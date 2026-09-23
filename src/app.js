@@ -1206,6 +1206,233 @@
   });
 
   /* ---------------------------------------------------------------
+     Flag cursor — the logo's ribbon flag (blue over red, a white gap
+     between) flies from the pointer. At rest it waves beside the
+     pointer; in motion it streams along the path; over anything you
+     can click it furls into a two-colour ring; a click makes it
+     flutter and sends out a ripple.
+     --------------------------------------------------------------- */
+  const fcCanvas = $("#flag-cursor");
+  const fcRing = $("#flag-ring");
+  const fcLabel = $(".fc-label", fcRing);
+  const fcSwitch = $("#cursor-switch");
+  const FC_KEY = "bloo-x-cursor";
+  const FC_N = 16;                 // points along the flag
+  const FC_SEG = 2.1;              // resting spacing → a ~32px flag
+  const FC_MAX = 12;               // longest stretch between points
+  const FC_DIR = { x: .8, y: .6 };  // at rest the flag flies down-right, like a pointer's tail
+  const FC_BLUE = ["#7DD3FF", "#2F6BFF", "#0B2DBF"];
+  const FC_RED = ["#FF8E7A", "#E3263B", "#A10D24"];
+  const FC_HOVER = 'a, button, summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, [data-drawer], [data-toast]';
+  const FC_TEXT = 'input:not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
+  const fcSupported = canHover && !!(fcCanvas && fcCanvas.getContext);
+  const fc = {
+    on: false, ctx: fcSupported ? fcCanvas.getContext("2d") : null, dpr: 1, w: 0, h: 0,
+    x: 0, y: 0, px: 0, py: 0, inside: false, placed: false, mode: "flag", label: "",
+    alpha: 0, rest: 1, ring: 0, press: 0, kick: 0, speed: 0, flip: 1, raf: 0, last: 0,
+    needsHit: false, ripples: [], nodes: Array.from({ length: FC_N }, () => ({ x: 0, y: 0 }))
+  };
+  const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+
+  function fcResize() {
+    if (!fc.on) return;
+    fc.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    fc.w = innerWidth; fc.h = innerHeight;
+    fcCanvas.width = Math.round(fc.w * fc.dpr);
+    fcCanvas.height = Math.round(fc.h * fc.dpr);
+  }
+  function fcStart() { if (fc.on && !fc.raf) { fc.last = 0; fc.raf = requestAnimationFrame(fcFrame); } }
+  function fcPlace() {
+    // unfurl from the pointer instead of streaking in from the corner
+    fc.nodes.forEach((n, i) => { n.x = fc.x + FC_DIR.x * FC_SEG * i; n.y = fc.y + FC_DIR.y * FC_SEG * i; });
+    fc.px = fc.x; fc.py = fc.y; fc.placed = true;
+  }
+  function fcTarget(el) {
+    if (!el || !el.closest) return;
+    if (el.closest("dialog[open]") || el.closest(FC_TEXT)) { fc.mode = "native"; return; }
+    const hit = el.closest(FC_HOVER);
+    const drag = el.closest("[data-drag]");
+    const label = !hit && drag ? "Drag" : "";
+    fc.mode = hit || drag ? "hover" : "flag";
+    if (label !== fc.label) { fc.label = label; fcLabel.textContent = label; fcRing.classList.toggle("has-label", !!label); }
+  }
+
+  // Smooth edge through the band's points (midpoint quadratic curves)
+  function fcEdge(ctx, pts, move) {
+    if (move) ctx.moveTo(pts[0].x, pts[0].y); else ctx.lineTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length - 1; i++) {
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, (pts[i].x + pts[i + 1].x) / 2, (pts[i].y + pts[i + 1].y) / 2);
+    }
+    const e = pts[pts.length - 1];
+    ctx.lineTo(e.x, e.y);
+  }
+
+  function fcFrame(now) {
+    fc.raf = 0;
+    const dt = fc.last ? Math.min(3, (now - fc.last) / 16.667) : 1;
+    fc.last = now;
+    const ctx = fc.ctx;
+    const ease = (r) => 1 - Math.pow(1 - r, dt);
+
+    if (fc.needsHit && fc.inside) { fc.needsHit = false; fcTarget(document.elementFromPoint(fc.x, fc.y)); }
+
+    // state springs
+    const show = fc.inside && fc.mode !== "native" ? 1 : 0;
+    fc.alpha += (show - fc.alpha) * ease(.22);
+    fc.rest += ((fc.mode === "hover" ? .16 : 1) - fc.rest) * ease(.16);
+    const ringTarget = fc.mode === "hover" ? (fc.label ? 1.3 : 1) : 0;
+    fc.ring += (ringTarget * (1 - fc.press * .18) - fc.ring) * ease(.2);
+    fc.kick *= Math.pow(.9, dt);
+    const sp = Math.hypot(fc.x - fc.px, fc.y - fc.py) / dt;
+    fc.speed += (sp - fc.speed) * ease(.2);
+    fc.px = fc.x; fc.py = fc.y;
+
+    // the flag: each point chases the one ahead of it, offset downwind
+    const n = fc.nodes;
+    n[0].x = fc.x; n[0].y = fc.y;
+    const k = ease(.5);
+    for (let i = 1; i < FC_N; i++) {
+      const p = n[i - 1], q = n[i];
+      q.x += (p.x + FC_DIR.x * FC_SEG * fc.rest - q.x) * k;
+      q.y += (p.y + FC_DIR.y * FC_SEG * fc.rest - q.y) * k;
+      const dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy);
+      if (d > FC_MAX) { q.x = p.x + dx / d * FC_MAX; q.y = p.y + dy / d * FC_MAX; }
+    }
+
+    ctx.setTransform(fc.dpr, 0, 0, fc.dpr, 0, 0);
+    ctx.clearRect(0, 0, fc.w, fc.h);
+
+    if (fc.alpha > .01) {
+      const time = now / 1000;
+      // flutter: a wave travelling to the tail, livelier with speed and on click
+      const amp = (1.8 + Math.min(fc.speed, 40) * .08 + fc.kick * 7) * fc.rest;
+      const mid = [];
+      for (let i = 0; i < FC_N; i++) {
+        const t = i / (FC_N - 1);
+        const a = n[Math.max(0, i - 1)], b = n[Math.min(FC_N - 1, i + 1)];
+        let tx = b.x - a.x, ty = b.y - a.y;
+        const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+        const w = amp * t * Math.sin(t * 5.2 - time * 8.5);
+        mid.push({ x: n[i].x + ty * w, y: n[i].y - tx * w, t });
+      }
+      // keep the blue stripe on top, as on a real flag (with a little hysteresis)
+      const vx = mid[FC_N - 1].x - mid[0].x;
+      if (vx > 4) fc.flip = 1; else if (vx < -4) fc.flip = -1;
+      let len = 0;
+      for (let i = 1; i < FC_N; i++) len += Math.hypot(mid[i].x - mid[i - 1].x, mid[i].y - mid[i - 1].y);
+      // a resting flag is chunky like the logo; a long streak thins into a ribbon
+      const stretch = clamp((len - 34) / 160);
+      const blueO = [], blueI = [], redO = [], redI = [];
+      const bandScale = (.55 + .45 * fc.rest) * (1 - .38 * stretch);
+      for (let i = 0; i < FC_N; i++) {
+        const m = mid[i];
+        const a = mid[Math.max(0, i - 1)], b = mid[Math.min(FC_N - 1, i + 1)];
+        let tx = b.x - a.x, ty = b.y - a.y;
+        const tl = Math.hypot(tx, ty) || 1; tx /= tl; ty /= tl;
+        if (tl < .5) { tx = FC_DIR.x; ty = FC_DIR.y; }
+        const nx = ty * fc.flip, ny = -tx * fc.flip;
+        const twist = .8 + .2 * Math.cos(m.t * 4 - time * 5);        // a hint of ribbon twist
+        const T = 5.6 * (1 - .22 * m.t) * bandScale * twist;
+        const G = 1.9 * (1 - .22 * m.t) * bandScale * twist;
+        blueI.push({ x: m.x + nx * G / 2, y: m.y + ny * G / 2 });
+        blueO.push({ x: m.x + nx * (G / 2 + T), y: m.y + ny * (G / 2 + T) });
+        redI.push({ x: m.x - nx * G / 2, y: m.y - ny * G / 2 });
+        redO.push({ x: m.x - nx * (G / 2 + T), y: m.y - ny * (G / 2 + T) });
+      }
+      // a long streak fades toward its tail; the resting flag stays solid
+      const tail = clamp(1 - (len - 70) / 170, .12, 1);
+      const h = mid[0], e = mid[FC_N - 1];
+      const gx = Math.abs(e.x - h.x) + Math.abs(e.y - h.y) < 1 ? h.x + 10 : e.x;
+      const gy = Math.abs(e.x - h.x) + Math.abs(e.y - h.y) < 1 ? h.y + 8 : e.y;
+      const band = (outer, inner, cols) => {
+        const g = ctx.createLinearGradient(h.x, h.y, gx, gy);
+        g.addColorStop(0, cols[0]); g.addColorStop(.45, cols[1]); g.addColorStop(1, hexA(cols[2], tail));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        fcEdge(ctx, outer, true);
+        fcEdge(ctx, inner.slice().reverse(), false);
+        ctx.closePath();
+        ctx.fill();
+        // rounded hoist, as on the logo
+        ctx.beginPath();
+        ctx.arc((outer[0].x + inner[0].x) / 2, (outer[0].y + inner[0].y) / 2, Math.hypot(outer[0].x - inner[0].x, outer[0].y - inner[0].y) / 2, 0, Math.PI * 2);
+        ctx.fillStyle = cols[0];
+        ctx.fill();
+      };
+      ctx.globalAlpha = fc.alpha;
+      ctx.shadowColor = "rgba(11, 22, 64, .22)"; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
+      band(redO, redI, FC_RED);
+      band(blueO, blueI, FC_BLUE);
+      ctx.shadowColor = "transparent";
+
+      // the pole-top: a precise dot at the hotspot
+      ctx.beginPath();
+      ctx.arc(fc.x, fc.y, 3.3 - fc.press * .9, 0, Math.PI * 2);
+      ctx.fillStyle = "#0B1640";
+      ctx.fill();
+      ctx.lineWidth = 1.6; ctx.strokeStyle = "rgba(255,255,255,.95)";
+      ctx.stroke();
+    }
+
+    // click ripples in the flag's colours
+    fc.ripples = fc.ripples.filter((r) => (r.age += dt / 60) < .55);
+    fc.ripples.forEach((r) => {
+      const q = r.age / .55, rad = 6 + easeOut(q) * 34;
+      ctx.globalAlpha = (1 - q) * .9;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, Math.PI * 2); ctx.strokeStyle = FC_BLUE[1]; ctx.stroke();
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad * .7, 0, Math.PI * 2); ctx.strokeStyle = FC_RED[1]; ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+
+    fcRing.style.opacity = (fc.alpha * Math.min(1, fc.ring * 1.6)).toFixed(3);
+    fcRing.style.transform = `translate3d(${fc.x}px, ${fc.y}px, 0) scale(${Math.max(.01, fc.ring).toFixed(3)})`;
+
+    if (fc.on && !document.hidden && (fc.inside || fc.alpha > .01 || fc.ripples.length)) fc.raf = requestAnimationFrame(fcFrame);
+  }
+
+  function setFlagCursor(pref) {
+    const on = pref && fcSupported && !reduceMotion;
+    if (fcSwitch) {
+      fcSwitch.hidden = !fcSupported || reduceMotion;
+      fcSwitch.setAttribute("aria-checked", String(pref));
+    }
+    if (on === fc.on) return;
+    fc.on = on;
+    root.classList.toggle("has-fc", on);
+    if (on) { fcResize(); fc.placed = false; }
+    else if (fc.ctx) { cancelAnimationFrame(fc.raf); fc.raf = 0; fc.ctx.clearRect(0, 0, fcCanvas.width, fcCanvas.height); fcRing.style.opacity = "0"; }
+  }
+  if (fcSupported) {
+    addEventListener("pointermove", (e) => {
+      if (!fc.on || e.pointerType !== "mouse") return;
+      fc.x = e.clientX; fc.y = e.clientY; fc.inside = true;
+      if (!fc.placed) fcPlace();
+      fcTarget(e.target);
+      fcStart();
+    }, { passive: true });
+    addEventListener("pointerdown", (e) => {
+      if (!fc.on || e.pointerType !== "mouse") return;
+      fc.press = 1; fc.kick = 1;
+      if (fc.mode !== "native") fc.ripples.push({ x: e.clientX, y: e.clientY, age: 0 });
+      fcStart();
+    }, { passive: true });
+    addEventListener("pointerup", () => { fc.press = 0; }, { passive: true });
+    document.addEventListener("mouseout", (e) => { if (!e.relatedTarget) { fc.inside = false; fc.placed = false; } });
+    addEventListener("blur", () => { fc.inside = false; fc.placed = false; });
+    addEventListener("scroll", () => { fc.needsHit = true; }, { passive: true });
+    addEventListener("resize", fcResize);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) fcStart(); });
+    fcSwitch?.addEventListener("click", () => {
+      const next = fcSwitch.getAttribute("aria-checked") !== "true";
+      store.set(FC_KEY, next ? "on" : "off");
+      setFlagCursor(next);
+      toast(next ? "Flag cursor on" : "Flag cursor off", "i-sparkle");
+    });
+  }
+  setFlagCursor(store.get(FC_KEY) !== "off");
+
+  /* ---------------------------------------------------------------
      Microinteractions — magnetic CTAs, app dock magnification,
      hero parallax on the pointer
      --------------------------------------------------------------- */
@@ -1392,7 +1619,7 @@
     rails.forEach(updateRail);
   });
   hsMQ.addEventListener("change", scheduleMeasure);
-  mqReduce.addEventListener("change", (e) => { reduceMotion = e.matches; scheduleMeasure(); });
+  mqReduce.addEventListener("change", (e) => { reduceMotion = e.matches; scheduleMeasure(); setFlagCursor(store.get(FC_KEY) !== "off"); });
 
   /* ---------------------------------------------------------------
      Reveal on scroll, split headings, count-ups

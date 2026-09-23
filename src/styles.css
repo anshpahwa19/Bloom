@@ -793,6 +793,10 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .sw + .sw { margin-left: -5px; }
 .sw--azure { background: linear-gradient(135deg, #164CFF, #03074C); }
 .sw--crimson { background: linear-gradient(135deg, #FF3C4B, #45000F); }
+.pref__flag { display: inline-grid; gap: 2px; width: 18px; transform: skewY(-12deg); }
+.pref__flag i { display: block; height: 5px; border-radius: var(--r-pill); }
+.pref__flag i:first-child { background: linear-gradient(90deg, #7DD3FF, #2F6BFF 55%, #0B2DBF); }
+.pref__flag i:last-child { background: linear-gradient(90deg, #FF8E7A, #E3263B 55%, #A10D24); }
 .mo__promo { display: flex; gap: 12px; margin-top: 8px; padding: 16px; border-radius: var(--r-md); background: linear-gradient(135deg, var(--accent-soft), var(--lavender-soft)); font-size: var(--fs-meta); color: var(--slate); }
 .mo__promo .ico { color: var(--accent-fg); margin-top: 2px; }
 .mo__promo span { display: grid; gap: 2px; }
@@ -1521,6 +1525,39 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   -webkit-mask: var(--logo-light) center top / 100% auto no-repeat;
           mask: var(--logo-light) center top / 100% auto no-repeat;
 }
+
+/* ------------------------------------------------------------------
+   5b. FLAG CURSOR — the logo's ribbon flag rides on the pointer.
+   The flag is drawn on a canvas; the hover ring is DOM so its label
+   stays crisp. Text fields and open dialogs keep the native cursor.
+   ------------------------------------------------------------------ */
+.fc-canvas { position: fixed; inset: 0; z-index: 400; width: 100%; height: 100%; pointer-events: none; display: none; }
+.fc-ring {
+  position: fixed; left: 0; top: 0; z-index: 401; display: none; place-items: center;
+  width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; pointer-events: none;
+  opacity: 0; will-change: transform, opacity;
+  transition: background-color var(--t-base);
+}
+/* a labelled ring ("Drag") gets a frosted fill so its word stays readable */
+.fc-ring.has-label { background: var(--frost-panel); -webkit-backdrop-filter: var(--frost-blur); backdrop-filter: var(--frost-blur); box-shadow: var(--frost-shadow); }
+.fc-ring::before {
+  /* the flag's two colours, as a slowly turning ring */
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.6px;
+  background: conic-gradient(from 200deg, #7DD3FF, #2F6BFF 22%, #0B2DBF 42%, transparent 44% 56%, #FF8E7A 58%, #E3263B 78%, #A10D24 98%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: spin 4.5s linear infinite;
+}
+.fc-label { font-size: 9px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ink); }
+.has-fc .fc-canvas { display: block; }
+.has-fc .fc-ring { display: grid; }
+.has-fc, .has-fc * { cursor: none !important; }
+.has-fc :is(input:not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]) { cursor: text !important; }
+/* Modal dialogs render above every layer, so they keep the system cursor */
+.has-fc dialog, .has-fc dialog * { cursor: auto !important; }
+.has-fc dialog :is(button, .chip) { cursor: pointer !important; }
+.has-fc dialog textarea { cursor: text !important; }
+.has-fc dialog::backdrop { cursor: auto; }
 
 /* ------------------------------------------------------------------
    6. MOTION — reveal system (added by JS so no-JS users see everything)

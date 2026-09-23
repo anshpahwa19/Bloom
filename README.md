@@ -52,6 +52,15 @@ The wordmark shrinks to the Bloom mark after the hero, and the capsule turns
 dark over dark chapters. ☰ opens a full menu with Your space and Appearance
 (theme and accent).
 
+**Flag cursor.** On mouse and trackpad devices the pointer carries the logo's
+ribbon flag: blue over red with a white gap. At rest it waves beside the
+pointer. In motion it streams along your path and thins into a ribbon. Over
+anything clickable it furls into a two-colour ring, and over draggable strips
+the ring reads "Drag". A click makes the flag flutter and sends out a
+blue-and-red ripple. Text fields and dialogs keep the system cursor. It is off
+on touch devices and with reduced motion, and ☰ → Appearance → Flag cursor
+turns it off.
+
 ## Kept from the original
 
 Search (Ctrl/⌘ K, now a command palette), notifications, profile menu,

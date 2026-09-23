@@ -18,5 +18,8 @@
     outer − inset). Never add a literal px radius.
   - Floating chrome (nav capsule, dock, hero fragments) uses the `.frost`
     glass class; nav dropdowns use the `--frost-panel` recipe.
+  - The flag cursor (canvas `#flag-cursor` + ring `#flag-ring`, "Flag cursor"
+    section of `src/app.js`) uses the logo's fixed blue/red, not the accent.
+    Anything clickable should match `FC_HOVER` so the ring appears on it.
   - Counters read `01 / 05`. Carousels put progress, counter and arrows in
     `.rail-foot`, and each chapter's "see all" link is a `.soft-link`.

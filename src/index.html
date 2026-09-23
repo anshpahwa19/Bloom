@@ -220,6 +220,10 @@
             <span class="pref__label"><span class="pref__swatches" aria-hidden="true"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span>Crimson accent</span>
             <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
           </button>
+          <button class="pref" type="button" id="cursor-switch" data-cursor-switch role="switch" aria-checked="true" hidden>
+            <span class="pref__label"><span class="pref__flag" aria-hidden="true"><i></i><i></i></span>Flag cursor</span>
+            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          </button>
         </div>
 
         <p class="mo__promo"><svg class="ico"><use href="#i-sparkle"/></svg><span><strong>Where Human and AI works together</strong>Your apps, people and perks in one workspace.</span></p>
@@ -987,6 +991,10 @@
   </dialog>
 
   <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Flag cursor — the Bloom ribbon flag rides on the pointer (fine pointers only) -->
+  <canvas class="fc-canvas" id="flag-cursor" aria-hidden="true"></canvas>
+  <div class="fc-ring" id="flag-ring" aria-hidden="true"><span class="fc-label"></span></div>
 
   <script>
 <!-- @include app.js -->
