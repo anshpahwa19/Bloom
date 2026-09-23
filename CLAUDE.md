@@ -30,3 +30,13 @@
     source of truth; don't copy task data.
   - Counters read `01 / 05`. Carousels put progress, counter and arrows in
     `.rail-foot`, and each chapter's "see all" link is a `.soft-link`.
+  - Nothing gets cut at the side:
+    - Word and line reveal masks clip vertically only
+      (`overflow-x: visible; overflow-y: clip`). The tight tracking otherwise
+      shaves off the last letter.
+    - Scroll strips and clipping carousels leave padding for selected rings,
+      focus rings, hover lifts and halos.
+    - Tab bars fit their width on phones.
+  - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
+    `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
+    halos; `--accent-glow` is kept faint for ambient light inside panels.

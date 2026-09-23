@@ -1954,13 +1954,16 @@
   const blobs = $$(".blob");
   addScene(hero, (p, y, s) => {
     const q = clamp(y / s.h);
-    heroCopy.style.translate = `0 ${(q * -110).toFixed(1)}px`;
-    heroCopy.style.scale = (1 - q * 0.08).toFixed(4);
-    heroCopy.style.opacity = (1 - clamp((q - 0.2) / 0.55)).toFixed(3);
-    heroStage.style.translate = `0 ${(q * -190).toFixed(1)}px`;
+    // Stacked (phone) hero runs taller than the screen: lifting and fading
+    // would hide the quick links before they are reached, so leave it still.
+    const still = s.h > vh * 1.2;
+    heroCopy.style.translate = still ? "" : `0 ${(q * -110).toFixed(1)}px`;
+    heroCopy.style.scale = still ? "" : (1 - q * 0.08).toFixed(4);
+    heroCopy.style.opacity = still ? "" : (1 - clamp((q - 0.2) / 0.55)).toFixed(3);
+    heroStage.style.translate = still ? "" : `0 ${(q * -190).toFixed(1)}px`;
     orbitLines.style.rotate = `${(q * 28).toFixed(2)}deg`;
-    heroFoot.style.translate = `0 ${(q * 70).toFixed(1)}px`;
-    heroFoot.style.opacity = (1 - clamp(q * 2.4)).toFixed(3);
+    heroFoot.style.translate = still ? "" : `0 ${(q * 70).toFixed(1)}px`;
+    heroFoot.style.opacity = still ? "" : (1 - clamp(q * 2.4)).toFixed(3);
     blobs[0].style.translate = `0 ${(q * 180).toFixed(1)}px`;
     blobs[1].style.translate = `${(q * 60).toFixed(1)}px ${(q * -90).toFixed(1)}px`;
     blobs[2].style.translate = `${(q * -80).toFixed(1)}px ${(q * 120).toFixed(1)}px`;
