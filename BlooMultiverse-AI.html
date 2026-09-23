@@ -1111,6 +1111,12 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
   background: linear-gradient(120deg, var(--crimson-stops)); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .03em; white-space: nowrap;
   animation: lensIn 520ms var(--ease-spring) both; animation-delay: calc(var(--mi, 0) * 70ms + 200ms);
 }
+/* List rows: a straight accent bar that stays clear of the rounded corners, and the tag sits in the row */
+.task.is-match::after, .partner.is-match::after, .policy--row.is-match::after, .policy--index.is-match::after, .tl.is-match::after, .faqs__item.is-match::after {
+  content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; border-radius: 3px; background: var(--accent-fg);
+  animation: fadeIn 500ms var(--ease-out) both;
+}
+.task .match-tag, .partner .match-tag, .policy--index .match-tag { display: flex; width: max-content; margin-bottom: 6px; }
 .is-pulse { animation: pulseRing 1.4s var(--ease-out) 2; }
 
 /* Lens note — Bloo's context line at the top of a lensed chapter */
@@ -1208,10 +1214,10 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .task--skeleton { display: none; }
 .task-list.is-loading .task--skeleton { display: flex; gap: 18px; align-items: center; }
 .task-list.is-loading .task:not(.task--skeleton) { display: none; }
-.task.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 7%, var(--white)), var(--white) 70%); box-shadow: inset 3px 0 0 var(--accent-fg), var(--sh-soft); }
+.task.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 7%, var(--white)), var(--white) 70%); box-shadow: var(--sh-soft); }
 :root[data-theme="dark"] .task.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 12%, #141821), #141821 70%); }
 .task.is-match::before, .task.is-match + .task::before { opacity: 0; }
-.task .match-tag { position: absolute; top: -9px; left: 64px; }
+.task.is-match + .task, .task + .task.is-match { margin-top: 6px; }
 .task-empty { padding: 28px 12px; text-align: center; color: var(--slate); }
 .attention__foot { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 16px; border-top: 1px solid var(--line); }
 #more-tasks .ico { transition: transform var(--t-base) var(--ease-out); }
@@ -1267,9 +1273,11 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .policy__go { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; color: var(--slate-2); border: 1px solid var(--line); transition: all var(--t-base) var(--ease-out); }
 .policy__go::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 .policy--row:hover .policy__go { background: var(--ink); border-color: var(--ink); color: var(--canvas); transform: rotate(-45deg); }
-.policy--row.is-match, .policy--index.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 8%, var(--white)), transparent 80%); border-radius: 18px; box-shadow: inset 3px 0 0 var(--accent-fg); }
+.policy--row.is-match, .policy--index.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 8%, var(--white)), transparent 80%); border-radius: 18px; border-top-color: transparent; }
+.policy--row.is-match + .policy--row, .policy--row + .policy--row.is-match, .policy--index.is-match + .policy--index, .policy--index + .policy--index.is-match { margin-top: 6px; }
 :root[data-theme="dark"] .policy--row.is-match, :root[data-theme="dark"] .policy--index.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 14%, #141821), transparent 80%); }
-.policy--row .match-tag, .policy--index .match-tag { position: absolute; top: 10px; right: 64px; }
+.policy--row .match-tag { margin-left: 6px; vertical-align: middle; }
+.policy--index .match-tag { margin: 14px 0 -6px 10px; }
 .library { display: grid; }
 .policy--index { position: relative; border-top: 1px solid var(--line); }
 .policy--index a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 16px; padding: 16px 10px; }
@@ -1348,7 +1356,7 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .tl__link { display: inline-flex; align-items: center; gap: 6px; font-size: var(--fs-support); font-weight: 600; color: var(--accent-fg); }
 .tl__link .ico { transition: transform var(--t-base) var(--ease-out); }
 .tl__link:hover .ico { transform: translateX(3px); }
-.tl.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 8%, var(--white)), transparent 85%); box-shadow: inset 3px 0 0 var(--accent-fg); }
+.tl.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 8%, var(--white)), transparent 85%); }
 :root[data-theme="dark"] .tl.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 14%, #141821), transparent 85%); }
 .tl .match-tag { position: absolute; top: 12px; right: 14px; }
 
@@ -1495,6 +1503,8 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 :root[data-theme="dark"] .partner:hover { background: #141821; }
 .offer { display: inline-flex; align-items: baseline; gap: 4px; font-size: var(--fs-meta); font-weight: 600; color: var(--slate-2); }
 .offer strong { font-family: var(--font-display); font-size: 2.1rem; font-weight: 700; letter-spacing: -0.05em; line-height: 1; color: var(--ink); }
+.offer--special { display: grid; gap: 4px; }
+.offer--special strong { font-size: 1.3rem; letter-spacing: -0.03em; }
 .partner__plate { display: grid; place-items: center; width: 56px; height: 56px; padding: 8px; border-radius: 16px; background: #fff; border: 1px solid var(--line); transition: transform var(--t-base) var(--ease-spring); }
 :root[data-theme="dark"] .partner__plate { border-color: transparent; }
 .partner:hover .partner__plate { transform: rotate(-4deg) scale(1.06); }
@@ -1509,9 +1519,10 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 }
 .partner__code:hover { border-style: solid; border-color: var(--accent-fg); background: var(--soft-blue); }
 .partner__code.is-revealed { border-style: solid; border-color: var(--ink); background: var(--ink); color: var(--canvas); letter-spacing: .02em; animation: flip .45s var(--ease-out); }
-.partner.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 8%, var(--white)), transparent 85%); border-radius: 18px; box-shadow: inset 3px 0 0 var(--accent-fg); }
+.partner.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 8%, var(--white)), transparent 85%); border-radius: 18px; border-top-color: transparent; }
+.partners:has(.partner.is-match) { row-gap: 6px; }
 :root[data-theme="dark"] .partner.is-match { background: linear-gradient(100deg, color-mix(in srgb, var(--accent-fg) 14%, #141821), transparent 85%); }
-.partner .match-tag { position: absolute; top: 8px; left: 10px; }
+
 
 /* 08 — FAQ ---------------------------------------------------------- */
 .faq-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
@@ -1535,8 +1546,8 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .faqs__a { padding: 0 12px 22px; animation: answerIn 420ms var(--ease-out); }
 .faqs__a p { max-width: 64ch; color: var(--slate); font-size: var(--fs-body); line-height: 1.65; }
 .faqs__a strong { color: var(--ink); font-weight: 600; }
-.faqs__item.is-match { box-shadow: inset 3px 0 0 var(--accent-fg); }
-.faqs__item .match-tag { position: absolute; top: -11px; left: 12px; }
+.faqs__item.is-match .faqs__q { padding-top: 44px; }
+.faqs__item .match-tag { position: absolute; top: 14px; left: 12px; }
 
 /* 09 — Support + footer --------------------------------------------- */
 .support {
@@ -1944,7 +1955,6 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .task:hover { transform: none; }
   .task__approve { background: var(--green-soft); border-color: transparent; color: var(--green-fg); }
   .task__reject { background: var(--warm-soft); border-color: transparent; color: var(--warm-fg); }
-  .task .match-tag { left: 56px; }
   .attention__foot { flex-direction: column-reverse; gap: 10px; align-items: stretch; text-align: center; }
   .tabs { max-width: calc(100vw - var(--gutter) * 2); }
 
@@ -1989,6 +1999,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .partner { grid-template-columns: 76px 48px minmax(0, 1fr); gap: 8px 14px; }
   .partner__plate { width: 48px; height: 48px; }
   .offer strong { font-size: 1.7rem; }
+  .offer--special strong { font-size: 1.1rem; }
   .partner__code { grid-column: 2 / -1; justify-self: start; }
 
   .support { margin-left: 0; border-radius: 32px 32px 0 0; }
@@ -2835,7 +2846,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
           <p class="interlude__text">Communities to join, partner discounts and the perks that come with being part of the team.</p>
           <ul class="interlude__facts">
             <li><strong>6</strong><span>communities</span></li>
-            <li><strong>8</strong><span>partner discounts</span></li>
+            <li><strong>8</strong><span>partner offers</span></li>
             <li><strong>4</strong><span>workplace perks</span></li>
           </ul>
         </div>
@@ -2995,12 +3006,12 @@ p.inbox-empty .text-btn { margin-left: 6px; }
           <ul class="partners">
             <li class="partner reveal-item" data-partner="marriott" data-topics="travel hotel stay dining food" data-lens-item><span class="offer"><strong>30%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-marriott" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Marriott Hotel Downtown</p><p class="partner__cat">Stays and dining</p></div><button class="partner__code" type="button" data-code="BLOOM-MAR30">Get code</button></li>
             <li class="partner reveal-item" data-partner="edition" data-topics="travel hotel stay spa" data-lens-item><span class="offer"><strong>30%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-edition" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Abu Dhabi Edition</p><p class="partner__cat">Hotel and spa</p></div><button class="partner__code" type="button" data-code="BLOOM-EDT30">Get code</button></li>
-            <li class="partner reveal-item" data-partner="eiic" data-topics="industrial supplies work" data-lens-item><span class="offer"><strong>15%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-eiic" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">EIIC</p><p class="partner__cat">Industrial supplies</p></div><button class="partner__code" type="button" data-code="BLOOM-EIIC15">Get code</button></li>
+            <li class="partner reveal-item" data-partner="eiic" data-topics="industrial supplies work" data-lens-item><span class="offer offer--special"><strong>Special</strong> offer</span><span class="partner__plate"><span class="partner__logo img-partner-eiic" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">EIIC</p><p class="partner__cat">Industrial supplies</p></div><button class="partner__code" type="button" data-code="BLOOM-EIIC">Get code</button></li>
             <li class="partner reveal-item" data-partner="efi" data-topics="food groceries grocery" data-lens-item><span class="offer"><strong>20%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-efi" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Emirates Food Industries</p><p class="partner__cat">Groceries</p></div><button class="partner__code" type="button" data-code="BLOOM-EFI20">Get code</button></li>
-            <li class="partner reveal-item" data-partner="exeed" data-topics="building materials home" data-lens-item><span class="offer"><strong>10%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-exeed" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Exeed Industries</p><p class="partner__cat">Building materials</p></div><button class="partner__code" type="button" data-code="BLOOM-EXD10">Get code</button></li>
+            <li class="partner reveal-item" data-partner="exeed" data-topics="building materials home" data-lens-item><span class="offer offer--special"><strong>Special</strong> offer</span><span class="partner__plate"><span class="partner__logo img-partner-exeed" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Exeed Industries</p><p class="partner__cat">Building materials</p></div><button class="partner__code" type="button" data-code="BLOOM-EXEED">Get code</button></li>
             <li class="partner reveal-item" data-partner="foodquests" data-topics="food restaurants restaurant dining eat" data-lens-item><span class="offer"><strong>25%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-foodquests" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Food Quests</p><p class="partner__cat">Restaurants</p></div><button class="partner__code" type="button" data-code="BLOOM-FQ25">Get code</button></li>
-            <li class="partner reveal-item" data-partner="petromal" data-topics="fuel car services" data-lens-item><span class="offer"><strong>5%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-petromal" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Petromal</p><p class="partner__cat">Fuel and services</p></div><button class="partner__code" type="button" data-code="BLOOM-PTM05">Get code</button></li>
-            <li class="partner reveal-item" data-partner="rise" data-topics="lifestyle shopping" data-lens-item><span class="offer"><strong>20%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-rise" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Rise</p><p class="partner__cat">Lifestyle</p></div><button class="partner__code" type="button" data-code="BLOOM-RISE20">Get code</button></li>
+            <li class="partner reveal-item" data-partner="petromal" data-topics="fuel car services" data-lens-item><span class="offer offer--special"><strong>Special</strong> offer</span><span class="partner__plate"><span class="partner__logo img-partner-petromal" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Petromal</p><p class="partner__cat">Fuel and services</p></div><button class="partner__code" type="button" data-code="BLOOM-PTM">Get code</button></li>
+            <li class="partner reveal-item" data-partner="rise" data-topics="lifestyle shopping" data-lens-item><span class="offer offer--special"><strong>Special</strong> offer</span><span class="partner__plate"><span class="partner__logo img-partner-rise" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Rise</p><p class="partner__cat">Lifestyle</p></div><button class="partner__code" type="button" data-code="BLOOM-RISE">Get code</button></li>
           </ul>
         </div>
       </section>
@@ -4876,9 +4887,11 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   const PARTNERS = $$(".partner").map((el) => ({
     key: el.dataset.partner, el, topics: el.dataset.topics.split(" "),
     name: $(".partner__name", el).textContent, cat: $(".partner__cat", el).textContent,
-    offer: Number($(".offer strong", el).textContent.replace("%", "")),
+    // Some partners give a percentage, the rest a special offer: offer is 0 for those
+    offer: Number($(".offer strong", el).textContent.match(/^(\d+)%$/)?.[1] || 0),
     img: [...$(".partner__logo", el).classList].find((c) => c.startsWith("img-"))
   }));
+  PARTNERS.forEach((x) => { x.deal = x.offer ? `${x.offer}% off` : "Special offer"; });
   const FAQS = $$(".faqs__item", faqSec).map((el) => ({
     el, q: $(".faqs__q span", el).textContent, a: $(".faqs__a p", el).textContent,
     tab: $(`#${el.closest(".faqs__panel").getAttribute("aria-labelledby")}`)
@@ -4987,7 +5000,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   const sportResult = (s) => result(s.name, `${s.members} members`, { icon: "i-ball" }, () => { openSport(s.el); spotlight(s.el); });
   const showPerk = (p) => perkTrack.scrollTo({ left: perkTrack.scrollLeft + p.el.getBoundingClientRect().left - perkTrack.getBoundingClientRect().left - 4, behavior: behavior() });
   const perkResult = (p) => result(p.title, "Workplace perk", { img: p.img }, () => { showPerk(p); spotlight(p.el); });
-  const partnerResult = (p) => result(p.name, `${p.offer}% off · ${p.cat}`, { logo: p.img }, () => spotlight(p.el));
+  const partnerResult = (p) => result(p.name, `${p.deal} · ${p.cat}`, { logo: p.img }, () => spotlight(p.el));
   const faqResult = (f) => result(f.q, "FAQ", { icon: "i-help" }, () => openFaq(f));
   const actionResult = (label, meta, iconId, act) => result(label, meta, { icon: iconId }, act);
 
@@ -5283,11 +5296,11 @@ p.inbox-empty .text-btn { margin-left: 6px; }
     if (p.partner) {
       const x = p.partner;
       return { ...base, think: [`Finding ${x.name}`],
-        title: `<em>${x.offer}% off</em> at ${escapeHtml(x.name)}`,
+        title: `<em>${x.deal}</em> at ${escapeHtml(x.name)}`,
         text: `${x.cat}. Show your Bloom ID in store, or use the code online.`,
         results: [result("Reveal the code", x.name, { logo: x.img }, () => { const b = $(".partner__code", x.el); if (!b.classList.contains("is-revealed")) b.click(); spotlight(x.el); })],
         focus: x.el,
-        lens: { sections: [disc], matches: [x.el], tag: `${x.offer}%`, note: { key: "discounts", text: `<strong>${escapeHtml(x.name)}</strong> — ${x.offer}% off`, chips: [] } }
+        lens: { sections: [disc], matches: [x.el], tag: x.deal, note: { key: "discounts", text: `<strong>${escapeHtml(x.name)}</strong> — ${x.deal.toLowerCase()}`, chips: [] } }
       };
     }
     const travel = /\b(travel|hotel|hotels|stay|stays|trip|trips|holiday|flight|flights|spa)\b/.test(q);
@@ -5300,8 +5313,8 @@ p.inbox-empty .text-btn { margin-left: 6px; }
       return { ...base, think: ["Comparing partner offers", `Matching ${topic}`],
         title: `<em>${n}</em> ${travel ? "travel" : "food & dining"} offers`,
         text: travel
-          ? `${partners.length} hotel partners at up to ${partners[0].offer}% off — ${listJoin(partners.map((x) => x.name))} — plus your annual air ticket and Mazaya member prices.`
-          : `${listJoin(partners.map((x) => `${x.name} (${x.offer}%)`))}, plus Mimojo cashback at cafés near you.`,
+          ? `${partners.length} hotel partners${partners[0].offer ? ` at up to ${partners[0].offer}% off` : ""} — ${listJoin(partners.map((x) => x.name))} — plus your annual air ticket and Mazaya member prices.`
+          : `${listJoin(partners.map((x) => `${x.name} (${x.deal.toLowerCase()})`))}, plus Mimojo cashback at cafés near you.`,
         results: [...partners.map(partnerResult), ...perks.map(perkResult)],
         before: () => { if (perks[0]) showPerk(perks[0]); },
         lens: { sections: [disc], matches: [...partners.map((x) => x.el), ...perks.map((x) => x.el)], tag: travel ? "Travel" : "Food",
@@ -5309,12 +5322,13 @@ p.inbox-empty .text-btn { margin-left: 6px; }
       };
     }
     const sorted = [...PARTNERS].sort((a, b) => b.offer - a.offer);
-    const best = sorted.filter((x) => x.offer === sorted[0].offer);
+    const best = sorted.filter((x) => x.offer && x.offer === sorted[0].offer);
+    const specials = PARTNERS.filter((x) => !x.offer).length;
     return { ...base, think: ["Comparing partner offers"],
-      title: `<em>${PARTNERS.length}</em> partner discounts`,
-      text: `The best are ${best[0].offer}% off at ${listJoin(best.map((x) => x.name))}. Show your Bloom ID in store, or use the code online.`,
+      title: `<em>${PARTNERS.length}</em> partner offers`,
+      text: `${best.length ? `The best ${best.length > 1 ? "are" : "is"} ${best[0].offer}% off at ${listJoin(best.map((x) => x.name))}` : "Every partner has an offer for you"}${specials ? `, and ${specials} more ${specials > 1 ? "partners have special offers" : "partner has a special offer"}` : ""}. Show your Bloom ID in store, or use the code online.`,
       results: sorted.map(partnerResult),
-      lens: { sections: [disc], matches: sorted.map((x) => x.el), tag: "Offer",
+      lens: { sections: [disc], matches: sorted.map((x) => x.el),
         note: { key: "discounts", text: `<strong>${PARTNERS.length} partner offers</strong>, best first`, chips: [{ label: "Travel", act: () => ask("Show me travel discounts") }, { label: "Food & dining", act: () => ask("Show me food discounts") }] } }
     };
   }
@@ -5420,7 +5434,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
     ...birthdays.map((x, i) => ({ group: "People", label: x.name, meta: "Birthday today", lead: { avatar: x.img }, plan: { intent: "news", person: { kind: "birthday", index: i } } })),
     ...SPORTS.map((s) => ({ group: "Communities", label: s.name, meta: `${s.members} members`, lead: { icon: "i-ball" }, plan: { intent: "communities", sport: s } })),
     ...PERKS.map((x) => ({ group: "Perks", label: x.title, meta: "Workplace perk", lead: { icon: "i-shield" }, plan: { intent: "perks" } })),
-    ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: `${x.offer}% off`, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
+    ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: x.deal, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
     ...FAQS.map((f) => ({ group: "Help", label: f.q, meta: "FAQ", lead: { icon: "i-help" }, plan: { intent: "help", faq: f } })),
     { group: "Help", label: "Help & support", meta: "FAQs and contacts", lead: { icon: "i-help" }, drawer: "help" },
     { group: "Help", label: "My profile", meta: "Role, team and contact details", lead: { icon: "i-user" }, drawer: "profile" },
@@ -5539,12 +5553,16 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   }
 
   function markTag(el, text, i) {
-    const host = $(".policy__frame, .perk__frame", el) || (el.tagName === "DETAILS" ? $("summary", el) : el);
     const tag = document.createElement("span");
     tag.className = "match-tag";
     tag.style.setProperty("--mi", i);
     tag.innerHTML = `${icon("i-sparkle", "ico ico--xs")}${escapeHtml(text)}`;
-    host.appendChild(tag);
+    // List rows carry the tag inside the row, so it never sits over the row above or the text beside it
+    const lead = $(".task__body, .partner__txt", el);
+    if (lead) lead.prepend(tag);
+    else if (el.matches(".policy--row")) $(".tag", el).after(tag);
+    else if (el.matches(".policy--index")) el.prepend(tag);
+    else ($(".policy__frame, .perk__frame", el) || (el.tagName === "DETAILS" ? $("summary", el) : el)).appendChild(tag);
   }
 
   function applyLens(res, query) {

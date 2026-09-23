@@ -61,8 +61,10 @@ There is no backend. `ai/app.js` runs a deterministic simulation over the page's
 3. **Answer.** Bloo gives a headline, a sentence of context and result rows.
    All of it is built from the live DOM, so counts change as you approve tasks.
 4. **AI Lens.** Relevant chapters brighten and get a context note with chips.
-   Matching items are tagged ✦. Everything else goes quiet (reduced opacity,
-   full again on hover) and nothing is hidden.
+   Matching items are tagged ✦. In lists (tasks, partners, policies, FAQs) the
+   tag sits inside the row, next to a straight accent bar, so it never covers
+   the row above. Everything else goes quiet (reduced opacity, full again on
+   hover) and nothing is hidden.
 5. **Navigation.** After 1.7 s Bloo scrolls to the chapter, unless you choose
    *Stay here* or scroll yourself. The rail briefly opens to show where you are
    (for example Explore › Policies ✦ AI).
@@ -146,6 +148,10 @@ Content notes:
   Their copy is placeholder.
 - FAQ answers that pointed at the old layout ("search bar at the top", "next to
   Quick links") were reworded for the new one.
+- Partner offers: Marriott, Abu Dhabi Edition, Emirates Food Industries and Food
+  Quests keep their percentage. EIIC, Exeed, Petromal and Rise show "Special offer"
+  instead, and their codes lost the number. To switch a partner back, put
+  `<strong>NN%</strong> off` in its `.offer`; Bloo's answers read it from there.
 
 ---
 

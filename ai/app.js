@@ -1651,9 +1651,11 @@
   const PARTNERS = $$(".partner").map((el) => ({
     key: el.dataset.partner, el, topics: el.dataset.topics.split(" "),
     name: $(".partner__name", el).textContent, cat: $(".partner__cat", el).textContent,
-    offer: Number($(".offer strong", el).textContent.replace("%", "")),
+    // Some partners give a percentage, the rest a special offer: offer is 0 for those
+    offer: Number($(".offer strong", el).textContent.match(/^(\d+)%$/)?.[1] || 0),
     img: [...$(".partner__logo", el).classList].find((c) => c.startsWith("img-"))
   }));
+  PARTNERS.forEach((x) => { x.deal = x.offer ? `${x.offer}% off` : "Special offer"; });
   const FAQS = $$(".faqs__item", faqSec).map((el) => ({
     el, q: $(".faqs__q span", el).textContent, a: $(".faqs__a p", el).textContent,
     tab: $(`#${el.closest(".faqs__panel").getAttribute("aria-labelledby")}`)
@@ -1762,7 +1764,7 @@
   const sportResult = (s) => result(s.name, `${s.members} members`, { icon: "i-ball" }, () => { openSport(s.el); spotlight(s.el); });
   const showPerk = (p) => perkTrack.scrollTo({ left: perkTrack.scrollLeft + p.el.getBoundingClientRect().left - perkTrack.getBoundingClientRect().left - 4, behavior: behavior() });
   const perkResult = (p) => result(p.title, "Workplace perk", { img: p.img }, () => { showPerk(p); spotlight(p.el); });
-  const partnerResult = (p) => result(p.name, `${p.offer}% off · ${p.cat}`, { logo: p.img }, () => spotlight(p.el));
+  const partnerResult = (p) => result(p.name, `${p.deal} · ${p.cat}`, { logo: p.img }, () => spotlight(p.el));
   const faqResult = (f) => result(f.q, "FAQ", { icon: "i-help" }, () => openFaq(f));
   const actionResult = (label, meta, iconId, act) => result(label, meta, { icon: iconId }, act);
 
@@ -2058,11 +2060,11 @@
     if (p.partner) {
       const x = p.partner;
       return { ...base, think: [`Finding ${x.name}`],
-        title: `<em>${x.offer}% off</em> at ${escapeHtml(x.name)}`,
+        title: `<em>${x.deal}</em> at ${escapeHtml(x.name)}`,
         text: `${x.cat}. Show your Bloom ID in store, or use the code online.`,
         results: [result("Reveal the code", x.name, { logo: x.img }, () => { const b = $(".partner__code", x.el); if (!b.classList.contains("is-revealed")) b.click(); spotlight(x.el); })],
         focus: x.el,
-        lens: { sections: [disc], matches: [x.el], tag: `${x.offer}%`, note: { key: "discounts", text: `<strong>${escapeHtml(x.name)}</strong> — ${x.offer}% off`, chips: [] } }
+        lens: { sections: [disc], matches: [x.el], tag: x.deal, note: { key: "discounts", text: `<strong>${escapeHtml(x.name)}</strong> — ${x.deal.toLowerCase()}`, chips: [] } }
       };
     }
     const travel = /\b(travel|hotel|hotels|stay|stays|trip|trips|holiday|flight|flights|spa)\b/.test(q);
@@ -2075,8 +2077,8 @@
       return { ...base, think: ["Comparing partner offers", `Matching ${topic}`],
         title: `<em>${n}</em> ${travel ? "travel" : "food & dining"} offers`,
         text: travel
-          ? `${partners.length} hotel partners at up to ${partners[0].offer}% off — ${listJoin(partners.map((x) => x.name))} — plus your annual air ticket and Mazaya member prices.`
-          : `${listJoin(partners.map((x) => `${x.name} (${x.offer}%)`))}, plus Mimojo cashback at cafés near you.`,
+          ? `${partners.length} hotel partners${partners[0].offer ? ` at up to ${partners[0].offer}% off` : ""} — ${listJoin(partners.map((x) => x.name))} — plus your annual air ticket and Mazaya member prices.`
+          : `${listJoin(partners.map((x) => `${x.name} (${x.deal.toLowerCase()})`))}, plus Mimojo cashback at cafés near you.`,
         results: [...partners.map(partnerResult), ...perks.map(perkResult)],
         before: () => { if (perks[0]) showPerk(perks[0]); },
         lens: { sections: [disc], matches: [...partners.map((x) => x.el), ...perks.map((x) => x.el)], tag: travel ? "Travel" : "Food",
@@ -2084,12 +2086,13 @@
       };
     }
     const sorted = [...PARTNERS].sort((a, b) => b.offer - a.offer);
-    const best = sorted.filter((x) => x.offer === sorted[0].offer);
+    const best = sorted.filter((x) => x.offer && x.offer === sorted[0].offer);
+    const specials = PARTNERS.filter((x) => !x.offer).length;
     return { ...base, think: ["Comparing partner offers"],
-      title: `<em>${PARTNERS.length}</em> partner discounts`,
-      text: `The best are ${best[0].offer}% off at ${listJoin(best.map((x) => x.name))}. Show your Bloom ID in store, or use the code online.`,
+      title: `<em>${PARTNERS.length}</em> partner offers`,
+      text: `${best.length ? `The best ${best.length > 1 ? "are" : "is"} ${best[0].offer}% off at ${listJoin(best.map((x) => x.name))}` : "Every partner has an offer for you"}${specials ? `, and ${specials} more ${specials > 1 ? "partners have special offers" : "partner has a special offer"}` : ""}. Show your Bloom ID in store, or use the code online.`,
       results: sorted.map(partnerResult),
-      lens: { sections: [disc], matches: sorted.map((x) => x.el), tag: "Offer",
+      lens: { sections: [disc], matches: sorted.map((x) => x.el),
         note: { key: "discounts", text: `<strong>${PARTNERS.length} partner offers</strong>, best first`, chips: [{ label: "Travel", act: () => ask("Show me travel discounts") }, { label: "Food & dining", act: () => ask("Show me food discounts") }] } }
     };
   }
@@ -2195,7 +2198,7 @@
     ...birthdays.map((x, i) => ({ group: "People", label: x.name, meta: "Birthday today", lead: { avatar: x.img }, plan: { intent: "news", person: { kind: "birthday", index: i } } })),
     ...SPORTS.map((s) => ({ group: "Communities", label: s.name, meta: `${s.members} members`, lead: { icon: "i-ball" }, plan: { intent: "communities", sport: s } })),
     ...PERKS.map((x) => ({ group: "Perks", label: x.title, meta: "Workplace perk", lead: { icon: "i-shield" }, plan: { intent: "perks" } })),
-    ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: `${x.offer}% off`, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
+    ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: x.deal, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
     ...FAQS.map((f) => ({ group: "Help", label: f.q, meta: "FAQ", lead: { icon: "i-help" }, plan: { intent: "help", faq: f } })),
     { group: "Help", label: "Help & support", meta: "FAQs and contacts", lead: { icon: "i-help" }, drawer: "help" },
     { group: "Help", label: "My profile", meta: "Role, team and contact details", lead: { icon: "i-user" }, drawer: "profile" },
@@ -2314,12 +2317,16 @@
   }
 
   function markTag(el, text, i) {
-    const host = $(".policy__frame, .perk__frame", el) || (el.tagName === "DETAILS" ? $("summary", el) : el);
     const tag = document.createElement("span");
     tag.className = "match-tag";
     tag.style.setProperty("--mi", i);
     tag.innerHTML = `${icon("i-sparkle", "ico ico--xs")}${escapeHtml(text)}`;
-    host.appendChild(tag);
+    // List rows carry the tag inside the row, so it never sits over the row above or the text beside it
+    const lead = $(".task__body, .partner__txt", el);
+    if (lead) lead.prepend(tag);
+    else if (el.matches(".policy--row")) $(".tag", el).after(tag);
+    else if (el.matches(".policy--index")) el.prepend(tag);
+    else ($(".policy__frame, .perk__frame", el) || (el.tagName === "DETAILS" ? $("summary", el) : el)).appendChild(tag);
   }
 
   function applyLens(res, query) {
