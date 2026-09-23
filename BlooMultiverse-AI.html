@@ -133,6 +133,12 @@
   --sh-lift: 0 18px 40px -18px rgba(11, 22, 64, .3);
   --quiet: .5;
 
+  /* Request types — categorical, validated for CVD separation and
+     contrast on the light surface (#B6000E / #5D4BD6 / #0B8FB5) */
+  --c-tcdf: #B6000E;
+  --c-memo: #5D4BD6;
+  --c-rfp: #0B8FB5;
+
   /* Layout */
   --rail: 84px;
   --rail-open: 272px;
@@ -189,6 +195,10 @@
   --sh-float: inset 0 1px 0 rgba(255, 255, 255, .05), 0 28px 70px -24px rgba(0, 0, 0, .85);
   --sh-lift: 0 22px 50px -20px rgba(0, 0, 0, .8);
   --quiet: .42;
+  /* dark steps, validated against the #141821 card surface */
+  --c-tcdf: #E8384A;
+  --c-memo: #7A6BF0;
+  --c-rfp: #0FA3C9;
 }
 
 /* Palette switch — azure. Independent of theme: all four combinations. */
@@ -489,8 +499,16 @@ kbd { font-family: var(--font-ui); }
 .drawer.is-fullpage.is-open .drawer__panel { transform: none; opacity: 1; }
 .drawer.is-fullpage .drawer__head { padding: 24px clamp(24px, 6vw, 72px); }
 .drawer.is-fullpage .drawer__title { font-size: var(--fs-chap); }
-.drawer.is-fullpage .drawer__body { max-width: 1100px; width: 100%; margin: 0 auto; padding: 32px clamp(24px, 6vw, 72px) 48px; }
-.drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+.drawer.is-fullpage .drawer__body { max-width: 1320px; width: 100%; margin: 0 auto; padding: 32px clamp(24px, 5vw, 64px) 56px; }
+.drawer.is-fullpage .drawer__head { max-width: 1320px; width: 100%; margin: 0 auto; border-bottom: 0; padding-bottom: 8px; }
+.drawer.is-fullpage .drawer__panel > .drawer__head { position: relative; }
+.drawer.is-fullpage .drawer__panel::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 320px; z-index: -1; pointer-events: none; background: radial-gradient(50% 100% at 85% 0%, var(--glow), transparent 70%); opacity: .6; }
+.drawer.is-fullpage .drawer__panel { isolation: isolate; }
+.drawer__head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+.drawer__heading { display: grid; gap: 4px; min-width: 0; }
+.drawer__sub { font-size: var(--fs-support); color: var(--slate); }
+.drawer__actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.drawer__actions:empty { display: none; }
 .drawer__title { font-size: 1.25rem; }
 .drawer__body { flex: 1; overflow: auto; padding: 24px; }
 .drawer__body > * + * { margin-top: 18px; }
@@ -534,6 +552,29 @@ kbd { font-family: var(--font-ui); }
 }
 .field textarea:focus { outline: none; border-color: var(--accent-fg); background: var(--white); box-shadow: var(--ring); }
 .field__hint { justify-self: end; font-size: var(--fs-meta); color: var(--slate-2); }
+.field input[type="text"] {
+  width: 100%; height: 46px; padding: 0 14px; border-radius: var(--r-sm);
+  border: 1px solid var(--line); font: inherit; color: var(--ink); background: var(--surface-2);
+  transition: border-color var(--t-base), box-shadow var(--t-base), background-color var(--t-base);
+}
+.field input[type="text"]:focus { outline: none; border-color: var(--accent-fg); background: var(--white); box-shadow: var(--ring); }
+.field input[aria-invalid="true"] { border-color: var(--warm); }
+.field__error { font-size: var(--fs-meta); font-weight: 600; color: var(--warm-fg); }
+.field__optional { margin-left: 4px; font-weight: 500; color: var(--slate-2); }
+fieldset.field { margin: 0; padding: 0; border: 0; min-width: 0; }
+fieldset.field > legend { padding: 0; margin-bottom: 6px; }
+.modal--request { width: min(560px, calc(100% - 32px)); }
+.modal__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.modal__top .meta { margin-top: 4px; }
+.type-pick__row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.type-opt { position: relative; display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 8px 10px; white-space: nowrap; border-radius: 14px; border: 1px solid var(--line); background: var(--surface-2); font-size: var(--fs-support); font-weight: 600; cursor: pointer; transition: border-color var(--t-base), background-color var(--t-base), box-shadow var(--t-base); }
+.type-opt input { position: absolute; opacity: 0; pointer-events: none; }
+.type-opt__ico { display: grid; place-items: center; flex: none; width: 30px; height: 30px; border-radius: 9px; color: var(--c); background: color-mix(in srgb, var(--c) 12%, var(--white)); }
+.type-opt--tcdf { --c: var(--c-tcdf); } .type-opt--memo { --c: var(--c-memo); } .type-opt--rfp { --c: var(--c-rfp); }
+.type-opt:hover { border-color: var(--line-strong); }
+.type-opt:has(input:checked) { border-color: var(--c); background: color-mix(in srgb, var(--c) 7%, var(--white)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 14%, transparent); }
+.type-opt:has(input:focus-visible) { box-shadow: var(--ring); }
+.modal__foot .btn[hidden] { display: none; }
 
 /* Skeleton */
 .sk { display: block; border-radius: var(--r-xs); background: linear-gradient(90deg, #EDF0F7 0%, #F7F9FC 40%, #EDF0F7 80%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
@@ -1543,6 +1584,130 @@ kbd { font-family: var(--font-ui); }
 :root[data-theme="dark"] .footer__mark { background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.03) 85%); }
 
 /* ------------------------------------------------------------------
+   8b. INBOX WORKSPACE — tasks, drafts, my requests, history
+   ------------------------------------------------------------------ */
+.task.is-nomatch, .task.is-duefiltered { display: none !important; }
+.task-list.is-refining .task.is-extra { display: grid; }
+
+.inbox {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr);
+  grid-template-areas: "summary main" "chart main" "bloo main" ". main";
+  grid-template-rows: auto auto auto 1fr; gap: 16px 32px; align-items: start;
+}
+.inbox-card { border-radius: 22px; background: var(--white); border: 1px solid var(--line); padding: 20px; }
+:root[data-theme="dark"] .inbox-card { background: #141821; border-color: rgba(255,255,255,.07); }
+.inbox-summary { grid-area: summary; display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 14px 16px; align-items: center; }
+.inbox-summary__ico { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 16px; background: var(--soft-blue); color: var(--accent-fg); }
+.inbox-summary__label { font-size: var(--fs-support); font-weight: 600; color: var(--slate); }
+.inbox-summary__num { font-family: var(--font-display); font-size: 2.6rem; font-weight: 600; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.inbox-summary__sub { grid-column: 1 / -1; padding-top: 12px; border-top: 1px solid var(--line); font-size: var(--fs-meta); color: var(--slate-2); }
+
+.inbox-chart { grid-area: chart; }
+.inbox-chart__head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.inbox-chart__head h3 { font-size: 1rem; letter-spacing: -0.01em; }
+.donut { position: relative; width: 176px; max-width: 100%; aspect-ratio: 1; margin: 16px auto 12px; }
+.donut svg { display: block; width: 100%; height: 100%; }
+.donut__track { fill: none; stroke: var(--surface-2); stroke-width: 15; }
+.donut__seg { fill: none; stroke-width: 15; cursor: default; transition: opacity var(--t-base), stroke-width var(--t-base) var(--ease-out); }
+.donut__seg--tcdf { stroke: var(--c-tcdf); } .donut__seg--memo { stroke: var(--c-memo); } .donut__seg--rfp { stroke: var(--c-rfp); }
+.donut.is-focus .donut__seg:not(.is-on) { opacity: .28; }
+.donut__seg.is-on { stroke-width: 18; }
+.donut__center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
+.donut__center strong { font-family: var(--font-display); font-size: 2.1rem; font-weight: 600; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.donut__center span { margin-top: 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+.legend { display: grid; gap: 2px; }
+.legend__row { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto 40px; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 12px; font-size: var(--fs-support); text-align: left; transition: background-color var(--t-fast); }
+.legend__row:hover, .legend__row.is-on { background: var(--surface-2); }
+.legend__swatch { width: 10px; height: 10px; border-radius: 3px; }
+.legend__swatch--tcdf { background: var(--c-tcdf); } .legend__swatch--memo { background: var(--c-memo); } .legend__swatch--rfp { background: var(--c-rfp); }
+.legend__name { color: var(--ink); }
+.legend__n { font-weight: 700; font-variant-numeric: tabular-nums; }
+.legend__pct { text-align: right; font-size: var(--fs-meta); color: var(--slate-2); font-variant-numeric: tabular-nums; }
+
+.inbox-bloo { grid-area: bloo; }
+.inbox-bloo .suggests__text { font-size: 1rem; }
+
+.inbox-main { grid-area: main; min-width: 0; }
+.inbox-toolbar { display: flex; gap: 10px; }
+.inbox-search {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 50px; padding: 0 16px; border-radius: 16px;
+  background: var(--white); border: 1px solid var(--line); color: var(--slate-2); transition: border-color var(--t-base), box-shadow var(--t-base);
+}
+:root[data-theme="dark"] .inbox-search, :root[data-theme="dark"] .inbox-filter__btn { background: #141821; border-color: rgba(255,255,255,.08); }
+.inbox-search:focus-within { border-color: color-mix(in srgb, var(--accent-fg) 50%, var(--line)); box-shadow: 0 0 0 4px var(--soft-blue); color: var(--accent-fg); }
+.inbox-search input { flex: 1; min-width: 0; height: 100%; border: 0; background: none; font-size: var(--fs-support); color: var(--ink); }
+.inbox-search input:focus, .inbox-search input:focus-visible { outline: none; box-shadow: none; }
+.inbox-search input::placeholder { color: var(--slate-2); }
+.inbox-filter { position: relative; }
+.inbox-filter__btn { display: inline-flex; align-items: center; gap: 8px; height: 50px; padding: 0 16px; border-radius: 16px; background: var(--white); border: 1px solid var(--line); font-size: var(--fs-support); font-weight: 600; transition: border-color var(--t-base), background-color var(--t-base); }
+.inbox-filter__btn:hover, .inbox-filter__btn[aria-expanded="true"] { border-color: var(--line-strong); }
+.inbox-filter__badge { min-width: 20px; height: 20px; padding: 0 6px; display: grid; place-items: center; border-radius: var(--r-pill); background: var(--bloo-blue); color: #fff; font-size: 11px; font-weight: 700; }
+.inbox-filter__menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 10; width: 240px; padding: 8px; border-radius: 18px; background: var(--white); border: 1px solid var(--line); box-shadow: var(--sh-float); animation: lensIn var(--t-base) var(--ease-out); }
+:root[data-theme="dark"] .inbox-filter__menu { background: #1A1F29; border-color: rgba(255,255,255,.08); }
+.filter-group { padding: 10px 10px 4px; font-size: var(--fs-label); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-3); }
+.filter-opt { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 38px; padding: 0 10px; border-radius: 10px; font-size: var(--fs-support); color: var(--slate); text-align: left; }
+.filter-opt:hover { background: var(--surface-2); color: var(--ink); }
+.filter-opt .ico { opacity: 0; color: var(--accent-fg); }
+.filter-opt[aria-checked="true"] { color: var(--ink); font-weight: 600; }
+.filter-opt[aria-checked="true"] .ico { opacity: 1; }
+.filter-reset { width: 100%; margin-top: 6px; padding: 10px; border-top: 1px solid var(--line); font-size: var(--fs-meta); font-weight: 600; color: var(--accent-fg); text-align: left; }
+
+.inbox-tabs { margin-top: 18px; }
+.inbox-panel { margin-top: 18px; }
+.inbox-panel #attention-body .tabs { margin-bottom: 4px; }
+.inbox-empty { display: grid; justify-items: center; gap: 12px; padding: 48px 20px; border-radius: 22px; border: 1px dashed var(--line-strong); text-align: center; color: var(--slate); }
+p.inbox-empty { display: block; }
+p.inbox-empty .text-btn { margin-left: 6px; }
+
+.req-head { display: grid; grid-template-columns: minmax(0, 1fr) 190px 240px; gap: 16px; padding: 0 20px 10px 76px; font-size: var(--fs-label); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
+.req-head > :last-child { text-align: right; }
+.req-head.is-drafts { grid-template-columns: minmax(0, 1fr) auto; }
+.req-head.is-drafts .req-head__status { display: none; }
+.req-list { display: grid; padding: 6px; border-radius: 22px; background: var(--white); border: 1px solid var(--line); }
+:root[data-theme="dark"] .req-list { background: #141821; border-color: rgba(255,255,255,.07); }
+.req { position: relative; border-radius: 16px; transition: background-color var(--t-base); }
+.req + .req::before { content: ""; position: absolute; left: 64px; right: 14px; top: 0; border-top: 1px solid var(--line); }
+.req:hover, .req.is-open, .req.is-confirming { background: var(--surface-2); }
+.req:hover::before, .req:hover + .req::before, .req.is-open::before, .req.is-open + .req::before { opacity: 0; }
+.req.is-flash { animation: reqFlash 1.8s var(--ease-out); }
+.req__main { display: grid; grid-template-columns: 40px minmax(0, 1fr) 190px 240px; align-items: center; gap: 16px; padding: 14px 14px; }
+.req-list.is-drafts .req__main { grid-template-columns: 40px minmax(0, 1fr) auto; }
+.req__icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; color: var(--c); background: color-mix(in srgb, var(--c) 12%, var(--white)); }
+.req__icon--tcdf { --c: var(--c-tcdf); } .req__icon--memo { --c: var(--c-memo); } .req__icon--rfp { --c: var(--c-rfp); }
+.req__icon--app { background: none; }
+.req__icon--app .app-mark { width: 40px; height: 40px; }
+.req__txt { min-width: 0; }
+.req__title { font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.req__meta { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 3px; font-size: var(--fs-meta); color: var(--slate-2); }
+.req__meta span::before { content: ""; display: inline-block; width: 3px; height: 3px; margin-right: 10px; border-radius: 50%; background: var(--slate-3); vertical-align: middle; }
+.status { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: var(--r-pill); font-size: var(--fs-meta); font-weight: 600; white-space: nowrap; background: var(--surface-2); color: var(--slate); }
+.req:hover .status--neutral { background: var(--white); }
+.status--warn { background: var(--amber-soft); color: var(--amber-fg); }
+.status--info { background: var(--lavender-soft); color: var(--lav-fg); }
+.status--alert { background: var(--warm-soft); color: var(--warm-fg); }
+.status--good { background: var(--green-soft); color: var(--green-fg); }
+.req__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px; }
+.req__confirm { margin-right: 4px; font-size: var(--fs-meta); font-weight: 600; color: var(--ink); }
+.req-btn { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px; border-radius: var(--r-pill); border: 1px solid var(--line); font-size: 12.5px; font-weight: 600; color: var(--slate); white-space: nowrap; transition: background-color var(--t-base), border-color var(--t-base), color var(--t-base), transform var(--t-fast); }
+.req-btn:active { transform: scale(.96); }
+.req-btn--quiet:hover { background: var(--white); color: var(--ink); border-color: var(--line-strong); }
+/* Edit is neutral ink so only destructive actions read red */
+.req-btn--edit { background: var(--white); border-color: var(--line-strong); color: var(--ink); }
+.req-btn--edit:hover { border-color: var(--ink); }
+:root[data-theme="dark"] .req-btn--edit { background: #1E232C; }
+.req-btn--delete { background: var(--warm-soft); border-color: color-mix(in srgb, var(--warm) 25%, transparent); color: var(--warm-fg); }
+.req-btn--delete:hover { border-color: var(--warm); }
+.req-btn--danger { background: var(--warm); border-color: var(--warm); color: #fff; }
+.req__detail { padding: 0 14px 16px 70px; display: grid; gap: 12px; animation: answerIn 320ms var(--ease-out); }
+.req__facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px 20px; }
+.req__facts dt { font-size: var(--fs-meta); color: var(--slate-2); }
+.req__facts dd { margin-top: 2px; font-size: var(--fs-support); font-weight: 600; }
+.req__note { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 12px; background: var(--warm-soft); color: var(--warm-fg); font-size: var(--fs-support); font-weight: 500; }
+.req__note .ico { margin-top: 3px; }
+.req__details { max-width: 70ch; font-size: var(--fs-support); color: var(--slate); }
+@keyframes reqFlash { 0%, 30% { background: var(--soft-blue); box-shadow: inset 0 0 0 1px var(--accent-fg); } 100% { background: transparent; box-shadow: inset 0 0 0 1px transparent; } }
+
+/* ------------------------------------------------------------------
    9. ASK LAYER — Ctrl K from anywhere lifts the conversation here
    ------------------------------------------------------------------ */
 .ask-layer { position: fixed; inset: 0; z-index: 180; display: grid; justify-items: center; align-items: start; padding: 10vh 20px 20px; }
@@ -1628,6 +1793,11 @@ kbd { font-family: var(--font-ui); }
   .policies { grid-template-columns: minmax(0, 1fr); grid-template-areas: "popular" "recs" "library"; }
   .news__grid, .people__stage, .faq-grid { grid-template-columns: minmax(0, 1fr); }
   .faq-grid .chap-head { position: static; }
+  .inbox { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "summary bloo" "main main" "chart chart"; grid-template-rows: auto; }
+  .inbox-chart { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "head head" "donut legend"; align-items: center; gap: 0 24px; }
+  .inbox-chart__head { grid-area: head; } .donut { grid-area: donut; margin: 16px 0 4px; } .legend { grid-area: legend; }
+  .req-head { grid-template-columns: minmax(0, 1fr) 170px 230px; }
+  .req__main { grid-template-columns: 40px minmax(0, 1fr) 170px 230px; }
   .partners { grid-template-columns: minmax(0, 1fr); }
   .footer__top { grid-template-columns: 1fr 1fr; }
   .context__ask-text, .context__kbd { display: none; }
@@ -1815,6 +1985,29 @@ kbd { font-family: var(--font-ui); }
   .footer__bottom { flex-direction: column; }
 
   .drawer__panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 88svh; transform: translateY(calc(100% + 20px)); }
+  .drawer.is-fullpage .drawer__panel { max-height: none; border-radius: 0; }
+  .drawer.is-fullpage .drawer__head { flex-wrap: wrap; padding: calc(18px + env(safe-area-inset-top, 0px)) var(--gutter) 6px; }
+  .inbox-tabs .tab { padding: 0 8px; gap: 5px; font-size: 13px; }
+  .drawer.is-fullpage .drawer__heading { order: 0; flex: 1; }
+  .drawer.is-fullpage .drawer__actions { order: 2; width: 100%; margin: 0; }
+  .drawer.is-fullpage .drawer__actions .btn { width: 100%; }
+  .drawer.is-fullpage .drawer__body { padding: 16px var(--gutter) 40px; }
+  .inbox { grid-template-columns: minmax(0, 1fr); grid-template-areas: "summary" "bloo" "main" "chart"; gap: 14px; }
+  .inbox-chart { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "donut" "legend"; }
+  .donut { margin: 14px auto 8px; }
+  .inbox-filter__label { display: none; }
+  .inbox-filter__btn { padding: 0 14px; }
+  .inbox-tabs { max-width: 100%; }
+  .req-head { display: none; }
+  .req__main, .req-list.is-drafts .req__main { grid-template-columns: 40px minmax(0, 1fr); grid-template-areas: "icon txt" ". status" ". actions"; gap: 8px 14px; }
+  .req__icon { grid-area: icon; align-self: start; }
+  .req__txt { grid-area: txt; }
+  .req__status { grid-area: status; }
+  .req__status:empty { display: none; }
+  .req__actions { grid-area: actions; justify-content: flex-start; }
+  .req__detail { padding-left: 14px; }
+  .req + .req::before { left: 14px; }
+  .type-pick__row { grid-template-columns: minmax(0, 1fr); }
   .ask-layer { padding: 10px 12px; }
   .ask-layer .thread { max-height: 58svh; }
 }
@@ -1955,6 +2148,12 @@ kbd { font-family: var(--font-ui); }
       <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/></symbol>
       <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.4-7.5-10a4.2 4.2 0 0 1 7.5-2.6 4.2 4.2 0 0 1 7.5 2.6c0 5.6-7.5 10-7.5 10Z"/></symbol>
       <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5H15V15h-6v5.5H5.5A1.5 1.5 0 0 1 4 19Z"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M9 4.5H7.5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H15"/><rect x="9" y="3" width="6" height="3" rx="1"/><path d="M9 11h6M9 15h4"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 11v6M14 11v6"/><path d="m6.5 7 .8 11.2a2 2 0 0 0 2 1.8h5.4a2 2 0 0 0 2-1.8L17.5 7"/><path d="M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6.5h16M7 12h10M10 17.5h4"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4.5 9.5 9 5"/><path d="M4.5 9.5H15a4.5 4.5 0 0 1 0 9h-3"/></symbol>
       <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 4 8.5 4.5L12 13 3.5 8.5Z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 16.5 12 21l8.5-4.5"/></symbol>
       <!-- Social / store glyphs (simplified, filled) -->
       <symbol id="s-linkedin" viewBox="0 0 24 24"><path class="fill" d="M5 8.5h3V19H5Zm1.5-4.7a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5ZM10 8.5h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.6 2 3.6 4.7V19h-3v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V19H10Z"/></symbol>
@@ -2221,6 +2420,7 @@ kbd { font-family: var(--font-ui); }
             <li><button class="prompt" type="button" data-ask="Show me policies about leave"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-calendar"/></svg>Leave policies</button></li>
             <li><button class="prompt" type="button" data-ask="What's new?"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-megaphone"/></svg>What’s new?</button></li>
             <li><button class="prompt" type="button" data-ask="Find a colleague"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-users"/></svg>Find a colleague</button></li>
+            <li><button class="prompt" type="button" data-ask="Show my drafts"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-doc"/></svg>My drafts</button></li>
             <li><button class="prompt" type="button" data-ask="Show my benefits"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-shield"/></svg>Show my benefits</button></li>
             <li><button class="prompt" type="button" data-ask="Show me travel discounts"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-tag"/></svg>Travel discounts</button></li>
             <li><button class="prompt" type="button" data-ask="Find communities"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-ball"/></svg>Find communities</button></li>
@@ -2938,7 +3138,11 @@ kbd { font-family: var(--font-ui); }
     <div class="drawer__scrim" data-close-drawer></div>
     <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <header class="drawer__head">
-        <h2 class="drawer__title" id="drawer-title">Drawer</h2>
+        <div class="drawer__heading">
+          <h2 class="drawer__title" id="drawer-title">Drawer</h2>
+          <p class="drawer__sub" id="drawer-sub" hidden></p>
+        </div>
+        <div class="drawer__actions" id="drawer-actions"></div>
         <button class="icon-btn" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
       </header>
       <div class="drawer__body" id="drawer-body"></div>
@@ -2964,6 +3168,41 @@ kbd { font-family: var(--font-ui); }
       <div class="modal__foot">
         <button class="btn btn--quiet" value="cancel" type="submit" formnovalidate>Cancel</button>
         <button class="btn btn--primary" type="button" id="wish-send"><span class="btn__label">Send wish</span><span class="spinner" aria-hidden="true"></span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- New request / edit draft -->
+  <dialog class="modal modal--request" id="request-modal" aria-labelledby="request-title">
+    <form class="modal__inner" id="request-form" novalidate>
+      <div class="modal__top">
+        <div>
+          <h2 class="h3" id="request-title">New request</h2>
+          <p class="meta" id="request-sub">Save it as a draft, or submit it for approval.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-request aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+      </div>
+      <fieldset class="field type-pick">
+        <legend class="field__label">Request type</legend>
+        <div class="type-pick__row">
+          <label class="type-opt type-opt--tcdf"><input type="radio" name="request-type" id="request-type-tcdf" value="tcdf" checked><span class="type-opt__ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span>TCDF</span></label>
+          <label class="type-opt type-opt--memo"><input type="radio" name="request-type" id="request-type-memo" value="memo"><span class="type-opt__ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span>Internal Memo</span></label>
+          <label class="type-opt type-opt--rfp"><input type="radio" name="request-type" id="request-type-rfp" value="rfp"><span class="type-opt__ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span>RFP</span></label>
+        </div>
+      </fieldset>
+      <label class="field">
+        <span class="field__label">Title</span>
+        <input id="request-name" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Annual Service Agreement – Project Beta" aria-describedby="request-error">
+        <span class="field__error" id="request-error" hidden>Add a title so approvers know what this request is for.</span>
+      </label>
+      <label class="field">
+        <span class="field__label">Details <span class="field__optional">Optional</span></span>
+        <textarea id="request-details" rows="4" maxlength="600" placeholder="Scope, amounts, vendors, anything the approver needs."></textarea>
+      </label>
+      <div class="modal__foot">
+        <button class="btn btn--quiet" type="button" data-close-request>Cancel</button>
+        <button class="btn btn--quiet" type="button" id="request-draft">Save as draft</button>
+        <button class="btn btn--primary" type="submit" id="request-submit">Submit request</button>
       </div>
     </form>
   </dialog>
@@ -3497,6 +3736,7 @@ kbd { font-family: var(--font-ui); }
     row.classList.add("is-done");
     $$(".task__actions button", row).forEach((b) => { b.disabled = true; });
     decrementCount(row.dataset.source);
+    recordDecision(row, action);
     toast(`${action === "approve" ? "Approved" : "Rejected"} and synced to ${sourceNames[row.dataset.source]}`, action === "approve" ? "i-check" : "i-x");
   }
 
@@ -3506,6 +3746,8 @@ kbd { font-family: var(--font-ui); }
   const drawer = $("#drawer");
   const drawerTitle = $("#drawer-title");
   const drawerBody = $("#drawer-body");
+  const drawerSub = $("#drawer-sub");
+  const drawerActions = $("#drawer-actions");
   const attentionBody = $("#attention-body");
   const attentionBodyHome = { parent: attentionBody.parentNode, next: attentionBody.nextSibling };
   let lastFocus = null;
@@ -3514,7 +3756,9 @@ kbd { font-family: var(--font-ui); }
   const drawerViews = {
     inbox: () => ({
       title: "Inbox",
-      html: `<p class="d-note"><span class="bloo-orb" aria-hidden="true"></span><span>Your tasks from every connected app, in one place.</span></p>`
+      sub: "Tasks from your apps and the requests you raise, in one place.",
+      actions: `<button class="btn btn--primary" type="button" id="new-request">${icon("i-plus", "ico ico--sm")}New request</button>`,
+      html: inboxShell()
     }),
     profile: () => ({
       title: "My profile",
@@ -3554,12 +3798,19 @@ kbd { font-family: var(--font-ui); }
     }
   };
 
+  let returnToInbox = false;
   function openDrawer(type, ctx) {
     closeAskLayer({ restoreFocus: false });
+    // Reviewing a task from the inbox comes back to the inbox afterwards
+    if (inboxOpen && type !== "inbox") { restoreAttention(); returnToInbox = true; }
     const view = drawerViews[type](ctx);
-    lastFocus = document.activeElement;
+    if (!drawer.classList.contains("is-open")) lastFocus = document.activeElement;
     drawerTitle.textContent = view.title;
+    drawerSub.textContent = view.sub || "";
+    drawerSub.hidden = !view.sub;
+    drawerActions.innerHTML = view.actions || "";
     drawerBody.innerHTML = view.html;
+    drawerBody.scrollTop = 0;
     drawer.classList.add("is-open");
     drawer.classList.toggle("is-fullpage", type === "inbox");
     drawer.setAttribute("aria-hidden", "false");
@@ -3570,9 +3821,9 @@ kbd { font-family: var(--font-ui); }
     if (type === "inbox") {
       const badge = $("#inbox-badge");
       if (badge) { badge.style.transform = "scale(0)"; setTimeout(() => badge.remove(), 250); }
-      drawerBody.appendChild(attentionBody);
+      $("#inbox-panel-inbox").prepend(attentionBody);
       inboxOpen = true;
-      moveTabIndicator();
+      initInbox();
     }
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {
@@ -3587,13 +3838,19 @@ kbd { font-family: var(--font-ui); }
       });
     }
   }
+  // The attention list goes back to its chapter, without the inbox's search
+  function restoreAttention() {
+    if (!inboxOpen) return;
+    taskList.classList.remove("is-refining");
+    taskRows().forEach((r) => r.classList.remove("is-nomatch", "is-duefiltered"));
+    attentionBodyHome.parent.insertBefore(attentionBody, attentionBodyHome.next);
+    inboxOpen = false;
+    requestAnimationFrame(() => moveTabIndicator());
+  }
   function closeDrawer() {
     if (!drawer.classList.contains("is-open")) return;
-    if (inboxOpen) {
-      attentionBodyHome.parent.insertBefore(attentionBody, attentionBodyHome.next);
-      inboxOpen = false;
-      requestAnimationFrame(() => moveTabIndicator());
-    }
+    if (returnToInbox) { returnToInbox = false; openDrawer("inbox"); return; }
+    restoreAttention();
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
     body.style.overflow = "";
@@ -3610,6 +3867,485 @@ kbd { font-family: var(--font-ui); }
     if (rejectBtn && !rejectBtn.disabled) quickResolve(rejectBtn.closest(".task"), "reject");
   });
   $$("[data-close-drawer]").forEach((el) => el.addEventListener("click", closeDrawer));
+
+  /* ---------------------------------------------------------------
+     8b. Inbox workspace — tasks, drafts, my requests, history
+     --------------------------------------------------------------- */
+  const REQ_TYPES = { tcdf: "TCDF", memo: "Internal Memo", rfp: "RFP" };
+  const TYPE_ORDER = ["tcdf", "memo", "rfp"];
+  const STATUS = {
+    draft: { label: "Draft", icon: "i-edit", tone: "neutral" },
+    pending: { label: "Pending approval", icon: "i-clock", tone: "warn" },
+    review: { label: "In review", icon: "i-eye", tone: "info" },
+    returned: { label: "Returned for changes", icon: "i-undo", tone: "alert" },
+    approved: { label: "Approved", icon: "i-check", tone: "good" },
+    rejected: { label: "Rejected", icon: "i-x", tone: "alert" },
+    completed: { label: "Completed", icon: "i-check", tone: "neutral" }
+  };
+  const MIN = 60000;
+  const DAY = 1440;
+  const minsAgo = (m) => Date.now() - m * MIN;
+  let reqSeq = 2044;
+  const requests = [
+    { id: 1, status: "draft", type: "tcdf", title: "Annual Service Agreement – Project Alpha", at: minsAgo(5 * DAY) },
+    { id: 2, status: "draft", type: "memo", title: "Request for Budget Approval – Marketing Campaign", at: minsAgo(7 * DAY) },
+    { id: 3, status: "draft", type: "rfp", title: "Payment Request – Annual Software License", at: minsAgo(15) },
+    { id: 4, status: "draft", type: "tcdf", title: "Service Agreement Renewal – Facilities Maintenance", at: minsAgo(2 * DAY) },
+    { id: 5, status: "draft", type: "memo", title: "Updated Site Access Hours – Mussafah Warehouse", at: minsAgo(180) },
+    { id: 6, status: "draft", type: "tcdf", title: "Consultancy Agreement – Digital Platforms Audit", at: minsAgo(DAY + 200) },
+    { id: 7, status: "draft", type: "tcdf", title: "Supply Contract – Site Equipment Q4", at: minsAgo(4 * DAY) },
+    { id: 8, status: "draft", type: "memo", title: "Team Offsite – Venue and Budget Proposal", at: minsAgo(12 * DAY) },
+    { id: 9, status: "pending", type: "tcdf", title: "Maintenance Contract – HVAC Systems, Tower B", at: minsAgo(DAY), ref: "REQ-2043", approver: "Mathew Raymond" },
+    { id: 10, status: "review", type: "rfp", title: "RFP – Fleet Telematics Provider", at: minsAgo(3 * DAY), ref: "REQ-2041", approver: "Procurement Committee" },
+    { id: 11, status: "pending", type: "memo", title: "New Joiner Onboarding – Digital Platforms", at: minsAgo(6 * DAY), ref: "REQ-2038", approver: "Mathew Raymond" },
+    { id: 12, status: "returned", type: "tcdf", title: "Vendor Agreement – Cloud Hosting Renewal", at: minsAgo(9 * DAY), ref: "REQ-2035", approver: "Finance", note: "Needs the updated pricing schedule before it can be approved." },
+    { id: 13, status: "approved", type: "tcdf", title: "Framework Agreement – Office Cleaning Services", at: minsAgo(20 * DAY), ref: "REQ-2029", approver: "Mathew Raymond" },
+    { id: 14, status: "approved", type: "tcdf", title: "License Agreement – Design Software Seats", at: minsAgo(34 * DAY), ref: "REQ-2022", approver: "Mathew Raymond" },
+    { id: 15, status: "rejected", type: "memo", title: "Parking Allocation Update – Tower B", at: minsAgo(41 * DAY), ref: "REQ-2018", approver: "Facilities" },
+    { id: 16, status: "approved", type: "tcdf", title: "Service Agreement – Security Services, Site 4", at: minsAgo(52 * DAY), ref: "REQ-2011", approver: "Mathew Raymond" },
+    { id: 17, status: "completed", type: "rfp", title: "RFP – Warehouse Racking Systems", at: minsAgo(60 * DAY), ref: "REQ-2007", approver: "Procurement Committee" },
+    { id: 18, status: "approved", type: "memo", title: "Holiday Schedule – Operations Team", at: minsAgo(66 * DAY), ref: "REQ-2004", approver: "Mathew Raymond" }
+  ];
+  const decisions = []; // tasks approved or rejected from the inbox this session
+  const TABS = {
+    inbox: { label: "Inbox" },
+    drafts: { label: "Drafts", statuses: ["draft"] },
+    mine: { label: "My requests", statuses: ["pending", "review", "returned"] },
+    history: { label: "History", statuses: ["approved", "rejected", "completed"] }
+  };
+  const ib = { tab: "inbox", q: "", type: "all", sort: "new", due: "all", confirm: null, open: null, flash: null };
+  const typeLabel = (r) => r.app || REQ_TYPES[r.type];
+  const byTab = (tab) => tab === "history"
+    ? [...decisions, ...requests.filter((r) => TABS.history.statuses.includes(r.status))]
+    : requests.filter((r) => (TABS[tab].statuses || []).includes(r.status));
+  const tabCount = (tab) => (tab === "inbox" ? totalCount() : byTab(tab).length);
+
+  function fmtAgo(at) {
+    const m = Math.max(0, Math.round((Date.now() - at) / MIN));
+    if (m < 1) return "Just now";
+    if (m < 60) return `${m} ${m === 1 ? "min" : "mins"} ago`;
+    const h = Math.round(m / 60);
+    if (h < 24) return `${h} ${h === 1 ? "hour" : "hours"} ago`;
+    const d = Math.round(m / DAY);
+    if (d === 1) return "Yesterday";
+    if (d < 7) return `${d} days ago`;
+    if (d < 30) { const w = Math.round(d / 7); return w === 1 ? "1 week ago" : `${w} weeks ago`; }
+    const mo = Math.round(d / 30);
+    return mo === 1 ? "1 month ago" : `${mo} months ago`;
+  }
+
+  function recordDecision(row, action) {
+    decisions.unshift({ id: `d${decisions.length + 1}`, decision: true, status: action === "approve" ? "approved" : "rejected",
+      title: taskTitle(row), app: sourceNames[row.dataset.source], mark: sourceMarks[row.dataset.source], at: Date.now() });
+    if (inboxOpen) renderInbox();
+  }
+
+  function inboxShell() {
+    return `<div class="inbox">
+      <section class="inbox-card inbox-summary" id="inbox-summary" aria-live="polite"></section>
+      <section class="inbox-card inbox-chart" aria-labelledby="chart-title">
+        <header class="inbox-chart__head"><h3 id="chart-title">Requests by type</h3><span class="meta">All your requests</span></header>
+        <div class="donut" id="donut"><svg viewBox="0 0 120 120" id="donut-svg" role="img"></svg>
+          <p class="donut__center" aria-hidden="true"><strong id="donut-num"></strong><span id="donut-label"></span></p></div>
+        <ul class="legend" id="legend"></ul>
+      </section>
+      <aside class="inbox-card suggests inbox-bloo" id="inbox-bloo" aria-label="Bloo suggests"></aside>
+      <section class="inbox-main" aria-label="Your inbox">
+        <div class="inbox-toolbar">
+          <label class="inbox-search">${icon("i-search", "ico ico--sm")}<span class="sr-only">Search</span>
+            <input id="inbox-search" type="search" autocomplete="off" placeholder="Search…"></label>
+          <div class="inbox-filter">
+            <button class="inbox-filter__btn" type="button" id="inbox-filter-btn" aria-expanded="false" aria-controls="inbox-filter-menu">${icon("i-filter", "ico ico--sm")}<span class="inbox-filter__label">Filter</span><span class="inbox-filter__badge" id="inbox-filter-badge" hidden></span>${icon("i-chevron-down", "ico ico--xs")}</button>
+            <div class="inbox-filter__menu" id="inbox-filter-menu" role="menu" aria-label="Filter" hidden></div>
+          </div>
+        </div>
+        <div class="tabs inbox-tabs" role="tablist" aria-label="Inbox sections" id="inbox-tabs">
+          <span class="tabs__indicator" aria-hidden="true"></span>
+          ${Object.entries(TABS).map(([k, v]) => `<button class="tab" role="tab" type="button" id="inbox-tab-${k}" data-itab="${k}" aria-controls="${k === "inbox" ? "inbox-panel-inbox" : "inbox-panel-list"}" aria-selected="false" tabindex="-1">${v.label} <span class="tab__count"></span></button>`).join("")}
+        </div>
+        <div class="inbox-panel" id="inbox-panel-inbox" role="tabpanel" aria-labelledby="inbox-tab-inbox">
+          <p class="inbox-empty" id="task-search-empty" hidden></p>
+        </div>
+        <div class="inbox-panel" id="inbox-panel-list" role="tabpanel" hidden>
+          <div class="req-head" aria-hidden="true"><span>Requests</span><span class="req-head__status">Status</span><span>Actions</span></div>
+          <ul class="req-list" id="req-list"></ul>
+          <div class="inbox-empty" id="req-empty" hidden></div>
+        </div>
+      </section>
+    </div>`;
+  }
+
+  function initInbox() {
+    ib.confirm = null;
+    ib.open = null;
+    $("#inbox-search").value = ib.q;
+    renderInbox();
+    document.fonts?.ready.then(() => moveTabIndicator($("#inbox-tabs")));
+  }
+
+  function renderInbox() {
+    if (!inboxOpen) return;
+    $$("#inbox-tabs .tab").forEach((t) => {
+      const on = t.dataset.itab === ib.tab;
+      t.classList.toggle("is-selected", on);
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      $(".tab__count", t).textContent = tabCount(t.dataset.itab);
+    });
+    $("#inbox-panel-inbox").hidden = ib.tab !== "inbox";
+    $("#inbox-panel-list").hidden = ib.tab === "inbox";
+    $("#inbox-panel-list").setAttribute("aria-labelledby", `inbox-tab-${ib.tab}`);
+    $("#inbox-search").placeholder = ib.tab === "inbox" ? "Search tasks…" : `Search ${TABS[ib.tab].label.toLowerCase()}…`;
+    moveTabIndicator($("#inbox-tabs"));
+    renderSummary();
+    renderChart();
+    renderBloo();
+    renderFilter();
+    renderPanel();
+  }
+
+  function renderSummary() {
+    const open = taskRows().filter(isOpen);
+    const drafts = byTab("drafts");
+    const mine = byTab("mine");
+    const hist = byTab("history");
+    const stale = drafts.filter((r) => Date.now() - r.at > 7 * DAY * MIN).length;
+    const returned = mine.filter((r) => r.status === "returned").length;
+    const cfg = {
+      inbox: { ico: "i-inbox", label: "Waiting on you", n: totalCount(), sub: `${open.filter(isOverdue).length} overdue · ${open.filter(isToday).length} due today` },
+      drafts: { ico: "i-edit", label: "Draft count", n: drafts.length, sub: stale ? `${plural(stale, "draft hasn’t", "drafts haven’t")} been touched in over a week` : "All edited in the last week" },
+      mine: { ico: "i-clock", label: "In progress", n: mine.length, sub: returned ? `${returned} returned for changes` : "With approvers now" },
+      history: { ico: "i-check", label: "Completed", n: hist.length, sub: `${hist.filter((r) => r.status === "approved").length} approved · ${hist.filter((r) => r.status === "rejected").length} rejected` }
+    }[ib.tab];
+    $("#inbox-summary").innerHTML = `<span class="inbox-summary__ico">${icon(cfg.ico)}</span>
+      <div><p class="inbox-summary__label">${cfg.label}</p><p class="inbox-summary__num">${cfg.n}</p></div>
+      <p class="inbox-summary__sub">${cfg.sub}</p>`;
+  }
+
+  // Donut: part-to-whole at a glance, 3 segments, 2-unit surface gaps.
+  // Hover or focus a segment or legend row to read it in the centre.
+  function renderChart() {
+    const counts = TYPE_ORDER.map((k) => requests.filter((r) => r.type === k).length);
+    const total = counts.reduce((a, b) => a + b, 0);
+    const gap = counts.filter(Boolean).length > 1 ? 1.4 : 0;
+    let off = 0;
+    $("#donut-svg").innerHTML = `<circle class="donut__track" cx="60" cy="60" r="46"/>` + TYPE_ORDER.map((k, i) => {
+      if (!counts[i]) return "";
+      const len = (counts[i] / total) * 100;
+      const dash = Math.max(len - gap, 0.6);
+      const seg = `<circle class="donut__seg donut__seg--${k}" data-type="${k}" cx="60" cy="60" r="46" pathLength="100" stroke-dasharray="${dash.toFixed(2)} ${(100 - dash).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 60 60)"><title>${REQ_TYPES[k]}: ${counts[i]}</title></circle>`;
+      off += len;
+      return seg;
+    }).join("");
+    $("#donut-svg").setAttribute("aria-label", `Requests by type: ${TYPE_ORDER.map((k, i) => `${REQ_TYPES[k]} ${counts[i]}`).join(", ")}, ${total} in total`);
+    $("#legend").innerHTML = TYPE_ORDER.map((k, i) => `<li><button class="legend__row" type="button" data-type="${k}">
+      <span class="legend__swatch legend__swatch--${k}" aria-hidden="true"></span><span class="legend__name">${REQ_TYPES[k]}</span>
+      <span class="legend__n">${counts[i]}</span><span class="legend__pct">${total ? Math.round((counts[i] / total) * 100) : 0}%</span></button></li>`).join("");
+    chartFocus(null, counts, total);
+  }
+  function chartFocus(type, counts, total) {
+    const donut = $("#donut");
+    if (!donut) return;
+    counts = counts || TYPE_ORDER.map((k) => requests.filter((r) => r.type === k).length);
+    total = total ?? counts.reduce((a, b) => a + b, 0);
+    donut.classList.toggle("is-focus", !!type);
+    $$(".donut__seg", donut).forEach((s) => s.classList.toggle("is-on", s.dataset.type === type));
+    $$(".legend__row").forEach((r) => r.classList.toggle("is-on", r.dataset.type === type));
+    const i = TYPE_ORDER.indexOf(type);
+    $("#donut-num").textContent = type ? counts[i] : total;
+    $("#donut-label").textContent = type ? `${REQ_TYPES[type]} · ${total ? Math.round((counts[i] / total) * 100) : 0}%` : "requests";
+  }
+
+  function renderBloo() {
+    const drafts = byTab("drafts").sort((a, b) => b.at - a.at);
+    const mine = byTab("mine");
+    const returned = mine.find((r) => r.status === "returned");
+    const hist = byTab("history").filter((r) => !r.decision);
+    let text = "";
+    let action = "";
+    if (ib.tab === "inbox") {
+      text = $("#bloo-suggests").textContent;
+      if (suggestedRow) action = `<button class="btn btn--primary btn--sm" type="button" data-ibloo="review">Review it${icon("i-arrow", "ico ico--sm btn__arrow")}</button>`;
+    } else if (ib.tab === "drafts") {
+      if (drafts[0]) {
+        text = `“${escapeHtml(drafts[0].title)}” was saved ${fmtAgo(drafts[0].at).toLowerCase()}. Pick up where you left off?`;
+        action = `<button class="btn btn--primary btn--sm" type="button" data-ibloo="continue" data-id="${drafts[0].id}">Continue editing${icon("i-arrow", "ico ico--sm btn__arrow")}</button>`;
+      } else text = "No drafts right now. Start a new request whenever you’re ready.";
+    } else if (ib.tab === "mine") {
+      if (returned) {
+        text = `“${escapeHtml(returned.title)}” was returned by ${returned.approver}: ${escapeHtml(returned.note.replace(/\.$/, "").toLowerCase())}.`;
+        action = `<button class="btn btn--primary btn--sm" type="button" data-ibloo="continue" data-id="${returned.id}">Edit and resubmit${icon("i-arrow", "ico ico--sm btn__arrow")}</button>`;
+      } else text = `${plural(mine.length, "request is", "requests are")} with approvers. I’ll let you know when anything changes.`;
+    } else {
+      const ok = hist.filter((r) => r.status === "approved").length;
+      text = `${ok} of your last ${hist.length} requests were approved. Decisions you make on tasks here are added to this history too.`;
+    }
+    $("#inbox-bloo").innerHTML = `<p class="suggests__who"><span class="bloo-orb" aria-hidden="true"></span>Bloo suggests</p>
+      <p class="suggests__text">${text}</p>${action ? `<div class="suggests__actions">${action}</div>` : ""}`;
+  }
+
+  function renderFilter() {
+    const menu = $("#inbox-filter-menu");
+    const opt = (group, value, label, on) => `<button class="filter-opt" type="button" role="menuitemradio" aria-checked="${on}" data-fgroup="${group}" data-fvalue="${value}"><span>${label}</span>${icon("i-check", "ico ico--xs")}</button>`;
+    let active = 0;
+    if (ib.tab === "inbox") {
+      active = ib.due !== "all" ? 1 : 0;
+      menu.innerHTML = `<p class="filter-group">Due</p>${[["all", "Any time"], ["overdue", "Overdue"], ["today", "Due today"], ["later", "Later this week"]].map(([v, l]) => opt("due", v, l, ib.due === v)).join("")}`;
+    } else {
+      active = (ib.type !== "all" ? 1 : 0) + (ib.sort !== "new" ? 1 : 0);
+      menu.innerHTML = `<p class="filter-group">Type</p>${[["all", "All types"], ...TYPE_ORDER.map((k) => [k, REQ_TYPES[k]])].map(([v, l]) => opt("type", v, l, ib.type === v)).join("")}
+        <p class="filter-group">Sort</p>${[["new", "Newest first"], ["old", "Oldest first"]].map(([v, l]) => opt("sort", v, l, ib.sort === v)).join("")}`;
+    }
+    if (active) menu.insertAdjacentHTML("beforeend", `<button class="filter-reset" type="button" data-freset>Reset filters</button>`);
+    const badge = $("#inbox-filter-badge");
+    badge.hidden = !active;
+    badge.textContent = active;
+    $("#inbox-filter-btn").setAttribute("aria-label", active ? `Filter, ${active} active` : "Filter");
+  }
+
+  function renderPanel() {
+    if (ib.tab === "inbox") { refineTasks(); return; }
+    const q = ib.q.trim().toLowerCase();
+    const list = byTab(ib.tab)
+      .filter((r) => (ib.type === "all" || r.type === ib.type))
+      .filter((r) => !q || `${r.title} ${typeLabel(r)} ${r.ref || ""} ${STATUS[r.status].label}`.toLowerCase().includes(q))
+      .sort((a, b) => (ib.sort === "new" ? b.at - a.at : a.at - b.at));
+    const listEl = $("#req-list");
+    listEl.classList.toggle("is-drafts", ib.tab === "drafts");
+    $(".req-head").classList.toggle("is-drafts", ib.tab === "drafts");
+    listEl.innerHTML = list.map(rowHTML).join("");
+    listEl.hidden = !list.length;
+    $(".req-head").hidden = !list.length;
+    const empty = $("#req-empty");
+    empty.hidden = !!list.length;
+    if (!list.length) {
+      const filtered = q || ib.type !== "all";
+      empty.innerHTML = filtered
+        ? `<p>Nothing in ${TABS[ib.tab].label} matches${q ? ` “${escapeHtml(ib.q.trim())}”` : ""}${ib.type !== "all" ? ` for ${REQ_TYPES[ib.type]}` : ""}.</p><button class="text-btn" type="button" data-freset>Clear search and filters</button>`
+        : ib.tab === "drafts" ? `<p>No drafts. Start a new request and save it here until it’s ready.</p><button class="btn btn--primary btn--sm" type="button" data-new-request>${icon("i-plus", "ico ico--sm")}New request</button>`
+        : `<p>Nothing here yet.</p>`;
+    }
+    if (ib.flash) {
+      const row = $(`.req[data-id="${ib.flash}"]`, listEl);
+      ib.flash = null;
+      if (row) { row.classList.add("is-flash"); row.scrollIntoView({ block: "nearest", behavior: behavior() }); }
+    }
+  }
+
+  function rowHTML(r) {
+    const st = STATUS[r.status];
+    const confirming = ib.confirm && ib.confirm.id === r.id;
+    const open = ib.open === r.id;
+    const lead = r.decision
+      ? `<span class="req__icon req__icon--app"><span class="app-mark app-mark--${r.mark}"></span></span>`
+      : `<span class="req__icon req__icon--${r.type}">${icon("i-doc", "ico ico--sm")}</span>`;
+    const meta = [typeLabel(r), fmtAgo(r.at), r.ref].filter(Boolean).map((m, i) => (i ? `<span>${escapeHtml(m)}</span>` : escapeHtml(m))).join("");
+    const status = r.status === "draft" ? "" : `<span class="status status--${st.tone}">${icon(st.icon, "ico ico--xs")}${r.decision ? (r.status === "approved" ? "You approved" : "You rejected") : st.label}</span>`;
+    const btn = (act, label, ico, cls = "req-btn--quiet", extra = "") => `<button class="req-btn ${cls}" type="button" data-req="${act}"${extra}>${icon(ico, "ico ico--xs")}${label}</button>`;
+    let actions;
+    if (confirming) {
+      const del = ib.confirm.kind === "delete";
+      actions = `<span class="req__confirm">${del ? "Delete this draft?" : "Withdraw this request?"}</span>
+        ${btn("cancel", "Keep", "i-x")}${btn(del ? "delete-yes" : "withdraw-yes", del ? "Delete" : "Withdraw", del ? "i-trash" : "i-undo", "req-btn--danger")}`;
+    } else if (r.status === "draft") {
+      actions = btn("edit", "Edit", "i-edit", "req-btn--edit") + btn("delete", "Delete", "i-trash", "req-btn--delete");
+    } else if (r.status === "returned") {
+      actions = btn("edit", "Edit & resubmit", "i-edit", "req-btn--edit") + btn("view", open ? "Hide" : "View", "i-eye", "req-btn--quiet", ` aria-expanded="${open}"`);
+    } else if (r.status === "pending" || r.status === "review") {
+      actions = btn("view", open ? "Hide" : "View", "i-eye", "req-btn--quiet", ` aria-expanded="${open}"`) + btn("withdraw", "Withdraw", "i-undo", "req-btn--delete");
+    } else {
+      actions = btn("view", open ? "Hide" : "View", "i-eye", "req-btn--quiet", ` aria-expanded="${open}"`);
+    }
+    const detail = open ? `<div class="req__detail">
+        <dl class="req__facts">
+          ${r.ref ? `<div><dt>Reference</dt><dd>${r.ref}</dd></div>` : ""}
+          <div><dt>${r.decision ? "Source" : "Type"}</dt><dd>${escapeHtml(typeLabel(r))}</dd></div>
+          <div><dt>${r.decision ? "Decided" : r.status === "draft" ? "Last edited" : "Submitted"}</dt><dd>${fmtAgo(r.at)}</dd></div>
+          ${r.approver ? `<div><dt>Approver</dt><dd>${escapeHtml(r.approver)}</dd></div>` : ""}
+          <div><dt>Status</dt><dd>${escapeHtml(st.label)}</dd></div>
+        </dl>
+        ${r.note ? `<p class="req__note">${icon("i-undo", "ico ico--xs")}${escapeHtml(r.note)}</p>` : ""}
+        ${r.details ? `<p class="req__details">${escapeHtml(r.details)}</p>` : ""}
+      </div>` : "";
+    return `<li class="req${confirming ? " is-confirming" : ""}${open ? " is-open" : ""}" data-id="${r.id}">
+      <div class="req__main">${lead}
+        <div class="req__txt"><p class="req__title">${escapeHtml(r.title)}</p><p class="req__meta">${meta}</p></div>
+        ${ib.tab === "drafts" ? "" : `<div class="req__status">${status}</div>`}
+        <div class="req__actions">${actions}</div>
+      </div>${detail}</li>`;
+  }
+
+  // Search and the due filter narrow the task list without touching the app tabs
+  function refineTasks() {
+    const q = ib.q.trim().toLowerCase();
+    taskList.classList.toggle("is-refining", !!q || ib.due !== "all");
+    taskRows().forEach((r) => {
+      r.classList.toggle("is-nomatch", !!q && !r.textContent.toLowerCase().includes(q));
+      const due = isOverdue(r) ? "overdue" : isToday(r) ? "today" : "later";
+      r.classList.toggle("is-duefiltered", ib.due !== "all" && due !== ib.due);
+    });
+    const empty = $("#task-search-empty");
+    if (!empty) return;
+    const refining = !!q || ib.due !== "all";
+    const visible = taskRows().filter((r) => r.offsetParent !== null).length;
+    empty.hidden = !refining || visible > 0 || taskList.classList.contains("is-loading");
+    empty.innerHTML = `No tasks match${q ? ` “${escapeHtml(ib.q.trim())}”` : " this filter"}. <button class="text-btn" type="button" data-freset>Clear search and filters</button>`;
+  }
+
+  function selectInboxTab(tab, focus = false) {
+    ib.tab = tab;
+    ib.confirm = null;
+    ib.open = null;
+    renderInbox();
+    if (focus) $(`#inbox-tab-${tab}`).focus();
+  }
+  function openInbox(tab = "inbox") {
+    if (!inboxOpen || !drawer.classList.contains("is-open")) openDrawer("inbox");
+    selectInboxTab(tab);
+  }
+  const findReq = (id) => requests.find((r) => String(r.id) === String(id));
+
+  // Inbox events — delegated, since the view is re-rendered
+  drawer.addEventListener("click", (e) => {
+    if (!inboxOpen) return;
+    const tab = e.target.closest("[data-itab]");
+    if (tab) { selectInboxTab(tab.dataset.itab); return; }
+    // Filter clicks stay inside: the menu re-renders, so an outside-click
+    // check would otherwise see a detached target and close it
+    if (e.target.closest(".inbox-filter")) e.stopPropagation();
+    if (e.target.closest("#inbox-filter-btn")) {
+      const menu = $("#inbox-filter-menu");
+      menu.hidden = !menu.hidden;
+      $("#inbox-filter-btn").setAttribute("aria-expanded", String(!menu.hidden));
+      if (!menu.hidden) $(".filter-opt[aria-checked=\"true\"]", menu)?.focus();
+      return;
+    }
+    const f = e.target.closest("[data-fgroup]");
+    if (f) {
+      ib[f.dataset.fgroup] = f.dataset.fvalue;
+      renderFilter(); renderPanel();
+      return;
+    }
+    if (e.target.closest("[data-freset]")) {
+      Object.assign(ib, { q: "", type: "all", sort: "new", due: "all" });
+      $("#inbox-search").value = "";
+      $("#inbox-filter-menu").hidden = true;
+      $("#inbox-filter-btn").setAttribute("aria-expanded", "false");
+      renderFilter(); renderPanel();
+      return;
+    }
+    if (e.target.closest("[data-new-request]")) { openRequestForm(); return; }
+    const bloo = e.target.closest("[data-ibloo]");
+    if (bloo) {
+      if (bloo.dataset.ibloo === "review" && suggestedRow) openDrawer("task", suggestedRow);
+      else openRequestForm(findReq(bloo.dataset.id));
+      return;
+    }
+    const act = e.target.closest("[data-req]");
+    if (act) {
+      const r = findReq(act.closest(".req").dataset.id) || decisions.find((d) => d.id === act.closest(".req").dataset.id);
+      const kind = act.dataset.req;
+      if (kind === "edit") openRequestForm(r);
+      else if (kind === "view") ib.open = ib.open === r.id ? null : r.id;
+      else if (kind === "delete" || kind === "withdraw") ib.confirm = { id: r.id, kind };
+      else if (kind === "cancel") ib.confirm = null;
+      else if (kind === "delete-yes") {
+        requests.splice(requests.indexOf(r), 1);
+        ib.confirm = null;
+        toast(`Draft deleted: ${escapeHtml(r.title)}`, "i-trash");
+      } else if (kind === "withdraw-yes") {
+        Object.assign(r, { status: "draft", at: Date.now() });
+        delete r.ref;
+        ib.confirm = null;
+        toast("Request withdrawn and moved back to your drafts", "i-undo");
+      }
+      if (kind !== "edit") {
+        renderInbox();
+        // Keep keyboard focus on the row that changed, or its tab if it left
+        ($(`.req[data-id="${r.id}"] .req-btn`) || $("#inbox-tabs .tab.is-selected"))?.focus();
+      }
+    }
+  });
+  drawer.addEventListener("input", (e) => {
+    if (e.target.id !== "inbox-search") return;
+    ib.q = e.target.value;
+    renderPanel();
+  });
+  drawer.addEventListener("keydown", (e) => {
+    const tab = e.target.closest?.("#inbox-tabs .tab");
+    if (tab && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+      const keys = Object.keys(TABS);
+      const i = keys.indexOf(ib.tab);
+      selectInboxTab(keys[(i + (e.key === "ArrowRight" ? 1 : -1) + keys.length) % keys.length], true);
+      e.preventDefault();
+    }
+  });
+  const legendFocus = (e) => {
+    const t = e.target.closest?.("[data-type]");
+    if (inboxOpen && t && t.closest(".inbox-chart")) chartFocus(t.dataset.type);
+  };
+  drawer.addEventListener("pointerover", legendFocus);
+  drawer.addEventListener("focusin", legendFocus);
+  drawer.addEventListener("pointerout", (e) => { if (inboxOpen && e.target.closest?.(".inbox-chart [data-type]") && !e.relatedTarget?.closest?.(".inbox-chart [data-type]")) chartFocus(null); });
+  drawer.addEventListener("focusout", (e) => { if (inboxOpen && e.target.closest?.(".inbox-chart [data-type]")) chartFocus(null); });
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#new-request")) { openRequestForm(); return; }
+    const menu = $("#inbox-filter-menu");
+    if (menu && !menu.hidden && !e.target.closest(".inbox-filter")) {
+      menu.hidden = true;
+      $("#inbox-filter-btn").setAttribute("aria-expanded", "false");
+    }
+  });
+
+  /* New request / edit draft */
+  const reqModal = $("#request-modal");
+  const reqName = $("#request-name");
+  const reqDetails = $("#request-details");
+  const reqError = $("#request-error");
+  let editing = null;
+  function openRequestForm(r) {
+    closeAskLayer({ restoreFocus: false });
+    editing = r || null;
+    const resubmit = r && r.status === "returned";
+    $("#request-title").textContent = !r ? "New request" : resubmit ? "Edit and resubmit" : "Edit draft";
+    $("#request-sub").textContent = resubmit ? `Returned by ${r.approver}: ${r.note}` : "Save it as a draft, or submit it for approval.";
+    $(`#request-type-${r ? r.type : "tcdf"}`).checked = true;
+    reqName.value = r ? r.title : "";
+    reqDetails.value = r?.details || "";
+    reqError.hidden = true;
+    reqName.removeAttribute("aria-invalid");
+    $("#request-draft").hidden = !!resubmit;
+    $("#request-submit").textContent = resubmit ? "Resubmit request" : "Submit request";
+    reqModal.showModal();
+    setTimeout(() => reqName.focus(), 30);
+  }
+  function saveRequest(submit) {
+    const title = reqName.value.trim();
+    if (!title) {
+      reqError.hidden = false;
+      reqName.setAttribute("aria-invalid", "true");
+      reqName.focus();
+      return;
+    }
+    const type = $('input[name="request-type"]:checked').value;
+    const details = reqDetails.value.trim();
+    let r = editing;
+    if (!r) { r = { id: Date.now() }; requests.push(r); }
+    Object.assign(r, { type, title, details, at: Date.now() });
+    if (submit) {
+      Object.assign(r, { status: "pending", ref: r.ref || `REQ-${++reqSeq}`, approver: r.approver || "Mathew Raymond" });
+      delete r.note;
+    } else r.status = "draft";
+    reqModal.close();
+    toast(submit ? `Submitted for approval · ${r.ref}` : "Saved to your drafts", submit ? "i-check" : "i-edit");
+    ib.flash = r.id;
+    if (inboxOpen) selectInboxTab(submit ? "mine" : "drafts");
+    editing = null;
+  }
+  $("#request-form").addEventListener("submit", (e) => { e.preventDefault(); saveRequest(true); });
+  $("#request-draft").addEventListener("click", () => saveRequest(false));
+  $$("[data-close-request]").forEach((b) => b.addEventListener("click", () => reqModal.close()));
+  reqName.addEventListener("input", () => { if (reqName.value.trim()) { reqError.hidden = true; reqName.removeAttribute("aria-invalid"); } });
 
   /* ---------------------------------------------------------------
      9. Announcements — birthdays, wish modal, timeline
@@ -4122,6 +4858,9 @@ kbd { font-family: var(--font-ui); }
     { id: "discounts", label: "Discounts",
       strong: ["discount", "discounts", "offer", "offers", "deal", "deals", "code", "codes", "coupon", "voucher", "hotel", "hotels", "restaurant", "restaurants", "retail", "partner", "partners", "savings", "save money"],
       weak: ["food", "shopping", "dining", "travel", "stay", "spa", "fuel", "groceries", "employee"] },
+    { id: "requests", label: "Inbox",
+      strong: ["draft", "drafts", "my requests", "new request", "raise a request", "create a request", "start a request", "request history", "tcdf", "internal memo", "memo", "rfp"],
+      weak: ["request", "requests", "submit", "submitted", "history", "withdraw", "returned"] },
     { id: "help", label: "FAQ",
       strong: ["help", "support", "faq", "faqs", "contact", "stuck", "problem", "issue"],
       weak: ["how do i", "how can i", "where can i", "how to", "question"] },
@@ -4211,6 +4950,7 @@ kbd { font-family: var(--font-ui); }
       case "perks": return respondPerks(p);
       case "discounts": return respondDiscounts(p);
       case "help": return respondHelp(p);
+      case "requests": return respondRequests(p);
       case "profile": return {
         kicker: "My profile", think: ["Opening your profile"], source: "Read your Darwinbox record",
         title: "Here’s <em>your profile</em>",
@@ -4542,6 +5282,60 @@ kbd { font-family: var(--font-ui); }
     };
   }
 
+  function respondRequests(p) {
+    const q = p.q || "";
+    const tabOf = (r) => (r.status === "draft" ? "drafts" : TABS.mine.statuses.includes(r.status) ? "mine" : "history");
+    const base = { kicker: "Inbox", source: `Checked your ${requests.length} requests`, think: ["Opening your requests"] };
+    if (p.focus) {
+      const r = findReq(p.focus);
+      if (r) {
+        const st = STATUS[r.status];
+        const editable = r.status === "draft" || r.status === "returned";
+        return { ...base, kicker: `${r.status === "draft" ? "Draft" : "Request"} · ${REQ_TYPES[r.type]}`,
+          title: escapeHtml(r.title),
+          text: r.status === "draft" ? `Saved ${fmtAgo(r.at).toLowerCase()}. Pick up where you left off, or delete it if it’s no longer needed.`
+            : `${st.label}${r.approver ? ` · ${escapeHtml(r.approver)}` : ""}${r.ref ? ` · ${r.ref}` : ""}.${r.note ? ` ${escapeHtml(r.note)}` : ""}`,
+          results: [editable ? actionResult(r.status === "draft" ? "Continue editing" : "Edit and resubmit", REQ_TYPES[r.type], "i-edit", () => { openInbox(tabOf(r)); openRequestForm(r); })
+            : actionResult("Show it in your inbox", st.label, "i-eye", () => { ib.open = r.id; ib.flash = r.id; openInbox(tabOf(r)); })],
+          go: { label: "Opening your inbox", run: () => { ib.flash = r.id; openInbox(tabOf(r)); } } };
+      }
+    }
+    if (/\b(new|raise|create|start|make)\b/.test(q)) {
+      return { ...base, think: ["Preparing a new request"],
+        title: "Let’s start a <em>new request</em>",
+        text: "Pick TCDF, Internal Memo or RFP and add a title. Save it as a draft, or submit it straight to your approver.",
+        results: [actionResult("New request", "TCDF · Internal Memo · RFP", "i-plus", () => openRequestForm())],
+        go: { label: "Opening a new request", run: () => openRequestForm() } };
+    }
+    const type = TYPE_ORDER.find((k) => has(q, k) || has(q, normalize(REQ_TYPES[k])));
+    const list = (tab) => byTab(tab).filter((r) => !type || r.type === type).sort((a, b) => b.at - a.at);
+    const reqResult = (r) => result(r.title, `${typeLabel(r)} · ${r.status === "draft" ? fmtAgo(r.at) : STATUS[r.status].label}`, { icon: "i-doc" },
+      () => { if (r.status === "draft" || r.status === "returned") { openInbox(tabOf(r)); openRequestForm(r); } else { ib.open = r.id; ib.flash = r.id; openInbox(tabOf(r)); } });
+    const open = (tab) => ({ label: `Opening ${TABS[tab].label}`, run: () => { ib.type = type || "all"; openInbox(tab); } });
+    const tLabel = type ? `${REQ_TYPES[type]} ` : "";
+    if (/\bdrafts?\b/.test(q) || (type && !/\b(my requests|history|approved|submitted)\b/.test(q) && list("drafts").length)) {
+      const d = list("drafts");
+      const stale = d.filter((r) => Date.now() - r.at > 7 * DAY * MIN).length;
+      return { ...base, kicker: "Inbox · Drafts",
+        title: `<em>${d.length}</em> ${tLabel}${d.length === 1 ? "draft" : "drafts"} waiting`,
+        text: d.length ? `The newest is “${escapeHtml(d[0].title)}”, saved ${fmtAgo(d[0].at).toLowerCase()}.${stale ? ` ${plural(stale, "hasn’t", "haven’t")} been touched in over a week.` : ""}` : "No drafts right now.",
+        results: d.map(reqResult), go: open("drafts") };
+    }
+    if (/\b(history|approved|rejected|completed|past|decided)\b/.test(q)) {
+      const h = list("history");
+      return { ...base, kicker: "Inbox · History",
+        title: `<em>${h.length}</em> ${tLabel}${h.length === 1 ? "item" : "items"} in your history`,
+        text: `${h.filter((r) => r.status === "approved").length} approved and ${h.filter((r) => r.status === "rejected").length} rejected, newest first.`,
+        results: h.map(reqResult), go: open("history") };
+    }
+    const m = list("mine");
+    const returned = m.find((r) => r.status === "returned");
+    return { ...base, kicker: "Inbox · My requests",
+      title: `<em>${m.length}</em> ${tLabel}${m.length === 1 ? "request" : "requests"} in progress`,
+      text: returned ? `“${escapeHtml(returned.title)}” was returned by ${returned.approver}: ${escapeHtml(returned.note)} The rest are with approvers.` : "All of them are with approvers. I’ll let you know when anything changes.",
+      results: m.map(reqResult), go: open("mine") };
+  }
+
   function respondSearch(text) {
     const hits = searchIndex(text).filter((it) => it.plan || it.drawer);
     if (!hits.length) {
@@ -4574,11 +5368,12 @@ kbd { font-family: var(--font-ui); }
     { group: "Help", label: "Inbox", meta: "Every task, one place", lead: { icon: "i-inbox" }, drawer: "inbox" }
   ];
   const metaOf = (it) => (typeof it.meta === "function" ? it.meta() : it.meta);
+  const requestItems = () => requests.map((r) => ({ group: "Requests", label: r.title, meta: `${REQ_TYPES[r.type]} · ${STATUS[r.status].label}`, lead: { icon: "i-doc" }, plan: { intent: "requests", focus: r.id } }));
   function searchIndex(text) {
     const q = normalize(text);
     const qt = tokens(text);
     if (!q) return [];
-    return INDEX.map((it) => {
+    return [...INDEX, ...requestItems()].map((it) => {
       const hay = normalize(`${it.label} ${metaOf(it)} ${it.group}`);
       let score = hay.includes(q) ? 10 : 0;
       if (normalize(it.label).startsWith(q)) score += 5;
@@ -4597,6 +5392,7 @@ kbd { font-family: var(--font-ui); }
     "What's new this week?", "Who has a birthday today?", "Who joined the team this week?", "Find a colleague",
     "Find me a community I might enjoy", "Help me find a sports community", "Show my benefits",
     "Show me travel discounts", "Show me employee discounts", "Take me to my profile", "Open my inbox",
+    "Show my drafts", "Show my requests", "Raise a new request", "Show my request history",
     "How do I update my personal information?", "Switch to dark mode"
   ];
 
@@ -5061,6 +5857,7 @@ kbd { font-family: var(--font-ui); }
       requestAsk();
       return;
     }
+    if (document.querySelector("dialog[open]")) return; // native dialogs handle Tab and Esc
     if (e.key === "Tab") {
       if (askOpen) trap(e, askPanel);
       else if (drawer.classList.contains("is-open")) trap(e, $(".drawer__panel"));
@@ -5069,7 +5866,9 @@ kbd { font-family: var(--font-ui); }
     }
     if (e.key !== "Escape") return;
     if (askOpen) { closeAskLayer(); return; }
-    if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
+    const fmenu = $("#inbox-filter-menu");
+    if (fmenu && !fmenu.hidden) { fmenu.hidden = true; $("#inbox-filter-btn").setAttribute("aria-expanded", "false"); $("#inbox-filter-btn").focus(); return; }
+    if (drawer.classList.contains("is-open")) { returnToInbox = false; closeDrawer(); return; }
     if (!contextMenu.hidden) { toggleContextMenu(false); contextWhere.focus(); return; }
     if (document.activeElement === input) { input.blur(); return; }
     closeMenus(); closeNav(); setPeek(false);

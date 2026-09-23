@@ -78,6 +78,12 @@
       <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/></symbol>
       <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.4-7.5-10a4.2 4.2 0 0 1 7.5-2.6 4.2 4.2 0 0 1 7.5 2.6c0 5.6-7.5 10-7.5 10Z"/></symbol>
       <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5H15V15h-6v5.5H5.5A1.5 1.5 0 0 1 4 19Z"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M9 4.5H7.5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-12a2 2 0 0 0-2-2H15"/><rect x="9" y="3" width="6" height="3" rx="1"/><path d="M9 11h6M9 15h4"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16Z"/><path d="m13.5 6.5 4 4"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 11v6M14 11v6"/><path d="m6.5 7 .8 11.2a2 2 0 0 0 2 1.8h5.4a2 2 0 0 0 2-1.8L17.5 7"/><path d="M9.5 7V5a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 6.5h16M7 12h10M10 17.5h4"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4.5 9.5 9 5"/><path d="M4.5 9.5H15a4.5 4.5 0 0 1 0 9h-3"/></symbol>
       <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 4 8.5 4.5L12 13 3.5 8.5Z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 16.5 12 21l8.5-4.5"/></symbol>
       <!-- Social / store glyphs (simplified, filled) -->
       <symbol id="s-linkedin" viewBox="0 0 24 24"><path class="fill" d="M5 8.5h3V19H5Zm1.5-4.7a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5ZM10 8.5h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.6 2 3.6 4.7V19h-3v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V19H10Z"/></symbol>
@@ -344,6 +350,7 @@
             <li><button class="prompt" type="button" data-ask="Show me policies about leave"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-calendar"/></svg>Leave policies</button></li>
             <li><button class="prompt" type="button" data-ask="What's new?"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-megaphone"/></svg>What’s new?</button></li>
             <li><button class="prompt" type="button" data-ask="Find a colleague"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-users"/></svg>Find a colleague</button></li>
+            <li><button class="prompt" type="button" data-ask="Show my drafts"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-doc"/></svg>My drafts</button></li>
             <li><button class="prompt" type="button" data-ask="Show my benefits"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-shield"/></svg>Show my benefits</button></li>
             <li><button class="prompt" type="button" data-ask="Show me travel discounts"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-tag"/></svg>Travel discounts</button></li>
             <li><button class="prompt" type="button" data-ask="Find communities"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-ball"/></svg>Find communities</button></li>
@@ -1061,7 +1068,11 @@
     <div class="drawer__scrim" data-close-drawer></div>
     <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <header class="drawer__head">
-        <h2 class="drawer__title" id="drawer-title">Drawer</h2>
+        <div class="drawer__heading">
+          <h2 class="drawer__title" id="drawer-title">Drawer</h2>
+          <p class="drawer__sub" id="drawer-sub" hidden></p>
+        </div>
+        <div class="drawer__actions" id="drawer-actions"></div>
         <button class="icon-btn" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
       </header>
       <div class="drawer__body" id="drawer-body"></div>
@@ -1087,6 +1098,41 @@
       <div class="modal__foot">
         <button class="btn btn--quiet" value="cancel" type="submit" formnovalidate>Cancel</button>
         <button class="btn btn--primary" type="button" id="wish-send"><span class="btn__label">Send wish</span><span class="spinner" aria-hidden="true"></span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- New request / edit draft -->
+  <dialog class="modal modal--request" id="request-modal" aria-labelledby="request-title">
+    <form class="modal__inner" id="request-form" novalidate>
+      <div class="modal__top">
+        <div>
+          <h2 class="h3" id="request-title">New request</h2>
+          <p class="meta" id="request-sub">Save it as a draft, or submit it for approval.</p>
+        </div>
+        <button class="icon-btn" type="button" data-close-request aria-label="Close"><svg class="ico"><use href="#i-x"/></svg></button>
+      </div>
+      <fieldset class="field type-pick">
+        <legend class="field__label">Request type</legend>
+        <div class="type-pick__row">
+          <label class="type-opt type-opt--tcdf"><input type="radio" name="request-type" id="request-type-tcdf" value="tcdf" checked><span class="type-opt__ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span>TCDF</span></label>
+          <label class="type-opt type-opt--memo"><input type="radio" name="request-type" id="request-type-memo" value="memo"><span class="type-opt__ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span>Internal Memo</span></label>
+          <label class="type-opt type-opt--rfp"><input type="radio" name="request-type" id="request-type-rfp" value="rfp"><span class="type-opt__ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span>RFP</span></label>
+        </div>
+      </fieldset>
+      <label class="field">
+        <span class="field__label">Title</span>
+        <input id="request-name" type="text" maxlength="120" autocomplete="off" placeholder="e.g. Annual Service Agreement – Project Beta" aria-describedby="request-error">
+        <span class="field__error" id="request-error" hidden>Add a title so approvers know what this request is for.</span>
+      </label>
+      <label class="field">
+        <span class="field__label">Details <span class="field__optional">Optional</span></span>
+        <textarea id="request-details" rows="4" maxlength="600" placeholder="Scope, amounts, vendors, anything the approver needs."></textarea>
+      </label>
+      <div class="modal__foot">
+        <button class="btn btn--quiet" type="button" data-close-request>Cancel</button>
+        <button class="btn btn--quiet" type="button" id="request-draft">Save as draft</button>
+        <button class="btn btn--primary" type="submit" id="request-submit">Submit request</button>
       </div>
     </form>
   </dialog>

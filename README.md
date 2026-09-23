@@ -81,6 +81,33 @@ so there is only one prompt. The suggestions merge Bloo prompts with the
 original search index (apps, tasks, policies, people, communities, perks,
 partners, FAQs), and all of them work from the keyboard.
 
+## Inbox workspace
+
+The rail's Inbox (and any "Open inbox" button) opens a full-page workspace:
+
+- **Tabs:** Inbox (tasks from connected apps, with the original app filters,
+  approve and reject), Drafts, My requests and History. Each tab shows a count.
+- **Summary card:** follows the tab (Waiting on you, Draft count, In progress,
+  Completed).
+- **Requests by type:** a donut with a legend of counts and percentages. Hover or
+  focus a segment or legend row to read it in the centre. The TCDF, Internal Memo
+  and RFP colours pass the colour-blind-safety checks in both themes.
+- **Bloo suggests:** a tip tied to the active tab: continue the newest draft,
+  fix a returned request, or review the most urgent task.
+- **Search and Filter:** search covers the active tab. Filter by due date on
+  tasks; by type and sort order on requests.
+- **Row actions:** Edit and Delete for drafts (delete asks inline). View and
+  Withdraw for requests in flight (withdraw moves the request back to drafts).
+  Edit & resubmit for returned requests. View for history. Approving or
+  rejecting a task adds it to History.
+- **New request:** a form with type, title and optional details. You can save a
+  draft or submit it, which gives it a reference and status "Pending approval".
+- **Bloo:** understands "Show my drafts", "Show my requests", "Show my request
+  history", "Raise a new request" and type names. Every request is searchable
+  from the prompt.
+
+The request data is a front-end sample, like the rest of the prototype.
+
 ## Navigation and scroll
 
 - **Rail:** 84 px wide, showing icons with short labels: Home, Ask, Inbox, My space,
