@@ -21,5 +21,12 @@
   - The flag cursor (canvas `#flag-cursor` + ring `#flag-ring`, "Flag cursor"
     section of `src/app.js`) uses the logo's fixed blue/red, not the accent.
     Anything clickable should match `FC_HOVER` so the ring appears on it.
+  - Chart colours are the `--viz-1..3` tokens (TCDF, Internal Memo, RFP).
+    They were validated as a set with the dataviz skill's validator in both
+    themes. Re-run it before changing or adding a colour. Text never uses them;
+    they mark dots, icon tiles and chart marks only.
+  - The Inbox page (`#inbox-page`, "Inbox — the requests workspace" in
+    `src/app.js`) reads its Inbox tab from the Attention rows. Keep one
+    source of truth; don't copy task data.
   - Counters read `01 / 05`. Carousels put progress, counter and arrows in
     `.rail-foot`, and each chapter's "see all" link is a `.soft-link`.

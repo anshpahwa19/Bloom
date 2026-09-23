@@ -353,6 +353,10 @@
     { group: "Communities", label: "Football", meta: "58 members", sport: "Football" },
     { group: "Perks", label: "Medical insurance", meta: "Workplace perk", href: "#perks" },
     { group: "Perks", label: "Marriott Hotel Downtown", meta: "30% off", href: "#discounts" },
+    { group: "Requests", label: "Inbox", meta: "Waiting on you", inbox: "inbox" },
+    { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
+    { group: "Requests", label: "Drafts", meta: "Requests you haven’t sent", inbox: "draft" },
+    { group: "Requests", label: "My requests", meta: "Waiting on approvers", inbox: "mine" },
     { group: "Help", label: "Help & support", meta: "FAQs and contacts", drawer: "help" }
   ];
   const search = $("#search");
@@ -385,7 +389,7 @@
       if (it.group !== group) { group = it.group; html += `<p class="search__group">${q ? group : group === "Apps" ? "Jump to an app" : "Suggested"}</p>`; }
       const lead = it.mark
         ? `<span class="app-mark app-mark--${it.mark}">${it.mark === "sap" ? "SAP" : it.label.slice(0, 2)}</span>`
-        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : "i-help", "ico ico--sm")}</span>`;
+        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Requests" ? "i-doc" : "i-help", "ico ico--sm")}</span>`;
       html += `<button type="button" class="search__item${i === 0 ? " is-active" : ""}" role="option" data-i="${i}">${lead}<span>${highlight(it.label, q)}</span><small>${escapeHtml(it.meta)}</small></button>`;
     });
     sPanel.innerHTML = html;
@@ -403,6 +407,7 @@
     sInput.blur();
     if (it.filter) { filterAttention(it.filter, true); return; }
     if (it.drawer) { openDrawer(it.drawer); return; }
+    if (it.inbox) { openInbox(null, it.inbox === "new" ? ib.tab : it.inbox); if (it.inbox === "new") openRequestForm(); return; }
     if (typeof it.person === "number") { showPerson(it.person); document.getElementById("people").scrollIntoView({ behavior: smooth() }); return; }
     if (it.policy) { revealPolicy(it.policy); return; }
     if (it.sport) { revealSport(it.sport); return; }
@@ -454,7 +459,6 @@
   const sourceMarks = { salesforce: "sf", uipath: "ui", darwinbox: "db", sap: "sap" };
   const taskRows = () => $$(".task:not(.task--skeleton)", taskList);
   let currentTab = "all";
-  let inboxOpen = false;
 
   // Direction-aware sliding indicator, shared by every tab list
   function moveIndicator(list) {
@@ -522,7 +526,7 @@
     $("#task-empty").hidden = visible > 0;
     moreBtn.hidden = source !== "all";
     if (!taskList.classList.contains("is-loading")) animateRows();
-    if (scroll && !inboxOpen) document.getElementById("attention").scrollIntoView({ behavior: smooth() });
+    if (scroll && !ib.open) document.getElementById("attention").scrollIntoView({ behavior: smooth() });
   }
 
   tabsEl.addEventListener("click", (e) => {
@@ -591,27 +595,23 @@
   function quickResolve(row, action) {
     if (!row || row.classList.contains("is-done")) return;
     row.classList.add("is-done");
+    row.dataset.outcome = action;
     $$(".task__actions button", row).forEach((b) => { b.disabled = true; });
     const verb = action === "approve" ? "Approved" : "Rejected";
     decrementCount(row.dataset.source);
     toast(`${verb} and synced to ${sourceNames[row.dataset.source]}`, action === "approve" ? "i-check" : "i-x");
+    if (ib.open) renderIb();
   }
 
   /* ---------------------------------------------------------------
-     Drawer (task review, inbox, profile, help)
+     Drawer (task review, request details, profile, help)
      --------------------------------------------------------------- */
   const drawer = $("#drawer");
   const drawerTitle = $("#drawer-title");
   const drawerBody = $("#drawer-body");
-  const attentionBody = $("#attention-body");
-  const attentionHome = { parent: attentionBody.parentNode, next: attentionBody.nextSibling };
   let lastFocus = null;
 
   const drawerViews = {
-    inbox: () => ({
-      title: "Inbox",
-      html: `<p class="d-note">Your tasks from every connected app, in one place.</p>`
-    }),
     profile: () => ({
       title: "My profile",
       html: `<div class="d-profile"><span class="avatar img-rashid"></span><h3>Rashid Khan</h3><p class="meta">Sr. Engineer, Digital Platforms</p></div>
@@ -650,25 +650,43 @@
             <button class="btn btn--quiet" type="button" disabled title="Only the task owner can reassign">Reassign</button>
           </div>`
       };
+    },
+    request: (x) => {
+      const t = IB_TYPES[x.type];
+      const steps = x.steps || [];
+      const stateOf = (i) => {
+        if (x.state === "history") {
+          if (x.outcome === "approved") return "done";
+          if (x.outcome === "rejected") return i < steps.length - 1 ? "done" : "rejected";
+          return i === 0 ? "done" : "skipped";
+        }
+        return i + 1 < x.step ? "done" : i + 1 === x.step ? (x.status === "returned" ? "returned" : "current") : "todo";
+      };
+      const stepIcon = { done: "i-check", current: "i-clock", returned: "i-return", rejected: "i-x", todo: "i-user", skipped: "i-user" };
+      const stepText = { done: "Approved", current: "Reviewing now", returned: "Sent it back to you", rejected: "Rejected", todo: "Next", skipped: "Not needed" };
+      return {
+        title: x.state === "draft" ? "Draft" : "Request details",
+        html: `<div class="d-task__row"><span class="ib-row__icon" style="--c: var(--viz-${t.slot})">${icon("i-doc")}</span><span class="tag">${t.label}</span>${ibStatusPill(x)}</div>
+          <p class="d-task__title">${escapeHtml(x.title)}</p>
+          <dl class="d-facts">
+            <div><dt>${x.state === "history" ? "Closed" : x.state === "draft" ? "Last edited" : "Submitted"}</dt><dd>${x.state === "history" ? x.closed : ibAgo(x.ago)}</dd></div>
+            <div><dt>Reference</dt><dd>${x.ref}</dd></div>
+          </dl>
+          ${x.details ? `<p class="d-note">${escapeHtml(x.details)}</p>` : ""}
+          ${x.note ? `<p class="d-note">${escapeHtml(x.note)}</p>` : ""}
+          ${steps.length ? `<h3 class="d-faq__label">Approval route</h3><ol class="d-steps">${steps.map((who, i) => { const s = stateOf(i); return `<li class="d-step d-step--${s}"><span class="d-step__dot">${icon(stepIcon[s])}</span><p><strong>${escapeHtml(who)}</strong><span>${stepText[s]}</span></p></li>`; }).join("")}</ol>` : ""}
+          <div class="d-actions">${x.state === "mine" && x.status === "review" ? `<button class="btn btn--primary" type="button" data-ib-drawer="remind" data-id="${x.id}">${icon("i-bellring", "ico ico--sm")}Remind ${escapeHtml(steps[x.step - 1] || "approver")}</button>` : ""}<button class="btn btn--quiet" type="button" data-close-drawer-inline>Close</button></div>`
+      };
     }
   };
 
-  function restoreAttention() {
-    if (!inboxOpen) return;
-    attentionHome.parent.insertBefore(attentionBody, attentionHome.next);
-    inboxOpen = false;
-    requestAnimationFrame(moveTabIndicator);
-  }
-
   function openDrawer(type, ctx) {
     const wasOpen = drawer.classList.contains("is-open");
-    restoreAttention(); // switching views while the inbox is open
     const view = drawerViews[type](ctx);
     if (!wasOpen) lastFocus = document.activeElement;
     drawerTitle.textContent = view.title;
     drawerBody.innerHTML = view.html;
     drawer.classList.add("is-open");
-    drawer.classList.toggle("is-fullpage", type === "inbox");
     drawer.setAttribute("aria-hidden", "false");
     body.style.overflow = "hidden";
     closeMenus();
@@ -677,15 +695,6 @@
     hideTip();
     setTimeout(() => $(".drawer__head .icon-btn").focus(), 60);
 
-    if (type === "inbox") {
-      $$(".js-inbox-badge").forEach((b) => { b.style.transform = "scale(0)"; setTimeout(() => b.remove(), 250); });
-      $$('[data-drawer="inbox"][aria-label]').forEach((b) => b.setAttribute("aria-label", "Inbox"));
-      drawerBody.appendChild(attentionBody);
-      inboxOpen = true;
-      $(".console__side", attentionBody).classList.add("is-visible");
-      loadTasks();
-      requestAnimationFrame(moveTabIndicator);
-    }
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {
         const btn = e.currentTarget;
@@ -700,10 +709,9 @@
   }
   function closeDrawer() {
     if (!drawer.classList.contains("is-open")) return;
-    restoreAttention();
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
-    if (!body.classList.contains("menu-open")) body.style.overflow = "";
+    if (!body.classList.contains("menu-open") && !ib.open) body.style.overflow = "";
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   }
   document.addEventListener("click", (e) => {
@@ -717,12 +725,464 @@
     if (rejectBtn && !rejectBtn.disabled) quickResolve(rejectBtn.closest(".task"), "reject");
   });
   $$("[data-close-drawer]").forEach((el) => el.addEventListener("click", closeDrawer));
+  drawerBody.addEventListener("click", (e) => {
+    if (e.target.closest("[data-close-drawer-inline]")) { closeDrawer(); return; }
+    const b = e.target.closest('[data-ib-drawer="remind"]');
+    if (b) { const x = ibFind(b.dataset.id); closeDrawer(); if (x) ibRemind(x); }
+  });
   document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
+    if (e.key !== "Escape" || e.target.closest?.("dialog")) return; // dialogs close themselves
     if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
     if (menus.some((m) => m.classList.contains("is-open"))) { closeMenus(); return; }
+    if (ib.open) { closeInbox(); return; }
     closeNav();
   });
+
+  /* ---------------------------------------------------------------
+     Inbox — the requests workspace (Bloom@Go)
+     Inbox:        what is waiting on you from the connected apps. These
+                   are the Attention rows, so both views stay in sync.
+     Draft / My requests / History: your own requests.
+     Search, filter and sort apply to the tab in view. The summary card
+     and the chart describe that tab; picking a slice filters the list.
+     --------------------------------------------------------------- */
+  const IB_TYPES = {
+    tcdf: { label: "TCDF", slot: 1 },
+    memo: { label: "Internal Memo", slot: 2 },
+    rfp: { label: "RFP", slot: 3 }
+  };
+  const IB_TABS = {
+    inbox: { name: "Inbox", icon: "i-inbox", stat: "Waiting on you", chart: "Waiting by app", unit: "waiting" },
+    draft: { name: "Draft", icon: "i-edit", stat: "Drafts", chart: "Drafts by type", unit: "drafts" },
+    mine: { name: "My requests", icon: "i-send", stat: "In progress", chart: "In progress by type", unit: "in progress" },
+    history: { name: "History", icon: "i-archive", stat: "Closed", chart: "Closed by type", unit: "closed" }
+  };
+  const IB_SORTS = { inbox: [["urgent", "Most urgent"], ["az", "A–Z"]], other: [["new", "Newest"], ["old", "Oldest"], ["az", "A–Z"]] };
+  const APP_ORDER = ["salesforce", "uipath", "darwinbox", "sap"];
+  const ROUTE = { tcdf: ["Mathew Raymond", "Omar Haddad", "Finance"], memo: ["Mathew Raymond", "Mariam Al Hashimi"], rfp: ["Mathew Raymond", "Omar Haddad", "Finance"] };
+  let ibSeq = 0;
+  let ibRef = 2640;
+  const rq = (o) => ({ id: `rq${++ibSeq}`, ref: `BG-${++ibRef}`, details: "", ...o });
+  const ib = {
+    open: false, tab: "inbox", q: "", type: "all", sort: "urgent", returnFocus: null, fresh: null, focusKey: null,
+    items: [
+      // drafts — "ago" is minutes since the last edit
+      rq({ state: "draft", type: "tcdf", title: "Annual Service Agreement – Project Alpha", ago: 7200 }),
+      rq({ state: "draft", type: "memo", title: "Request for Budget Approval – Marketing Campaign", ago: 10080 }),
+      rq({ state: "draft", type: "rfp", title: "Payment Request – Annual Software License", ago: 15 }),
+      rq({ state: "draft", type: "tcdf", title: "Vendor Onboarding – Site Equipment Supplier", ago: 2880 }),
+      rq({ state: "draft", type: "tcdf", title: "Consultancy Agreement – Digital Platforms Audit", ago: 4320 }),
+      rq({ state: "draft", type: "memo", title: "Office Relocation Notice – Mussafah Warehouse", ago: 20160 }),
+      rq({ state: "draft", type: "tcdf", title: "Framework Agreement – Facilities Maintenance", ago: 30240 }),
+      rq({ state: "draft", type: "tcdf", title: "Licence Renewal – Design Tools", ago: 43200 }),
+      // in progress
+      rq({ state: "mine", type: "tcdf", title: "Master Services Agreement – Abu Dhabi Edition Events", ago: 2880, status: "review", step: 2, steps: ROUTE.tcdf }),
+      rq({ state: "mine", type: "rfp", title: "Cloud Hosting Services – Tender", ago: 4320, status: "review", step: 3, steps: ROUTE.rfp }),
+      rq({ state: "mine", type: "memo", title: "Budget Reallocation – Q4 Digital Initiatives", ago: 5760, status: "review", step: 1, steps: ROUTE.memo }),
+      rq({ state: "mine", type: "tcdf", title: "Supply Agreement – Petromal Fleet Fuel", ago: 10080, status: "returned", step: 2, steps: ["Mathew Raymond", "Legal", "Finance"], note: "Legal sent this back: attach the signed quote, then resubmit." }),
+      // closed
+      rq({ state: "history", type: "tcdf", title: "Service Agreement – Marriott Hotel Downtown Offsite", ago: 16000, closed: "12 Sep 2026", outcome: "approved", steps: ROUTE.tcdf }),
+      rq({ state: "history", type: "memo", title: "Updated Travel Policy Rollout", ago: 20000, closed: "9 Sep 2026", outcome: "approved", steps: ROUTE.memo }),
+      rq({ state: "history", type: "tcdf", title: "Equipment Lease – Survey Drones", ago: 30000, closed: "2 Sep 2026", outcome: "rejected", steps: ROUTE.tcdf }),
+      rq({ state: "history", type: "tcdf", title: "Training Services – Brand Guidelines Workshop", ago: 37000, closed: "28 Aug 2026", outcome: "approved", steps: ROUTE.tcdf }),
+      rq({ state: "history", type: "rfp", title: "Catering Services – Annual Town Hall", ago: 47000, closed: "21 Aug 2026", outcome: "withdrawn", steps: ROUTE.rfp }),
+      rq({ state: "history", type: "tcdf", title: "Consultancy Agreement – Data Security Review", ago: 57000, closed: "14 Aug 2026", outcome: "approved", steps: ROUTE.tcdf })
+    ]
+  };
+  const inboxEl = $("#inbox-page");
+  const ibTabs = $("#ib-tabs");
+  const ibList = $("#ib-list");
+  const ibPlot = $("#ib-plot");
+  const ibLegend = $("#ib-legend");
+  const ibSearch = $("#ib-search");
+  const ibTypeChips = $("#ib-type-chips");
+  const ibSortChips = $("#ib-sort-chips");
+  const ibStatNum = $("#ib-stat-num");
+  const ibFind = (id) => ib.items.find((x) => x.id === id);
+
+  function ibAgo(m) {
+    if (m < 1) return "just now";
+    if (m < 60) return `${m} min${m === 1 ? "" : "s"} ago`;
+    if (m < 1440) { const h = Math.round(m / 60); return `${h} hour${h === 1 ? "" : "s"} ago`; }
+    if (m < 10080) { const d = Math.round(m / 1440); return `${d} day${d === 1 ? "" : "s"} ago`; }
+    if (m < 43200) { const w = Math.round(m / 10080); return `${w} week${w === 1 ? "" : "s"} ago`; }
+    const mo = Math.round(m / 43200); return `${mo} month${mo === 1 ? "" : "s"} ago`;
+  }
+  function ibStatusPill(x) {
+    if (x.state === "mine") return x.status === "returned"
+      ? `<span class="ib-status ib-status--returned">${icon("i-return", "ico ico--xs")}Returned</span>`
+      : `<span class="ib-status ib-status--review">${icon("i-clock", "ico ico--xs")}In review</span>`;
+    if (x.state === "history") {
+      const o = { approved: ["i-check", "Approved"], rejected: ["i-x", "Rejected"], withdrawn: ["i-return", "Withdrawn"] }[x.outcome];
+      return `<span class="ib-status ib-status--${x.outcome}">${icon(o[0], "ico ico--xs")}${o[1]}</span>`;
+    }
+    return "";
+  }
+
+  // Inbox rows come straight from the Attention list
+  function ibTasks() {
+    return taskRows().map((row, i) => ({
+      id: `task-${i}`, kind: "task", row, key: row.dataset.source, order: i,
+      title: $(".task__title", row).textContent, detail: $(".task__meta span", row).textContent,
+      done: row.classList.contains("is-done"), outcome: row.dataset.outcome
+    }));
+  }
+  const ibOf = (tab) => tab === "inbox" ? ibTasks() : ib.items.filter((x) => x.state === tab).map((x) => ({ ...x, kind: "req", key: x.type }));
+  const ibCount = (tab) => tab === "inbox" ? totalPending() : ib.items.filter((x) => x.state === tab).length;
+  const ibKeyLabel = (k) => IB_TYPES[k]?.label || sourceNames[k] || k;
+
+  function ibVisible() {
+    let list = ibOf(ib.tab);
+    const all = list.length;
+    if (ib.type !== "all") list = list.filter((x) => x.key === ib.type);
+    const q = ib.q.trim().toLowerCase();
+    if (q) list = list.filter((x) => `${x.title} ${x.detail || ""} ${x.note || ""} ${ibKeyLabel(x.key)} ${x.ref || ""}`.toLowerCase().includes(q));
+    const by = { urgent: (a, b) => a.order - b.order, new: (a, b) => a.ago - b.ago, old: (a, b) => b.ago - a.ago, az: (a, b) => a.title.localeCompare(b.title) }[ib.sort];
+    return { list: list.sort(by), all };
+  }
+
+  function ibRowHTML(x, i, animate) {
+    const cls = `ib-row${x.done ? " is-done" : ""}${animate ? " is-in" : ""}${ib.fresh === x.id ? " is-new" : ""}`;
+    const style = animate ? ` style="animation-delay:${Math.min(i, 10) * 45}ms"` : "";
+    if (x.kind === "task") {
+      const due = $(".due", x.row).outerHTML;
+      const side = x.done
+        ? `<span class="ib-status ib-status--${x.outcome === "reject" ? "rejected" : "approved"}">${icon(x.outcome === "reject" ? "i-x" : "i-check", "ico ico--xs")}${x.outcome === "reject" ? "Rejected" : "Approved"}</span>`
+        : `${due}<div class="task__actions"><button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button><button class="task__more" type="button" data-ib="review" aria-label="Review ${escapeHtml(x.title)}">&#8942;</button></div>`;
+      return `<li class="${cls}"${style} data-id="${x.id}"><span class="app-mark app-mark--${sourceMarks[x.key]}">${x.key === "sap" ? "SAP" : sourceNames[x.key].slice(0, 2)}</span>
+        <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.key]}</span><span>${escapeHtml(x.detail)}</span></p></div>
+        <div class="ib-row__side">${side}</div></li>`;
+    }
+    const t = IB_TYPES[x.type];
+    let meta = "";
+    let side = "";
+    if (x.state === "draft") {
+      meta = `<span>${ibAgo(x.ago)}</span>`;
+      side = `<button class="ib-act ib-act--edit" type="button" data-ib="edit">${icon("i-edit", "ico ico--xs")}Edit</button><button class="ib-act ib-act--delete" type="button" data-ib="delete" aria-label="Delete draft ${escapeHtml(x.title)}">${icon("i-trash", "ico ico--xs")}Delete</button>`;
+    } else if (x.state === "mine") {
+      const bars = x.steps.map((_, s) => `<i class="${s + 1 < x.step ? "is-done" : s + 1 === x.step ? (x.status === "returned" ? "is-returned" : "is-current") : ""}"></i>`).join("");
+      meta = `<span>Submitted ${ibAgo(x.ago)}</span><span><span class="ib-steps" aria-hidden="true">${bars}</span>Step ${x.step} of ${x.steps.length} · ${x.status === "returned" ? "Back with you" : `With ${escapeHtml(x.steps[x.step - 1])}`}</span>`;
+      side = `${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>` + (x.status === "returned"
+        ? `<button class="ib-act ib-act--edit" type="button" data-ib="revise">${icon("i-edit", "ico ico--xs")}Revise</button>`
+        : `<button class="ib-act" type="button" data-ib="remind"${x.reminded ? " disabled" : ""}>${icon("i-bellring", "ico ico--xs")}${x.reminded ? "Reminded" : "Remind"}</button>`);
+    } else {
+      meta = `<span>Closed ${x.closed}</span>`;
+      side = `${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button><button class="ib-act" type="button" data-ib="duplicate">${icon("i-copy", "ico ico--xs")}Duplicate</button>`;
+    }
+    return `<li class="${cls}"${style} data-id="${x.id}"><span class="ib-row__icon" style="--c: var(--viz-${t.slot})">${icon("i-doc")}</span>
+      <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span class="ib-type" style="--c: var(--viz-${t.slot})">${t.label}</span>${meta}</p></div>
+      <div class="ib-row__side">${side}</div></li>`;
+  }
+
+  // numbers count to their new value
+  function ibNum(el, to) {
+    const from = Number(el.textContent) || 0;
+    if (reduceMotion || from === to) { el.textContent = to; return; }
+    const t0 = performance.now();
+    const step = (t) => { const k = clamp((t - t0) / 600); el.textContent = Math.round(from + (to - from) * easeOut(k)); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+
+  function ibStat() {
+    const T = IB_TABS[ib.tab];
+    $("#ib-stat-icon use").setAttribute("href", `#${T.icon}`);
+    $("#ib-stat-label").textContent = T.stat;
+    ibNum(ibStatNum, ibCount(ib.tab));
+    let sub = "";
+    if (ib.tab === "inbox") {
+      const open = ibTasks().filter((x) => !x.done);
+      const overdue = open.filter((x) => $(".due--overdue", x.row)).length;
+      const today = open.filter((x) => $(".due--today", x.row)).length;
+      sub = `${overdue} overdue · ${today} due today · across ${APP_ORDER.filter((a) => counts[a]).length} apps`;
+    } else if (ib.tab === "draft") {
+      const d = ib.items.filter((x) => x.state === "draft");
+      sub = d.length ? `Last edited ${ibAgo(Math.min(...d.map((x) => x.ago)))}` : "No drafts — start one with New request";
+    } else if (ib.tab === "mine") {
+      const m = ib.items.filter((x) => x.state === "mine");
+      const back = m.filter((x) => x.status === "returned").length;
+      sub = `${m.length - back} in review · ${back} returned to you`;
+    } else {
+      const h = ib.items.filter((x) => x.state === "history");
+      const n = (o) => h.filter((x) => x.outcome === o).length;
+      sub = `${n("approved")} approved · ${n("rejected")} rejected · ${n("withdrawn")} withdrawn`;
+    }
+    $("#ib-stat-sub").textContent = sub;
+  }
+
+  // Chart: bars by app (Inbox) or a donut by request type (other tabs)
+  const DONUT_R = 52, DONUT_C = 2 * Math.PI * DONUT_R, DONUT_GAP = 2.5;
+  function ibChart() {
+    $("#ib-chart-title").textContent = IB_TABS[ib.tab].chart;
+    if (ib.tab === "inbox") {
+      const total = totalPending() || 1;
+      if (!ibPlot.querySelector(".ib-bars")) {
+        ibPlot.innerHTML = `<div class="ib-bars">${APP_ORDER.map((a) => `<button class="ib-bar" type="button" data-key="${a}" aria-pressed="false"><span class="app-mark app-mark--${sourceMarks[a]}">${a === "sap" ? "SAP" : sourceNames[a].slice(0, 2)}</span><span class="ib-bar__name">${sourceNames[a]}</span><span class="ib-bar__val"></span><span class="ib-bar__track"><span class="ib-bar__fill"></span></span></button>`).join("")}</div>`;
+        void ibPlot.offsetWidth; // bars grow from zero
+      }
+      const bars = $(".ib-bars", ibPlot);
+      bars.classList.toggle("has-filter", ib.type !== "all");
+      $$(".ib-bar", bars).forEach((b) => {
+        const a = b.dataset.key;
+        $(".ib-bar__val", b).textContent = counts[a];
+        $(".ib-bar__fill", b).style.setProperty("--v", (counts[a] / total).toFixed(3));
+        b.setAttribute("aria-pressed", String(ib.type === a));
+        b.setAttribute("aria-label", `${sourceNames[a]}: ${counts[a]} waiting. Show only ${sourceNames[a]}`);
+      });
+      ibLegend.hidden = true;
+      return;
+    }
+    const items = ib.items.filter((x) => x.state === ib.tab);
+    const total = items.length;
+    const byType = Object.fromEntries(Object.keys(IB_TYPES).map((k) => [k, items.filter((x) => x.type === k).length]));
+    if (!ibPlot.querySelector(".ib-donut")) {
+      ibPlot.innerHTML = `<div class="ib-donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="ib-donut__track" cx="66" cy="66" r="${DONUT_R}"/>${Object.entries(IB_TYPES).map(([k, t]) => `<circle class="ib-donut__seg" data-key="${k}" cx="66" cy="66" r="${DONUT_R}" style="--c: var(--viz-${t.slot}); stroke-dasharray: 0 ${DONUT_C}"/>`).join("")}</svg><div class="ib-donut__center"><p class="ib-donut__num"></p><p class="ib-donut__lbl"></p></div></div>`;
+      void ibPlot.offsetWidth; // start segments from zero so they sweep in
+    }
+    let acc = 0;
+    $$(".ib-donut__seg", ibPlot).forEach((seg) => {
+      const v = byType[seg.dataset.key];
+      const len = total ? (v / total) * DONUT_C : 0;
+      seg.style.strokeDasharray = `${Math.max(0, len - (v && v !== total ? DONUT_GAP : 0)).toFixed(2)} ${DONUT_C.toFixed(2)}`;
+      seg.style.strokeDashoffset = (-acc).toFixed(2);
+      acc += len;
+    });
+    ibLegend.hidden = false;
+    ibLegend.innerHTML = Object.entries(IB_TYPES).map(([k, t]) => `<li><button class="ib-legend__item" type="button" data-key="${k}" aria-pressed="${ib.type === k}" style="--c: var(--viz-${t.slot})" aria-label="${t.label}: ${byType[k]} of ${total}. Show only ${t.label}"><span class="ib-legend__dot"></span><span class="ib-legend__name">${t.label}</span><span class="ib-legend__val">${byType[k]}</span><span class="ib-legend__pct">${total ? Math.round((byType[k] / total) * 100) : 0}%</span></button></li>`).join("");
+    ibDonutFocus(ib.focusKey || (ib.type !== "all" ? ib.type : null));
+  }
+  function ibDonutFocus(key) {
+    const donut = $(".ib-donut", ibPlot);
+    if (!donut) return;
+    const items = ib.items.filter((x) => x.state === ib.tab);
+    const n = key ? items.filter((x) => x.type === key).length : items.length;
+    donut.classList.toggle("has-focus", !!key);
+    $$(".ib-donut__seg", donut).forEach((s) => s.classList.toggle("is-focus", s.dataset.key === key));
+    $$(".ib-legend__item", ibLegend).forEach((b) => b.classList.toggle("is-focus", b.dataset.key === key));
+    $(".ib-donut__num", donut).textContent = n;
+    $(".ib-donut__lbl", donut).textContent = key ? IB_TYPES[key].label : IB_TABS[ib.tab].unit;
+  }
+
+  function ibControls() {
+    const keys = ib.tab === "inbox" ? APP_ORDER : Object.keys(IB_TYPES);
+    ibTypeChips.innerHTML = [["all", "All"], ...keys.map((k) => [k, ibKeyLabel(k)])].map(([k, l]) => `<button class="chip${ib.type === k ? " is-selected" : ""}" type="button" aria-pressed="${ib.type === k}" data-type="${k}">${escapeHtml(l)}</button>`).join("");
+    $("#ib-type-label").textContent = ib.tab === "inbox" ? "App" : "Request type";
+    const sorts = ib.tab === "inbox" ? IB_SORTS.inbox : IB_SORTS.other;
+    ibSortChips.innerHTML = sorts.map(([k, l]) => `<button class="chip${ib.sort === k ? " is-selected" : ""}" type="button" aria-pressed="${ib.sort === k}" data-sort="${k}">${l}</button>`).join("");
+    const n = (ib.type !== "all" ? 1 : 0) + (ib.sort !== sorts[0][0] ? 1 : 0);
+    const badge = $("#ib-filter-count");
+    badge.hidden = !n;
+    badge.textContent = n;
+    $("#ib-filter-btn").setAttribute("aria-label", n ? `Filter, ${n} active` : "Filter");
+  }
+
+  function renderIb({ animate = false } = {}) {
+    Object.keys(IB_TABS).forEach((t) => { $(`[data-ib-count="${t}"]`, ibTabs).textContent = ibCount(t); });
+    ibStat();
+    ibChart();
+    ibControls();
+    const { list, all } = ibVisible();
+    ibList.innerHTML = list.map((x, i) => ibRowHTML(x, i, animate)).join("");
+    ibList.setAttribute("aria-labelledby", `ib-tab-${ib.tab}`);
+    const empty = $("#ib-empty");
+    empty.hidden = list.length > 0;
+    if (!list.length) {
+      const filtered = ib.q.trim() || ib.type !== "all";
+      $("#ib-empty-title").textContent = filtered ? "Nothing matches" : `No ${IB_TABS[ib.tab].unit} right now`;
+      $("#ib-empty-text").textContent = filtered ? "Try another word, pick a different type, or clear the filters." : ib.tab === "draft" ? "Start one with New request." : "You’re all caught up.";
+    }
+    const more = ib.tab === "inbox" ? ` · the ${totalPending()} total includes items you open in each app` : "";
+    $("#ib-showing").textContent = `Showing ${list.length} of ${all}${more}`;
+    ib.fresh = null;
+    requestAnimationFrame(() => moveIndicator(ibTabs));
+  }
+
+  function setIbTab(tab, { focus = false } = {}) {
+    if (!IB_TABS[tab]) return;
+    const changed = tab !== ib.tab;
+    ib.tab = tab;
+    if (changed) { ib.type = "all"; ib.sort = tab === "inbox" ? "urgent" : "new"; ib.focusKey = null; ibPlot.innerHTML = ""; }
+    $$(".tab", ibTabs).forEach((t) => {
+      const on = t.dataset.ibTab === tab;
+      t.classList.toggle("is-selected", on);
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
+    });
+    renderIb({ animate: changed || focus });
+  }
+
+  function openInbox(trigger, tab) {
+    if (!ib.open) {
+      ib.returnFocus = document.activeElement;
+      const r = trigger?.getBoundingClientRect?.();
+      inboxEl.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+      inboxEl.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
+      closeNav(false); closeMenus(); closeSearch(); hideTip();
+      ib.open = true;
+      inboxEl.classList.add("is-open");
+      inboxEl.setAttribute("aria-hidden", "false");
+      inboxEl.scrollTop = 0;
+      body.style.overflow = "hidden";
+      loadTasks();
+      $$(".js-inbox-badge").forEach((b) => { b.style.transform = "scale(0)"; setTimeout(() => b.remove(), 250); });
+      $$("[data-open-inbox][aria-label]").forEach((b) => b.setAttribute("aria-label", "Inbox"));
+    }
+    setIbTab(tab || ib.tab);
+    renderIb({ animate: true });
+    setTimeout(() => $(".tab.is-selected", ibTabs)?.focus({ preventScroll: true }), 320);
+  }
+  function closeInbox() {
+    if (!ib.open) return;
+    ib.open = false;
+    inboxEl.classList.remove("is-open");
+    inboxEl.setAttribute("aria-hidden", "true");
+    closeMenus();
+    if (!body.classList.contains("menu-open") && !drawer.classList.contains("is-open")) body.style.overflow = "";
+    if (ib.returnFocus && document.contains(ib.returnFocus)) ib.returnFocus.focus({ preventScroll: true });
+  }
+  document.addEventListener("click", (e) => {
+    const opener = e.target.closest("[data-open-inbox]");
+    if (opener) { e.preventDefault(); openInbox(opener); }
+    if (e.target.closest("[data-close-inbox]")) closeInbox();
+  });
+  // keep keyboard focus inside the inbox while it is the top layer
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !ib.open || drawer.classList.contains("is-open") || $("dialog[open]")) return;
+    const items = $$("button:not([disabled]), input, a[href]", inboxEl).filter((el) => el.offsetParent !== null);
+    const i = items.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); items[items.length - 1].focus(); }
+    else if (!e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
+  });
+
+  ibTabs.addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) setIbTab(t.dataset.ibTab); });
+  ibTabs.addEventListener("keydown", (e) => {
+    const tabs = $$(".tab", ibTabs);
+    const i = tabs.indexOf(document.activeElement);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined || i < 0) return;
+    e.preventDefault();
+    setIbTab(tabs[(next + tabs.length) % tabs.length].dataset.ibTab, { focus: true });
+  });
+  ibSearch.addEventListener("input", () => { ib.q = ibSearch.value; renderIb(); });
+  ibSearch.addEventListener("keydown", (e) => { if (e.key === "Escape" && ibSearch.value) { e.stopPropagation(); ibSearch.value = ""; ib.q = ""; renderIb(); } });
+  const ibPickType = (k) => { ib.type = ib.type === k ? "all" : k; ib.focusKey = null; renderIb({ animate: true }); };
+  ibTypeChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.type = c.dataset.type; renderIb({ animate: true }); } });
+  ibSortChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.sort = c.dataset.sort; renderIb({ animate: true }); } });
+  $("#ib-clear").addEventListener("click", () => { ib.type = "all"; ib.sort = ib.tab === "inbox" ? "urgent" : "new"; ib.q = ""; ibSearch.value = ""; renderIb({ animate: true }); });
+  // the chart is also a filter: pick a bar or a legend row
+  ibPlot.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
+  ibLegend.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
+  const ibHover = (e) => { const b = e.target.closest?.("[data-key]"); const k = b ? b.dataset.key : null; if (k !== ib.focusKey) { ib.focusKey = k; ibDonutFocus(k || (ib.type !== "all" ? ib.type : null)); } };
+  [ibPlot, ibLegend].forEach((el) => {
+    el.addEventListener("pointerover", ibHover);
+    el.addEventListener("pointerleave", () => { ib.focusKey = null; ibDonutFocus(ib.type !== "all" ? ib.type : null); });
+    el.addEventListener("focusin", ibHover);
+    el.addEventListener("focusout", () => { ib.focusKey = null; ibDonutFocus(ib.type !== "all" ? ib.type : null); });
+  });
+
+  function ibRemind(x) {
+    x.reminded = true;
+    toast(`Reminder sent to ${x.steps[x.step - 1]}`, "i-bellring");
+    if (ib.open) renderIb();
+  }
+  ibList.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-ib]");
+    if (!btn) return;
+    const li = btn.closest(".ib-row");
+    const act = btn.dataset.ib;
+    if (li.dataset.id.startsWith("task-")) {
+      const row = taskRows()[Number(li.dataset.id.slice(5))];
+      if (act === "review") openDrawer("task", row);
+      else quickResolve(row, act);
+      return;
+    }
+    const x = ibFind(li.dataset.id);
+    if (!x) return;
+    if (act === "edit") openRequestForm(x, x.state === "draft" ? "edit" : "revise");
+    else if (act === "revise") openRequestForm(x, "revise");
+    else if (act === "view") openDrawer("request", x);
+    else if (act === "remind") ibRemind(x);
+    else if (act === "duplicate") {
+      const copy = rq({ state: "draft", type: x.type, title: `${x.title} (copy)`, details: x.details, ago: 0 });
+      ib.items.unshift(copy);
+      toast("Copied to Drafts", "i-copy");
+      renderIb();
+      const draftTab = $('[data-ib-tab="draft"] .tab__count', ibTabs);
+      if (!reduceMotion) draftTab.animate([{ transform: "scale(1.6)" }, { transform: "none" }], { duration: 500, easing: "cubic-bezier(.34,1.56,.64,1)" });
+    } else if (act === "delete") {
+      if (!btn.classList.contains("is-confirm")) {
+        btn.classList.add("is-confirm");
+        btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Confirm`;
+        btn.setAttribute("aria-label", `Confirm: delete ${x.title}`);
+        setTimeout(() => { if (btn.isConnected && btn.classList.contains("is-confirm")) { btn.classList.remove("is-confirm"); btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Delete`; btn.setAttribute("aria-label", `Delete draft ${x.title}`); } }, 3200);
+        return;
+      }
+      const done = () => { ib.items = ib.items.filter((y) => y !== x); renderIb(); toast("Draft deleted", "i-trash"); };
+      if (reduceMotion || !li.animate) { done(); return; }
+      li.style.overflow = "hidden";
+      li.animate([{ height: `${li.offsetHeight}px`, opacity: 1 }, { height: "0px", opacity: 0, paddingTop: "0px", paddingBottom: "0px", marginBottom: "-10px" }], { duration: 380, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).onfinish = done;
+    }
+  });
+
+  /* New request / edit draft / revise — a native dialog above the inbox */
+  const rqModal = $("#request-modal");
+  const rqForm = $("#request-form");
+  const rqName = $("#rq-name");
+  const rqDetails = $("#rq-details");
+  const rqTypes = $("#rq-types");
+  const rqDraftBtn = $("#rq-draft");
+  let rqEditing = null;
+  let rqMode = "new";
+  let rqType = "tcdf";
+  rqTypes.setAttribute("role", "radiogroup");
+  rqTypes.setAttribute("aria-label", "Request type");
+  rqTypes.innerHTML = Object.entries(IB_TYPES).map(([k, t]) => `<button class="rq-type" type="button" role="radio" aria-checked="false" data-type="${k}" style="--c: var(--viz-${t.slot})">${t.label}</button>`).join("");
+  const rqSetType = (k, focus) => {
+    rqType = k;
+    $$(".rq-type", rqTypes).forEach((b) => { const on = b.dataset.type === k; b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
+  };
+  rqTypes.addEventListener("click", (e) => { const b = e.target.closest(".rq-type"); if (b) rqSetType(b.dataset.type); });
+  rqTypes.addEventListener("keydown", (e) => {
+    const keys = Object.keys(IB_TYPES);
+    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    rqSetType(keys[(keys.indexOf(rqType) + d + keys.length) % keys.length], true);
+  });
+  const rqError = (on) => { $("#rq-name-error").hidden = !on; rqName.setAttribute("aria-invalid", String(on)); };
+  rqName.addEventListener("input", () => { if (rqName.value.trim()) rqError(false); });
+
+  function openRequestForm(item = null, mode = "new") {
+    rqEditing = item;
+    rqMode = mode;
+    $("#rq-title").textContent = { new: "New request", edit: "Edit draft", revise: "Revise and resubmit" }[mode];
+    $("#rq-sub").textContent = mode === "revise" ? (item.note || "Update the request, then send it back to the approvers.") : `Bloom@Go · ${item ? item.ref : "a reference is added when you save"}`;
+    rqName.value = item ? item.title : "";
+    rqDetails.value = item ? item.details : "";
+    rqSetType(item ? item.type : "tcdf");
+    rqDraftBtn.hidden = mode === "revise";
+    rqError(false);
+    rqModal.showModal();
+    setTimeout(() => rqName.focus(), 40);
+  }
+  function rqSave(submit) {
+    const title = rqName.value.trim();
+    if (!title) { rqError(true); rqName.focus(); return; }
+    let x = rqEditing;
+    if (!x) { x = rq({ state: "draft", type: rqType, title, ago: 0 }); ib.items.unshift(x); }
+    Object.assign(x, { title, type: rqType, details: rqDetails.value.trim(), ago: 0 });
+    if (submit) Object.assign(x, { state: "mine", status: "review", step: 1, steps: ROUTE[rqType], note: "", reminded: false });
+    rqModal.close();
+    ib.fresh = x.id;
+    if (ib.open) setIbTab(x.state); else openInbox(null, x.state);
+    ib.fresh = x.id;
+    renderIb();
+    toast(submit ? `Sent to ${ROUTE[rqType][0]} for approval` : "Draft saved", submit ? "i-send" : "i-edit");
+  }
+  rqForm.addEventListener("submit", (e) => { e.preventDefault(); rqSave(true); });
+  rqDraftBtn.addEventListener("click", () => rqSave(false));
+  $("#rq-cancel").addEventListener("click", () => rqModal.close());
+  $("#ib-new").addEventListener("click", () => openRequestForm());
 
   /* ---------------------------------------------------------------
      Announcements — birthday feed carousel + wish modal

@@ -61,10 +61,29 @@ blue-and-red ripple. Text fields and dialogs keep the system cursor. It is off
 on touch devices and with reduced motion, and ☰ → Appearance → Flag cursor
 turns it off.
 
+**Inbox (requests workspace).** The inbox button in the nav, the hero and the
+menu opens a full-screen page, revealed in a circle from the button pressed.
+It has four tabs:
+
+- **Inbox**: tasks waiting on you from Salesforce, UiPath, Darwinbox and SAP.
+  These are the same rows as the Attention section, so approving or rejecting
+  in either place updates both.
+- **Draft**: Edit, and Delete with a confirm step.
+- **My requests**: step progress and status, View, and Remind, or Revise when
+  a request is returned.
+- **History**: the outcome, View and Duplicate.
+
+Around the tabs sit a search field, a filter (type or app, plus sort) and New
+request. New request opens a form with type (TCDF, Internal Memo, RFP), title
+and details, then Save draft or Submit for approval. A summary card and a
+chart follow the tab: bars by app on Inbox, a donut by type on the others.
+Clicking a bar or legend row filters the list. The type colours are
+validated for colour blindness and contrast in both themes.
+
 ## Kept from the original
 
 Search (Ctrl/⌘ K, now a command palette), notifications, profile menu,
-full-page inbox, task drawer, approve/reject, app filters, show more,
+full-page inbox (now the requests workspace), task drawer, approve/reject, app filters, show more,
 policy filters, people carousel, birthday carousel and wish modal,
 join group, discount codes, FAQ tabs, help drawer, theme and palette
 switching, and toasts.

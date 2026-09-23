@@ -118,6 +118,11 @@
   --sk-a: #ECE8E0;
   --sk-b: #F8F6F1;
   --tile: #FFFFFF;          /* app-icon tile behind third-party logos */
+  /* Chart categories — request types. Validated as a set (all pairs, CVD +
+     normal vision + contrast) on the card surface in each theme. */
+  --viz-1: #2F5BFF;         /* TCDF */
+  --viz-2: #0E9FB5;         /* Internal Memo */
+  --viz-3: #D9722A;         /* RFP */
   --dot: rgba(11, 22, 64, .16);
 
   /* Type */
@@ -233,6 +238,9 @@
   --sk-a: #121A40;
   --sk-b: #1A2452;
   --tile: #F4F6FF;
+  --viz-1: #4470FF;
+  --viz-2: #11A0B3;
+  --viz-3: #CF6B30;
   --dot: rgba(160, 180, 255, .14);
 }
 
@@ -498,7 +506,7 @@ em { font-style: normal; }
   transition: opacity var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out), visibility 0s linear var(--t-base);
 }
 .menu.is-open .menu__panel { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
-.navbar .menu__panel {
+.navbar .menu__panel, .ib-filter .menu__panel {
   background: linear-gradient(180deg, var(--frost-sheen), transparent 40%), var(--frost-panel);
   border-color: var(--frost-edge-2); box-shadow: inset 0 1px 0 var(--frost-edge-2), var(--frost-shadow);
   -webkit-backdrop-filter: var(--frost-blur); backdrop-filter: var(--frost-blur);
@@ -561,17 +569,6 @@ em { font-style: normal; }
   transform: translateX(calc(100% + 24px)); transition: transform var(--t-slow) var(--ease-expo);
 }
 .drawer.is-open .drawer__panel { transform: none; }
-/* Inbox — full page control center instead of a side overlay */
-.drawer.is-fullpage .drawer__scrim { display: none; }
-.drawer.is-fullpage .drawer__panel {
-  inset: 0; width: 100%; max-width: none; border-radius: 0; border: 0; background: var(--canvas);
-  transform: translateY(24px); opacity: 0;
-  transition: transform var(--t-slow) var(--ease-expo), opacity var(--t-slow) var(--ease-out);
-}
-.drawer.is-fullpage.is-open .drawer__panel { transform: none; opacity: 1; }
-.drawer.is-fullpage .drawer__head { padding: 22px clamp(20px, 6vw, 72px); }
-.drawer.is-fullpage .drawer__head h2 { font-size: var(--fs-xl); font-weight: 700; letter-spacing: -.04em; }
-.drawer.is-fullpage .drawer__body { max-width: 1240px; width: 100%; margin: 0 auto; padding: 32px clamp(20px, 6vw, 72px) 56px; }
 .drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--line); }
 .drawer__body { flex: 1; overflow: auto; padding: 24px; overscroll-behavior: contain; }
 .drawer__body > * + * { margin-top: 18px; }
@@ -592,6 +589,18 @@ em { font-style: normal; }
 .drawer .faq p strong { color: var(--ink); font-weight: 600; }
 .d-faq__label { margin: 28px 0 2px; font-size: var(--fs-label); font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
 .d-faq__label:first-child { margin-top: 0; }
+.d-steps { display: grid; gap: 0; padding: 4px 0; }
+.d-step { position: relative; display: grid; grid-template-columns: 28px 1fr; gap: 12px; padding-bottom: 18px; }
+.d-step:last-child { padding-bottom: 0; }
+.d-step::before { content: ""; position: absolute; left: 13.5px; top: 26px; bottom: 2px; width: 1px; background: var(--line-strong); }
+.d-step:last-child::before { display: none; }
+.d-step__dot { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--surface-2); color: var(--slate-2); border: 1px solid var(--line-strong); }
+.d-step__dot .ico { width: 14px; height: 14px; }
+.d-step--done .d-step__dot { background: var(--ok-soft); color: var(--ok-fg); border-color: var(--ok-line); }
+.d-step--current .d-step__dot { background: var(--accent); color: #fff; border-color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
+.d-step--returned .d-step__dot, .d-step--rejected .d-step__dot { background: var(--warm-soft); color: var(--warm-fg); border-color: var(--bad-line); }
+.d-step strong { display: block; font-size: var(--fs-support); }
+.d-step span { font-size: var(--fs-meta); color: var(--slate-2); }
 .d-profile { text-align: center; padding: 8px 0 12px; }
 .d-profile .avatar { width: 104px; height: 104px; margin: 0 auto 16px; font-size: 1.4rem; box-shadow: 0 0 0 5px var(--surface), 0 0 0 7px var(--accent); }
 .d-profile h3 { font-size: 1.6rem; letter-spacing: -.03em; }
@@ -604,15 +613,35 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .modal__inner { display: grid; gap: 18px; padding: 28px; }
 .modal__hero { display: flex; align-items: center; gap: 16px; }
 .modal__hero .h3 { font-size: 1.35rem; }
-.modal__foot { display: flex; justify-content: flex-end; gap: 10px; }
+.modal__foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+.modal--wide { width: min(580px, calc(100% - 32px)); }
+.rq-head { display: flex; align-items: center; gap: 14px; }
+.rq-head__icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: var(--r-icon); background: var(--accent-soft); color: var(--accent-fg); }
+.rq-head .h3 { font-size: 1.35rem; }
+.rq-types { display: grid; gap: 8px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.rq-types legend { padding: 0; margin-bottom: 8px; }
+.rq-types__row { display: flex; flex-wrap: wrap; gap: 8px; }
+.rq-type {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); font-size: var(--fs-support); font-weight: 600;
+  transition: background-color var(--t-base), color var(--t-base), border-color var(--t-base), transform var(--t-fast) var(--ease-out);
+}
+.rq-type::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+.rq-type:hover { border-color: var(--ink); }
+.rq-type:active { transform: scale(.96); }
+.rq-type[aria-checked="true"] { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
 .field { display: grid; gap: 6px; }
 .field__label { font-size: var(--fs-meta); font-weight: 600; color: var(--slate); }
-.field textarea {
+.field textarea, .field__input {
   width: 100%; resize: vertical; padding: 12px 14px; border-radius: var(--r-sm);
   border: 1px solid var(--line); font: inherit; color: var(--ink); background: var(--surface-2);
   transition: border-color var(--t-base), box-shadow var(--t-base), background-color var(--t-base);
 }
-.field textarea:focus { outline: none; border-color: var(--accent-fg); background: var(--surface); box-shadow: var(--ring); }
+.field__input { height: 48px; resize: none; }
+.field__input[aria-invalid="true"] { border-color: var(--warm); }
+.field__error { font-size: var(--fs-meta); font-weight: 600; color: var(--bad-fg); }
+.field__opt { margin-left: 4px; font-weight: 500; color: var(--slate-3); }
+.field textarea:focus, .field__input:focus { outline: none; border-color: var(--accent-fg); background: var(--surface); box-shadow: var(--ring); }
 .field__hint { justify-self: end; font-size: var(--fs-meta); color: var(--slate-2); }
 
 /* Skeleton loading */
@@ -861,6 +890,145 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .search__empty { padding: 20px 12px; color: var(--slate); font-size: var(--fs-support); }
 .search__foot { display: flex; gap: 18px; padding: 10px 18px; border-top: 1px solid var(--line); font-size: var(--fs-meta); color: var(--slate-2); }
 .search__foot kbd { margin-right: 4px; }
+
+/* ------------------------------------------------------------------
+   4d. INBOX — the requests workspace. Opens like the menu: a circle
+   grows from the button that opened it.
+   ------------------------------------------------------------------ */
+.inbox {
+  position: fixed; inset: 0; z-index: 130; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--canvas); visibility: hidden;
+  clip-path: circle(0px at var(--ox, 50%) var(--oy, 40px));
+  transition: clip-path 760ms var(--ease-expo), visibility 0s linear 760ms;
+}
+.inbox::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(55% 45% at 100% 0%, color-mix(in srgb, var(--blob-1) 14%, transparent), transparent 70%), radial-gradient(45% 40% at 0% 100%, color-mix(in srgb, var(--blob-2) 12%, transparent), transparent 70%); }
+.inbox.is-open { visibility: visible; clip-path: circle(150vmax at var(--ox, 50%) var(--oy, 40px)); transition-delay: 0s; }
+.inbox__inner { padding-block: calc(clamp(24px, 4vh, 48px) + var(--safe-top)) 72px; }
+.inbox__top { position: relative; z-index: 5; /* its dropdown opens over the list */ display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 24px 40px; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
+.inbox__back { display: inline-flex; align-items: center; gap: 6px; margin-left: -8px; padding: 6px 14px 6px 8px; border-radius: var(--r-pill); font-size: var(--fs-support); font-weight: 600; color: var(--slate); transition: background-color var(--t-base), color var(--t-base); }
+.inbox__back:hover { background: var(--surface-2); color: var(--ink); }
+.inbox__title { margin-top: 16px; font-size: var(--fs-giant); font-weight: 700; line-height: .9; letter-spacing: -.05em; }
+.inbox__sub { margin-top: 14px; max-width: 52ch; color: var(--slate); text-wrap: pretty; }
+.inbox__tools { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.ib-search {
+  display: flex; align-items: center; gap: 10px; width: clamp(220px, 22vw, 320px); height: 46px; padding: 0 18px;
+  border-radius: var(--r-pill); border: 1px solid var(--line-strong); background: var(--surface); color: var(--slate-2);
+  transition: border-color var(--t-base), box-shadow var(--t-base), color var(--t-base);
+}
+.ib-search:focus-within { border-color: var(--accent-fg); box-shadow: var(--ring); color: var(--accent-fg); }
+.ib-search input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; background: none; font: inherit; font-size: var(--fs-support); color: var(--ink); outline: none; }
+.ib-search input::placeholder { color: var(--slate-2); }
+.ib-search input::-webkit-search-cancel-button { display: none; }
+.ib-filter__count { display: grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--r-pill); background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; }
+.ib-filter__chev { transition: transform var(--t-base) var(--ease-out); }
+.ib-filter.is-open .ib-filter__chev { transform: rotate(180deg); }
+.ib-filter .menu__panel { display: grid; gap: 10px; width: 300px; padding: 16px; }
+.ib-filter__label { font-size: var(--fs-label); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate-2); }
+.ib-filter__label + .chips { margin-bottom: 6px; }
+.ib-filter__clear { justify-self: start; }
+
+.inbox__grid { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: clamp(24px, 3vw, 44px); align-items: start; margin-top: 32px; }
+.inbox__side { position: sticky; top: 24px; display: grid; gap: 16px; }
+.ib-stat, .ib-chart { border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1); }
+.ib-stat { position: relative; overflow: hidden; isolation: isolate; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 16px; padding: 22px 24px 20px; }
+.ib-stat__icon { grid-row: span 2; display: grid; place-items: center; width: 56px; height: 56px; border-radius: var(--r-icon); background: var(--accent-soft); color: var(--accent-fg); }
+.ib-stat__label { align-self: end; font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; letter-spacing: -.015em; }
+.ib-stat__num { align-self: start; font-family: var(--font-display); font-size: 3.2rem; font-weight: 700; line-height: .95; letter-spacing: -.05em; color: var(--accent-fg); font-variant-numeric: tabular-nums; }
+.ib-stat__sub { grid-column: 1 / -1; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-size: var(--fs-support); color: var(--slate); }
+.ib-stat__rings { position: absolute; z-index: -1; right: -56px; top: -56px; width: 170px; height: 170px; border-radius: 50%; background: repeating-radial-gradient(circle, transparent 0 20px, var(--line) 20px 21px); -webkit-mask-image: radial-gradient(closest-side, #000, transparent); mask-image: radial-gradient(closest-side, #000, transparent); }
+.ib-chart { padding: 22px 24px 18px; }
+.ib-chart__title { font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; letter-spacing: -.015em; }
+.ib-chart__plot { margin-top: 16px; }
+
+/* donut — request types */
+.ib-donut { position: relative; width: 176px; max-width: 100%; aspect-ratio: 1; margin-inline: auto; }
+.ib-donut svg { width: 100%; height: 100%; rotate: -90deg; overflow: visible; }
+.ib-donut__track { fill: none; stroke: var(--surface-2); stroke-width: 18; }
+.ib-donut__seg { fill: none; stroke: var(--c); stroke-width: 18; cursor: pointer; transition: stroke-dasharray .9s var(--ease-expo), stroke-dashoffset .9s var(--ease-expo), opacity var(--t-base), stroke-width var(--t-base) var(--ease-out); }
+.ib-donut.has-focus .ib-donut__seg:not(.is-focus) { opacity: .28; }
+.ib-donut__seg.is-focus { stroke-width: 22; }
+.ib-donut__center { position: absolute; inset: 22%; display: grid; place-content: center; text-align: center; pointer-events: none; }
+.ib-donut__num { font-family: var(--font-display); font-size: 2.1rem; font-weight: 700; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.ib-donut__lbl { margin-top: 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+.ib-legend { display: grid; gap: 2px; margin-top: 14px; }
+.ib-legend__item, .ib-bar {
+  display: grid; align-items: center; width: 100%; padding: 9px 10px; border-radius: var(--r-sm); text-align: left;
+  transition: background-color var(--t-base), opacity var(--t-base);
+}
+.ib-legend__item { grid-template-columns: 10px minmax(0, 1fr) auto 38px; gap: 10px; }
+.ib-legend__item:hover, .ib-legend__item.is-focus, .ib-bar:hover { background: var(--surface-2); }
+.ib-legend__item[aria-pressed="true"], .ib-bar[aria-pressed="true"] { background: var(--accent-soft); }
+.ib-legend__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
+.ib-legend__name { font-size: var(--fs-support); font-weight: 600; color: var(--ink-2); }
+.ib-legend__val { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ib-legend__pct { font-size: var(--fs-meta); color: var(--slate-2); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* bars — what's waiting, by app (one hue; the logos carry identity) */
+.ib-bars { display: grid; gap: 2px; }
+.ib-bar { grid-template-columns: 34px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 7px; }
+.ib-bar .app-mark { grid-row: span 2; width: 34px; height: 34px; }
+.ib-bar__name { font-size: var(--fs-support); font-weight: 600; color: var(--ink-2); }
+.ib-bar__val { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ib-bar__track { grid-column: 2 / -1; position: relative; height: 6px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
+.ib-bar__fill { position: absolute; inset: 0; border-radius: inherit; background: var(--accent); transform-origin: left center; transform: scaleX(var(--v, 0)); transition: transform 1s var(--ease-expo); }
+.ib-bars.has-filter .ib-bar:not([aria-pressed="true"]) { opacity: .45; }
+
+/* list */
+.ib-tabs { max-width: 100%; }
+.ib-head { display: flex; justify-content: space-between; padding: 22px 18px 10px 78px; font-size: var(--fs-label); font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate-2); }
+.ib-list { display: grid; gap: 10px; }
+.ib-row {
+  position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 16px;
+  padding: 14px 16px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line);
+  transition: border-color var(--t-base), box-shadow var(--t-base), opacity var(--t-slow);
+}
+.ib-row:hover { border-color: color-mix(in srgb, var(--accent) 28%, var(--line)); box-shadow: var(--sh-1); }
+.ib-row.is-in { animation: rowIn var(--t-slow) var(--ease-expo) both; }
+.ib-row.is-new { animation: rowFlash 1.8s var(--ease-out); }
+.ib-row.is-done { opacity: .6; }
+.ib-row.is-done .ib-row__title { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.ib-row > .app-mark { width: 44px; height: 44px; }
+.ib-row__icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-icon); background: color-mix(in srgb, var(--c) 13%, var(--surface)); color: var(--c); }
+.ib-row__body { min-width: 0; }
+.ib-row__title { font-family: var(--font-display); font-size: 1.02rem; font-weight: 600; letter-spacing: -.012em; line-height: 1.3; }
+.ib-row__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+.ib-row__meta > * + *::before { content: ""; display: inline-block; width: 3px; height: 3px; margin-right: 10px; border-radius: 50%; background: var(--slate-3); vertical-align: middle; }
+.ib-type { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--ink-2); }
+.ib-type::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+.ib-steps { display: inline-flex; gap: 3px; margin-right: 6px; vertical-align: middle; }
+.ib-steps i { width: 14px; height: 4px; border-radius: var(--r-pill); background: var(--line-strong); }
+.ib-steps i.is-done { background: var(--ok-fg); }
+.ib-steps i.is-current { background: var(--accent); }
+.ib-steps i.is-returned { background: var(--warm); }
+.ib-row__side { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.ib-status { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: var(--r-pill); font-size: var(--fs-meta); font-weight: 600; white-space: nowrap; background: var(--surface-2); color: var(--slate); }
+.ib-status--review { background: var(--accent-soft); color: var(--accent-fg); }
+.ib-status--returned, .ib-status--rejected { background: var(--bad-soft); color: var(--bad-fg); }
+.ib-status--approved { background: var(--ok-soft); color: var(--ok-fg); }
+.ib-act {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: var(--r-pill);
+  border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink-2); font-size: 12.5px; font-weight: 600; white-space: nowrap;
+  transition: background-color var(--t-base), color var(--t-base), border-color var(--t-base), transform var(--t-fast) var(--ease-out);
+}
+.ib-act:hover { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
+.ib-act:active { transform: scale(.95); }
+.ib-act:disabled { opacity: .5; pointer-events: none; }
+.ib-act--edit { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent-fg); }
+.ib-act--edit:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+.ib-act--delete { background: var(--bad-soft); border-color: var(--bad-line); color: var(--bad-fg); }
+.ib-act--delete:hover, .ib-act--delete.is-confirm { background: var(--warm); border-color: var(--warm); color: #fff; }
+.ib-empty { display: flex; align-items: center; gap: 16px; padding: 28px; border-radius: var(--r-lg); border: 1px dashed var(--line-strong); color: var(--slate); }
+.ib-empty__icon { display: grid; place-items: center; flex: none; width: 48px; height: 48px; border-radius: var(--r-icon); background: var(--surface-2); color: var(--slate-2); }
+.ib-empty p { display: grid; gap: 2px; font-size: var(--fs-support); }
+.ib-empty strong { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); }
+.ib-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 16px; padding: 0 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+
+/* entrance */
+.inbox.is-open .inbox__heading, .inbox.is-open .inbox__tools, .inbox.is-open .ib-stat, .inbox.is-open .ib-chart, .inbox.is-open .ib-tabs { animation: rise .8s var(--ease-expo) both; }
+.inbox.is-open .inbox__tools { animation-delay: .06s; }
+.inbox.is-open .ib-stat { animation-delay: .12s; }
+.inbox.is-open .ib-tabs { animation-delay: .14s; }
+.inbox.is-open .ib-chart { animation-delay: .2s; }
 
 /* ------------------------------------------------------------------
    5. CHAPTERS
@@ -1663,6 +1831,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 @keyframes timer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes sparkle { from { opacity: .45; } to { opacity: .75; } }
 @keyframes giftBounce { 0% { scale: 0; rotate: -30deg; } 100% { scale: 1; rotate: none; } }
+@keyframes rowFlash { 0% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent); } 100% { box-shadow: 0 0 0 3px transparent; } }
 @keyframes donePop { 0% { scale: 1; } 40% { scale: 1.2; } 100% { scale: 1; } }
 @keyframes burst {
   0% { opacity: 1; transform: translate(0, 0) rotate(0) scale(1); }
@@ -1714,6 +1883,12 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   .faq__tabs .tab { flex: none; height: 48px; gap: 10px; }
   .faq__tabs .tabs__indicator { top: 0; bottom: 0; right: auto; height: auto !important; }
   .footer__grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Inbox on tablets: summary cards sit side by side above the list */
+@media (max-width: 1023px) {
+  .inbox__grid { grid-template-columns: minmax(0, 1fr); }
+  .inbox__side { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 }
 
 /* Tablet: no pinned horizontal reel — a native, swipeable strip instead */
@@ -1816,6 +1991,19 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   .faq__help { flex-wrap: wrap; }
 
   .footer__grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+
+  .inbox__top { padding-bottom: 22px; }
+  .inbox__tools { width: 100%; }
+  .ib-search { flex: 1 1 100%; width: auto; }
+  .ib-filter, #ib-new { flex: 1 1 0; }
+  .ib-filter__btn, #ib-new { width: 100%; }
+  .ib-filter .menu__panel { left: 0; right: auto; width: min(300px, calc(100vw - 32px)); transform-origin: top left; }
+  .inbox__side { grid-template-columns: minmax(0, 1fr); }
+  .ib-head { display: none; }
+  .ib-row { grid-template-columns: 40px minmax(0, 1fr); gap: 12px 14px; padding: 14px; }
+  .ib-row > .app-mark, .ib-row__icon { width: 40px; height: 40px; }
+  .ib-row__side { grid-column: 1 / -1; justify-content: flex-start; gap: 6px; }
+  .ib-foot { flex-direction: column; gap: 4px; }
   .footer__bottom { flex-direction: column; align-items: flex-start; }
   .d-facts { grid-template-columns: 1fr; }
 }
@@ -1941,6 +2129,15 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
       <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9.5 20H6a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 6 4h3.5"/><path d="M15 16.5 19.5 12 15 7.5M19.5 12H9.5"/></symbol>
       <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.9 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1.1 3-3Z"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h4"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5h4l10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 8.5 3 3"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 12.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5L17.5 7"/><path d="M10 11v6M14 11v6"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10 14M20.5 3.5 14 20.5l-4-6.5-6.5-4Z"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14 4.5 9.5 9 5"/><path d="M4.5 9.5h10a5 5 0 0 1 0 10H11"/></symbol>
+      <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></symbol>
+      <symbol id="i-bellring" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21a2 2 0 0 0 4 0M3 7.5A9 9 0 0 1 6 3.5M21 7.5a9 9 0 0 0-3-4"/></symbol>
       <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
       <!-- Social / store glyphs (simplified, filled) -->
       <symbol id="s-linkedin" viewBox="0 0 24 24"><path class="fill" d="M5 8.5h3V19H5Zm1.5-4.7a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5ZM10 8.5h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.6 2 3.6 4.7V19h-3v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V19H10Z"/></symbol>
@@ -1997,7 +2194,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
           <svg class="ico"><use href="#i-search"/></svg><kbd class="nav-kbd search__kbd" aria-hidden="true">Ctrl K</kbd>
         </button>
 
-        <button class="nav-btn nav-btn--inbox" type="button" data-drawer="inbox" aria-label="Inbox, 4 new" data-tip="Inbox">
+        <button class="nav-btn nav-btn--inbox" type="button" data-open-inbox aria-label="Inbox, 4 new" data-tip="Inbox">
           <svg class="ico"><use href="#i-inbox"/></svg><span class="nav-badge js-inbox-badge" id="inbox-badge">4</span>
         </button>
 
@@ -2078,7 +2275,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 
         <p class="mo__label">Your space</p>
         <ul class="mo__utils">
-          <li><button class="mo__util" type="button" data-drawer="inbox"><svg class="ico"><use href="#i-inbox"/></svg>Inbox<span class="nav-badge nav-badge--inline js-inbox-badge">4</span></button></li>
+          <li><button class="mo__util" type="button" data-open-inbox><svg class="ico"><use href="#i-inbox"/></svg>Inbox<span class="nav-badge nav-badge--inline js-inbox-badge">4</span></button></li>
           <li><button class="mo__util" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button></li>
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
           <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
@@ -2152,7 +2349,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
           </ul>
           <div class="hero__actions">
             <a class="btn btn--primary btn--lg btn--magnetic" href="#attention"><span>Review <span data-total>32</span> actions</span><svg class="ico ico--sm btn__arrow btn__arrow--down"><use href="#i-arrow-down"/></svg></a>
-            <button class="btn btn--ghost btn--lg" type="button" data-drawer="inbox"><svg class="ico ico--sm"><use href="#i-inbox"/></svg>Open inbox</button>
+            <button class="btn btn--ghost btn--lg" type="button" data-open-inbox><svg class="ico ico--sm"><use href="#i-inbox"/></svg>Open inbox</button>
           </div>
         </div>
 
@@ -2831,6 +3028,79 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
        ============================================================ -->
   <div class="tooltip" id="tooltip" role="tooltip"></div>
 
+  <!-- ============================================================
+       INBOX — requests workspace (Inbox · Draft · My requests · History)
+       ============================================================ -->
+  <div class="inbox" id="inbox-page" role="dialog" aria-modal="true" aria-labelledby="inbox-title" aria-hidden="true">
+    <div class="inbox__inner container">
+      <header class="inbox__top">
+        <div class="inbox__heading">
+          <button class="inbox__back" type="button" data-close-inbox><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg>Back to home</button>
+          <h2 class="inbox__title" id="inbox-title">Inbox</h2>
+          <p class="inbox__sub">Everything waiting on you, what you’re writing, and where your requests are.</p>
+        </div>
+        <div class="inbox__tools">
+          <label class="ib-search">
+            <svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg>
+            <input id="ib-search" type="search" placeholder="Search requests…" autocomplete="off" aria-label="Search requests in this tab">
+          </label>
+          <div class="menu ib-filter" data-menu>
+            <button class="btn btn--ghost ib-filter__btn" type="button" id="ib-filter-btn" data-menu-trigger aria-expanded="false" aria-haspopup="true">
+              <svg class="ico ico--sm" aria-hidden="true"><use href="#i-filter"/></svg>Filter<span class="ib-filter__count" id="ib-filter-count" hidden>1</span><svg class="ico ico--sm ib-filter__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+            </button>
+            <div class="menu__panel ib-filter__panel" role="group" aria-label="Filter and sort">
+              <p class="ib-filter__label" id="ib-type-label">Type</p>
+              <div class="chips chips--sm" id="ib-type-chips" role="group" aria-labelledby="ib-type-label"></div>
+              <p class="ib-filter__label" id="ib-sort-label">Sort by</p>
+              <div class="chips chips--sm" id="ib-sort-chips" role="group" aria-labelledby="ib-sort-label">
+                <button class="chip is-selected" type="button" aria-pressed="true" data-sort="new">Newest</button>
+                <button class="chip" type="button" aria-pressed="false" data-sort="old">Oldest</button>
+                <button class="chip" type="button" aria-pressed="false" data-sort="az">A–Z</button>
+              </div>
+              <button class="link-btn ib-filter__clear" type="button" id="ib-clear">Clear filters</button>
+            </div>
+          </div>
+          <button class="btn btn--primary btn--magnetic" type="button" id="ib-new"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
+          <button class="icon-btn icon-btn--bordered inbox__close" type="button" data-close-inbox aria-label="Close inbox"><svg class="ico"><use href="#i-x"/></svg></button>
+        </div>
+      </header>
+
+      <div class="inbox__grid">
+        <aside class="inbox__side" aria-label="Summary">
+          <div class="ib-stat">
+            <span class="ib-stat__icon" aria-hidden="true"><svg class="ico" id="ib-stat-icon"><use href="#i-inbox"/></svg></span>
+            <p class="ib-stat__label" id="ib-stat-label">Waiting on you</p>
+            <p class="ib-stat__num" id="ib-stat-num">32</p>
+            <p class="ib-stat__sub" id="ib-stat-sub"></p>
+            <span class="ib-stat__rings" aria-hidden="true"></span>
+          </div>
+          <section class="ib-chart" aria-labelledby="ib-chart-title">
+            <h3 class="ib-chart__title" id="ib-chart-title">Waiting by app</h3>
+            <div class="ib-chart__plot" id="ib-plot"></div>
+            <ul class="ib-legend" id="ib-legend"></ul>
+          </section>
+        </aside>
+
+        <div class="inbox__main">
+          <div class="tabs ib-tabs" role="tablist" aria-label="Requests" id="ib-tabs">
+            <span class="tabs__indicator" aria-hidden="true"></span>
+            <button class="tab is-selected" role="tab" type="button" id="ib-tab-inbox" aria-selected="true" aria-controls="ib-list" data-ib-tab="inbox">Inbox <span class="tab__count" data-ib-count="inbox">32</span></button>
+            <button class="tab" role="tab" type="button" id="ib-tab-draft" aria-selected="false" aria-controls="ib-list" data-ib-tab="draft" tabindex="-1">Draft <span class="tab__count" data-ib-count="draft">8</span></button>
+            <button class="tab" role="tab" type="button" id="ib-tab-mine" aria-selected="false" aria-controls="ib-list" data-ib-tab="mine" tabindex="-1">My requests <span class="tab__count" data-ib-count="mine">4</span></button>
+            <button class="tab" role="tab" type="button" id="ib-tab-history" aria-selected="false" aria-controls="ib-list" data-ib-tab="history" tabindex="-1">History <span class="tab__count" data-ib-count="history">6</span></button>
+          </div>
+          <div class="ib-head" aria-hidden="true"><span>Request</span><span>Actions</span></div>
+          <ul class="ib-list" id="ib-list" role="tabpanel" aria-labelledby="ib-tab-inbox"></ul>
+          <div class="ib-empty" id="ib-empty" hidden>
+            <span class="ib-empty__icon" aria-hidden="true"><svg class="ico"><use href="#i-search"/></svg></span>
+            <p><strong id="ib-empty-title">Nothing matches</strong><span id="ib-empty-text">Try another word, or clear the filters.</span></p>
+          </div>
+          <footer class="ib-foot"><span id="ib-showing"></span><span>Synced 2 minutes ago</span></footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="drawer" id="drawer" aria-hidden="true">
     <div class="drawer__scrim" data-close-drawer></div>
     <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
@@ -2861,6 +3131,33 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
       <div class="modal__foot">
         <button class="btn btn--quiet" value="cancel" type="submit" formnovalidate>Cancel</button>
         <button class="btn btn--primary" type="button" id="wish-send"><span class="btn__label">Send wish</span><span class="spinner" aria-hidden="true"></span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="modal modal--wide" id="request-modal" aria-labelledby="rq-title">
+    <form class="modal__inner" id="request-form" novalidate>
+      <div class="rq-head">
+        <span class="rq-head__icon" aria-hidden="true"><svg class="ico"><use href="#i-doc"/></svg></span>
+        <div><h2 class="h3" id="rq-title">New request</h2><p class="meta" id="rq-sub">Bloom@Go · saved to your requests</p></div>
+      </div>
+      <fieldset class="rq-types">
+        <legend class="field__label">Request type</legend>
+        <div class="rq-types__row" id="rq-types"></div>
+      </fieldset>
+      <label class="field">
+        <span class="field__label">Title</span>
+        <input class="field__input" id="rq-name" type="text" maxlength="90" placeholder="e.g. Annual Service Agreement – Project Alpha" autocomplete="off" required aria-describedby="rq-name-error">
+        <span class="field__error" id="rq-name-error" hidden>Give the request a title so approvers know what it is.</span>
+      </label>
+      <label class="field">
+        <span class="field__label">Details <span class="field__opt">optional</span></span>
+        <textarea id="rq-details" rows="3" maxlength="400" placeholder="What is it for, and is there a deadline?"></textarea>
+      </label>
+      <div class="modal__foot">
+        <button class="btn btn--quiet" type="button" id="rq-cancel">Cancel</button>
+        <button class="btn btn--ghost" type="button" id="rq-draft"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-edit"/></svg>Save draft</button>
+        <button class="btn btn--primary" type="submit" id="rq-submit"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-send"/></svg>Submit for approval</button>
       </div>
     </form>
   </dialog>
@@ -3227,6 +3524,10 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
     { group: "Communities", label: "Football", meta: "58 members", sport: "Football" },
     { group: "Perks", label: "Medical insurance", meta: "Workplace perk", href: "#perks" },
     { group: "Perks", label: "Marriott Hotel Downtown", meta: "30% off", href: "#discounts" },
+    { group: "Requests", label: "Inbox", meta: "Waiting on you", inbox: "inbox" },
+    { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
+    { group: "Requests", label: "Drafts", meta: "Requests you haven’t sent", inbox: "draft" },
+    { group: "Requests", label: "My requests", meta: "Waiting on approvers", inbox: "mine" },
     { group: "Help", label: "Help & support", meta: "FAQs and contacts", drawer: "help" }
   ];
   const search = $("#search");
@@ -3259,7 +3560,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
       if (it.group !== group) { group = it.group; html += `<p class="search__group">${q ? group : group === "Apps" ? "Jump to an app" : "Suggested"}</p>`; }
       const lead = it.mark
         ? `<span class="app-mark app-mark--${it.mark}">${it.mark === "sap" ? "SAP" : it.label.slice(0, 2)}</span>`
-        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : "i-help", "ico ico--sm")}</span>`;
+        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Requests" ? "i-doc" : "i-help", "ico ico--sm")}</span>`;
       html += `<button type="button" class="search__item${i === 0 ? " is-active" : ""}" role="option" data-i="${i}">${lead}<span>${highlight(it.label, q)}</span><small>${escapeHtml(it.meta)}</small></button>`;
     });
     sPanel.innerHTML = html;
@@ -3277,6 +3578,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
     sInput.blur();
     if (it.filter) { filterAttention(it.filter, true); return; }
     if (it.drawer) { openDrawer(it.drawer); return; }
+    if (it.inbox) { openInbox(null, it.inbox === "new" ? ib.tab : it.inbox); if (it.inbox === "new") openRequestForm(); return; }
     if (typeof it.person === "number") { showPerson(it.person); document.getElementById("people").scrollIntoView({ behavior: smooth() }); return; }
     if (it.policy) { revealPolicy(it.policy); return; }
     if (it.sport) { revealSport(it.sport); return; }
@@ -3328,7 +3630,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   const sourceMarks = { salesforce: "sf", uipath: "ui", darwinbox: "db", sap: "sap" };
   const taskRows = () => $$(".task:not(.task--skeleton)", taskList);
   let currentTab = "all";
-  let inboxOpen = false;
 
   // Direction-aware sliding indicator, shared by every tab list
   function moveIndicator(list) {
@@ -3396,7 +3697,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
     $("#task-empty").hidden = visible > 0;
     moreBtn.hidden = source !== "all";
     if (!taskList.classList.contains("is-loading")) animateRows();
-    if (scroll && !inboxOpen) document.getElementById("attention").scrollIntoView({ behavior: smooth() });
+    if (scroll && !ib.open) document.getElementById("attention").scrollIntoView({ behavior: smooth() });
   }
 
   tabsEl.addEventListener("click", (e) => {
@@ -3465,27 +3766,23 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   function quickResolve(row, action) {
     if (!row || row.classList.contains("is-done")) return;
     row.classList.add("is-done");
+    row.dataset.outcome = action;
     $$(".task__actions button", row).forEach((b) => { b.disabled = true; });
     const verb = action === "approve" ? "Approved" : "Rejected";
     decrementCount(row.dataset.source);
     toast(`${verb} and synced to ${sourceNames[row.dataset.source]}`, action === "approve" ? "i-check" : "i-x");
+    if (ib.open) renderIb();
   }
 
   /* ---------------------------------------------------------------
-     Drawer (task review, inbox, profile, help)
+     Drawer (task review, request details, profile, help)
      --------------------------------------------------------------- */
   const drawer = $("#drawer");
   const drawerTitle = $("#drawer-title");
   const drawerBody = $("#drawer-body");
-  const attentionBody = $("#attention-body");
-  const attentionHome = { parent: attentionBody.parentNode, next: attentionBody.nextSibling };
   let lastFocus = null;
 
   const drawerViews = {
-    inbox: () => ({
-      title: "Inbox",
-      html: `<p class="d-note">Your tasks from every connected app, in one place.</p>`
-    }),
     profile: () => ({
       title: "My profile",
       html: `<div class="d-profile"><span class="avatar img-rashid"></span><h3>Rashid Khan</h3><p class="meta">Sr. Engineer, Digital Platforms</p></div>
@@ -3524,25 +3821,43 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
             <button class="btn btn--quiet" type="button" disabled title="Only the task owner can reassign">Reassign</button>
           </div>`
       };
+    },
+    request: (x) => {
+      const t = IB_TYPES[x.type];
+      const steps = x.steps || [];
+      const stateOf = (i) => {
+        if (x.state === "history") {
+          if (x.outcome === "approved") return "done";
+          if (x.outcome === "rejected") return i < steps.length - 1 ? "done" : "rejected";
+          return i === 0 ? "done" : "skipped";
+        }
+        return i + 1 < x.step ? "done" : i + 1 === x.step ? (x.status === "returned" ? "returned" : "current") : "todo";
+      };
+      const stepIcon = { done: "i-check", current: "i-clock", returned: "i-return", rejected: "i-x", todo: "i-user", skipped: "i-user" };
+      const stepText = { done: "Approved", current: "Reviewing now", returned: "Sent it back to you", rejected: "Rejected", todo: "Next", skipped: "Not needed" };
+      return {
+        title: x.state === "draft" ? "Draft" : "Request details",
+        html: `<div class="d-task__row"><span class="ib-row__icon" style="--c: var(--viz-${t.slot})">${icon("i-doc")}</span><span class="tag">${t.label}</span>${ibStatusPill(x)}</div>
+          <p class="d-task__title">${escapeHtml(x.title)}</p>
+          <dl class="d-facts">
+            <div><dt>${x.state === "history" ? "Closed" : x.state === "draft" ? "Last edited" : "Submitted"}</dt><dd>${x.state === "history" ? x.closed : ibAgo(x.ago)}</dd></div>
+            <div><dt>Reference</dt><dd>${x.ref}</dd></div>
+          </dl>
+          ${x.details ? `<p class="d-note">${escapeHtml(x.details)}</p>` : ""}
+          ${x.note ? `<p class="d-note">${escapeHtml(x.note)}</p>` : ""}
+          ${steps.length ? `<h3 class="d-faq__label">Approval route</h3><ol class="d-steps">${steps.map((who, i) => { const s = stateOf(i); return `<li class="d-step d-step--${s}"><span class="d-step__dot">${icon(stepIcon[s])}</span><p><strong>${escapeHtml(who)}</strong><span>${stepText[s]}</span></p></li>`; }).join("")}</ol>` : ""}
+          <div class="d-actions">${x.state === "mine" && x.status === "review" ? `<button class="btn btn--primary" type="button" data-ib-drawer="remind" data-id="${x.id}">${icon("i-bellring", "ico ico--sm")}Remind ${escapeHtml(steps[x.step - 1] || "approver")}</button>` : ""}<button class="btn btn--quiet" type="button" data-close-drawer-inline>Close</button></div>`
+      };
     }
   };
 
-  function restoreAttention() {
-    if (!inboxOpen) return;
-    attentionHome.parent.insertBefore(attentionBody, attentionHome.next);
-    inboxOpen = false;
-    requestAnimationFrame(moveTabIndicator);
-  }
-
   function openDrawer(type, ctx) {
     const wasOpen = drawer.classList.contains("is-open");
-    restoreAttention(); // switching views while the inbox is open
     const view = drawerViews[type](ctx);
     if (!wasOpen) lastFocus = document.activeElement;
     drawerTitle.textContent = view.title;
     drawerBody.innerHTML = view.html;
     drawer.classList.add("is-open");
-    drawer.classList.toggle("is-fullpage", type === "inbox");
     drawer.setAttribute("aria-hidden", "false");
     body.style.overflow = "hidden";
     closeMenus();
@@ -3551,15 +3866,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
     hideTip();
     setTimeout(() => $(".drawer__head .icon-btn").focus(), 60);
 
-    if (type === "inbox") {
-      $$(".js-inbox-badge").forEach((b) => { b.style.transform = "scale(0)"; setTimeout(() => b.remove(), 250); });
-      $$('[data-drawer="inbox"][aria-label]').forEach((b) => b.setAttribute("aria-label", "Inbox"));
-      drawerBody.appendChild(attentionBody);
-      inboxOpen = true;
-      $(".console__side", attentionBody).classList.add("is-visible");
-      loadTasks();
-      requestAnimationFrame(moveTabIndicator);
-    }
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {
         const btn = e.currentTarget;
@@ -3574,10 +3880,9 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   }
   function closeDrawer() {
     if (!drawer.classList.contains("is-open")) return;
-    restoreAttention();
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
-    if (!body.classList.contains("menu-open")) body.style.overflow = "";
+    if (!body.classList.contains("menu-open") && !ib.open) body.style.overflow = "";
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   }
   document.addEventListener("click", (e) => {
@@ -3591,12 +3896,464 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
     if (rejectBtn && !rejectBtn.disabled) quickResolve(rejectBtn.closest(".task"), "reject");
   });
   $$("[data-close-drawer]").forEach((el) => el.addEventListener("click", closeDrawer));
+  drawerBody.addEventListener("click", (e) => {
+    if (e.target.closest("[data-close-drawer-inline]")) { closeDrawer(); return; }
+    const b = e.target.closest('[data-ib-drawer="remind"]');
+    if (b) { const x = ibFind(b.dataset.id); closeDrawer(); if (x) ibRemind(x); }
+  });
   document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
+    if (e.key !== "Escape" || e.target.closest?.("dialog")) return; // dialogs close themselves
     if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
     if (menus.some((m) => m.classList.contains("is-open"))) { closeMenus(); return; }
+    if (ib.open) { closeInbox(); return; }
     closeNav();
   });
+
+  /* ---------------------------------------------------------------
+     Inbox — the requests workspace (Bloom@Go)
+     Inbox:        what is waiting on you from the connected apps. These
+                   are the Attention rows, so both views stay in sync.
+     Draft / My requests / History: your own requests.
+     Search, filter and sort apply to the tab in view. The summary card
+     and the chart describe that tab; picking a slice filters the list.
+     --------------------------------------------------------------- */
+  const IB_TYPES = {
+    tcdf: { label: "TCDF", slot: 1 },
+    memo: { label: "Internal Memo", slot: 2 },
+    rfp: { label: "RFP", slot: 3 }
+  };
+  const IB_TABS = {
+    inbox: { name: "Inbox", icon: "i-inbox", stat: "Waiting on you", chart: "Waiting by app", unit: "waiting" },
+    draft: { name: "Draft", icon: "i-edit", stat: "Drafts", chart: "Drafts by type", unit: "drafts" },
+    mine: { name: "My requests", icon: "i-send", stat: "In progress", chart: "In progress by type", unit: "in progress" },
+    history: { name: "History", icon: "i-archive", stat: "Closed", chart: "Closed by type", unit: "closed" }
+  };
+  const IB_SORTS = { inbox: [["urgent", "Most urgent"], ["az", "A–Z"]], other: [["new", "Newest"], ["old", "Oldest"], ["az", "A–Z"]] };
+  const APP_ORDER = ["salesforce", "uipath", "darwinbox", "sap"];
+  const ROUTE = { tcdf: ["Mathew Raymond", "Omar Haddad", "Finance"], memo: ["Mathew Raymond", "Mariam Al Hashimi"], rfp: ["Mathew Raymond", "Omar Haddad", "Finance"] };
+  let ibSeq = 0;
+  let ibRef = 2640;
+  const rq = (o) => ({ id: `rq${++ibSeq}`, ref: `BG-${++ibRef}`, details: "", ...o });
+  const ib = {
+    open: false, tab: "inbox", q: "", type: "all", sort: "urgent", returnFocus: null, fresh: null, focusKey: null,
+    items: [
+      // drafts — "ago" is minutes since the last edit
+      rq({ state: "draft", type: "tcdf", title: "Annual Service Agreement – Project Alpha", ago: 7200 }),
+      rq({ state: "draft", type: "memo", title: "Request for Budget Approval – Marketing Campaign", ago: 10080 }),
+      rq({ state: "draft", type: "rfp", title: "Payment Request – Annual Software License", ago: 15 }),
+      rq({ state: "draft", type: "tcdf", title: "Vendor Onboarding – Site Equipment Supplier", ago: 2880 }),
+      rq({ state: "draft", type: "tcdf", title: "Consultancy Agreement – Digital Platforms Audit", ago: 4320 }),
+      rq({ state: "draft", type: "memo", title: "Office Relocation Notice – Mussafah Warehouse", ago: 20160 }),
+      rq({ state: "draft", type: "tcdf", title: "Framework Agreement – Facilities Maintenance", ago: 30240 }),
+      rq({ state: "draft", type: "tcdf", title: "Licence Renewal – Design Tools", ago: 43200 }),
+      // in progress
+      rq({ state: "mine", type: "tcdf", title: "Master Services Agreement – Abu Dhabi Edition Events", ago: 2880, status: "review", step: 2, steps: ROUTE.tcdf }),
+      rq({ state: "mine", type: "rfp", title: "Cloud Hosting Services – Tender", ago: 4320, status: "review", step: 3, steps: ROUTE.rfp }),
+      rq({ state: "mine", type: "memo", title: "Budget Reallocation – Q4 Digital Initiatives", ago: 5760, status: "review", step: 1, steps: ROUTE.memo }),
+      rq({ state: "mine", type: "tcdf", title: "Supply Agreement – Petromal Fleet Fuel", ago: 10080, status: "returned", step: 2, steps: ["Mathew Raymond", "Legal", "Finance"], note: "Legal sent this back: attach the signed quote, then resubmit." }),
+      // closed
+      rq({ state: "history", type: "tcdf", title: "Service Agreement – Marriott Hotel Downtown Offsite", ago: 16000, closed: "12 Sep 2026", outcome: "approved", steps: ROUTE.tcdf }),
+      rq({ state: "history", type: "memo", title: "Updated Travel Policy Rollout", ago: 20000, closed: "9 Sep 2026", outcome: "approved", steps: ROUTE.memo }),
+      rq({ state: "history", type: "tcdf", title: "Equipment Lease – Survey Drones", ago: 30000, closed: "2 Sep 2026", outcome: "rejected", steps: ROUTE.tcdf }),
+      rq({ state: "history", type: "tcdf", title: "Training Services – Brand Guidelines Workshop", ago: 37000, closed: "28 Aug 2026", outcome: "approved", steps: ROUTE.tcdf }),
+      rq({ state: "history", type: "rfp", title: "Catering Services – Annual Town Hall", ago: 47000, closed: "21 Aug 2026", outcome: "withdrawn", steps: ROUTE.rfp }),
+      rq({ state: "history", type: "tcdf", title: "Consultancy Agreement – Data Security Review", ago: 57000, closed: "14 Aug 2026", outcome: "approved", steps: ROUTE.tcdf })
+    ]
+  };
+  const inboxEl = $("#inbox-page");
+  const ibTabs = $("#ib-tabs");
+  const ibList = $("#ib-list");
+  const ibPlot = $("#ib-plot");
+  const ibLegend = $("#ib-legend");
+  const ibSearch = $("#ib-search");
+  const ibTypeChips = $("#ib-type-chips");
+  const ibSortChips = $("#ib-sort-chips");
+  const ibStatNum = $("#ib-stat-num");
+  const ibFind = (id) => ib.items.find((x) => x.id === id);
+
+  function ibAgo(m) {
+    if (m < 1) return "just now";
+    if (m < 60) return `${m} min${m === 1 ? "" : "s"} ago`;
+    if (m < 1440) { const h = Math.round(m / 60); return `${h} hour${h === 1 ? "" : "s"} ago`; }
+    if (m < 10080) { const d = Math.round(m / 1440); return `${d} day${d === 1 ? "" : "s"} ago`; }
+    if (m < 43200) { const w = Math.round(m / 10080); return `${w} week${w === 1 ? "" : "s"} ago`; }
+    const mo = Math.round(m / 43200); return `${mo} month${mo === 1 ? "" : "s"} ago`;
+  }
+  function ibStatusPill(x) {
+    if (x.state === "mine") return x.status === "returned"
+      ? `<span class="ib-status ib-status--returned">${icon("i-return", "ico ico--xs")}Returned</span>`
+      : `<span class="ib-status ib-status--review">${icon("i-clock", "ico ico--xs")}In review</span>`;
+    if (x.state === "history") {
+      const o = { approved: ["i-check", "Approved"], rejected: ["i-x", "Rejected"], withdrawn: ["i-return", "Withdrawn"] }[x.outcome];
+      return `<span class="ib-status ib-status--${x.outcome}">${icon(o[0], "ico ico--xs")}${o[1]}</span>`;
+    }
+    return "";
+  }
+
+  // Inbox rows come straight from the Attention list
+  function ibTasks() {
+    return taskRows().map((row, i) => ({
+      id: `task-${i}`, kind: "task", row, key: row.dataset.source, order: i,
+      title: $(".task__title", row).textContent, detail: $(".task__meta span", row).textContent,
+      done: row.classList.contains("is-done"), outcome: row.dataset.outcome
+    }));
+  }
+  const ibOf = (tab) => tab === "inbox" ? ibTasks() : ib.items.filter((x) => x.state === tab).map((x) => ({ ...x, kind: "req", key: x.type }));
+  const ibCount = (tab) => tab === "inbox" ? totalPending() : ib.items.filter((x) => x.state === tab).length;
+  const ibKeyLabel = (k) => IB_TYPES[k]?.label || sourceNames[k] || k;
+
+  function ibVisible() {
+    let list = ibOf(ib.tab);
+    const all = list.length;
+    if (ib.type !== "all") list = list.filter((x) => x.key === ib.type);
+    const q = ib.q.trim().toLowerCase();
+    if (q) list = list.filter((x) => `${x.title} ${x.detail || ""} ${x.note || ""} ${ibKeyLabel(x.key)} ${x.ref || ""}`.toLowerCase().includes(q));
+    const by = { urgent: (a, b) => a.order - b.order, new: (a, b) => a.ago - b.ago, old: (a, b) => b.ago - a.ago, az: (a, b) => a.title.localeCompare(b.title) }[ib.sort];
+    return { list: list.sort(by), all };
+  }
+
+  function ibRowHTML(x, i, animate) {
+    const cls = `ib-row${x.done ? " is-done" : ""}${animate ? " is-in" : ""}${ib.fresh === x.id ? " is-new" : ""}`;
+    const style = animate ? ` style="animation-delay:${Math.min(i, 10) * 45}ms"` : "";
+    if (x.kind === "task") {
+      const due = $(".due", x.row).outerHTML;
+      const side = x.done
+        ? `<span class="ib-status ib-status--${x.outcome === "reject" ? "rejected" : "approved"}">${icon(x.outcome === "reject" ? "i-x" : "i-check", "ico ico--xs")}${x.outcome === "reject" ? "Rejected" : "Approved"}</span>`
+        : `${due}<div class="task__actions"><button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button><button class="task__more" type="button" data-ib="review" aria-label="Review ${escapeHtml(x.title)}">&#8942;</button></div>`;
+      return `<li class="${cls}"${style} data-id="${x.id}"><span class="app-mark app-mark--${sourceMarks[x.key]}">${x.key === "sap" ? "SAP" : sourceNames[x.key].slice(0, 2)}</span>
+        <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.key]}</span><span>${escapeHtml(x.detail)}</span></p></div>
+        <div class="ib-row__side">${side}</div></li>`;
+    }
+    const t = IB_TYPES[x.type];
+    let meta = "";
+    let side = "";
+    if (x.state === "draft") {
+      meta = `<span>${ibAgo(x.ago)}</span>`;
+      side = `<button class="ib-act ib-act--edit" type="button" data-ib="edit">${icon("i-edit", "ico ico--xs")}Edit</button><button class="ib-act ib-act--delete" type="button" data-ib="delete" aria-label="Delete draft ${escapeHtml(x.title)}">${icon("i-trash", "ico ico--xs")}Delete</button>`;
+    } else if (x.state === "mine") {
+      const bars = x.steps.map((_, s) => `<i class="${s + 1 < x.step ? "is-done" : s + 1 === x.step ? (x.status === "returned" ? "is-returned" : "is-current") : ""}"></i>`).join("");
+      meta = `<span>Submitted ${ibAgo(x.ago)}</span><span><span class="ib-steps" aria-hidden="true">${bars}</span>Step ${x.step} of ${x.steps.length} · ${x.status === "returned" ? "Back with you" : `With ${escapeHtml(x.steps[x.step - 1])}`}</span>`;
+      side = `${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>` + (x.status === "returned"
+        ? `<button class="ib-act ib-act--edit" type="button" data-ib="revise">${icon("i-edit", "ico ico--xs")}Revise</button>`
+        : `<button class="ib-act" type="button" data-ib="remind"${x.reminded ? " disabled" : ""}>${icon("i-bellring", "ico ico--xs")}${x.reminded ? "Reminded" : "Remind"}</button>`);
+    } else {
+      meta = `<span>Closed ${x.closed}</span>`;
+      side = `${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button><button class="ib-act" type="button" data-ib="duplicate">${icon("i-copy", "ico ico--xs")}Duplicate</button>`;
+    }
+    return `<li class="${cls}"${style} data-id="${x.id}"><span class="ib-row__icon" style="--c: var(--viz-${t.slot})">${icon("i-doc")}</span>
+      <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span class="ib-type" style="--c: var(--viz-${t.slot})">${t.label}</span>${meta}</p></div>
+      <div class="ib-row__side">${side}</div></li>`;
+  }
+
+  // numbers count to their new value
+  function ibNum(el, to) {
+    const from = Number(el.textContent) || 0;
+    if (reduceMotion || from === to) { el.textContent = to; return; }
+    const t0 = performance.now();
+    const step = (t) => { const k = clamp((t - t0) / 600); el.textContent = Math.round(from + (to - from) * easeOut(k)); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+
+  function ibStat() {
+    const T = IB_TABS[ib.tab];
+    $("#ib-stat-icon use").setAttribute("href", `#${T.icon}`);
+    $("#ib-stat-label").textContent = T.stat;
+    ibNum(ibStatNum, ibCount(ib.tab));
+    let sub = "";
+    if (ib.tab === "inbox") {
+      const open = ibTasks().filter((x) => !x.done);
+      const overdue = open.filter((x) => $(".due--overdue", x.row)).length;
+      const today = open.filter((x) => $(".due--today", x.row)).length;
+      sub = `${overdue} overdue · ${today} due today · across ${APP_ORDER.filter((a) => counts[a]).length} apps`;
+    } else if (ib.tab === "draft") {
+      const d = ib.items.filter((x) => x.state === "draft");
+      sub = d.length ? `Last edited ${ibAgo(Math.min(...d.map((x) => x.ago)))}` : "No drafts — start one with New request";
+    } else if (ib.tab === "mine") {
+      const m = ib.items.filter((x) => x.state === "mine");
+      const back = m.filter((x) => x.status === "returned").length;
+      sub = `${m.length - back} in review · ${back} returned to you`;
+    } else {
+      const h = ib.items.filter((x) => x.state === "history");
+      const n = (o) => h.filter((x) => x.outcome === o).length;
+      sub = `${n("approved")} approved · ${n("rejected")} rejected · ${n("withdrawn")} withdrawn`;
+    }
+    $("#ib-stat-sub").textContent = sub;
+  }
+
+  // Chart: bars by app (Inbox) or a donut by request type (other tabs)
+  const DONUT_R = 52, DONUT_C = 2 * Math.PI * DONUT_R, DONUT_GAP = 2.5;
+  function ibChart() {
+    $("#ib-chart-title").textContent = IB_TABS[ib.tab].chart;
+    if (ib.tab === "inbox") {
+      const total = totalPending() || 1;
+      if (!ibPlot.querySelector(".ib-bars")) {
+        ibPlot.innerHTML = `<div class="ib-bars">${APP_ORDER.map((a) => `<button class="ib-bar" type="button" data-key="${a}" aria-pressed="false"><span class="app-mark app-mark--${sourceMarks[a]}">${a === "sap" ? "SAP" : sourceNames[a].slice(0, 2)}</span><span class="ib-bar__name">${sourceNames[a]}</span><span class="ib-bar__val"></span><span class="ib-bar__track"><span class="ib-bar__fill"></span></span></button>`).join("")}</div>`;
+        void ibPlot.offsetWidth; // bars grow from zero
+      }
+      const bars = $(".ib-bars", ibPlot);
+      bars.classList.toggle("has-filter", ib.type !== "all");
+      $$(".ib-bar", bars).forEach((b) => {
+        const a = b.dataset.key;
+        $(".ib-bar__val", b).textContent = counts[a];
+        $(".ib-bar__fill", b).style.setProperty("--v", (counts[a] / total).toFixed(3));
+        b.setAttribute("aria-pressed", String(ib.type === a));
+        b.setAttribute("aria-label", `${sourceNames[a]}: ${counts[a]} waiting. Show only ${sourceNames[a]}`);
+      });
+      ibLegend.hidden = true;
+      return;
+    }
+    const items = ib.items.filter((x) => x.state === ib.tab);
+    const total = items.length;
+    const byType = Object.fromEntries(Object.keys(IB_TYPES).map((k) => [k, items.filter((x) => x.type === k).length]));
+    if (!ibPlot.querySelector(".ib-donut")) {
+      ibPlot.innerHTML = `<div class="ib-donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="ib-donut__track" cx="66" cy="66" r="${DONUT_R}"/>${Object.entries(IB_TYPES).map(([k, t]) => `<circle class="ib-donut__seg" data-key="${k}" cx="66" cy="66" r="${DONUT_R}" style="--c: var(--viz-${t.slot}); stroke-dasharray: 0 ${DONUT_C}"/>`).join("")}</svg><div class="ib-donut__center"><p class="ib-donut__num"></p><p class="ib-donut__lbl"></p></div></div>`;
+      void ibPlot.offsetWidth; // start segments from zero so they sweep in
+    }
+    let acc = 0;
+    $$(".ib-donut__seg", ibPlot).forEach((seg) => {
+      const v = byType[seg.dataset.key];
+      const len = total ? (v / total) * DONUT_C : 0;
+      seg.style.strokeDasharray = `${Math.max(0, len - (v && v !== total ? DONUT_GAP : 0)).toFixed(2)} ${DONUT_C.toFixed(2)}`;
+      seg.style.strokeDashoffset = (-acc).toFixed(2);
+      acc += len;
+    });
+    ibLegend.hidden = false;
+    ibLegend.innerHTML = Object.entries(IB_TYPES).map(([k, t]) => `<li><button class="ib-legend__item" type="button" data-key="${k}" aria-pressed="${ib.type === k}" style="--c: var(--viz-${t.slot})" aria-label="${t.label}: ${byType[k]} of ${total}. Show only ${t.label}"><span class="ib-legend__dot"></span><span class="ib-legend__name">${t.label}</span><span class="ib-legend__val">${byType[k]}</span><span class="ib-legend__pct">${total ? Math.round((byType[k] / total) * 100) : 0}%</span></button></li>`).join("");
+    ibDonutFocus(ib.focusKey || (ib.type !== "all" ? ib.type : null));
+  }
+  function ibDonutFocus(key) {
+    const donut = $(".ib-donut", ibPlot);
+    if (!donut) return;
+    const items = ib.items.filter((x) => x.state === ib.tab);
+    const n = key ? items.filter((x) => x.type === key).length : items.length;
+    donut.classList.toggle("has-focus", !!key);
+    $$(".ib-donut__seg", donut).forEach((s) => s.classList.toggle("is-focus", s.dataset.key === key));
+    $$(".ib-legend__item", ibLegend).forEach((b) => b.classList.toggle("is-focus", b.dataset.key === key));
+    $(".ib-donut__num", donut).textContent = n;
+    $(".ib-donut__lbl", donut).textContent = key ? IB_TYPES[key].label : IB_TABS[ib.tab].unit;
+  }
+
+  function ibControls() {
+    const keys = ib.tab === "inbox" ? APP_ORDER : Object.keys(IB_TYPES);
+    ibTypeChips.innerHTML = [["all", "All"], ...keys.map((k) => [k, ibKeyLabel(k)])].map(([k, l]) => `<button class="chip${ib.type === k ? " is-selected" : ""}" type="button" aria-pressed="${ib.type === k}" data-type="${k}">${escapeHtml(l)}</button>`).join("");
+    $("#ib-type-label").textContent = ib.tab === "inbox" ? "App" : "Request type";
+    const sorts = ib.tab === "inbox" ? IB_SORTS.inbox : IB_SORTS.other;
+    ibSortChips.innerHTML = sorts.map(([k, l]) => `<button class="chip${ib.sort === k ? " is-selected" : ""}" type="button" aria-pressed="${ib.sort === k}" data-sort="${k}">${l}</button>`).join("");
+    const n = (ib.type !== "all" ? 1 : 0) + (ib.sort !== sorts[0][0] ? 1 : 0);
+    const badge = $("#ib-filter-count");
+    badge.hidden = !n;
+    badge.textContent = n;
+    $("#ib-filter-btn").setAttribute("aria-label", n ? `Filter, ${n} active` : "Filter");
+  }
+
+  function renderIb({ animate = false } = {}) {
+    Object.keys(IB_TABS).forEach((t) => { $(`[data-ib-count="${t}"]`, ibTabs).textContent = ibCount(t); });
+    ibStat();
+    ibChart();
+    ibControls();
+    const { list, all } = ibVisible();
+    ibList.innerHTML = list.map((x, i) => ibRowHTML(x, i, animate)).join("");
+    ibList.setAttribute("aria-labelledby", `ib-tab-${ib.tab}`);
+    const empty = $("#ib-empty");
+    empty.hidden = list.length > 0;
+    if (!list.length) {
+      const filtered = ib.q.trim() || ib.type !== "all";
+      $("#ib-empty-title").textContent = filtered ? "Nothing matches" : `No ${IB_TABS[ib.tab].unit} right now`;
+      $("#ib-empty-text").textContent = filtered ? "Try another word, pick a different type, or clear the filters." : ib.tab === "draft" ? "Start one with New request." : "You’re all caught up.";
+    }
+    const more = ib.tab === "inbox" ? ` · the ${totalPending()} total includes items you open in each app` : "";
+    $("#ib-showing").textContent = `Showing ${list.length} of ${all}${more}`;
+    ib.fresh = null;
+    requestAnimationFrame(() => moveIndicator(ibTabs));
+  }
+
+  function setIbTab(tab, { focus = false } = {}) {
+    if (!IB_TABS[tab]) return;
+    const changed = tab !== ib.tab;
+    ib.tab = tab;
+    if (changed) { ib.type = "all"; ib.sort = tab === "inbox" ? "urgent" : "new"; ib.focusKey = null; ibPlot.innerHTML = ""; }
+    $$(".tab", ibTabs).forEach((t) => {
+      const on = t.dataset.ibTab === tab;
+      t.classList.toggle("is-selected", on);
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      if (on && focus) t.focus();
+    });
+    renderIb({ animate: changed || focus });
+  }
+
+  function openInbox(trigger, tab) {
+    if (!ib.open) {
+      ib.returnFocus = document.activeElement;
+      const r = trigger?.getBoundingClientRect?.();
+      inboxEl.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+      inboxEl.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
+      closeNav(false); closeMenus(); closeSearch(); hideTip();
+      ib.open = true;
+      inboxEl.classList.add("is-open");
+      inboxEl.setAttribute("aria-hidden", "false");
+      inboxEl.scrollTop = 0;
+      body.style.overflow = "hidden";
+      loadTasks();
+      $$(".js-inbox-badge").forEach((b) => { b.style.transform = "scale(0)"; setTimeout(() => b.remove(), 250); });
+      $$("[data-open-inbox][aria-label]").forEach((b) => b.setAttribute("aria-label", "Inbox"));
+    }
+    setIbTab(tab || ib.tab);
+    renderIb({ animate: true });
+    setTimeout(() => $(".tab.is-selected", ibTabs)?.focus({ preventScroll: true }), 320);
+  }
+  function closeInbox() {
+    if (!ib.open) return;
+    ib.open = false;
+    inboxEl.classList.remove("is-open");
+    inboxEl.setAttribute("aria-hidden", "true");
+    closeMenus();
+    if (!body.classList.contains("menu-open") && !drawer.classList.contains("is-open")) body.style.overflow = "";
+    if (ib.returnFocus && document.contains(ib.returnFocus)) ib.returnFocus.focus({ preventScroll: true });
+  }
+  document.addEventListener("click", (e) => {
+    const opener = e.target.closest("[data-open-inbox]");
+    if (opener) { e.preventDefault(); openInbox(opener); }
+    if (e.target.closest("[data-close-inbox]")) closeInbox();
+  });
+  // keep keyboard focus inside the inbox while it is the top layer
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !ib.open || drawer.classList.contains("is-open") || $("dialog[open]")) return;
+    const items = $$("button:not([disabled]), input, a[href]", inboxEl).filter((el) => el.offsetParent !== null);
+    const i = items.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); items[items.length - 1].focus(); }
+    else if (!e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
+  });
+
+  ibTabs.addEventListener("click", (e) => { const t = e.target.closest(".tab"); if (t) setIbTab(t.dataset.ibTab); });
+  ibTabs.addEventListener("keydown", (e) => {
+    const tabs = $$(".tab", ibTabs);
+    const i = tabs.indexOf(document.activeElement);
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined || i < 0) return;
+    e.preventDefault();
+    setIbTab(tabs[(next + tabs.length) % tabs.length].dataset.ibTab, { focus: true });
+  });
+  ibSearch.addEventListener("input", () => { ib.q = ibSearch.value; renderIb(); });
+  ibSearch.addEventListener("keydown", (e) => { if (e.key === "Escape" && ibSearch.value) { e.stopPropagation(); ibSearch.value = ""; ib.q = ""; renderIb(); } });
+  const ibPickType = (k) => { ib.type = ib.type === k ? "all" : k; ib.focusKey = null; renderIb({ animate: true }); };
+  ibTypeChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.type = c.dataset.type; renderIb({ animate: true }); } });
+  ibSortChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.sort = c.dataset.sort; renderIb({ animate: true }); } });
+  $("#ib-clear").addEventListener("click", () => { ib.type = "all"; ib.sort = ib.tab === "inbox" ? "urgent" : "new"; ib.q = ""; ibSearch.value = ""; renderIb({ animate: true }); });
+  // the chart is also a filter: pick a bar or a legend row
+  ibPlot.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
+  ibLegend.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
+  const ibHover = (e) => { const b = e.target.closest?.("[data-key]"); const k = b ? b.dataset.key : null; if (k !== ib.focusKey) { ib.focusKey = k; ibDonutFocus(k || (ib.type !== "all" ? ib.type : null)); } };
+  [ibPlot, ibLegend].forEach((el) => {
+    el.addEventListener("pointerover", ibHover);
+    el.addEventListener("pointerleave", () => { ib.focusKey = null; ibDonutFocus(ib.type !== "all" ? ib.type : null); });
+    el.addEventListener("focusin", ibHover);
+    el.addEventListener("focusout", () => { ib.focusKey = null; ibDonutFocus(ib.type !== "all" ? ib.type : null); });
+  });
+
+  function ibRemind(x) {
+    x.reminded = true;
+    toast(`Reminder sent to ${x.steps[x.step - 1]}`, "i-bellring");
+    if (ib.open) renderIb();
+  }
+  ibList.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-ib]");
+    if (!btn) return;
+    const li = btn.closest(".ib-row");
+    const act = btn.dataset.ib;
+    if (li.dataset.id.startsWith("task-")) {
+      const row = taskRows()[Number(li.dataset.id.slice(5))];
+      if (act === "review") openDrawer("task", row);
+      else quickResolve(row, act);
+      return;
+    }
+    const x = ibFind(li.dataset.id);
+    if (!x) return;
+    if (act === "edit") openRequestForm(x, x.state === "draft" ? "edit" : "revise");
+    else if (act === "revise") openRequestForm(x, "revise");
+    else if (act === "view") openDrawer("request", x);
+    else if (act === "remind") ibRemind(x);
+    else if (act === "duplicate") {
+      const copy = rq({ state: "draft", type: x.type, title: `${x.title} (copy)`, details: x.details, ago: 0 });
+      ib.items.unshift(copy);
+      toast("Copied to Drafts", "i-copy");
+      renderIb();
+      const draftTab = $('[data-ib-tab="draft"] .tab__count', ibTabs);
+      if (!reduceMotion) draftTab.animate([{ transform: "scale(1.6)" }, { transform: "none" }], { duration: 500, easing: "cubic-bezier(.34,1.56,.64,1)" });
+    } else if (act === "delete") {
+      if (!btn.classList.contains("is-confirm")) {
+        btn.classList.add("is-confirm");
+        btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Confirm`;
+        btn.setAttribute("aria-label", `Confirm: delete ${x.title}`);
+        setTimeout(() => { if (btn.isConnected && btn.classList.contains("is-confirm")) { btn.classList.remove("is-confirm"); btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Delete`; btn.setAttribute("aria-label", `Delete draft ${x.title}`); } }, 3200);
+        return;
+      }
+      const done = () => { ib.items = ib.items.filter((y) => y !== x); renderIb(); toast("Draft deleted", "i-trash"); };
+      if (reduceMotion || !li.animate) { done(); return; }
+      li.style.overflow = "hidden";
+      li.animate([{ height: `${li.offsetHeight}px`, opacity: 1 }, { height: "0px", opacity: 0, paddingTop: "0px", paddingBottom: "0px", marginBottom: "-10px" }], { duration: 380, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).onfinish = done;
+    }
+  });
+
+  /* New request / edit draft / revise — a native dialog above the inbox */
+  const rqModal = $("#request-modal");
+  const rqForm = $("#request-form");
+  const rqName = $("#rq-name");
+  const rqDetails = $("#rq-details");
+  const rqTypes = $("#rq-types");
+  const rqDraftBtn = $("#rq-draft");
+  let rqEditing = null;
+  let rqMode = "new";
+  let rqType = "tcdf";
+  rqTypes.setAttribute("role", "radiogroup");
+  rqTypes.setAttribute("aria-label", "Request type");
+  rqTypes.innerHTML = Object.entries(IB_TYPES).map(([k, t]) => `<button class="rq-type" type="button" role="radio" aria-checked="false" data-type="${k}" style="--c: var(--viz-${t.slot})">${t.label}</button>`).join("");
+  const rqSetType = (k, focus) => {
+    rqType = k;
+    $$(".rq-type", rqTypes).forEach((b) => { const on = b.dataset.type === k; b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
+  };
+  rqTypes.addEventListener("click", (e) => { const b = e.target.closest(".rq-type"); if (b) rqSetType(b.dataset.type); });
+  rqTypes.addEventListener("keydown", (e) => {
+    const keys = Object.keys(IB_TYPES);
+    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    rqSetType(keys[(keys.indexOf(rqType) + d + keys.length) % keys.length], true);
+  });
+  const rqError = (on) => { $("#rq-name-error").hidden = !on; rqName.setAttribute("aria-invalid", String(on)); };
+  rqName.addEventListener("input", () => { if (rqName.value.trim()) rqError(false); });
+
+  function openRequestForm(item = null, mode = "new") {
+    rqEditing = item;
+    rqMode = mode;
+    $("#rq-title").textContent = { new: "New request", edit: "Edit draft", revise: "Revise and resubmit" }[mode];
+    $("#rq-sub").textContent = mode === "revise" ? (item.note || "Update the request, then send it back to the approvers.") : `Bloom@Go · ${item ? item.ref : "a reference is added when you save"}`;
+    rqName.value = item ? item.title : "";
+    rqDetails.value = item ? item.details : "";
+    rqSetType(item ? item.type : "tcdf");
+    rqDraftBtn.hidden = mode === "revise";
+    rqError(false);
+    rqModal.showModal();
+    setTimeout(() => rqName.focus(), 40);
+  }
+  function rqSave(submit) {
+    const title = rqName.value.trim();
+    if (!title) { rqError(true); rqName.focus(); return; }
+    let x = rqEditing;
+    if (!x) { x = rq({ state: "draft", type: rqType, title, ago: 0 }); ib.items.unshift(x); }
+    Object.assign(x, { title, type: rqType, details: rqDetails.value.trim(), ago: 0 });
+    if (submit) Object.assign(x, { state: "mine", status: "review", step: 1, steps: ROUTE[rqType], note: "", reminded: false });
+    rqModal.close();
+    ib.fresh = x.id;
+    if (ib.open) setIbTab(x.state); else openInbox(null, x.state);
+    ib.fresh = x.id;
+    renderIb();
+    toast(submit ? `Sent to ${ROUTE[rqType][0]} for approval` : "Draft saved", submit ? "i-send" : "i-edit");
+  }
+  rqForm.addEventListener("submit", (e) => { e.preventDefault(); rqSave(true); });
+  rqDraftBtn.addEventListener("click", () => rqSave(false));
+  $("#rq-cancel").addEventListener("click", () => rqModal.close());
+  $("#ib-new").addEventListener("click", () => openRequestForm());
 
   /* ---------------------------------------------------------------
      Announcements — birthday feed carousel + wish modal
