@@ -148,6 +148,11 @@
     requestAnimationFrame(step);
   }
 
+  // Sub-lists open and close on their own timing: settle the indicator when any of them finishes
+  rail.addEventListener("transitionend", (e) => {
+    if (e.target === rail || e.target.classList.contains("rail__sub")) moveRailIndicator();
+  });
+
   function setPeek(on) {
     if (isMobile() || rail.classList.contains("is-peek") === on) return;
     rail.classList.toggle("is-peek", on);
@@ -2326,6 +2331,7 @@
     if (lead) lead.prepend(tag);
     else if (el.matches(".policy--row")) $(".tag", el).after(tag);
     else if (el.matches(".policy--index")) el.prepend(tag);
+    else if (el.matches(".celebrate")) $(".celebrate__count", el).after(tag);
     else ($(".policy__frame, .perk__frame", el) || (el.tagName === "DETAILS" ? $("summary", el) : el)).appendChild(tag);
   }
 
