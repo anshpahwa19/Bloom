@@ -1,0 +1,1086 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BlooMultiverse AI — Ask Bloo</title>
+  <meta name="description" content="BlooMultiverse AI — an AI-first employee experience. Tell Bloo what you need and your tasks, people, policies and perks rearrange around it.">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("bloo-theme");
+        var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+        if (localStorage.getItem("bloo-palette") === "azure") document.documentElement.setAttribute("data-palette", "azure");
+        if (localStorage.getItem("bloo-ai-rail") === "pinned") document.documentElement.classList.add("rail-pinned");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 43'%3E%3Cpath fill='%23922A22' d='M7.77 0v42.52h3.66V3.78h11.24c8.56.14 7.47 6.41 5.85 9.52h4.26C35.48 4.41 28.7.95 25.09 0H7.77Z'/%3E%3Cpath fill='%23922A22' d='M15.16 13.3v21.7h3.61V23.3l6.2 7.1 7.16-9.58c2.32.66 3.8 4.06 4.26 5.68 1.75 8.18-4.51 11.57-7.86 12.24l-13.37.41v3.31h12.3c11.02-1.18 13.23-9.99 12.95-14.25.19-7.14-6.39-10.94-9.7-11.94l-6.33 8.34-9.22-11.3Z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&display=swap" rel="stylesheet">
+  <style>
+<!-- @include styles.css -->
+  </style>
+  <style>
+<!-- @include ../src/media.css -->
+  </style>
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+
+<body>
+  <!-- ============================================================
+       ICON SPRITE — 24px line icons, referenced with <use href="#i-…">
+       ============================================================ -->
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/><path d="M5.6 5.6 3.5 13.5v4a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4l-2.1-7.9a2 2 0 0 0-1.9-1.6H7.5a2 2 0 0 0-1.9 1.6Z"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8.5 7.5h7M8.5 11h5"/></symbol>
+      <symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M3.5 10v4a1.5 1.5 0 0 0 1.5 1.5h2L13 19V5L7 8.5H5A1.5 1.5 0 0 0 3.5 10Z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+      <symbol id="i-ball" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m12 7.5 4 2.9-1.5 4.7h-5L8 10.4Z"/><path d="M12 3.5v4M16 10.4l4.2-1.3M14.5 15.1l2.6 3.7M9.5 15.1l-2.6 3.7M8 10.4 3.8 9.1"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.1V4.5a1 1 0 0 1 1-1h7.6a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8l-6.6 6.6a2 2 0 0 1-2.8 0L4.1 13.5a2 2 0 0 1-.6-1.4Z"/><circle cx="8.5" cy="8.5" r="1.5"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6Z"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="m6 6 3.5 3.5M14.5 14.5 18 18M18 6l-3.5 3.5M9.5 14.5 6 18"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5"/></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19.5v-14M6.5 11 12 5.5l5.5 5.5"/></symbol>
+      <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4.5v14M6.5 13l5.5 5.5 5.5-5.5"/></symbol>
+      <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5l-8 8"/><path d="M18 14v4.5a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1H10"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9.5 4.5v15"/><path d="m15.5 10-2 2 2 2"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
+      <symbol id="i-wave" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7.5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L2.8 15.6a1.6 1.6 0 0 1 2.4-2.1L8 16"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5c1-3.1 3.4-4.8 6.5-4.8s5.5 1.7 6.5 4.8"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.9c1.7.7 2.9 2.2 3.5 4.6"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-3a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9.5 20H6a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 6 4h3.5"/><path d="M15 16.5 19.5 12 15 7.5M19.5 12H9.5"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.9 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1.1 3-3Z"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m15.5 8.5-2 5-5 2 2-5Z"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 19.5s-7.5-4.4-7.5-10a4.2 4.2 0 0 1 7.5-2.6 4.2 4.2 0 0 1 7.5 2.6c0 5.6-7.5 10-7.5 10Z"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V19a1.5 1.5 0 0 1-1.5 1.5H15V15h-6v5.5H5.5A1.5 1.5 0 0 1 4 19Z"/></symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 4 8.5 4.5L12 13 3.5 8.5Z"/><path d="m3.5 12.5 8.5 4.5 8.5-4.5M3.5 16.5 12 21l8.5-4.5"/></symbol>
+      <!-- Social / store glyphs (simplified, filled) -->
+      <symbol id="s-linkedin" viewBox="0 0 24 24"><path class="fill" d="M5 8.5h3V19H5Zm1.5-4.7a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5ZM10 8.5h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.6 2 3.6 4.7V19h-3v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V19H10Z"/></symbol>
+      <symbol id="s-x" viewBox="0 0 24 24"><path class="fill" d="M16.8 4h2.8l-6.1 7 7.2 9h-5.6l-4.4-5.6L5.6 20H2.8l6.5-7.5L2.4 4h5.7l4 5.2Zm-1 14.4h1.5L7.3 5.5H5.7Z"/></symbol>
+      <symbol id="s-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="fill" cx="17.2" cy="6.8" r="1"/></symbol>
+      <symbol id="s-facebook" viewBox="0 0 24 24"><path class="fill" d="M13.5 21v-7.5H16l.4-3h-2.9V8.7c0-.9.3-1.5 1.5-1.5h1.5V4.5a20 20 0 0 0-2.3-.1c-2.3 0-3.8 1.4-3.8 3.9v2.2H8v3h2.5V21Z"/></symbol>
+      <symbol id="s-youtube" viewBox="0 0 24 24"><path class="fill" d="M21.6 7.7a2.5 2.5 0 0 0-1.8-1.8C18.3 5.5 12 5.5 12 5.5s-6.3 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 9.2 2 12 2 12s0 2.8.4 4.3a2.5 2.5 0 0 0 1.8 1.8c1.5.4 7.8.4 7.8.4s6.3 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.5.4-4.3.4-4.3s0-2.8-.4-4.3ZM10 15V9l5.2 3Z"/></symbol>
+      <symbol id="s-tiktok" viewBox="0 0 24 24"><path class="fill" d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.8a5.7 5.7 0 1 0 4.9 5.6V9.1a7.3 7.3 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6Z"/></symbol>
+      <symbol id="s-play" viewBox="0 0 24 24"><path fill="#00A0FF" stroke="none" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924Z"/><path fill="#32A071" stroke="none" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973Z"/><path fill="#FF3A44" stroke="none" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21Z"/><path fill="#FFC400" stroke="none" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594Z"/></symbol>
+      <symbol id="s-apple" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09Zm3.378-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701Z"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================================================
+       RAIL — compact AI navigation. Hover / focus expands it as an
+       overlay; the pin keeps it open. On phones it is a bottom sheet.
+       ============================================================ -->
+  <aside class="rail" id="rail" aria-label="Primary">
+    <div class="rail__brand">
+      <a href="#top" class="rail__logo" aria-label="BlooMultiverse home" data-nav-link>
+        <svg class="rail__mark" viewBox="0 0 42 43" aria-hidden="true">
+          <path d="M7.7666 0V42.517H11.4329V3.78454H22.6682C31.2308 3.92646 30.1388 10.1907 28.5225 13.305H32.7801C35.4766 4.41136 28.6999 0.946136 25.0927 0H7.7666Z"/>
+          <path d="M15.1594 13.3042V35.0062H18.7666V23.2978L24.9756 30.3938L32.1307 20.8142C34.4488 21.4764 35.935 24.8747 36.3883 26.491C38.1387 34.675 31.8745 38.0614 28.5236 38.7316L15.1594 39.1455V42.457H27.4592C38.4817 41.2743 40.6854 32.4634 40.4094 28.2058C40.5986 21.0625 34.023 17.2661 30.7115 16.2609L24.3842 24.5987L15.1594 13.3042Z"/>
+        </svg>
+        <span class="rail__word logo-word has-logo" aria-hidden="true"></span>
+      </a>
+      <button class="icon-btn rail__close" type="button" data-close-nav aria-label="Close menu"><svg class="ico"><use href="#i-x"/></svg></button>
+    </div>
+
+    <nav class="rail__nav" id="nav" aria-label="Sections">
+      <span class="rail__indicator" aria-hidden="true"></span>
+      <ul class="rail__list">
+        <li class="rail__group" data-group="home">
+          <a class="rail__item" href="#top" data-nav-link data-group-link="home">
+            <svg class="ico"><use href="#i-home"/></svg><span class="rail__short">Home</span><span class="rail__long">Home</span>
+          </a>
+        </li>
+        <li class="rail__group rail__group--ai" data-group="ai">
+          <button class="rail__item rail__item--ai" type="button" data-open-ask aria-keyshortcuts="Control+K Meta+K">
+            <span class="bloo-orb" aria-hidden="true"></span><span class="rail__short">Ask</span><span class="rail__long">Ask Bloo</span><kbd class="rail__kbd js-kbd">Ctrl K</kbd>
+          </button>
+        </li>
+        <li class="rail__group" data-group="inbox">
+          <button class="rail__item" type="button" data-drawer="inbox">
+            <svg class="ico"><use href="#i-inbox"/></svg><span class="rail__short">Inbox</span><span class="rail__long">Inbox</span><span class="rail__badge" id="inbox-badge">4</span>
+          </button>
+        </li>
+        <li class="rail__group" data-group="me">
+          <a class="rail__item" href="#attention" data-nav-link data-group-link="me">
+            <svg class="ico"><use href="#i-user"/></svg><span class="rail__short">My space</span><span class="rail__long">My space</span>
+          </a>
+          <ul class="rail__sub">
+            <li><a class="rail__subitem" href="#attention" data-nav-link data-sub="attention">Your attention</a></li>
+            <li><button class="rail__subitem" type="button" data-drawer="profile">My profile</button></li>
+          </ul>
+        </li>
+        <li class="rail__group" data-group="explore">
+          <a class="rail__item" href="#policies" data-nav-link data-group-link="explore">
+            <svg class="ico"><use href="#i-compass"/></svg><span class="rail__short">Explore</span><span class="rail__long">Explore</span>
+          </a>
+          <ul class="rail__sub">
+            <li><a class="rail__subitem" href="#policies" data-nav-link data-sub="policies">Policies</a></li>
+            <li><a class="rail__subitem" href="#announcements" data-nav-link data-sub="announcements">Announcements</a></li>
+            <li><a class="rail__subitem" href="#people" data-nav-link data-sub="people">New joiners</a></li>
+          </ul>
+        </li>
+        <li class="rail__group" data-group="experience">
+          <a class="rail__item" href="#life" data-nav-link data-group-link="experience">
+            <svg class="ico"><use href="#i-heart"/></svg><span class="rail__short">Life</span><span class="rail__long">Experience</span>
+          </a>
+          <ul class="rail__sub">
+            <li><a class="rail__subitem" href="#sports" data-nav-link data-sub="sports">Sports &amp; communities</a></li>
+            <li><a class="rail__subitem" href="#discounts" data-nav-link data-sub="discounts">Discounts &amp; perks</a></li>
+          </ul>
+        </li>
+        <li class="rail__group" data-group="support">
+          <a class="rail__item" href="#faq" data-nav-link data-group-link="support">
+            <svg class="ico"><use href="#i-help"/></svg><span class="rail__short">Support</span><span class="rail__long">Support</span>
+          </a>
+          <ul class="rail__sub">
+            <li><a class="rail__subitem" href="#faq" data-nav-link data-sub="faq">FAQ</a></li>
+            <li><button class="rail__subitem" type="button" data-drawer="help">Help &amp; support</button></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="rail__foot">
+      <p class="rail__foot-label">Appearance</p>
+      <button class="rail__tool" type="button" id="theme-switch" role="switch" aria-checked="false" aria-label="Dark theme" data-tip="Dark theme">
+        <span class="rail__tool-ico"><svg class="ico ico--sm rail__sun"><use href="#i-sun"/></svg><svg class="ico ico--sm rail__moon"><use href="#i-moon"/></svg></span>
+        <span class="rail__long">Dark theme</span><span class="mini-switch" aria-hidden="true"></span>
+      </button>
+      <button class="rail__tool" type="button" id="palette-switch" role="switch" aria-checked="false" aria-label="Blue palette" data-tip="Blue palette">
+        <span class="rail__tool-ico"><span class="swatch" aria-hidden="true"></span></span>
+        <span class="rail__long">Blue palette</span><span class="mini-switch" aria-hidden="true"></span>
+      </button>
+      <button class="rail__tool rail__pin" type="button" id="sidebar-toggle" aria-pressed="false" aria-controls="rail" aria-label="Keep navigation open" data-tip="Keep navigation open">
+        <span class="rail__tool-ico"><svg class="ico ico--sm"><use href="#i-panel"/></svg></span>
+        <span class="rail__long">Keep open</span>
+      </button>
+    </div>
+  </aside>
+  <div class="scrim" data-close-nav aria-hidden="true"></div>
+
+  <!-- ============================================================
+       TOP LAYER — mobile brand bar, section-aware context, utilities
+       ============================================================ -->
+  <header class="topline" id="topline">
+    <a class="topline__brand" href="#top" aria-label="BlooMultiverse home" data-nav-link>
+      <svg class="topline__mark" viewBox="0 0 42 43" aria-hidden="true">
+        <path d="M7.7666 0V42.517H11.4329V3.78454H22.6682C31.2308 3.92646 30.1388 10.1907 28.5225 13.305H32.7801C35.4766 4.41136 28.6999 0.946136 25.0927 0H7.7666Z"/>
+        <path d="M15.1594 13.3042V35.0062H18.7666V23.2978L24.9756 30.3938L32.1307 20.8142C34.4488 21.4764 35.935 24.8747 36.3883 26.491C38.1387 34.675 31.8745 38.0614 28.5236 38.7316L15.1594 39.1455V42.457H27.4592C38.4817 41.2743 40.6854 32.4634 40.4094 28.2058C40.5986 21.0625 34.023 17.2661 30.7115 16.2609L24.3842 24.5987L15.1594 13.3042Z"/>
+      </svg>
+      <span class="topline__word logo-word has-logo" aria-hidden="true"></span>
+    </a>
+
+    <!-- Section-aware context: where you are, and the current AI lens -->
+    <div class="context" id="context">
+      <button class="context__ask" type="button" data-open-ask aria-label="Ask Bloo" aria-keyshortcuts="Control+K Meta+K">
+        <span class="bloo-orb" aria-hidden="true"></span><span class="context__ask-text">Ask Bloo</span><kbd class="context__kbd js-kbd">Ctrl K</kbd>
+      </button>
+      <span class="context__sep" aria-hidden="true"></span>
+      <button class="context__where" type="button" id="context-where" aria-expanded="false" aria-controls="context-menu" aria-label="Current section: Ask Bloo. Jump to a section">
+        <span class="context__dot" aria-hidden="true"></span>
+        <span class="context__names" aria-hidden="true"><span class="context__name is-current" id="context-name">Ask Bloo</span></span>
+        <span class="context__track" aria-hidden="true"><span class="context__fill" id="context-fill"></span></span>
+        <span class="context__count" aria-hidden="true"><span id="context-num">01</span><span class="context__of"> / <span id="context-total">09</span></span></span>
+        <svg class="ico ico--xs context__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+      </button>
+      <div class="context__lens" id="context-lens" hidden>
+        <svg class="ico ico--xs" aria-hidden="true"><use href="#i-sparkle"/></svg>
+        <span class="context__lens-text" id="context-lens-text">AI Lens</span>
+        <button class="context__lens-clear" type="button" data-clear-lens aria-label="Clear AI lens"><svg class="ico ico--xs"><use href="#i-x"/></svg></button>
+      </div>
+      <nav class="context__menu" id="context-menu" aria-label="Jump to section" hidden>
+        <ol class="context__list" id="context-list"></ol>
+      </nav>
+    </div>
+
+    <div class="topline__tools">
+      <!-- Notifications -->
+      <div class="menu" data-menu>
+        <button class="icon-btn icon-btn--float" type="button" aria-label="Notifications, 3 unread" aria-expanded="false" data-menu-trigger id="bell">
+          <svg class="ico"><use href="#i-bell"/></svg>
+          <span class="badge-dot" id="bell-badge">3</span>
+        </button>
+        <div class="menu__panel menu__panel--wide" role="menu" aria-label="Notifications">
+          <div class="menu__head">
+            <p class="menu__title">Notifications</p>
+            <button class="link-btn" type="button" id="mark-read">Mark all as read</button>
+          </div>
+          <ul class="notif-list" id="notif-list">
+            <li class="notif is-unread"><span class="app-mark app-mark--sf">Sf</span><p><strong>Layla Hassan</strong> asked you to approve a discount on Al Noor Trading.<time>12 min ago</time></p></li>
+            <li class="notif is-unread"><span class="avatar avatar--sm img-rashid">AO</span><p>It’s <strong>Ahmed Obaid</strong>’s birthday today. Send a wish before the day ends.<time>1 h ago</time></p></li>
+            <li class="notif is-unread"><span class="app-mark app-mark--ui">Ui</span><p>Invoice Matcher bot paused with <strong>3 exceptions</strong>.<time>2 h ago</time></p></li>
+            <li class="notif"><span class="app-mark app-mark--policy"><svg class="ico"><use href="#i-shield"/></svg></span><p>The <strong>Data Security</strong> policy was updated.<time>Yesterday</time></p></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Profile menu -->
+      <div class="menu" data-menu>
+        <button class="profile-btn" type="button" aria-expanded="false" aria-label="Account menu" data-menu-trigger>
+          <span class="avatar img-rashid"></span>
+          <span class="profile-btn__text"><strong>Rashid Khan</strong><span>Sr. Engineer</span></span>
+          <svg class="ico ico--sm profile-btn__chev"><use href="#i-chevron-down"/></svg>
+        </button>
+        <div class="menu__panel" role="menu" aria-label="Account">
+          <div class="menu__who">
+            <span class="avatar avatar--lg img-rashid"></span>
+            <p><strong>Rashid Khan</strong><span>rashid.khan@bloom.ae</span></p>
+          </div>
+          <button class="menu__item" role="menuitem" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button>
+          <button class="menu__item" role="menuitem" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
+          <hr>
+          <button class="menu__item menu__item--danger" role="menuitem" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
+        </div>
+      </div>
+
+      <button class="icon-btn icon-btn--float topline__menu" type="button" id="menu-btn" aria-label="Open menu" aria-controls="rail" aria-expanded="false">
+        <svg class="ico"><use href="#i-menu"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Phones: Ask Bloo stays within thumb reach once the prompt scrolls away -->
+  <button class="ask-fab" type="button" data-open-ask aria-label="Ask Bloo"><span class="bloo-orb" aria-hidden="true"></span><span>Ask Bloo</span></button>
+
+  <main class="main" id="main" tabindex="-1">
+
+    <!-- ==========================================================
+         01 — AI COMMAND CENTER
+         ========================================================== -->
+    <section class="command" id="top" data-chapter data-title="Ask Bloo" data-group="home" aria-labelledby="cmd-title">
+      <div class="command__field" aria-hidden="true">
+        <span class="field__glow field__glow--a" data-speed="0.35"></span>
+        <span class="field__glow field__glow--b" data-speed="0.2"></span>
+        <span class="field__glow field__glow--c" data-speed="0.5"></span>
+        <span class="field__grid"></span>
+        <span class="field__cursor" id="field-cursor"></span>
+        <svg class="field__lines" id="field-lines"></svg>
+      </div>
+
+      <!-- Connected apps — Bloo reads these; each asks about its tasks -->
+      <div class="signals" aria-label="Connected apps">
+        <button class="signal" type="button" data-signal="salesforce" data-ask="Show my Salesforce tasks" style="--x:9%;--y:30%;--d:0s" aria-label="Salesforce, 15 waiting. Ask Bloo about them">
+          <span class="app-mark app-mark--sf">Sf</span><span class="signal__count">15</span><span class="signal__name">Salesforce</span>
+        </button>
+        <button class="signal" type="button" data-signal="uipath" data-ask="Show my UiPath tasks" style="--x:91%;--y:24%;--d:-1.6s" aria-label="UiPath, 10 waiting. Ask Bloo about them">
+          <span class="app-mark app-mark--ui">Ui</span><span class="signal__count">10</span><span class="signal__name">UiPath</span>
+        </button>
+        <button class="signal" type="button" data-signal="darwinbox" data-ask="Show my Darwinbox tasks" style="--x:12%;--y:74%;--d:-2.8s" aria-label="Darwinbox, 5 waiting. Ask Bloo about them">
+          <span class="app-mark app-mark--db">Db</span><span class="signal__count">05</span><span class="signal__name">Darwinbox</span>
+        </button>
+        <button class="signal" type="button" data-signal="sap" data-ask="Show my SAP tasks" style="--x:88%;--y:70%;--d:-4s" aria-label="SAP, 2 waiting. Ask Bloo about them">
+          <span class="app-mark app-mark--sap">SAP</span><span class="signal__count">02</span><span class="signal__name">SAP</span>
+        </button>
+      </div>
+
+      <div class="command__inner">
+        <p class="command__hello"><span class="bloo-orb bloo-orb--live" aria-hidden="true"></span><span><span id="greeting">Good morning</span>, Rashid</span><span class="command__dot" aria-hidden="true"></span><time id="today-date">Tuesday, 22 September</time></p>
+        <p class="eyebrow eyebrow--ai"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-sparkle"/></svg>BlooMultiverse AI</p>
+        <h1 class="command__title" id="cmd-title"><span class="command__line">Your workday,</span> <span class="command__line command__line--ai">in one conversation.<span class="caret" aria-hidden="true"></span></span></h1>
+        <p class="command__lede">Ask Bloo to find, explain or help you get something done.</p>
+
+        <!-- The conversation: composer, lens bar and thread. The whole
+             block lifts into the Ask layer when Ctrl K is pressed away
+             from the top, so there is only ever one prompt. -->
+        <div class="convo-home" id="convo-home">
+          <div class="convo" id="convo">
+            <form class="composer" id="composer" role="search" autocomplete="off" novalidate>
+              <label class="sr-only" for="ask-input">Ask Bloo anything</label>
+              <span class="composer__orb bloo-orb" aria-hidden="true"></span>
+              <div class="composer__field">
+                <input class="composer__input" id="ask-input" type="text" placeholder="Ask Bloo anything…" role="combobox" aria-expanded="false" aria-controls="ask-suggest" aria-autocomplete="list" aria-describedby="composer-hint" enterkeyhint="send" spellcheck="false">
+                <span class="composer__ghost" id="composer-ghost" aria-hidden="true"></span>
+              </div>
+              <kbd class="composer__kbd js-kbd" aria-hidden="true">Ctrl K</kbd>
+              <button class="composer__send" type="submit" aria-label="Ask Bloo"><svg class="ico"><use href="#i-arrow-up"/></svg><span class="composer__spin" aria-hidden="true"></span></button>
+              <span class="composer__beam" aria-hidden="true"></span>
+              <div class="suggest" id="ask-suggest" role="listbox" aria-label="Suggestions"></div>
+            </form>
+            <p class="sr-only" id="composer-hint">Type a question and press Enter. Use the arrow keys to pick a suggestion.</p>
+
+            <div class="lens-bar" id="lens-bar" hidden>
+              <span class="lens-bar__tag"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-sparkle"/></svg>AI Lens</span>
+              <p class="lens-bar__text">Showing results for <q id="lens-bar-query"></q></p>
+              <button class="lens-bar__clear" type="button" data-clear-lens>Clear <svg class="ico ico--xs" aria-hidden="true"><use href="#i-x"/></svg></button>
+            </div>
+
+            <div class="thread" id="thread" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <div class="prompts">
+          <p class="prompts__label" id="prompts-label">Try asking</p>
+          <ul class="prompts__row" aria-labelledby="prompts-label">
+            <li><button class="prompt" type="button" data-ask="What needs my attention?"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-bolt"/></svg>What needs my attention?</button></li>
+            <li><button class="prompt" type="button" data-ask="Show my tasks"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-check"/></svg>Show my tasks</button></li>
+            <li><button class="prompt" type="button" data-ask="Find a policy"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-book"/></svg>Find a policy</button></li>
+            <li><button class="prompt" type="button" data-ask="Show me policies about leave"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-calendar"/></svg>Leave policies</button></li>
+            <li><button class="prompt" type="button" data-ask="What's new?"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-megaphone"/></svg>What’s new?</button></li>
+            <li><button class="prompt" type="button" data-ask="Find a colleague"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-users"/></svg>Find a colleague</button></li>
+            <li><button class="prompt" type="button" data-ask="Show my benefits"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-shield"/></svg>Show my benefits</button></li>
+            <li><button class="prompt" type="button" data-ask="Show me travel discounts"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-tag"/></svg>Travel discounts</button></li>
+            <li><button class="prompt" type="button" data-ask="Find communities"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-ball"/></svg>Find communities</button></li>
+            <li><button class="prompt" type="button" data-ask="Take me to my profile"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-user"/></svg>Take me to my profile</button></li>
+            <li><button class="prompt" type="button" data-ask="I need help"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-help"/></svg>Help</button></li>
+          </ul>
+        </div>
+
+        <div class="noticed" aria-label="Bloo noticed">
+          <p class="noticed__label"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-sparkle"/></svg>Bloo noticed</p>
+          <ul class="noticed__list">
+            <li><button class="noticed__item" type="button" data-ask="What needs my attention?"><i class="pulse-dot" aria-hidden="true"></i><span id="noticed-overdue">2 approvals are overdue</span></button></li>
+            <li><button class="noticed__item" type="button" data-ask="Who has a birthday today?"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg><span>It’s Ahmed’s birthday today</span></button></li>
+            <li><button class="noticed__item" type="button" data-ask="What changed in the Data Security policy?"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-shield"/></svg><span>Data Security was updated</span></button></li>
+          </ul>
+        </div>
+      </div>
+
+      <nav class="command__index" aria-label="Or explore your day">
+        <p class="command__index-label"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-arrow-down"/></svg>Or scroll through your day</p>
+        <ol class="command__chapters" id="command-chapters"></ol>
+      </nav>
+    </section>
+
+    <!-- Everything below hangs from one thread — the spine — so the
+         page reads as a single continuous conversation. -->
+    <div class="flow" id="flow">
+      <div class="spine" aria-hidden="true"><span class="spine__fill" id="spine-fill"></span></div>
+
+      <!-- ==========================================================
+           02 — YOUR ATTENTION
+           ========================================================== -->
+      <section class="chap attention" id="attention" data-chapter data-title="Your attention" data-group="me" data-sub="attention" aria-labelledby="attention-title">
+        <header class="chap-head">
+          <span class="chap-head__num" aria-hidden="true">02</span>
+          <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Your attention</p>
+          <h2 class="chap-head__title" id="attention-title"><span class="count-word" id="attention-count">5</span> things worth doing today</h2>
+          <p class="chap-head__sub" id="attention-lede">32 things are waiting across four of your apps. Salesforce needs you most today.</p>
+        </header>
+        <div class="lens-note" data-lens-note="attention" hidden></div>
+
+        <div class="attention__grid">
+          <aside class="brief reveal" aria-label="Summary">
+            <div class="suggests">
+              <p class="suggests__who"><span class="bloo-orb" aria-hidden="true"></span>Bloo suggests</p>
+              <p class="suggests__text" id="bloo-suggests">You have 2 overdue approvals and 3 items due today. Start with the Al Noor Trading renewal — Layla Hassan has been waiting a day.</p>
+              <div class="suggests__actions">
+                <button class="btn btn--primary btn--sm" type="button" id="suggest-review"><span>Review it</span><svg class="ico ico--sm btn__arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+                <button class="btn btn--quiet btn--sm" type="button" data-drawer="inbox">Open inbox</button>
+              </div>
+            </div>
+
+            <ul class="stat-line">
+              <li class="stat stat--alert"><i class="pulse-dot" aria-hidden="true"></i><strong id="stat-overdue">2</strong> overdue</li>
+              <li class="stat"><strong id="stat-today">3</strong> due today</li>
+              <li class="stat"><strong>27</strong> this week</li>
+            </ul>
+            <p class="pending-pill"><i class="pulse-dot" aria-hidden="true"></i><span id="pending-count">32</span> actions pending</p>
+
+            <!-- QUICK LINKS — connected apps: filter tasks, or open the app -->
+            <section class="apps" id="quick-links" aria-labelledby="ql-title">
+              <header class="apps__head">
+                <h3 class="apps__title" id="ql-title">Quick links</h3>
+                <a class="cta-link" href="#quick-links" data-toast="Opening quick links…">View All <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </header>
+              <ul class="apps__list">
+                <li class="app" data-app="salesforce">
+                  <span class="app-mark app-mark--lg app-mark--sf">Sf</span>
+                  <span class="app__txt"><span class="app__name">Salesforce</span><span class="app__hint">Sales &amp; CRM</span></span>
+                  <button class="app__count" type="button" data-filter="salesforce" aria-label="Show 15 Salesforce tasks"><span class="js-count">15</span> waiting</button>
+                  <a class="app__open" href="https://www.salesforce.com" target="_blank" rel="noopener" aria-label="Open Salesforce"><svg class="ico ico--sm"><use href="#i-external"/></svg></a>
+                </li>
+                <li class="app" data-app="uipath">
+                  <span class="app-mark app-mark--lg app-mark--ui">Ui</span>
+                  <span class="app__txt"><span class="app__name">UiPath</span><span class="app__hint">Automations</span></span>
+                  <button class="app__count" type="button" data-filter="uipath" aria-label="Show 10 UiPath tasks"><span class="js-count">10</span> waiting</button>
+                  <a class="app__open" href="https://www.uipath.com" target="_blank" rel="noopener" aria-label="Open UiPath"><svg class="ico ico--sm"><use href="#i-external"/></svg></a>
+                </li>
+                <li class="app" data-app="darwinbox">
+                  <span class="app-mark app-mark--lg app-mark--db">Db</span>
+                  <span class="app__txt"><span class="app__name">Darwinbox</span><span class="app__hint">People records</span></span>
+                  <button class="app__count" type="button" data-filter="darwinbox" aria-label="Show 5 Darwinbox tasks"><span class="js-count">5</span> waiting</button>
+                  <a class="app__open" href="https://www.darwinbox.com" target="_blank" rel="noopener" aria-label="Open Darwinbox"><svg class="ico ico--sm"><use href="#i-external"/></svg></a>
+                </li>
+                <li class="app" data-app="sap">
+                  <span class="app-mark app-mark--lg app-mark--sap">SAP</span>
+                  <span class="app__txt"><span class="app__name">SAP</span><span class="app__hint">Procurement</span></span>
+                  <button class="app__count" type="button" data-filter="sap" aria-label="Show 2 SAP tasks"><span class="js-count">2</span> waiting</button>
+                  <a class="app__open" href="https://www.sap.com" target="_blank" rel="noopener" aria-label="Open SAP"><svg class="ico ico--sm"><use href="#i-external"/></svg></a>
+                </li>
+              </ul>
+            </section>
+          </aside>
+
+          <div class="work">
+            <div id="attention-body">
+              <div class="tabs" role="tablist" aria-label="Filter by app" id="attention-tabs">
+                <span class="tabs__indicator" aria-hidden="true"></span>
+                <button class="tab is-selected" role="tab" type="button" aria-selected="true" data-tab="all">All <span class="tab__count">32</span></button>
+                <button class="tab" role="tab" type="button" aria-selected="false" data-tab="salesforce">Salesforce <span class="tab__count">15</span></button>
+                <button class="tab" role="tab" type="button" aria-selected="false" data-tab="uipath">UiPath <span class="tab__count">10</span></button>
+                <button class="tab" role="tab" type="button" aria-selected="false" data-tab="darwinbox">Darwinbox <span class="tab__count">05</span></button>
+                <button class="tab" role="tab" type="button" aria-selected="false" data-tab="sap">SAP <span class="tab__count">02</span></button>
+              </div>
+
+              <ul class="task-list is-loading" id="task-list" aria-busy="true">
+                <!-- Skeleton rows (removed once "loaded") -->
+                <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
+                <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
+                <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
+
+                <li class="task" data-source="salesforce" data-lens-item>
+                  <span class="app-mark app-mark--sf">Sf</span>
+                  <div class="task__body"><p class="task__title">Approve 12% discount on Al Noor Trading renewal</p><p class="task__meta">Salesforce <span>Requested by Layla Hassan</span></p></div>
+                  <span class="due due--overdue"><svg class="ico ico--xs"><use href="#i-clock"/></svg>Overdue 1 day</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task" data-source="uipath" data-lens-item>
+                  <span class="app-mark app-mark--ui">Ui</span>
+                  <div class="task__body"><p class="task__title">Resolve 3 exceptions paused by the Invoice Matcher bot</p><p class="task__meta">UiPath <span>Finance automation</span></p></div>
+                  <span class="due due--overdue"><svg class="ico ico--xs"><use href="#i-clock"/></svg>Overdue 4 hours</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task" data-source="sap" data-lens-item>
+                  <span class="app-mark app-mark--sap">SAP</span>
+                  <div class="task__body"><p class="task__title">Approve purchase requisition PR-40821 for site equipment</p><p class="task__meta">SAP <span>Requested by Omar Haddad</span></p></div>
+                  <span class="due due--today">Due today</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task" data-source="darwinbox" data-lens-item>
+                  <span class="app-mark app-mark--db">Db</span>
+                  <div class="task__body"><p class="task__title">Confirm onboarding checklist for Abdulazeez Aladwan</p><p class="task__meta">Darwinbox <span>Projects Affairs team</span></p></div>
+                  <span class="due due--today">Due today</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task" data-source="salesforce" data-lens-item>
+                  <span class="app-mark app-mark--sf">Sf</span>
+                  <div class="task__body"><p class="task__title">Review Q3 pipeline forecast before Thursday’s call</p><p class="task__meta">Salesforce <span>Shared by Sales Operations</span></p></div>
+                  <span class="due due--today">Due today</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task is-extra" data-source="uipath" data-lens-item>
+                  <span class="app-mark app-mark--ui">Ui</span>
+                  <div class="task__body"><p class="task__title">Validate extracted fields on 12 vendor contracts</p><p class="task__meta">UiPath <span>Document Understanding</span></p></div>
+                  <span class="due">Thu, 24 Sep</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task is-extra" data-source="darwinbox" data-lens-item>
+                  <span class="app-mark app-mark--db">Db</span>
+                  <div class="task__body"><p class="task__title">Approve travel request for Mathew Raymond</p><p class="task__meta">Darwinbox <span>Abu Dhabi to Riyadh</span></p></div>
+                  <span class="due">Fri, 25 Sep</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task is-extra" data-source="sap" data-lens-item>
+                  <span class="app-mark app-mark--sap">SAP</span>
+                  <div class="task__body"><p class="task__title">Sign off goods receipt GR-11093</p><p class="task__meta">SAP <span>Warehouse, Mussafah</span></p></div>
+                  <span class="due">Mon, 28 Sep</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+                <li class="task is-extra" data-source="salesforce" data-lens-item>
+                  <span class="app-mark app-mark--sf">Sf</span>
+                  <div class="task__body"><p class="task__title">Update close date on 4 stalled opportunities</p><p class="task__meta">Salesforce <span>Your pipeline</span></p></div>
+                  <span class="due">Mon, 28 Sep</span>
+                  <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="Review task">&#8942;</button></div>
+                </li>
+              </ul>
+              <p class="task-empty" id="task-empty" hidden>Nothing waiting here. Pick another app above.</p>
+
+              <div class="attention__foot">
+                <button class="btn btn--quiet" type="button" id="more-tasks" aria-expanded="false">Show more tasks <svg class="ico ico--sm"><use href="#i-chevron-down"/></svg></button>
+                <span class="meta">Synced 2 minutes ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           03 — POLICIES — a knowledge experience
+           ========================================================== -->
+      <section class="chap policies-sec" id="policies" data-chapter data-title="Policies" data-group="explore" data-sub="policies" aria-labelledby="pol-title">
+        <header class="chap-head chap-head--split">
+          <div>
+            <span class="chap-head__num" aria-hidden="true">03</span>
+            <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Explore policies</p>
+            <h2 class="chap-head__title" id="pol-title">Need an answer?</h2>
+            <p class="chap-head__sub">The guides that shape how we work, kept current by each policy owner.</p>
+          </div>
+          <form class="ask-inline" data-ask-form data-fallback="Show me policies about leave">
+            <span class="bloo-orb" aria-hidden="true"></span>
+            <label class="sr-only" for="ask-policy">Ask Bloo about a policy</label>
+            <input class="ask-inline__input" id="ask-policy" type="text" placeholder="Ask Bloo about a policy — “Can I work from home?”" autocomplete="off" enterkeyhint="send">
+            <button class="ask-inline__go" type="submit" aria-label="Ask Bloo about a policy"><svg class="ico ico--sm"><use href="#i-arrow-up"/></svg></button>
+          </form>
+        </header>
+        <div class="lens-note" data-lens-note="policies" hidden></div>
+
+        <div class="chips" role="group" aria-label="Filter policies" id="policy-chips">
+          <button class="chip is-selected" type="button" aria-pressed="true" data-cat="all">All</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="security">Security</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="operations">Operations</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="brand">Brand</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="conduct">Conduct</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="people">Time off</button>
+        </div>
+
+        <div class="policies">
+          <div class="policies__group policies__group--popular" data-policy-group>
+            <p class="group-label">Most read this month</p>
+            <article class="policy policy--feature" data-cat="security" data-policy="security" data-lens-item>
+              <div class="policy__frame"><div class="policy__media media img-pol-security" data-parallax="0.08"></div></div>
+              <div class="policy__body">
+                <span class="tag tag--red"><svg class="ico ico--xs"><use href="#i-lock"/></svg>Security</span>
+                <h3 class="policy__title">Data Security</h3>
+                <p>How to protect your email, files and customer data, including the updated guide for reporting suspicious messages.</p>
+                <div class="policy__foot">
+                  <a class="cta-link" href="#" data-toast="Opening the Data Security policy…">Read policy <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+                  <span class="meta">Updated 12 Sep 2026</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="policies__group policies__group--recs" data-policy-group>
+            <p class="group-label">Recommended for you</p>
+            <div class="policies__list">
+              <article class="policy policy--row reveal-item" data-cat="operations" data-policy="management" data-lens-item>
+                <div class="policy__thumb media img-pol-management"></div>
+                <div><span class="tag">Operations</span><h3 class="policy__title">Management Process</h3><p>Change management steps, approvals and who to involve.</p></div>
+                <a class="policy__go" href="#" aria-label="Read Management Process" data-toast="Opening Management Process…"><svg class="ico"><use href="#i-arrow"/></svg></a>
+              </article>
+              <article class="policy policy--row reveal-item" data-cat="brand" data-policy="brand" data-lens-item>
+                <div class="policy__thumb media img-pol-brand"></div>
+                <div><span class="tag tag--lav">Brand</span><h3 class="policy__title">Brand Guidelines</h3><p>Our identity, voice and how to use the Bloom logo.</p></div>
+                <a class="policy__go" href="#" aria-label="Read Brand Guidelines" data-toast="Opening Brand Guidelines…"><svg class="ico"><use href="#i-arrow"/></svg></a>
+              </article>
+              <article class="policy policy--row reveal-item" data-cat="conduct" data-policy="conduct" data-lens-item>
+                <div class="policy__thumb media img-pol-conduct"></div>
+                <div><span class="tag tag--cyan">Conduct</span><h3 class="policy__title">Code of Conduct</h3><p>What we expect of each other, and how to raise a concern.</p></div>
+                <a class="policy__go" href="#" aria-label="Read Code of Conduct" data-toast="Opening Code of Conduct…"><svg class="ico"><use href="#i-arrow"/></svg></a>
+              </article>
+              <article class="policy policy--row reveal-item" data-cat="operations" data-policy="travel" data-lens-item>
+                <div class="policy__thumb media img-pol-travel"></div>
+                <div><span class="tag">Operations</span><h3 class="policy__title">Travel &amp; Expenses</h3><p>Booking business travel and claiming expenses.</p></div>
+                <a class="policy__go" href="#" aria-label="Read Travel and Expenses" data-toast="Opening Travel &amp; Expenses…"><svg class="ico"><use href="#i-arrow"/></svg></a>
+              </article>
+            </div>
+          </div>
+
+          <div class="policies__group policies__group--library" data-policy-group>
+            <p class="group-label">Also in the library</p>
+            <ul class="library">
+              <li class="policy policy--index" data-cat="people" data-policy="annual-leave" data-lens-item>
+                <a href="#" data-toast="Opening the Annual Leave policy…"><span class="library__title">Annual Leave</span><span class="library__desc">Your entitlement, booking time off in Darwinbox and agreeing dates with your manager.</span><svg class="ico ico--sm library__go" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a>
+              </li>
+              <li class="policy policy--index" data-cat="people" data-policy="sick-leave" data-lens-item>
+                <a href="#" data-toast="Opening the Sick Leave policy…"><span class="library__title">Sick Leave</span><span class="library__desc">What to do when you’re unwell, and when a medical certificate is needed.</span><svg class="ico ico--sm library__go" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a>
+              </li>
+              <li class="policy policy--index" data-cat="people" data-policy="wfh" data-lens-item>
+                <a href="#" data-toast="Opening the Work From Home policy…"><span class="library__title">Work From Home</span><span class="library__desc">When remote work is possible and how to agree it with your manager.</span><svg class="ico ico--sm library__go" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a>
+              </li>
+            </ul>
+            <a class="policies__all" href="#" data-toast="Opening the policy library…">Browse all 24 policies <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           04 — ANNOUNCEMENTS — what changed this week
+           ========================================================== -->
+      <section class="chap news" id="announcements" data-chapter data-title="Announcements" data-group="explore" data-sub="announcements" aria-labelledby="ann-title">
+        <header class="chap-head">
+          <span class="chap-head__num" aria-hidden="true">04</span>
+          <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>What’s new</p>
+          <h2 class="chap-head__title" id="ann-title">Announcements</h2>
+          <p class="chap-head__sub">Birthdays, new faces and policy changes — <strong id="news-count">5 updates</strong> this week.</p>
+        </header>
+        <div class="lens-note" data-lens-note="announcements" hidden></div>
+
+        <div class="news__grid">
+          <!-- Birthday carousel -->
+          <div class="celebrate" id="celebrate" aria-roledescription="carousel" aria-label="Birthdays today" data-lens-item>
+            <div class="celebrate__shine" aria-hidden="true"></div>
+            <div class="celebrate__confetti" aria-hidden="true"></div>
+            <header class="celebrate__head">
+              <p class="celebrate__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>Celebrations</p>
+              <div class="carousel-ctrl">
+                <button class="icon-btn icon-btn--glass" type="button" data-bday="prev" aria-label="Previous announcement"><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg></button>
+                <button class="icon-btn icon-btn--glass" type="button" data-bday="next" aria-label="Next announcement"><svg class="ico ico--sm"><use href="#i-chevron-right"/></svg></button>
+              </div>
+            </header>
+            <div class="celebrate__viewport">
+              <div class="celebrate__track" id="bday-track"><!-- rendered by app.js --></div>
+            </div>
+            <div class="dots dots--light" id="bday-dots" role="tablist" aria-label="Choose announcement"></div>
+          </div>
+
+          <!-- This week, as a timeline -->
+          <ol class="timeline" id="timeline" aria-label="This week at Bloom">
+            <li class="tl reveal-item" data-news="birthdays" data-lens-item>
+              <span class="tl__when">Today</span>
+              <div class="tl__body">
+                <p class="tl__kind"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>3 birthdays</p>
+                <p class="tl__title">Ahmed, Mariam and Yousef are celebrating today</p>
+                <div class="tl__foot"><span class="stack" aria-hidden="true"><i class="img-rashid"></i><i class="img-av-mh"></i><i class="img-av-yousef"></i></span><button class="tl__link" type="button" data-goto-bday="0">Send wishes <svg class="ico ico--xs"><use href="#i-arrow"/></svg></button></div>
+              </div>
+            </li>
+            <li class="tl reveal-item" data-news="joiner" data-lens-item>
+              <span class="tl__when">This week</span>
+              <div class="tl__body">
+                <p class="tl__kind"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-users"/></svg>New joiner</p>
+                <p class="tl__title">Abdulazeez Aladwan joined Projects Affairs</p>
+                <div class="tl__foot"><span class="stack" aria-hidden="true"><i class="img-joiner-abdulazeez"></i></span><button class="tl__link" type="button" data-goto-person="0">Say hello <svg class="ico ico--xs"><use href="#i-arrow"/></svg></button></div>
+              </div>
+            </li>
+            <li class="tl reveal-item" data-news="policy" data-lens-item>
+              <span class="tl__when">Yesterday</span>
+              <div class="tl__body">
+                <p class="tl__kind"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-shield"/></svg>Policy update</p>
+                <p class="tl__title">The Data Security policy was updated</p>
+                <p class="tl__text">Including the updated guide for reporting suspicious messages.</p>
+                <div class="tl__foot"><button class="tl__link" type="button" data-goto-policy="security">Read what changed <svg class="ico ico--xs"><use href="#i-arrow"/></svg></button></div>
+              </div>
+            </li>
+            <li class="tl tl--past reveal-item" data-news="joiner-earlier">
+              <span class="tl__when">Last week</span>
+              <div class="tl__body">
+                <p class="tl__kind"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-users"/></svg>New joiner</p>
+                <p class="tl__title">Sara Al Mansoori joined Digital Platforms</p>
+                <div class="tl__foot"><span class="stack" aria-hidden="true"><i class="img-av-sa"></i></span><button class="tl__link" type="button" data-goto-person="1">Say hello <svg class="ico ico--xs"><use href="#i-arrow"/></svg></button></div>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           05 — NEW JOINERS — meet the people behind Bloom
+           ========================================================== -->
+      <section class="chap people" id="people" data-chapter data-title="New joiners" data-group="explore" data-sub="people" aria-labelledby="people-title" aria-roledescription="carousel">
+        <header class="chap-head chap-head--split">
+          <div>
+            <span class="chap-head__num" aria-hidden="true">05</span>
+            <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Welcome to the Bloom family</p>
+            <h2 class="chap-head__title" id="people-title">Meet the people behind Bloom.</h2>
+            <p class="chap-head__sub">Five people joined us this month. Say hello and make their first weeks easier.</p>
+          </div>
+          <div class="carousel-ctrl">
+            <span class="counter" id="people-counter" aria-live="polite">1 / 5</span>
+            <button class="icon-btn icon-btn--bordered" type="button" data-people="prev" aria-label="Previous person"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+            <button class="icon-btn icon-btn--bordered" type="button" data-people="next" aria-label="Next person"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+          </div>
+        </header>
+        <div class="lens-note" data-lens-note="people" hidden></div>
+
+        <div class="people__stage" id="people-stage">
+          <figure class="people__portrait" data-lens-item>
+            <div class="people__img media" id="people-img"></div>
+            <figcaption class="people__badge"><svg class="ico ico--xs"><use href="#i-sparkle"/></svg><span id="people-week">Joined this week</span></figcaption>
+          </figure>
+
+          <div class="people__story">
+            <p class="people__intro"><span class="bloo-orb" aria-hidden="true"></span><span id="people-intro"></span></p>
+            <blockquote class="people__quote" id="people-quote"></blockquote>
+            <div class="people__who">
+              <h3 class="people__name" id="people-name"></h3>
+              <p class="people__role" id="people-role"></p>
+            </div>
+            <dl class="people__facts">
+              <div><dt>Reporting manager</dt><dd id="people-manager"></dd></div>
+              <div><dt>Date of joining</dt><dd id="people-doj"></dd></div>
+              <div><dt>Team</dt><dd id="people-team"></dd></div>
+            </dl>
+            <button class="btn btn--primary" type="button" id="say-hello"><svg class="ico ico--sm btn__wave"><use href="#i-wave"/></svg><span>Say hello</span></button>
+          </div>
+        </div>
+
+        <div class="people__reel" id="people-reel" role="tablist" aria-label="Choose a new joiner"></div>
+      </section>
+
+      <!-- ==========================================================
+           LIFE AT BLOOM — interlude that opens the experience band
+           ========================================================== -->
+      <div class="interlude" id="life" data-chapter data-title="Life at Bloom" data-group="experience" data-sub="sports" data-alias>
+        <div class="interlude__glow" aria-hidden="true"></div>
+        <h2 class="interlude__title" data-drift><span>Life at Bloom</span></h2>
+        <div class="interlude__row">
+          <p class="interlude__text">Communities to join, partner discounts and the perks that come with being part of the team.</p>
+          <ul class="interlude__facts">
+            <li><strong>6</strong><span>communities</span></li>
+            <li><strong>8</strong><span>partner discounts</span></li>
+            <li><strong>4</strong><span>workplace perks</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ==========================================================
+           06 — SPORTS & COMMUNITIES
+           ========================================================== -->
+      <section class="chap communities" id="sports" data-chapter data-title="Sports & communities" data-group="experience" data-sub="sports" aria-labelledby="sports-title">
+        <header class="chap-head chap-head--split">
+          <div>
+            <span class="chap-head__num" aria-hidden="true">06</span>
+            <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Sports &amp; communities</p>
+            <h2 class="chap-head__title" id="sports-title">Find your people.</h2>
+            <p class="chap-head__sub">Six groups meet every week. Join one and you’ll get the schedule in your inbox.</p>
+          </div>
+          <div class="head-actions">
+            <button class="ask-chip" type="button" data-ask="Find me a community I might enjoy"><span class="bloo-orb" aria-hidden="true"></span>Find me a community I might enjoy</button>
+            <a class="cta-link" href="#" data-toast="Opening all communities…">See all communities <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+          </div>
+        </header>
+        <div class="lens-note" data-lens-note="sports" hidden></div>
+
+        <ul class="sports" id="sports-list">
+          <li class="sport img-sport-cricket" style="--tint:#2E5BFF" data-sport="cricket" data-members="42" data-lens-item>
+            <button class="sport__hit" type="button" aria-expanded="false" aria-label="Cricket"></button>
+            <span class="sport__light" aria-hidden="true"></span>
+            <span class="sport__label">Cricket</span>
+            <div class="sport__info">
+              <p class="sport__name">Cricket</p>
+              <div class="sport__foot"><span class="stack"><i class="img-av-crimson"></i><i class="img-av-elder"></i><i class="img-av-yousef"></i></span><span>42 members</span>
+              <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+            </div>
+          </li>
+          <li class="sport img-sport-yoga" style="--tint:#8E7CF0" data-sport="yoga" data-members="36" data-lens-item>
+            <button class="sport__hit" type="button" aria-expanded="false" aria-label="Yoga"></button>
+            <span class="sport__light" aria-hidden="true"></span>
+            <span class="sport__label">Yoga</span>
+            <div class="sport__info">
+              <p class="sport__name">Yoga</p>
+              <div class="sport__foot"><span class="stack"><i class="img-av-ha"></i><i class="img-av-sa"></i><i class="img-av-mh"></i></span><span>36 members</span>
+              <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+            </div>
+          </li>
+          <li class="sport is-open img-sport-padel" style="--tint:#1FB5C9" data-sport="padel" data-members="28" data-lens-item>
+            <button class="sport__hit" type="button" aria-expanded="true" aria-label="Padel"></button>
+            <span class="sport__light" aria-hidden="true"></span>
+            <span class="sport__label">Padel</span>
+            <div class="sport__info">
+              <p class="sport__name">Padel</p>
+              <div class="sport__foot"><span class="stack"><i class="img-rashid"></i><i class="img-rashid"></i></span><span>28 members</span>
+              <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+            </div>
+          </li>
+          <li class="sport img-sport-basketball" style="--tint:#F2545B" data-sport="basketball" data-members="31" data-lens-item>
+            <button class="sport__hit" type="button" aria-expanded="false" aria-label="Basketball"></button>
+            <span class="sport__light" aria-hidden="true"></span>
+            <span class="sport__label">Basketball</span>
+            <div class="sport__info">
+              <p class="sport__name">Basketball</p>
+              <div class="sport__foot"><span class="stack"><i class="img-av-yousef"></i><i class="img-av-crimson"></i></span><span>31 members</span>
+              <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+            </div>
+          </li>
+          <li class="sport img-sport-badminton" style="--tint:#2CC7E8" data-sport="badminton" data-members="24" data-lens-item>
+            <button class="sport__hit" type="button" aria-expanded="false" aria-label="Badminton"></button>
+            <span class="sport__light" aria-hidden="true"></span>
+            <span class="sport__label">Badminton</span>
+            <div class="sport__info">
+              <p class="sport__name">Badminton</p>
+              <div class="sport__foot"><span class="stack"><i class="img-av-sa"></i><i class="img-av-elder"></i></span><span>24 members</span>
+              <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+            </div>
+          </li>
+          <li class="sport img-sport-football" style="--tint:#1FB57A" data-sport="football" data-members="58" data-lens-item>
+            <button class="sport__hit" type="button" aria-expanded="false" aria-label="Football"></button>
+            <span class="sport__light" aria-hidden="true"></span>
+            <span class="sport__label">Football</span>
+            <div class="sport__info">
+              <p class="sport__name">Football</p>
+              <div class="sport__foot"><span class="stack"><i class="img-rashid"></i><i class="img-rashid"></i><i class="img-av-crimson"></i></span><span>58 members</span>
+              <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ==========================================================
+           07 — DISCOUNTS & PERKS — good things come with being here
+           ========================================================== -->
+      <section class="chap goods" id="discounts" data-chapter data-title="Discounts & perks" data-group="experience" data-sub="discounts" aria-labelledby="goods-title">
+        <header class="chap-head">
+          <span class="chap-head__num" aria-hidden="true">07</span>
+          <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Discounts &amp; perks</p>
+          <h2 class="chap-head__title" id="goods-title">Good things come with being here.</h2>
+        </header>
+        <div class="lens-note" data-lens-note="discounts" hidden></div>
+
+        <!-- WORKPLACE PERKS — horizontal exploration -->
+        <div class="perks-block" id="perks" aria-labelledby="perks-title">
+          <div class="sub-head">
+            <div>
+              <h3 class="sub-head__title" id="perks-title">Your workplace perks</h3>
+              <p class="sub-head__text">Benefits included with your role, and where to use them.</p>
+            </div>
+            <div class="carousel-ctrl">
+              <button class="icon-btn icon-btn--bordered" type="button" data-scroll="perk-track" data-dir="-1" aria-label="Previous perks"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+              <button class="icon-btn icon-btn--bordered" type="button" data-scroll="perk-track" data-dir="1" aria-label="More perks"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+            </div>
+          </div>
+          <ul class="perk-track" id="perk-track">
+            <li class="perk perk--lead" data-perk="medical" data-lens-item>
+              <div class="perk__frame"><div class="perk__media media img-perk-medical" data-parallax-x></div><span class="tag tag--glass"><svg class="ico ico--xs"><use href="#i-shield"/></svg>Covered</span></div>
+              <div class="perk__body">
+                <h4 class="perk__title">Medical insurance</h4>
+                <p>You and your family are covered. Download the myNAS app to find clinics and submit claims.</p>
+                <a class="btn btn--primary btn--sm" href="#" data-toast="Opening the myNAS download page…">Download myNAS app <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
+              </div>
+            </li>
+            <li class="perk" data-perk="air" data-lens-item>
+              <div class="perk__frame"><div class="perk__media media img-perk-air" data-parallax-x></div></div>
+              <div class="perk__body">
+                <h4 class="perk__title">Air tickets</h4>
+                <p>Your annual ticket home is ready to book.</p>
+                <a class="cta-link" href="#" data-toast="Opening air ticket details…">See details <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </div>
+            </li>
+            <li class="perk" data-perk="mimojo" data-lens-item>
+              <div class="perk__frame"><div class="perk__media media img-perk-mimojo" data-parallax-x></div></div>
+              <div class="perk__body">
+                <h4 class="perk__title">Mimojo</h4>
+                <p>Cashback at cafés and stores near you.</p>
+                <a class="cta-link" href="#" data-toast="Opening Mimojo…">Open Mimojo <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </div>
+            </li>
+            <li class="perk" data-perk="mazaya" data-lens-item>
+              <div class="perk__frame"><div class="perk__media media img-perk-mazaya" data-parallax-x></div></div>
+              <div class="perk__body">
+                <h4 class="perk__title">Mazaya</h4>
+                <p>Member prices on travel, dining and leisure.</p>
+                <a class="cta-link" href="#" data-toast="Opening Mazaya…">Open Mazaya <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </div>
+            </li>
+          </ul>
+          <div class="track-progress" aria-hidden="true"><span id="perk-progress"></span></div>
+        </div>
+
+        <!-- EXCLUSIVE RETAIL DISCOUNTS — an offer board -->
+        <div class="deals" id="deals" aria-labelledby="disc-title">
+          <div class="sub-head">
+            <div>
+              <h3 class="sub-head__title" id="disc-title">Exclusive retail discounts</h3>
+              <p class="sub-head__text">Show your Bloom ID in store, or use the code online.</p>
+            </div>
+            <a class="cta-link" href="#" data-toast="Opening all partner offers…">All partner offers <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+          </div>
+          <ul class="partners">
+            <li class="partner reveal-item" data-partner="marriott" data-topics="travel hotel stay dining food" data-lens-item><span class="offer"><strong>30%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-marriott" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Marriott Hotel Downtown</p><p class="partner__cat">Stays and dining</p></div><button class="partner__code" type="button" data-code="BLOOM-MAR30">Get code</button></li>
+            <li class="partner reveal-item" data-partner="edition" data-topics="travel hotel stay spa" data-lens-item><span class="offer"><strong>30%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-edition" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Abu Dhabi Edition</p><p class="partner__cat">Hotel and spa</p></div><button class="partner__code" type="button" data-code="BLOOM-EDT30">Get code</button></li>
+            <li class="partner reveal-item" data-partner="eiic" data-topics="industrial supplies work" data-lens-item><span class="offer"><strong>15%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-eiic" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">EIIC</p><p class="partner__cat">Industrial supplies</p></div><button class="partner__code" type="button" data-code="BLOOM-EIIC15">Get code</button></li>
+            <li class="partner reveal-item" data-partner="efi" data-topics="food groceries grocery" data-lens-item><span class="offer"><strong>20%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-efi" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Emirates Food Industries</p><p class="partner__cat">Groceries</p></div><button class="partner__code" type="button" data-code="BLOOM-EFI20">Get code</button></li>
+            <li class="partner reveal-item" data-partner="exeed" data-topics="building materials home" data-lens-item><span class="offer"><strong>10%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-exeed" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Exeed Industries</p><p class="partner__cat">Building materials</p></div><button class="partner__code" type="button" data-code="BLOOM-EXD10">Get code</button></li>
+            <li class="partner reveal-item" data-partner="foodquests" data-topics="food restaurants restaurant dining eat" data-lens-item><span class="offer"><strong>25%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-foodquests" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Food Quests</p><p class="partner__cat">Restaurants</p></div><button class="partner__code" type="button" data-code="BLOOM-FQ25">Get code</button></li>
+            <li class="partner reveal-item" data-partner="petromal" data-topics="fuel car services" data-lens-item><span class="offer"><strong>5%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-petromal" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Petromal</p><p class="partner__cat">Fuel and services</p></div><button class="partner__code" type="button" data-code="BLOOM-PTM05">Get code</button></li>
+            <li class="partner reveal-item" data-partner="rise" data-topics="lifestyle shopping" data-lens-item><span class="offer"><strong>20%</strong> off</span><span class="partner__plate"><span class="partner__logo img-partner-rise" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__name">Rise</p><p class="partner__cat">Lifestyle</p></div><button class="partner__code" type="button" data-code="BLOOM-RISE20">Get code</button></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           08 — FAQ — the knowledge base behind Bloo
+           ========================================================== -->
+      <section class="chap faq-sec" id="faq" data-chapter data-title="FAQ" data-group="support" data-sub="faq" aria-labelledby="faq-title">
+        <div class="faq-grid">
+          <header class="chap-head">
+            <span class="chap-head__num" aria-hidden="true">08</span>
+            <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Frequently asked questions</p>
+            <h2 class="chap-head__title" id="faq-title">Still looking for an answer?</h2>
+            <p class="chap-head__sub">Quick answers about finding your way around BlooMultiverse.</p>
+            <form class="ask-inline ask-inline--stack" data-ask-form data-fallback="How do I search for information?">
+              <span class="bloo-orb" aria-hidden="true"></span>
+              <label class="sr-only" for="ask-faq">Ask Bloo a question</label>
+              <input class="ask-inline__input" id="ask-faq" type="text" placeholder="Ask Bloo — “How do I update my details?”" autocomplete="off" enterkeyhint="send">
+              <button class="ask-inline__go ask-inline__go--label" type="submit">Ask Bloo <svg class="ico ico--sm"><use href="#i-arrow-up"/></svg></button>
+            </form>
+          </header>
+
+          <div class="faq-body">
+            <div class="lens-note" data-lens-note="faq" hidden></div>
+            <div class="tabs" role="tablist" aria-label="Question categories" id="faq-tabs">
+              <span class="tabs__indicator" aria-hidden="true"></span>
+              <button class="tab is-selected" role="tab" type="button" id="faq-tab-general" aria-selected="true" aria-controls="faq-panel-general" data-tab="general">General <span class="tab__count">4</span></button>
+              <button class="tab" role="tab" type="button" id="faq-tab-policies" aria-selected="false" aria-controls="faq-panel-policies" data-tab="policies" tabindex="-1">Policies &amp; documents <span class="tab__count">3</span></button>
+              <button class="tab" role="tab" type="button" id="faq-tab-announcements" aria-selected="false" aria-controls="faq-panel-announcements" data-tab="announcements" tabindex="-1">Announcements <span class="tab__count">2</span></button>
+            </div>
+
+            <div class="faqs">
+              <div class="faqs__panel" role="tabpanel" id="faq-panel-general" aria-labelledby="faq-tab-general">
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>What is BlooMultiverse?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>BlooMultiverse is Bloom’s employee portal. Your tasks, apps, policies, announcements and perks are in one place, so you don’t have to switch between systems.</p></div>
+                </details>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>How do I access my profile?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Select your name in the top-right corner, then choose <strong>My profile</strong>. You’ll see your role, team and contact details.</p></div>
+                </details>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>How do I update my personal information?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Personal details are managed in Darwinbox. Open Darwinbox from <strong>Quick links</strong>, go to your profile and submit the change. Some changes need HR approval before they appear.</p></div>
+                </details>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>How do I search for information?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Ask Bloo at the top of the page, or press <kbd class="js-kbd">Ctrl K</kbd> from anywhere. You can find people, policies and apps from one place.</p></div>
+                </details>
+              </div>
+              <div class="faqs__panel" role="tabpanel" id="faq-panel-policies" aria-labelledby="faq-tab-policies" hidden>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>Where can I find company policies?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Go to <strong>Explore policies</strong> on the home page. Filter by category, or select <strong>Browse all policies</strong> to see the full library.</p></div>
+                </details>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>How can I view or download a policy?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Open any policy to read it in your browser. Use the download option on the policy page to save a PDF copy.</p></div>
+                </details>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>Where can I find company guidelines?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Guidelines, such as the Brand Guidelines, are listed with the policies in <strong>Explore policies</strong>. You can also search for a guideline by name.</p></div>
+                </details>
+              </div>
+              <div class="faqs__panel" role="tabpanel" id="faq-panel-announcements" aria-labelledby="faq-tab-announcements" hidden>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>Where can I see company announcements?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>The latest announcements appear on the home page, under <strong>What’s new</strong>. Use the arrows to move between them.</p></div>
+                </details>
+                <details class="faqs__item" data-lens-item>
+                  <summary class="faqs__q"><span>How can I wish a colleague on their birthday?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+                  <div class="faqs__a"><p>Birthdays appear in <strong>Announcements</strong>. Select <strong>Send birthday wish</strong>, pick or write a message, then select <strong>Send wish</strong>.</p></div>
+                </details>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       09 — SUPPORT + FOOTER
+       ============================================================ -->
+  <footer class="support" id="support" data-chapter data-title="Support" data-group="support" aria-labelledby="support-title">
+    <div class="support__glow" aria-hidden="true"></div>
+    <div class="support__hero">
+      <span class="chap-head__num" aria-hidden="true">09</span>
+      <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>Help &amp; support</p>
+      <h2 class="support__title" id="support-title">Ask Bloo first.<br><span>A person is one click away.</span></h2>
+      <div class="support__actions">
+        <button class="btn btn--primary" type="button" data-toast="A support request has been started.">Contact support</button>
+        <button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre <svg class="ico ico--sm" aria-hidden="true"><use href="#i-arrow-ne"/></svg></button>
+        <button class="btn btn--quiet" type="button" data-open-ask><span class="bloo-orb" aria-hidden="true"></span>Ask Bloo</button>
+      </div>
+    </div>
+
+    <div class="footer__top">
+      <div class="footer__brand">
+        <span class="footer__logo logo-word has-logo" role="img" aria-label="BlooMultiverse"></span>
+        <p class="footer__tag">Where Human and AI works together</p>
+      </div>
+      <div class="footer__apps">
+        <p class="footer__label">Take BlooMultiverse with you</p>
+        <div class="store-row">
+          <a class="store" href="#" data-toast="Opening Google Play…"><svg class="ico"><use href="#s-play"/></svg><span><small>Get it on</small>Google Play</span></a>
+          <a class="store" href="#" data-toast="Opening the App Store…"><svg class="ico"><use href="#s-apple"/></svg><span><small>Download on the</small>App Store</span></a>
+        </div>
+      </div>
+      <nav class="footer__col" aria-label="Support">
+        <p class="footer__label">Support</p>
+        <button class="footer__link" type="button" data-drawer="help">FAQs</button>
+        <button class="footer__link" type="button" data-drawer="help">Help &amp; support</button>
+      </nav>
+      <div class="footer__col">
+        <p class="footer__label">Follow us</p>
+        <ul class="socials">
+          <li><a href="#" aria-label="LinkedIn"><svg class="ico"><use href="#s-linkedin"/></svg></a></li>
+          <li><a href="#" aria-label="Instagram"><svg class="ico"><use href="#s-instagram"/></svg></a></li>
+          <li><a href="#" aria-label="X"><svg class="ico"><use href="#s-x"/></svg></a></li>
+          <li><a href="#" aria-label="Facebook"><svg class="ico"><use href="#s-facebook"/></svg></a></li>
+          <li><a href="#" aria-label="YouTube"><svg class="ico"><use href="#s-youtube"/></svg></a></li>
+          <li><a href="#" aria-label="TikTok"><svg class="ico"><use href="#s-tiktok"/></svg></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© 2026 Bloom. All rights reserved.</p>
+      <p>BlooMultiverse employee experience platform</p>
+    </div>
+    <div class="footer__mark has-logo" aria-hidden="true"></div>
+  </footer>
+
+  <!-- ============================================================
+       OVERLAYS — Ask layer, tooltip, drawer, modal, toasts
+       ============================================================ -->
+  <div class="ask-layer" id="ask-layer" hidden>
+    <div class="ask-layer__scrim" data-close-ask></div>
+    <div class="ask-layer__panel" role="dialog" aria-modal="true" aria-label="Ask Bloo">
+      <p class="ask-layer__hint"><span><svg class="ico ico--xs" aria-hidden="true"><use href="#i-sparkle"/></svg>Ask Bloo from anywhere</span><span><kbd>Esc</kbd> to close</span></p>
+      <div class="ask-layer__slot" id="convo-float"></div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+  <div class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__scrim" data-close-drawer></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <header class="drawer__head">
+        <h2 class="drawer__title" id="drawer-title">Drawer</h2>
+        <button class="icon-btn" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
+      </header>
+      <div class="drawer__body" id="drawer-body"></div>
+    </section>
+  </div>
+
+  <dialog class="modal" id="wish-modal" aria-labelledby="wish-title">
+    <form method="dialog" class="modal__inner" id="wish-form">
+      <div class="modal__hero">
+        <span class="avatar avatar--xl" id="wish-avatar"></span>
+        <div><h2 class="h3" id="wish-title">Wish Ahmed a happy birthday</h2><p class="meta" id="wish-role">Contact Center Agent</p></div>
+      </div>
+      <label class="field">
+        <span class="field__label">Your message</span>
+        <textarea id="wish-text" rows="4" maxlength="280">Happy birthday! Wishing you a wonderful year ahead.</textarea>
+        <span class="field__hint"><span id="wish-count">52</span> / 280</span>
+      </label>
+      <div class="chips chips--sm" id="wish-presets">
+        <button class="chip" type="button">Have a great day! 🎉</button>
+        <button class="chip" type="button">Many happy returns</button>
+        <button class="chip" type="button">Cake is on you today</button>
+      </div>
+      <div class="modal__foot">
+        <button class="btn btn--quiet" value="cancel" type="submit" formnovalidate>Cancel</button>
+        <button class="btn btn--primary" type="button" id="wish-send"><span class="btn__label">Send wish</span><span class="spinner" aria-hidden="true"></span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script>
+<!-- @include app.js -->
+  </script>
+</body>
+</html>
