@@ -517,6 +517,7 @@
     $(".signal__count", signal).textContent = pad(counts[source]);
     signal.setAttribute("aria-label", `${sourceNames[source]}, ${counts[source]} waiting. Ask Bloo about them`);
     refreshAttention();
+    if (inboxOpen) renderAppFilter();
   }
 
   function quickResolve(row, action) {
@@ -742,6 +743,10 @@
         <div class="inbox-toolbar">
           <label class="inbox-search">${icon("i-search", "ico ico--sm")}<span class="sr-only">Search</span>
             <input id="inbox-search" type="search" autocomplete="off" placeholder="Search…"></label>
+          <div class="inbox-app" id="inbox-app">
+            <button class="inbox-filter__btn inbox-app__btn" type="button" id="inbox-app-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="inbox-app-menu"></button>
+            <div class="inbox-filter__menu inbox-app__menu" id="inbox-app-menu" role="menu" aria-label="Filter tasks by app" hidden></div>
+          </div>
           <div class="inbox-filter">
             <button class="inbox-filter__btn" type="button" id="inbox-filter-btn" aria-expanded="false" aria-controls="inbox-filter-menu">${icon("i-filter", "ico ico--sm")}<span class="inbox-filter__label">Filter</span><span class="inbox-filter__badge" id="inbox-filter-badge" hidden></span>${icon("i-chevron-down", "ico ico--xs")}</button>
             <div class="inbox-filter__menu" id="inbox-filter-menu" role="menu" aria-label="Filter" hidden></div>
@@ -785,11 +790,34 @@
     $("#inbox-panel-list").setAttribute("aria-labelledby", `inbox-tab-${ib.tab}`);
     $("#inbox-search").placeholder = ib.tab === "inbox" ? "Search tasks…" : `Search ${TABS[ib.tab].label.toLowerCase()}…`;
     moveTabIndicator($("#inbox-tabs"));
+    $("#inbox-app").hidden = ib.tab !== "inbox";
     renderSummary();
     renderChart();
     renderBloo();
+    renderAppFilter();
     renderFilter();
     renderPanel();
+  }
+
+  // On the Inbox page the app tabs become one dropdown; home keeps its tabs.
+  // Both drive the same list through filterAttention().
+  const currentApp = () => $(".tab.is-selected", tabsEl)?.dataset.tab || "all";
+  function renderAppFilter() {
+    const cur = currentApp();
+    const lead = (k) => (k === "all" ? `<span class="inbox-app__all">${icon("i-grid", "ico ico--xs")}</span>` : `<span class="app-mark app-mark--${sourceMarks[k]}"></span>`);
+    const name = (k) => (k === "all" ? "All apps" : sourceNames[k]);
+    const n = (k) => (k === "all" ? totalCount() : counts[k]);
+    $("#inbox-app-btn").innerHTML = `${lead(cur)}<span class="inbox-app__name">${name(cur)}</span><span class="inbox-app__count">${n(cur)}</span>${icon("i-chevron-down", "ico ico--xs")}`;
+    $("#inbox-app-btn").setAttribute("aria-label", `App: ${name(cur)}, ${n(cur)} tasks. Change app`);
+    $("#inbox-app-menu").innerHTML = `<p class="filter-group">App</p>` + ["all", ...Object.keys(sourceNames)].map((k) =>
+      `<button class="filter-opt inbox-app__opt" type="button" role="menuitemradio" aria-checked="${k === cur}" data-appf="${k}">${lead(k)}<span class="inbox-app__opt-name">${name(k)}</span><span class="inbox-app__n">${n(k)}</span>${icon("i-check", "ico ico--xs")}</button>`).join("");
+  }
+  function closeInboxMenus(except) {
+    [["#inbox-filter-menu", "#inbox-filter-btn"], ["#inbox-app-menu", "#inbox-app-btn"]].forEach(([m, b]) => {
+      if (m === except || !$(m)) return;
+      $(m).hidden = true;
+      $(b).setAttribute("aria-expanded", "false");
+    });
   }
 
   function renderSummary() {
@@ -800,7 +828,12 @@
     const stale = drafts.filter((r) => Date.now() - r.at > 7 * DAY * MIN).length;
     const returned = mine.filter((r) => r.status === "returned").length;
     const cfg = {
-      inbox: { ico: "i-inbox", label: "Waiting on you", n: totalCount(), sub: `${open.filter(isOverdue).length} overdue · ${open.filter(isToday).length} due today` },
+      inbox: (() => {
+        const app = currentApp();
+        const rows = open.filter((r) => app === "all" || r.dataset.source === app);
+        return { ico: "i-inbox", label: app === "all" ? "Waiting on you" : `Waiting in ${sourceNames[app]}`, n: app === "all" ? totalCount() : counts[app],
+          sub: `${rows.filter(isOverdue).length} overdue · ${rows.filter(isToday).length} due today` };
+      })(),
       drafts: { ico: "i-edit", label: "Draft count", n: drafts.length, sub: stale ? `${plural(stale, "draft hasn’t", "drafts haven’t")} been touched in over a week` : "All edited in the last week" },
       mine: { ico: "i-clock", label: "In progress", n: mine.length, sub: returned ? `${returned} returned for changes` : "With approvers now" },
       history: { ico: "i-check", label: "Completed", n: hist.length, sub: `${hist.filter((r) => r.status === "approved").length} approved · ${hist.filter((r) => r.status === "rejected").length} rejected` }
@@ -1000,12 +1033,22 @@
     if (tab) { selectInboxTab(tab.dataset.itab); return; }
     // Filter clicks stay inside: the menu re-renders, so an outside-click
     // check would otherwise see a detached target and close it
-    if (e.target.closest(".inbox-filter")) e.stopPropagation();
-    if (e.target.closest("#inbox-filter-btn")) {
-      const menu = $("#inbox-filter-menu");
+    if (e.target.closest(".inbox-filter, .inbox-app")) e.stopPropagation();
+    const menuBtn = e.target.closest("#inbox-filter-btn, #inbox-app-btn");
+    if (menuBtn) {
+      const menu = $(`#${menuBtn.getAttribute("aria-controls")}`);
+      closeInboxMenus(`#${menu.id}`);
       menu.hidden = !menu.hidden;
-      $("#inbox-filter-btn").setAttribute("aria-expanded", String(!menu.hidden));
+      menuBtn.setAttribute("aria-expanded", String(!menu.hidden));
       if (!menu.hidden) $(".filter-opt[aria-checked=\"true\"]", menu)?.focus();
+      return;
+    }
+    const appOpt = e.target.closest("[data-appf]");
+    if (appOpt) {
+      filterAttention(appOpt.dataset.appf);
+      closeInboxMenus();
+      renderAppFilter(); renderSummary(); refineTasks();
+      $("#inbox-app-btn").focus();
       return;
     }
     const f = e.target.closest("[data-fgroup]");
@@ -1017,8 +1060,8 @@
     if (e.target.closest("[data-freset]")) {
       Object.assign(ib, { q: "", type: "all", sort: "new", due: "all" });
       $("#inbox-search").value = "";
-      $("#inbox-filter-menu").hidden = true;
-      $("#inbox-filter-btn").setAttribute("aria-expanded", "false");
+      closeInboxMenus();
+      if (ib.tab === "inbox" && currentApp() !== "all") { filterAttention("all"); renderAppFilter(); renderSummary(); }
       renderFilter(); renderPanel();
       return;
     }
@@ -1060,6 +1103,13 @@
     renderPanel();
   });
   drawer.addEventListener("keydown", (e) => {
+    const opt = e.target.closest?.(".inbox-filter__menu .filter-opt");
+    if (opt && (e.key === "ArrowDown" || e.key === "ArrowUp")) {
+      const opts = $$(".filter-opt", opt.closest(".inbox-filter__menu"));
+      opts[(opts.indexOf(opt) + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length].focus();
+      e.preventDefault();
+      return;
+    }
     const tab = e.target.closest?.("#inbox-tabs .tab");
     if (tab && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
       const keys = Object.keys(TABS);
@@ -1078,11 +1128,7 @@
   drawer.addEventListener("focusout", (e) => { if (inboxOpen && e.target.closest?.(".inbox-chart [data-type]")) chartFocus(null); });
   document.addEventListener("click", (e) => {
     if (e.target.closest("#new-request")) { openRequestForm(); return; }
-    const menu = $("#inbox-filter-menu");
-    if (menu && !menu.hidden && !e.target.closest(".inbox-filter")) {
-      menu.hidden = true;
-      $("#inbox-filter-btn").setAttribute("aria-expanded", "false");
-    }
+    if ($("#inbox-filter-menu") && !e.target.closest(".inbox-filter, .inbox-app")) closeInboxMenus();
   });
 
   /* New request / edit draft */
@@ -2654,8 +2700,8 @@
     }
     if (e.key !== "Escape") return;
     if (askOpen) { closeAskLayer(); return; }
-    const fmenu = $("#inbox-filter-menu");
-    if (fmenu && !fmenu.hidden) { fmenu.hidden = true; $("#inbox-filter-btn").setAttribute("aria-expanded", "false"); $("#inbox-filter-btn").focus(); return; }
+    const openMenu = $$("#inbox-filter-menu, #inbox-app-menu").find((m) => !m.hidden);
+    if (openMenu) { closeInboxMenus(); $(`[aria-controls="${openMenu.id}"]`).focus(); return; }
     if (drawer.classList.contains("is-open")) { returnToInbox = false; closeDrawer(); return; }
     if (!contextMenu.hidden) { toggleContextMenu(false); contextWhere.focus(); return; }
     if (document.activeElement === input) { input.blur(); return; }

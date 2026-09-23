@@ -1626,6 +1626,17 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .filter-opt[aria-checked="true"] .ico { opacity: 1; }
 .filter-reset { width: 100%; margin-top: 6px; padding: 10px; border-top: 1px solid var(--line); font-size: var(--fs-meta); font-weight: 600; color: var(--accent-fg); text-align: left; }
 
+/* App filter — a dropdown on the Inbox page (the home chapter keeps its tabs) */
+.inbox-panel #attention-tabs { display: none; }
+.inbox-app { position: relative; }
+.inbox-app__btn { padding: 0 14px 0 12px; }
+.inbox-app__btn .app-mark, .inbox-app__opt .app-mark { width: 24px; height: 24px; border-radius: 7px; }
+.inbox-app__all { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; background: var(--surface-2); color: var(--slate); }
+.inbox-app__count { min-width: 26px; height: 20px; padding: 0 7px; display: grid; place-items: center; border-radius: var(--r-pill); background: var(--soft-blue); color: var(--accent-fg); font-size: 11px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.inbox-app__menu { left: 0; right: auto; width: 250px; }
+.filter-opt.inbox-app__opt { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto 14px; gap: 10px; height: 42px; }
+.inbox-app__n { font-size: var(--fs-meta); color: var(--slate-2); font-variant-numeric: tabular-nums; }
+.inbox-app__opt[aria-checked="true"] .inbox-app__n { color: var(--accent-fg); font-weight: 700; }
 .inbox-tabs { margin-top: 18px; }
 .inbox-panel { margin-top: 18px; }
 .inbox-panel #attention-body .tabs { margin-bottom: 4px; }
@@ -1970,6 +1981,8 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .inbox-chart { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "donut" "legend"; }
   .donut { margin: 14px auto 8px; }
   .inbox-filter__label { display: none; }
+  .inbox-app__name { display: none; }
+  .inbox-app__menu { left: auto; right: 0; }
   .inbox-filter__btn { padding: 0 14px; }
   .inbox-tabs { max-width: 100%; }
   .req-head { display: none; }
