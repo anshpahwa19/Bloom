@@ -10,6 +10,7 @@ dependencies besides Google Fonts.
 import base64
 import pathlib
 import re
+import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent
 ASSETS = ROOT / "src" / "assets"
@@ -40,5 +41,23 @@ def build(folder: str, out_name: str) -> None:
     print(f"wrote {out.name} ({out.stat().st_size / 1024:.0f} KB)")
 
 
+def fragment(src_name: str, out_path: str) -> None:
+    """Write a built page without its document wrapper (doctype, html, head,
+    body, charset/viewport/icon meta) — the form a hosted Artifact expects,
+    since the host supplies that skeleton. The <title> stays first."""
+    html = (ROOT / src_name).read_text(encoding="utf-8")
+    html = re.sub(r"<!doctype html>\s*|</?html[^>]*>\s*|</?head>\s*|</?body>\s*", "", html, flags=re.I)
+    html = re.sub(r"\s*<meta (charset|name=\"viewport\"|name=\"description\")[^>]*>", "", html)
+    html = re.sub(r"\s*<link rel=\"icon\"[^>]*>", "", html)
+    out = pathlib.Path(out_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html.lstrip(), encoding="utf-8")
+    print(f"wrote fragment {out} ({out.stat().st_size / 1024:.0f} KB)")
+
+
 for folder, out_name in TARGETS.items():
     build(folder, out_name)
+
+# python3 build.py --fragment PATH  → Direction C as a hosted-page fragment
+if len(sys.argv) == 3 and sys.argv[1] == "--fragment":
+    fragment(TARGETS["ai"], sys.argv[2])

@@ -28,6 +28,18 @@ reference/                        the original prototype (Direction A)
 
 Edit anything in `ai/` or `src/`, then run `python3 build.py`.
 
+## Live preview (Direction C)
+
+Direction C is hosted as a private claude.ai page. Every change is published
+to the same link:
+**https://claude.ai/artifact/KzMq66uZxh7puiANuVuMRJ**
+
+To update it, edit `ai/`, then run
+`python3 build.py --fragment <path>/bloomultiverse-ai.html`. This writes the page
+without its document wrapper, because the host supplies that. Republish that file
+to the URL above. Viewers who already have the page open get the new version
+automatically. The page is private until it is shared from its Share menu.
+
 ---
 
 # Direction C · AI employee experience

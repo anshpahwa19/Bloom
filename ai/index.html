@@ -3,13 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>BlooMultiverse AI — Ask Bloo</title>
+  <title>BlooMultiverse AI</title>
   <meta name="description" content="BlooMultiverse AI — an AI-first employee experience. Tell Bloo what you need and your tasks, people, policies and perks rearrange around it.">
   <script>
     (function () {
       try {
+        // Own saved choice, then a theme the host page stamped, then the OS
         var saved = localStorage.getItem("bloo-theme");
-        var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        var stamped = document.documentElement.getAttribute("data-theme");
+        var theme = saved || stamped || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.lang = "en";
         document.documentElement.setAttribute("data-theme", theme);
         if (localStorage.getItem("bloo-palette") === "azure") document.documentElement.setAttribute("data-palette", "azure");
         if (localStorage.getItem("bloo-ai-rail") === "pinned") document.documentElement.classList.add("rail-pinned");

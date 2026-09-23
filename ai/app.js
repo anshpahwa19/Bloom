@@ -59,6 +59,9 @@
     themeSwitch.setAttribute("aria-checked", String(theme === "dark"));
   }
   applyTheme(root.getAttribute("data-theme") || "light");
+  // A host page can restamp the theme; keep the switch in step with it
+  new MutationObserver(() => themeSwitch.setAttribute("aria-checked", String(root.getAttribute("data-theme") === "dark")))
+    .observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   themeSwitch.addEventListener("click", () => {
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
     applyTheme(next);
