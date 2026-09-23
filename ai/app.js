@@ -1009,9 +1009,10 @@
       if (n.top < y - vh || n.top > y + vh * 2) return;
       n.el.style.translate = `0 ${(n.top - (y + vh / 2)) * 0.07}px`;
     });
+    // Life at Bloom: a highlight sweeps through the letters as you pass
     if (driftEl && geo.drift) {
       const p = clamp((y + vh - geo.drift.top) / (vh + geo.drift.h));
-      driftEl.style.translate = `${(0.5 - p) * 14}% 0`;
+      driftEl.style.setProperty("--sweep", `${(1 - p) * 100}%`);
     }
   }
 
