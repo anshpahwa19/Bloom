@@ -1,0 +1,4 @@
+__pycache__/
+*.png
+!src/assets/*.png
+.DS_Store

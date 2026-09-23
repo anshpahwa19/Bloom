@@ -1,0 +1,66 @@
+# BlooMultiverse — Direction B · Interactive Employee Experience
+
+A second design direction for the BlooMultiverse prototype: a scroll-driven
+digital workplace with a floating, section-aware navigation instead of a
+sidebar dashboard. Same content, features and interactions as the original.
+
+**Open `BlooMultiverse-Interactive.html`**. It is one self-contained file;
+only Google Fonts load from the network.
+
+## Structure
+
+```
+BlooMultiverse-Interactive.html   built deliverable (open this)
+build.py                          inlines src/ into the single file
+src/index.html                    markup, with @include markers
+src/styles.css                    tokens, light/dark, chapters, motion, responsive
+src/media.css                     every embedded image, declared once
+src/app.js                        behaviour (vanilla JS)
+src/assets/                       images extracted from the original
+reference/                        the original prototype (Direction A)
+```
+
+Edit anything in `src/`, then run `python3 build.py`.
+
+## The experience, top to bottom
+
+| # | Chapter | What happens |
+|---|---------|--------------|
+| 01 | Home | Oversized greeting, live app constellation (click a node to filter tasks), floating “today” fragments, quick-links dock with magnification. The hero lifts and fades as you scroll. |
+| 02 | Attention | Dark “live control center”: a large count, apps with share bars, and a task list. Hover an app to spotlight its tasks; select it to filter. Approve and reject work as before. |
+| 03 | People | Editorial new-joiner spread: sticky portrait with a colour-wipe transition, quote, facts and a reel. Announcements follow as a birthday feed with confetti. |
+| 04 | Policies | Horizontal discovery strip. Category index, the hovered card expands, and a progress rail. |
+| — | Life at Bloom | Typographic interlude with drifting outline words. |
+| 05 | Communities | Pinned horizontal reel: vertical scroll moves the cards sideways. Cards expand on hover, with a pointer spotlight. |
+| 06 | Discounts | Draggable partner marketplace with tilt, big offer numbers and reveal-then-copy codes. |
+| 07 | Perks | Editorial list; a sticky image masks between perks as you scroll. |
+| 08 | FAQ | Calm support chapter: category tabs and an animated accordion. |
+| — | Footer | Word-by-word statement, app stores, support, socials. |
+
+The floating capsule tracks the current chapter with IntersectionObserver.
+The active pill slides between links and fills with that chapter’s progress.
+The capsule compacts after the hero and turns dark over dark chapters. On
+tablet and phone it shows the current chapter name, and ☰ opens a full menu
+with Your space and Appearance (theme and accent).
+
+## Kept from the original
+
+Search (Ctrl/⌘ K, now a command palette), notifications, profile menu,
+full-page inbox, task drawer, approve/reject, app filters, show more,
+policy filters, people carousel, birthday carousel and wish modal,
+join group, discount codes, FAQ tabs, help drawer, theme and palette
+switching, and toasts.
+
+Two small fixes along the way. Approving from the task drawer threw an error
+in the original; it now resolves the row. The profile-menu items (My profile,
+Help & support) now open their drawers.
+
+## Accessibility and motion
+
+- Honours `prefers-reduced-motion`: parallax, pinning and entrances are
+  removed, and every feature still works.
+- Keyboard: tabs support arrow keys, and focusing a community card scrolls
+  it into view. Esc closes the top layer, and focus is trapped in the menu
+  overlay.
+- The scroll work runs in one `requestAnimationFrame` loop. Geometry is
+  cached on resize, and only transforms and opacity are written.

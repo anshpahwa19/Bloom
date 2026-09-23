@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>BlooMultiverse — Your Digital Workplace</title>
+  <meta name="description" content="BlooMultiverse — the interactive employee experience where your apps, people and perks come together.">
+  <meta name="theme-color" content="#F6F4EF">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("bloo-theme");
+        var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+        if (localStorage.getItem("bloo-x-palette") === "crimson") document.documentElement.setAttribute("data-palette", "crimson");
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 43'%3E%3Cpath fill='%23922A22' d='M7.77 0v42.52h3.66V3.78h11.24c8.56.14 7.47 6.41 5.85 9.52h4.26C35.48 4.41 28.7.95 25.09 0H7.77Z'/%3E%3Cpath fill='%23922A22' d='M15.16 13.3v21.7h3.61V23.3l6.2 7.1 7.16-9.58c2.32.66 3.8 4.06 4.26 5.68 1.75 8.18-4.51 11.57-7.86 12.24l-13.37.41v3.31h12.3c11.02-1.18 13.23-9.99 12.95-14.25.19-7.14-6.39-10.94-9.7-11.94l-6.33 8.34-9.22-11.3Z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+<!-- @include styles.css -->
+  </style>
+  <style>
+<!-- @include media.css -->
+  </style>
+  <script>document.documentElement.classList.add("js");</script>
+</head>
+
+<body>
+  <!-- ============================================================
+       ICON SPRITE — 24px line icons, referenced with <use href="#i-…">
+       ============================================================ -->
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/><path d="M5.6 5.6 3.5 13.5v4a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4l-2.1-7.9a2 2 0 0 0-1.9-1.6H7.5a2 2 0 0 0-1.9 1.6Z"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.4-3.6 4.2-5.5 7.5-5.5s6.1 1.9 7.5 5.5"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5Z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M8.5 7.5h7M8.5 11h5"/></symbol>
+      <symbol id="i-megaphone" viewBox="0 0 24 24"><path d="M3.5 10v4a1.5 1.5 0 0 0 1.5 1.5h2L13 19V5L7 8.5H5A1.5 1.5 0 0 0 3.5 10Z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+      <symbol id="i-ball" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m12 7.5 4 2.9-1.5 4.7h-5L8 10.4Z"/><path d="M12 3.5v4M16 10.4l4.2-1.3M14.5 15.1l2.6 3.7M9.5 15.1l-2.6 3.7M8 10.4 3.8 9.1"/></symbol>
+      <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3.5 12.1V4.5a1 1 0 0 1 1-1h7.6a2 2 0 0 1 1.4.6l7.4 7.4a2 2 0 0 1 0 2.8l-6.6 6.6a2 2 0 0 1-2.8 0L4.1 13.5a2 2 0 0 1-.6-1.4Z"/><circle cx="8.5" cy="8.5" r="1.5"/></symbol>
+      <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="m6 6 3.5 3.5M14.5 14.5 18 18M18 6l-3.5 3.5M9.5 14.5 6 18"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+      <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9.5 6 6 6-6 6"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5"/></symbol>
+      <symbol id="i-arrow-down" viewBox="0 0 24 24"><path d="M12 4.5v14M6.5 13l5.5 5.5 5.5-5.5"/></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19.5v-14M6.5 11 12 5.5l5.5 5.5"/></symbol>
+      <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5l-8 8"/><path d="M18 14v4.5a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1H10"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
+      <symbol id="i-wave" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7.5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L2.8 15.6a1.6 1.6 0 0 1 2.4-2.1L8 16"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5c1-3.1 3.4-4.8 6.5-4.8s5.5 1.7 6.5 4.8"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.9c1.7.7 2.9 2.2 3.5 4.6"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-3a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
+      <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9.5 20H6a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 6 4h3.5"/><path d="M15 16.5 19.5 12 15 7.5M19.5 12H9.5"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.9 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1.1 3-3Z"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+      <!-- Social / store glyphs (simplified, filled) -->
+      <symbol id="s-linkedin" viewBox="0 0 24 24"><path class="fill" d="M5 8.5h3V19H5Zm1.5-4.7a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5ZM10 8.5h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.6 2 3.6 4.7V19h-3v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V19H10Z"/></symbol>
+      <symbol id="s-x" viewBox="0 0 24 24"><path class="fill" d="M16.8 4h2.8l-6.1 7 7.2 9h-5.6l-4.4-5.6L5.6 20H2.8l6.5-7.5L2.4 4h5.7l4 5.2Zm-1 14.4h1.5L7.3 5.5H5.7Z"/></symbol>
+      <symbol id="s-instagram" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="fill" cx="17.2" cy="6.8" r="1"/></symbol>
+      <symbol id="s-facebook" viewBox="0 0 24 24"><path class="fill" d="M13.5 21v-7.5H16l.4-3h-2.9V8.7c0-.9.3-1.5 1.5-1.5h1.5V4.5a20 20 0 0 0-2.3-.1c-2.3 0-3.8 1.4-3.8 3.9v2.2H8v3h2.5V21Z"/></symbol>
+      <symbol id="s-youtube" viewBox="0 0 24 24"><path class="fill" d="M21.6 7.7a2.5 2.5 0 0 0-1.8-1.8C18.3 5.5 12 5.5 12 5.5s-6.3 0-7.8.4a2.5 2.5 0 0 0-1.8 1.8C2 9.2 2 12 2 12s0 2.8.4 4.3a2.5 2.5 0 0 0 1.8 1.8c1.5.4 7.8.4 7.8.4s6.3 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.5.4-4.3.4-4.3s0-2.8-.4-4.3ZM10 15V9l5.2 3Z"/></symbol>
+      <symbol id="s-tiktok" viewBox="0 0 24 24"><path class="fill" d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.8a5.7 5.7 0 1 0 4.9 5.6V9.1a7.3 7.3 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6Z"/></symbol>
+      <symbol id="s-play" viewBox="0 0 24 24"><path fill="#00A0FF" stroke="none" d="M1.337.924a1.486 1.486 0 0 0-.112.568v21.017c0 .217.045.419.124.6l11.155-11.087L1.337.924Z"/><path fill="#32A071" stroke="none" d="M13.544 10.989l3.258-3.238L3.45.195a1.466 1.466 0 0 0-.946-.179l11.04 10.973Z"/><path fill="#FF3A44" stroke="none" d="M13.544 13.056l-11 10.933c.298.036.612-.016.906-.183l13.324-7.54-3.23-3.21Z"/><path fill="#FFC400" stroke="none" d="M22.018 13.298l-3.919 2.218-3.515-3.493 3.543-3.521 3.891 2.202a1.49 1.49 0 0 1 0 2.594Z"/></symbol>
+      <symbol id="s-apple" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09Zm3.378-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701Z"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================================================
+       FLOATING NAVIGATION — section-aware capsule
+       ============================================================ -->
+  <header class="navbar" id="navbar">
+    <div class="navbar__capsule">
+      <a class="brand" href="#top" aria-label="BlooMultiverse home">
+        <span class="brand__word has-logo" aria-hidden="true"></span>
+      </a>
+
+      <p class="navbar__where" aria-hidden="true"><span class="navbar__num">01</span><span class="navbar__label">Home</span></p>
+
+      <nav class="navbar__links" aria-label="Sections">
+        <span class="navbar__pill" aria-hidden="true"><span class="navbar__pill-progress"></span></span>
+        <a class="navbar__link" href="#top" data-spy="top" data-label="Home"><span>Home</span></a>
+        <a class="navbar__link" href="#attention" data-spy="attention" data-label="Attention"><span>Attention</span></a>
+        <a class="navbar__link" href="#people" data-spy="people announcements" data-label="People"><span>People</span></a>
+        <a class="navbar__link" href="#policies" data-spy="policies" data-label="Policies"><span>Policies</span></a>
+        <a class="navbar__link" href="#sports" data-spy="life sports" data-label="Communities"><span>Communities</span></a>
+        <a class="navbar__link" href="#discounts" data-spy="discounts" data-label="Discounts"><span>Discounts</span></a>
+        <a class="navbar__link" href="#perks" data-spy="perks" data-label="Perks"><span>Perks</span></a>
+        <a class="navbar__link" href="#faq" data-spy="faq footer" data-label="FAQ"><span>FAQ</span></a>
+      </nav>
+
+      <div class="navbar__actions">
+        <button class="nav-btn nav-btn--search" type="button" id="search-open" aria-label="Search" aria-keyshortcuts="Control+K Meta+K" data-tip="Search">
+          <svg class="ico"><use href="#i-search"/></svg><kbd class="nav-kbd search__kbd" aria-hidden="true">Ctrl K</kbd>
+        </button>
+
+        <button class="nav-btn nav-btn--inbox" type="button" data-drawer="inbox" aria-label="Inbox, 4 new" data-tip="Inbox">
+          <svg class="ico"><use href="#i-inbox"/></svg><span class="nav-badge js-inbox-badge" id="inbox-badge">4</span>
+        </button>
+
+        <!-- Notifications -->
+        <div class="menu" data-menu>
+          <button class="nav-btn" type="button" aria-label="Notifications, 3 unread" aria-expanded="false" data-menu-trigger id="bell">
+            <svg class="ico"><use href="#i-bell"/></svg>
+            <span class="badge-dot" id="bell-badge">3</span>
+          </button>
+          <div class="menu__panel menu__panel--wide" role="menu" aria-label="Notifications">
+            <div class="menu__head">
+              <p class="menu__title">Notifications</p>
+              <button class="link-btn" type="button" id="mark-read">Mark all as read</button>
+            </div>
+            <ul class="notif-list" id="notif-list">
+              <li class="notif is-unread"><span class="app-mark app-mark--sf">Sf</span><p><strong>Layla Hassan</strong> asked you to approve a discount on Al Noor Trading.<time>12 min ago</time></p></li>
+              <li class="notif is-unread"><span class="avatar avatar--sm img-rashid">AO</span><p>It’s <strong>Ahmed Obaid</strong>’s birthday today. Send a wish before the day ends.<time>1 h ago</time></p></li>
+              <li class="notif is-unread"><span class="app-mark app-mark--ui">Ui</span><p>Invoice Matcher bot paused with <strong>3 exceptions</strong>.<time>2 h ago</time></p></li>
+              <li class="notif"><span class="app-mark app-mark--policy"><svg class="ico"><use href="#i-shield"/></svg></span><p>The <strong>Data Security</strong> policy was updated.<time>Yesterday</time></p></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Theme switch (icon morph) -->
+        <button class="nav-btn theme-toggle" type="button" id="theme-switch" data-theme-switch="icon" role="switch" aria-checked="false" aria-label="Switch to dark theme" data-tip="Theme">
+          <svg class="ico theme-toggle__sun"><use href="#i-sun"/></svg>
+          <svg class="ico theme-toggle__moon"><use href="#i-moon"/></svg>
+        </button>
+
+        <!-- Profile menu -->
+        <div class="menu menu--profile" data-menu>
+          <button class="profile-btn" type="button" aria-expanded="false" aria-label="Account menu" data-menu-trigger>
+            <span class="avatar img-rashid"></span>
+          </button>
+          <div class="menu__panel" role="menu" aria-label="Account">
+            <div class="menu__who">
+              <span class="avatar avatar--lg img-rashid"></span>
+              <p><strong>Rashid Khan</strong><span>rashid.khan@bloom.ae</span></p>
+            </div>
+            <button class="menu__item" role="menuitem" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button>
+            <button class="menu__item" role="menuitem" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
+            <hr>
+            <button class="menu__item menu__item--danger" role="menuitem" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
+          </div>
+        </div>
+
+        <button class="nav-btn burger" type="button" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="menu-overlay">
+          <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
+        </button>
+      </div>
+      <span class="navbar__progress" aria-hidden="true"></span>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       MENU OVERLAY — full navigation, your space and appearance
+       ============================================================ -->
+  <div class="mo" id="menu-overlay" role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="true">
+    <div class="mo__inner container">
+      <nav class="mo__nav" aria-label="All sections">
+        <p class="mo__label">Explore your workplace</p>
+        <ol class="mo__list">
+          <li><a class="mo__link" href="#top" data-mo="top"><span class="mo__num">01</span><span class="mo__text">Home</span><span class="mo__desc">Your day at a glance</span></a></li>
+          <li><a class="mo__link" href="#attention" data-mo="attention"><span class="mo__num">02</span><span class="mo__text">Attention</span><span class="mo__desc"><span data-total>32</span> actions waiting</span></a></li>
+          <li><a class="mo__link" href="#people" data-mo="people"><span class="mo__num">03</span><span class="mo__text">People</span><span class="mo__desc">New joiners &amp; announcements</span></a></li>
+          <li><a class="mo__link" href="#policies" data-mo="policies"><span class="mo__num">04</span><span class="mo__text">Policies</span><span class="mo__desc">How we work</span></a></li>
+          <li><a class="mo__link" href="#sports" data-mo="sports"><span class="mo__num">05</span><span class="mo__text">Communities</span><span class="mo__desc">Sports &amp; communities</span></a></li>
+          <li><a class="mo__link" href="#discounts" data-mo="discounts"><span class="mo__num">06</span><span class="mo__text">Discounts</span><span class="mo__desc">Exclusive retail discounts</span></a></li>
+          <li><a class="mo__link" href="#perks" data-mo="perks"><span class="mo__num">07</span><span class="mo__text">Perks</span><span class="mo__desc">Your workplace perks</span></a></li>
+          <li><a class="mo__link" href="#faq" data-mo="faq"><span class="mo__num">08</span><span class="mo__text">FAQ</span><span class="mo__desc">Help &amp; support</span></a></li>
+        </ol>
+      </nav>
+
+      <aside class="mo__side" aria-label="Your space">
+        <div class="mo__who">
+          <span class="avatar avatar--lg img-rashid"></span>
+          <p><strong>Rashid Khan</strong><span>Sr. Engineer</span></p>
+        </div>
+
+        <p class="mo__label">Your space</p>
+        <ul class="mo__utils">
+          <li><button class="mo__util" type="button" data-drawer="inbox"><svg class="ico"><use href="#i-inbox"/></svg>Inbox<span class="nav-badge nav-badge--inline js-inbox-badge">4</span></button></li>
+          <li><button class="mo__util" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button></li>
+          <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
+          <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
+          <li><button class="mo__util" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
+        </ul>
+
+        <p class="mo__label">Appearance</p>
+        <div class="mo__prefs">
+          <button class="pref" type="button" data-theme-switch role="switch" aria-checked="false">
+            <span class="pref__label"><svg class="ico"><use href="#i-moon"/></svg>Dark theme</span>
+            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          </button>
+          <button class="pref" type="button" id="palette-switch" data-palette-switch role="switch" aria-checked="false">
+            <span class="pref__label"><span class="pref__swatches" aria-hidden="true"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span>Crimson accent</span>
+            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          </button>
+        </div>
+
+        <p class="mo__promo"><svg class="ico"><use href="#i-sparkle"/></svg><span><strong>Where Human and AI works together</strong>Your apps, people and perks in one workspace.</span></p>
+        <button class="mo__signout" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SEARCH — command palette (Ctrl / ⌘ K)
+       ============================================================ -->
+  <div class="search" id="search">
+    <div class="search__scrim" aria-hidden="true"></div>
+    <div class="search__box" role="dialog" aria-label="Search BlooMultiverse">
+      <div class="search__field">
+        <svg class="ico search__icon"><use href="#i-search"/></svg>
+        <input class="search__input" id="search-input" type="search" placeholder="Search people, policies, apps…" autocomplete="off" aria-label="Search" aria-controls="search-results" aria-expanded="false" role="combobox">
+        <kbd class="search__esc" aria-hidden="true">Esc</kbd>
+      </div>
+      <div class="search__panel" id="search-results" role="listbox" aria-label="Search results"></div>
+      <p class="search__foot" aria-hidden="true"><span><kbd>↑</kbd><kbd>↓</kbd> move</span><span><kbd>↵</kbd> open</span><span><kbd>Esc</kbd> close</span></p>
+    </div>
+  </div>
+
+  <main class="main" id="main" tabindex="-1">
+
+    <!-- ==========================================================
+         01 — HOME: immersive greeting, live constellation, app dock
+         ========================================================== -->
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero__field" aria-hidden="true">
+        <span class="blob blob--1"></span>
+        <span class="blob blob--2"></span>
+        <span class="blob blob--3"></span>
+        <span class="hero__grid"></span>
+      </div>
+
+      <div class="container hero__inner">
+        <div class="hero__copy">
+          <p class="hero__date"><i class="pulse-dot pulse-dot--live"></i><span id="today-date">Tuesday, 22 September</span></p>
+          <h1 class="hero__title" id="hero-title">
+            <span class="hero__line"><span class="hero__line-in"><span id="greeting">Good morning</span>,</span></span>
+            <span class="hero__line hero__line--name"><span class="hero__line-in">Rashid<span class="hero__dot">.</span></span></span>
+          </h1>
+          <p class="hero__tagline">Your workplace, <em>connected.<svg class="squiggle" viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c22-7 40-7 60-2s40 6 62 0 44-7 72-1"/></svg></em></p>
+          <p class="hero__lede"><span data-total>32</span> things are waiting across four of your apps. Salesforce needs you most today.</p>
+          <ul class="hero__stats">
+            <li class="stat-pill stat-pill--alert"><i class="pulse-dot"></i>2 overdue</li>
+            <li class="stat-pill">3 due today</li>
+            <li class="stat-pill">27 this week</li>
+          </ul>
+          <div class="hero__actions">
+            <a class="btn btn--primary btn--lg btn--magnetic" href="#attention"><span>Review <span data-total>32</span> actions</span><svg class="ico ico--sm btn__arrow btn__arrow--down"><use href="#i-arrow-down"/></svg></a>
+            <button class="btn btn--ghost btn--lg" type="button" data-drawer="inbox"><svg class="ico ico--sm"><use href="#i-inbox"/></svg>Open inbox</button>
+          </div>
+        </div>
+
+        <!-- Live constellation: every app node filters the attention list -->
+        <div class="hero__stage">
+          <div class="orbit" id="orbit" role="group" aria-label="Pending actions by app">
+            <svg class="orbit__lines" viewBox="0 0 400 400" aria-hidden="true">
+              <defs>
+                <radialGradient id="orbit-glow" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="currentColor" stop-opacity=".22"/>
+                  <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+              <circle cx="200" cy="200" r="200" fill="url(#orbit-glow)" class="orbit__halo"/>
+              <circle class="ring ring--1" cx="200" cy="200" r="96"/>
+              <circle class="ring ring--2" cx="200" cy="200" r="146"/>
+              <circle class="ring ring--3" cx="200" cy="200" r="192"/>
+              <line class="beam" x1="200" y1="200" x2="312" y2="72"/>
+              <line class="beam" x1="200" y1="200" x2="56" y2="168"/>
+              <line class="beam" x1="200" y1="200" x2="160" y2="360"/>
+              <line class="beam" x1="200" y1="200" x2="352" y2="248"/>
+              <circle class="ring-dot" r="4"><animateMotion dur="14s" repeatCount="indefinite" path="M200 54a146 146 0 1 1 0 292a146 146 0 1 1 0-292"/></circle>
+              <circle class="ring-dot ring-dot--sm" r="3"><animateMotion dur="22s" repeatCount="indefinite" path="M200 8a192 192 0 1 0 0 384a192 192 0 1 0 0-384"/></circle>
+            </svg>
+            <div class="orbit__core">
+              <strong id="orbit-total" data-count>32</strong>
+              <span>actions<br>waiting</span>
+            </div>
+            <button class="orbit__node" type="button" style="--x:78%;--y:18%;--s:1.12;--d:0s;--z:16" data-filter="salesforce" aria-label="Salesforce, 15 pending">
+              <span class="orbit__icon"><span class="app-mark app-mark--sf">Sf</span><span class="orbit__count">15</span></span><span class="orbit__name">Salesforce</span>
+            </button>
+            <button class="orbit__node" type="button" style="--x:14%;--y:42%;--s:1.02;--d:-1.4s;--z:12" data-filter="uipath" aria-label="UiPath, 10 pending">
+              <span class="orbit__icon"><span class="app-mark app-mark--ui">Ui</span><span class="orbit__count">10</span></span><span class="orbit__name">UiPath</span>
+            </button>
+            <button class="orbit__node" type="button" style="--x:40%;--y:90%;--s:.94;--d:-2.6s;--z:9" data-filter="darwinbox" aria-label="Darwinbox, 5 pending">
+              <span class="orbit__icon"><span class="app-mark app-mark--db">Db</span><span class="orbit__count">05</span></span><span class="orbit__name">Darwinbox</span>
+            </button>
+            <button class="orbit__node" type="button" style="--x:88%;--y:62%;--s:.88;--d:-3.6s;--z:7" data-filter="sap" aria-label="SAP, 2 pending">
+              <span class="orbit__icon"><span class="app-mark app-mark--sap">SAP</span><span class="orbit__count">02</span></span><span class="orbit__name">SAP</span>
+            </button>
+          </div>
+
+          <!-- Floating fragments — today's moments, each a doorway into the story -->
+          <ul class="frags" aria-label="Today at Bloom">
+            <li><a class="frag frag--joiner" href="#people" style="--z:26;--r:-3deg;--d:-2s"><span class="avatar avatar--sm img-joiner-abdulazeez"></span><span class="frag__txt"><small>Joined this week</small><strong>Abdulazeez Aladwan</strong></span></a></li>
+            <li><a class="frag frag--bday" href="#announcements" style="--z:32;--r:2.5deg;--d:-4s"><span class="frag__icon frag__icon--gift"><svg class="ico ico--sm"><use href="#i-gift"/></svg></span><span class="frag__txt"><small>Birthday today</small><strong>Ahmed Obaid</strong></span></a></li>
+            <li><a class="frag frag--policy" href="#policies" style="--z:20;--r:-2deg;--d:-1s"><span class="frag__icon"><svg class="ico ico--sm"><use href="#i-shield"/></svg></span><span class="frag__txt"><small>Policy updated</small><strong>Data Security</strong></span></a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="container hero__foot">
+        <a class="hero__cue" href="#attention"><span class="hero__cue-line" aria-hidden="true"></span>Scroll to explore</a>
+
+        <!-- QUICK LINKS — application dock -->
+        <section class="dock" id="quick-links" aria-labelledby="ql-title">
+          <h2 class="dock__title" id="ql-title">Quick links</h2>
+          <ul class="dock__list">
+            <li><a class="dock__item" href="https://www.salesforce.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--sf">Sf</span><span class="dock__label"><span class="dock__name">Salesforce</span><span class="dock__hint">Sales &amp; CRM</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
+            <li><a class="dock__item" href="https://www.darwinbox.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--db">Db</span><span class="dock__label"><span class="dock__name">Darwinbox</span><span class="dock__hint">People records</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
+            <li><a class="dock__item" href="https://www.sap.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--sap">SAP</span><span class="dock__label"><span class="dock__name">SAP</span><span class="dock__hint">Procurement</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
+            <li><a class="dock__item" href="https://www.uipath.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--ui">Ui</span><span class="dock__label"><span class="dock__name">UiPath</span><span class="dock__hint">Automations</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
+          </ul>
+          <a class="dock__all" href="#quick-links" data-toast="Opening quick links…">View All <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+        </section>
+
+        <p class="hero__chapter" aria-hidden="true"><span>01</span> / 08</p>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         02 — ATTENTION: live control center
+         ========================================================== -->
+    <section class="chapter attention tone-invert" id="attention" aria-labelledby="attention-title">
+      <div class="attention__glow" aria-hidden="true"></div>
+      <div class="container">
+        <header class="chapter-head attention__head reveal">
+          <div>
+            <p class="kicker"><span class="kicker__num">02</span><span class="kicker__line"></span>Live control center</p>
+            <h2 class="display split" id="attention-title">Your attention required</h2>
+          </div>
+          <div class="attention__meta">
+            <p class="section-sub">Tasks from your connected apps, most urgent first.</p>
+            <p class="live"><i class="pulse-dot pulse-dot--ok"></i>Live</p>
+          </div>
+        </header>
+
+        <div id="attention-body" class="console">
+          <div class="console__side reveal">
+            <p class="console__total"><strong id="pending-count" data-count>32</strong><span class="console__total-label"><i class="pulse-dot"></i>actions<br>pending</span></p>
+
+            <div class="tabs console__apps" role="tablist" aria-label="Filter by app" id="attention-tabs">
+              <span class="tabs__indicator" aria-hidden="true"></span>
+              <button class="tab is-selected" role="tab" type="button" aria-selected="true" data-tab="all" style="--i:0;--share:1"><span class="tab__mark tab__mark--all" aria-hidden="true"><svg class="ico ico--sm"><use href="#i-grid"/></svg></span><span class="tab__name">All apps</span> <span class="tab__count">32</span><span class="tab__bar" aria-hidden="true"></span></button>
+              <button class="tab" role="tab" type="button" aria-selected="false" data-tab="salesforce" style="--i:1;--share:.469"><span class="app-mark app-mark--sf" aria-hidden="true">Sf</span><span class="tab__name">Salesforce</span> <span class="tab__count">15</span><span class="tab__bar" aria-hidden="true"></span></button>
+              <button class="tab" role="tab" type="button" aria-selected="false" data-tab="uipath" style="--i:2;--share:.3125"><span class="app-mark app-mark--ui" aria-hidden="true">Ui</span><span class="tab__name">UiPath</span> <span class="tab__count">10</span><span class="tab__bar" aria-hidden="true"></span></button>
+              <button class="tab" role="tab" type="button" aria-selected="false" data-tab="darwinbox" style="--i:3;--share:.156"><span class="app-mark app-mark--db" aria-hidden="true">Db</span><span class="tab__name">Darwinbox</span> <span class="tab__count">05</span><span class="tab__bar" aria-hidden="true"></span></button>
+              <button class="tab" role="tab" type="button" aria-selected="false" data-tab="sap" style="--i:4;--share:.0625"><span class="app-mark app-mark--sap" aria-hidden="true">SAP</span><span class="tab__name">SAP</span> <span class="tab__count">02</span><span class="tab__bar" aria-hidden="true"></span></button>
+            </div>
+            <p class="console__hint">Hover an app to surface its tasks. Select it to filter.</p>
+          </div>
+
+          <div class="console__main">
+            <ul class="task-list is-loading" id="task-list" aria-busy="true">
+              <!-- Skeleton rows (hidden once "loaded") -->
+              <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
+              <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
+              <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
+
+              <li class="task" data-source="salesforce">
+                <span class="app-mark app-mark--sf">Sf</span>
+                <div class="task__body"><p class="task__title">Approve 12% discount on Al Noor Trading renewal</p><p class="task__meta">Salesforce <span>Requested by Layla Hassan</span></p></div>
+                <span class="due due--overdue"><svg class="ico ico--xs"><use href="#i-clock"/></svg>Overdue 1 day</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task" data-source="uipath">
+                <span class="app-mark app-mark--ui">Ui</span>
+                <div class="task__body"><p class="task__title">Resolve 3 exceptions paused by the Invoice Matcher bot</p><p class="task__meta">UiPath <span>Finance automation</span></p></div>
+                <span class="due due--overdue"><svg class="ico ico--xs"><use href="#i-clock"/></svg>Overdue 4 hours</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task" data-source="sap">
+                <span class="app-mark app-mark--sap">SAP</span>
+                <div class="task__body"><p class="task__title">Approve purchase requisition PR-40821 for site equipment</p><p class="task__meta">SAP <span>Requested by Omar Haddad</span></p></div>
+                <span class="due due--today">Due today</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task" data-source="darwinbox">
+                <span class="app-mark app-mark--db">Db</span>
+                <div class="task__body"><p class="task__title">Confirm onboarding checklist for Abdulazeez Aladwan</p><p class="task__meta">Darwinbox <span>Projects Affairs team</span></p></div>
+                <span class="due due--today">Due today</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task" data-source="salesforce">
+                <span class="app-mark app-mark--sf">Sf</span>
+                <div class="task__body"><p class="task__title">Review Q3 pipeline forecast before Thursday’s call</p><p class="task__meta">Salesforce <span>Shared by Sales Operations</span></p></div>
+                <span class="due due--today">Due today</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task is-extra is-hidden" data-source="uipath">
+                <span class="app-mark app-mark--ui">Ui</span>
+                <div class="task__body"><p class="task__title">Validate extracted fields on 12 vendor contracts</p><p class="task__meta">UiPath <span>Document Understanding</span></p></div>
+                <span class="due">Thu, 24 Sep</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task is-extra is-hidden" data-source="darwinbox">
+                <span class="app-mark app-mark--db">Db</span>
+                <div class="task__body"><p class="task__title">Approve travel request for Mathew Raymond</p><p class="task__meta">Darwinbox <span>Abu Dhabi to Riyadh</span></p></div>
+                <span class="due">Fri, 25 Sep</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task is-extra is-hidden" data-source="sap">
+                <span class="app-mark app-mark--sap">SAP</span>
+                <div class="task__body"><p class="task__title">Sign off goods receipt GR-11093</p><p class="task__meta">SAP <span>Warehouse, Mussafah</span></p></div>
+                <span class="due">Mon, 28 Sep</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+              <li class="task is-extra is-hidden" data-source="salesforce">
+                <span class="app-mark app-mark--sf">Sf</span>
+                <div class="task__body"><p class="task__title">Update close date on 4 stalled opportunities</p><p class="task__meta">Salesforce <span>Your pipeline</span></p></div>
+                <span class="due">Mon, 28 Sep</span>
+                <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
+              </li>
+            </ul>
+            <p class="task-empty" id="task-empty" hidden>Nothing waiting here. Pick another app.</p>
+
+            <div class="attention__foot">
+              <button class="btn btn--quiet" type="button" id="more-tasks" aria-expanded="false">Show more tasks <svg class="ico ico--sm"><use href="#i-chevron-down"/></svg></button>
+              <span class="meta">Synced 2 minutes ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         03 — PEOPLE: welcome to the Bloom family (editorial)
+         ========================================================== -->
+    <section class="chapter people" id="people" aria-labelledby="people-title" aria-roledescription="carousel">
+      <div class="people__marquee" aria-hidden="true"><span>Welcome to the Bloom family <i>✦</i> Welcome to the Bloom family <i>✦</i> Welcome to the Bloom family <i>✦</i></span></div>
+
+      <div class="container people__grid" id="people-stage">
+        <div class="people__media">
+          <figure class="people__portrait">
+            <div class="people__img" id="people-img"></div>
+            <span class="people__wipe" aria-hidden="true"></span>
+            <figcaption class="people__badge"><svg class="ico ico--xs"><use href="#i-sparkle"/></svg><span id="people-week">Joined this week</span></figcaption>
+            <span class="people__index" id="people-counter" aria-live="polite">1 / 5</span>
+          </figure>
+        </div>
+
+        <div class="people__story">
+          <header class="people__head reveal">
+            <p class="kicker"><span class="kicker__num">03</span><span class="kicker__line"></span>People</p>
+            <h2 class="display split" id="people-title">Welcome to the Bloom family</h2>
+            <p class="section-sub">Five people joined us this month. Say hello and make their first weeks easier.</p>
+          </header>
+
+          <div class="people__card">
+            <p class="people__meet">Meet</p>
+            <h3 class="people__name" id="people-name"></h3>
+            <p class="people__role" id="people-role"></p>
+            <blockquote class="people__quote" id="people-quote"></blockquote>
+            <dl class="people__facts">
+              <div data-speed="-12"><dt>Reporting manager</dt><dd id="people-manager"></dd></div>
+              <div data-speed="-22"><dt>Date of joining</dt><dd id="people-doj"></dd></div>
+              <div data-speed="-32"><dt>Team</dt><dd id="people-team"></dd></div>
+            </dl>
+            <div class="people__actions">
+              <button class="btn btn--primary btn--lg btn--magnetic" type="button" id="say-hello"><svg class="ico ico--sm btn__wave"><use href="#i-wave"/></svg><span>Say hello</span></button>
+              <div class="carousel-ctrl">
+                <button class="icon-btn icon-btn--bordered" type="button" data-people="prev" aria-label="Previous person"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+                <button class="icon-btn icon-btn--bordered" type="button" data-people="next" aria-label="Next person"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="people__reel" id="people-reel" role="tablist" aria-label="Choose a new joiner"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANNOUNCEMENTS — celebratory editorial feed -->
+    <section class="chapter announce" id="announcements" aria-labelledby="ann-title" aria-roledescription="carousel">
+      <div class="announce__bg" aria-hidden="true"><span class="announce__glow"></span><span class="announce__dots"></span></div>
+      <div class="container announce__grid">
+        <header class="announce__head">
+          <p class="kicker kicker--light"><span class="kicker__num">03.2</span><span class="kicker__line"></span>Today at Bloom</p>
+          <h2 class="announce__title" id="ann-title">Announcements</h2>
+          <div class="carousel-ctrl">
+            <button class="icon-btn icon-btn--glass" type="button" data-bday="prev" aria-label="Previous announcement"><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg></button>
+            <button class="icon-btn icon-btn--glass" type="button" data-bday="next" aria-label="Next announcement"><svg class="ico ico--sm"><use href="#i-chevron-right"/></svg></button>
+          </div>
+        </header>
+        <div class="announce__stage">
+          <div class="celebrate__viewport">
+            <div class="celebrate__track" id="bday-track"><!-- rendered by script --></div>
+          </div>
+          <div class="confetti" id="confetti" aria-hidden="true"></div>
+        </div>
+        <div class="announce__feed">
+          <p class="announce__feed-label">In the feed</p>
+          <div class="feed" id="bday-dots" role="tablist" aria-label="Choose announcement"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         04 — POLICIES: exploration strip
+         ========================================================== -->
+    <section class="chapter policies-sec" id="policies" aria-labelledby="pol-title">
+      <div class="container">
+        <header class="chapter-head chapter-head--split reveal">
+          <div>
+            <p class="kicker"><span class="kicker__num">04</span><span class="kicker__line"></span>Knowledge</p>
+            <h2 class="display split" id="pol-title">Explore policies</h2>
+            <p class="section-sub">The guides that shape how we work, kept current by each policy owner.</p>
+          </div>
+          <a class="policies__all" href="#" data-toast="Opening the policy library…">Browse all 24 policies <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+        </header>
+
+        <div class="chips policy-index reveal" role="group" aria-label="Filter policies" id="policy-chips">
+          <button class="chip is-selected" type="button" aria-pressed="true" data-cat="all"><span class="chip__num">00</span>All</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="security"><span class="chip__num">01</span>Security</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="operations"><span class="chip__num">02</span>Operations</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="brand"><span class="chip__num">03</span>Brand</button>
+          <button class="chip" type="button" aria-pressed="false" data-cat="conduct"><span class="chip__num">04</span>Conduct</button>
+        </div>
+      </div>
+
+      <div class="policy-strip rail" id="policy-strip" data-drag>
+        <article class="policy is-featured" data-cat="security" data-name="Data Security">
+          <div class="policy__frame"><div class="policy__media img-pol-security"></div></div>
+          <div class="policy__body">
+            <span class="tag tag--red"><svg class="ico ico--xs"><use href="#i-lock"/></svg>Security</span>
+            <h3 class="policy__title">Data Security</h3>
+            <p class="policy__desc">How to protect your email, files and customer data, including the updated guide for reporting suspicious messages.</p>
+            <div class="policy__foot">
+              <span class="meta">Updated 12 Sep 2026</span>
+              <a class="policy__go" href="#" aria-label="Read the Data Security policy" data-toast="Opening the Data Security policy…"><span class="policy__go-label">Read policy</span><svg class="ico"><use href="#i-arrow"/></svg></a>
+            </div>
+          </div>
+        </article>
+        <article class="policy" data-cat="operations" data-name="Management Process">
+          <div class="policy__frame"><div class="policy__media img-pol-management"></div></div>
+          <div class="policy__body">
+            <span class="tag">Operations</span>
+            <h3 class="policy__title">Management Process</h3>
+            <p class="policy__desc">Change management steps, approvals and who to involve.</p>
+            <div class="policy__foot"><span class="meta">Operations</span><a class="policy__go" href="#" aria-label="Read Management Process" data-toast="Opening Management Process…"><span class="policy__go-label">Read policy</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+          </div>
+        </article>
+        <article class="policy" data-cat="brand" data-name="Brand Guidelines">
+          <div class="policy__frame"><div class="policy__media img-pol-brand"></div></div>
+          <div class="policy__body">
+            <span class="tag tag--lav">Brand</span>
+            <h3 class="policy__title">Brand Guidelines</h3>
+            <p class="policy__desc">Our identity, voice and how to use the Bloom logo.</p>
+            <div class="policy__foot"><span class="meta">Brand</span><a class="policy__go" href="#" aria-label="Read Brand Guidelines" data-toast="Opening Brand Guidelines…"><span class="policy__go-label">Read policy</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+          </div>
+        </article>
+        <article class="policy" data-cat="conduct" data-name="Code of Conduct">
+          <div class="policy__frame"><div class="policy__media img-pol-conduct"></div></div>
+          <div class="policy__body">
+            <span class="tag tag--cyan">Conduct</span>
+            <h3 class="policy__title">Code of Conduct</h3>
+            <p class="policy__desc">What we expect of each other, and how to raise a concern.</p>
+            <div class="policy__foot"><span class="meta">Conduct</span><a class="policy__go" href="#" aria-label="Read Code of Conduct" data-toast="Opening Code of Conduct…"><span class="policy__go-label">Read policy</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+          </div>
+        </article>
+        <article class="policy" data-cat="operations" data-name="Travel &amp; Expenses">
+          <div class="policy__frame"><div class="policy__media img-pol-travel"></div></div>
+          <div class="policy__body">
+            <span class="tag">Operations</span>
+            <h3 class="policy__title">Travel &amp; Expenses</h3>
+            <p class="policy__desc">Booking business travel and claiming expenses.</p>
+            <div class="policy__foot"><span class="meta">Operations</span><a class="policy__go" href="#" aria-label="Read Travel and Expenses" data-toast="Opening Travel &amp; Expenses…"><span class="policy__go-label">Read policy</span><svg class="ico"><use href="#i-arrow"/></svg></a></div>
+          </div>
+        </article>
+      </div>
+
+      <div class="container rail-foot">
+        <div class="rail-progress" aria-hidden="true"><span id="policy-progress"></span></div>
+        <p class="rail-count" id="policy-count" aria-hidden="true">01 — 05</p>
+        <div class="carousel-ctrl">
+          <button class="icon-btn icon-btn--bordered" type="button" data-rail-prev="policy-strip" aria-label="Scroll policies back"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+          <button class="icon-btn icon-btn--bordered" type="button" data-rail-next="policy-strip" aria-label="Scroll policies forward"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         LIFE AT BLOOM — chapter interlude
+         ========================================================== -->
+    <section class="interlude" id="life" aria-labelledby="life-title">
+      <div class="interlude__rows" aria-hidden="true">
+        <p class="interlude__row" data-dir="1">Communities · Discounts · Perks · Communities · Discounts · Perks ·</p>
+        <p class="interlude__row" data-dir="-1">Join · Save · Belong · Join · Save · Belong · Join · Save · Belong ·</p>
+      </div>
+      <span class="sticker sticker--1 img-sport-yoga" data-speed="-90" aria-hidden="true"></span>
+      <span class="sticker sticker--2 img-perk-air" data-speed="-150" aria-hidden="true"></span>
+      <span class="sticker sticker--3 img-sport-padel" data-speed="-60" aria-hidden="true"></span>
+      <div class="container interlude__inner reveal">
+        <p class="kicker kicker--center"><span class="kicker__line"></span>Chapter two<span class="kicker__line"></span></p>
+        <h2 class="interlude__title" id="life-title">Life at <em>Bloom</em></h2>
+        <p class="interlude__text">Communities to join, partner discounts and the perks that come with being part of the team.</p>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         05 — SPORTS & COMMUNITIES: pinned horizontal reel
+         ========================================================== -->
+    <section class="sports-sec tone-invert" id="sports" aria-labelledby="sports-title">
+      <div class="hscroll" data-hscroll>
+        <div class="hscroll__pin">
+          <div class="hscroll__track">
+            <header class="sports__intro">
+              <p class="kicker"><span class="kicker__num">05</span><span class="kicker__line"></span>Communities</p>
+              <h2 class="display" id="sports-title">Sports &amp; <em>communities</em></h2>
+              <p class="section-sub">Six groups meet every week. Join one and you’ll get the schedule in your inbox.</p>
+              <p class="sports__scroll-hint" aria-hidden="true"><span></span><em class="hint-pinned">Keep scrolling</em><em class="hint-swipe">Swipe to explore</em></p>
+            </header>
+
+            <ul class="sports" id="sports-list">
+              <li class="sport is-open img-sport-cricket" style="--tint:#2E5BFF">
+                <button class="sport__hit" type="button" aria-expanded="true" aria-label="Cricket"></button>
+                <div class="sport__media"></div>
+                <span class="sport__num" aria-hidden="true">01</span>
+                <span class="sport__label" aria-hidden="true">Cricket</span>
+                <div class="sport__info">
+                  <p class="sport__name">Cricket</p>
+                  <div class="sport__foot"><span class="stack"><i class="img-av-crimson"></i><i class="img-av-elder"></i><i class="img-av-yousef"></i></span><span>42 members</span>
+                  <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+                </div>
+              </li>
+              <li class="sport img-sport-yoga" style="--tint:#8E7CF0">
+                <button class="sport__hit" type="button" aria-expanded="false" aria-label="Yoga"></button>
+                <div class="sport__media"></div>
+                <span class="sport__num" aria-hidden="true">02</span>
+                <span class="sport__label" aria-hidden="true">Yoga</span>
+                <div class="sport__info">
+                  <p class="sport__name">Yoga</p>
+                  <div class="sport__foot"><span class="stack"><i class="img-av-ha"></i><i class="img-av-sa"></i><i class="img-av-mh"></i></span><span>36 members</span>
+                  <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+                </div>
+              </li>
+              <li class="sport img-sport-padel" style="--tint:#1FB5C9">
+                <button class="sport__hit" type="button" aria-expanded="false" aria-label="Padel"></button>
+                <div class="sport__media"></div>
+                <span class="sport__num" aria-hidden="true">03</span>
+                <span class="sport__label" aria-hidden="true">Padel</span>
+                <div class="sport__info">
+                  <p class="sport__name">Padel</p>
+                  <div class="sport__foot"><span class="stack"><i class="img-rashid"></i><i class="img-rashid"></i></span><span>28 members</span>
+                  <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+                </div>
+              </li>
+              <li class="sport img-sport-basketball" style="--tint:#F2545B">
+                <button class="sport__hit" type="button" aria-expanded="false" aria-label="Basketball"></button>
+                <div class="sport__media"></div>
+                <span class="sport__num" aria-hidden="true">04</span>
+                <span class="sport__label" aria-hidden="true">Basketball</span>
+                <div class="sport__info">
+                  <p class="sport__name">Basketball</p>
+                  <div class="sport__foot"><span class="stack"><i class="img-av-yousef"></i><i class="img-av-crimson"></i></span><span>31 members</span>
+                  <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+                </div>
+              </li>
+              <li class="sport img-sport-badminton" style="--tint:#2CC7E8">
+                <button class="sport__hit" type="button" aria-expanded="false" aria-label="Badminton"></button>
+                <div class="sport__media"></div>
+                <span class="sport__num" aria-hidden="true">05</span>
+                <span class="sport__label" aria-hidden="true">Badminton</span>
+                <div class="sport__info">
+                  <p class="sport__name">Badminton</p>
+                  <div class="sport__foot"><span class="stack"><i class="img-av-sa"></i><i class="img-av-elder"></i></span><span>24 members</span>
+                  <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+                </div>
+              </li>
+              <li class="sport img-sport-football" style="--tint:#1FB57A">
+                <button class="sport__hit" type="button" aria-expanded="false" aria-label="Football"></button>
+                <div class="sport__media"></div>
+                <span class="sport__num" aria-hidden="true">06</span>
+                <span class="sport__label" aria-hidden="true">Football</span>
+                <div class="sport__info">
+                  <p class="sport__name">Football</p>
+                  <div class="sport__foot"><span class="stack"><i class="img-rashid"></i><i class="img-rashid"></i><i class="img-av-crimson"></i></span><span>58 members</span>
+                  <button class="btn btn--join" type="button" aria-pressed="false" data-join>Join group</button></div>
+                </div>
+              </li>
+            </ul>
+
+            <a class="sports__outro" href="#" data-toast="Opening all communities…">
+              <span class="sports__outro-num">+</span>
+              <span class="sports__outro-text">See all communities</span>
+              <span class="sports__outro-arrow"><svg class="ico"><use href="#i-arrow"/></svg></span>
+            </a>
+          </div>
+
+          <div class="hscroll__hud container" aria-hidden="true">
+            <span class="hscroll__hud-label">Sports &amp; communities</span>
+            <span class="hscroll__bar"><span id="sports-progress"></span></span>
+            <span class="hscroll__count" id="sports-count">01 / 06</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         06 — DISCOUNTS: lifestyle marketplace
+         ========================================================== -->
+    <section class="chapter discounts" id="discounts" aria-labelledby="disc-title">
+      <div class="container">
+        <header class="chapter-head chapter-head--split reveal">
+          <div>
+            <p class="kicker"><span class="kicker__num">06</span><span class="kicker__line"></span>Marketplace</p>
+            <h2 class="display split" id="disc-title">Exclusive retail discounts</h2>
+            <p class="section-sub">Show your Bloom ID in store, or use the code online.</p>
+          </div>
+          <div class="rail-head-ctrl">
+            <a class="cta-link" href="#" data-toast="Opening all partner offers…">All partner offers <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+            <div class="carousel-ctrl">
+              <button class="icon-btn icon-btn--bordered" type="button" data-rail-prev="partner-rail" aria-label="Scroll offers back"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+              <button class="icon-btn icon-btn--bordered" type="button" data-rail-next="partner-rail" aria-label="Scroll offers forward"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <div class="rail partner-rail" id="partner-rail" data-drag>
+        <ul class="partners">
+          <li class="partner" style="--i:0"><span class="partner__plate"><span class="partner__logo img-partner-marriott" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Stays and dining</p><p class="partner__name">Marriott Hotel Downtown</p></div><span class="offer"><strong>30%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-MAR30">Get code</button></li>
+          <li class="partner" style="--i:1"><span class="partner__plate"><span class="partner__logo img-partner-edition" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Hotel and spa</p><p class="partner__name">Abu Dhabi Edition</p></div><span class="offer"><strong>30%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EDT30">Get code</button></li>
+          <li class="partner" style="--i:2"><span class="partner__plate"><span class="partner__logo img-partner-eiic" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Industrial supplies</p><p class="partner__name">EIIC</p></div><span class="offer"><strong>15%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EIIC15">Get code</button></li>
+          <li class="partner" style="--i:3"><span class="partner__plate"><span class="partner__logo img-partner-efi" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Groceries</p><p class="partner__name">Emirates Food Industries</p></div><span class="offer"><strong>20%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EFI20">Get code</button></li>
+          <li class="partner" style="--i:4"><span class="partner__plate"><span class="partner__logo img-partner-exeed" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Building materials</p><p class="partner__name">Exeed Industries</p></div><span class="offer"><strong>10%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EXD10">Get code</button></li>
+          <li class="partner" style="--i:5"><span class="partner__plate"><span class="partner__logo img-partner-foodquests" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Restaurants</p><p class="partner__name">Food Quests</p></div><span class="offer"><strong>25%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-FQ25">Get code</button></li>
+          <li class="partner" style="--i:6"><span class="partner__plate"><span class="partner__logo img-partner-petromal" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Fuel and services</p><p class="partner__name">Petromal</p></div><span class="offer"><strong>5%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-PTM05">Get code</button></li>
+          <li class="partner" style="--i:7"><span class="partner__plate"><span class="partner__logo img-partner-rise" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Lifestyle</p><p class="partner__name">Rise</p></div><span class="offer"><strong>20%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-RISE20">Get code</button></li>
+        </ul>
+      </div>
+
+      <div class="container rail-foot">
+        <div class="rail-progress" aria-hidden="true"><span id="partner-progress"></span></div>
+        <p class="rail-count" id="partner-count" aria-hidden="true">01 — 08</p>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         07 — PERKS: editorial service list with a sticky visual
+         ========================================================== -->
+    <section class="chapter perks-sec" id="perks" aria-labelledby="perks-title">
+      <div class="container perks">
+        <header class="perks__intro reveal">
+          <p class="kicker"><span class="kicker__num">07</span><span class="kicker__line"></span>Benefits</p>
+          <h2 class="display split" id="perks-title">Your workplace perks</h2>
+          <p class="section-sub">Benefits included with your role, and where to use them.</p>
+        </header>
+
+        <div class="perks__visual" aria-hidden="true">
+          <div class="perks__shot img-perk-medical is-active" data-shot="0"></div>
+          <div class="perks__shot img-perk-air" data-shot="1"></div>
+          <div class="perks__shot img-perk-mimojo" data-shot="2"></div>
+          <div class="perks__shot img-perk-mazaya" data-shot="3"></div>
+          <div class="perks__caption"><span class="perks__caption-num" id="perk-num">01</span><span class="perks__caption-title" id="perk-caption">Medical insurance</span></div>
+        </div>
+
+        <ol class="perks__list">
+          <li>
+            <article class="perk is-active" data-perk="medical">
+              <span class="perk__num">01</span>
+              <div class="perk__media img-perk-medical"></div>
+              <div class="perk__body">
+                <span class="tag tag--covered"><svg class="ico ico--xs"><use href="#i-shield"/></svg>Covered</span>
+                <h3 class="perk__title">Medical insurance</h3>
+                <p>You and your family are covered. Download the myNAS app to find clinics and submit claims.</p>
+                <a class="btn btn--primary btn--sm" href="#" data-toast="Opening the myNAS download page…">Download myNAS app <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="perk" data-perk="air">
+              <span class="perk__num">02</span>
+              <div class="perk__media img-perk-air"></div>
+              <div class="perk__body">
+                <h3 class="perk__title">Air tickets</h3>
+                <p>Your annual ticket home is ready to book.</p>
+                <a class="cta-link" href="#" data-toast="Opening air ticket details…">See details <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="perk" data-perk="mimojo">
+              <span class="perk__num">03</span>
+              <div class="perk__media img-perk-mimojo"></div>
+              <div class="perk__body">
+                <h3 class="perk__title">Mimojo</h3>
+                <p>Cashback at cafés and stores near you.</p>
+                <a class="cta-link" href="#" data-toast="Opening Mimojo…">Open Mimojo <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="perk" data-perk="mazaya">
+              <span class="perk__num">04</span>
+              <div class="perk__media img-perk-mazaya"></div>
+              <div class="perk__body">
+                <h3 class="perk__title">Mazaya</h3>
+                <p>Member prices on travel, dining and leisure.</p>
+                <a class="cta-link" href="#" data-toast="Opening Mazaya…">Open Mazaya <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+              </div>
+            </article>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         08 — FAQ: the calm support chapter
+         ========================================================== -->
+    <section class="chapter faq-sec" id="faq" aria-labelledby="faq-title">
+      <div class="container faq-grid">
+        <header class="faq__head reveal">
+          <p class="kicker"><span class="kicker__num">08</span><span class="kicker__line"></span>Support</p>
+          <h2 class="display split" id="faq-title">Frequently asked questions</h2>
+          <p class="section-sub">Quick answers about finding your way around BlooMultiverse.</p>
+          <div class="tabs faq__tabs" role="tablist" aria-label="Question categories" id="faq-tabs">
+            <span class="tabs__indicator" aria-hidden="true"></span>
+            <button class="tab is-selected" role="tab" type="button" id="faq-tab-general" aria-selected="true" aria-controls="faq-panel-general" data-tab="general">General <span class="tab__count">4</span></button>
+            <button class="tab" role="tab" type="button" id="faq-tab-policies" aria-selected="false" aria-controls="faq-panel-policies" data-tab="policies" tabindex="-1">Policies &amp; documents <span class="tab__count">3</span></button>
+            <button class="tab" role="tab" type="button" id="faq-tab-announcements" aria-selected="false" aria-controls="faq-panel-announcements" data-tab="announcements" tabindex="-1">Announcements <span class="tab__count">2</span></button>
+          </div>
+        </header>
+
+        <div class="faqs">
+          <div class="faqs__panel" role="tabpanel" id="faq-panel-general" aria-labelledby="faq-tab-general">
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>What is BlooMultiverse?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>BlooMultiverse is Bloom’s employee portal. Your tasks, apps, policies, announcements and perks are in one place, so you don’t have to switch between systems.</p></div>
+            </details>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>How do I access my profile?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Select your name in the top-right corner, then choose <strong>My profile</strong>. You’ll see your role, team and contact details.</p></div>
+            </details>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>How do I update my personal information?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Personal details are managed in Darwinbox. Open Darwinbox from <strong>Quick links</strong>, go to your profile and submit the change. Some changes need HR approval before they appear.</p></div>
+            </details>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>How do I search for information?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Use the search bar at the top of any page, or press <kbd>Ctrl K</kbd>. You can find people, policies and apps from one place.</p></div>
+            </details>
+          </div>
+          <div class="faqs__panel" role="tabpanel" id="faq-panel-policies" aria-labelledby="faq-tab-policies" hidden>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>Where can I find company policies?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Go to <strong>Explore policies</strong> on the home page. Filter by category, or select <strong>Browse all policies</strong> to see the full library.</p></div>
+            </details>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>How can I view or download a policy?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Open any policy to read it in your browser. Use the download option on the policy page to save a PDF copy.</p></div>
+            </details>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>Where can I find company guidelines?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Guidelines, such as the Brand Guidelines, are listed with the policies in <strong>Explore policies</strong>. You can also search for a guideline by name.</p></div>
+            </details>
+          </div>
+          <div class="faqs__panel" role="tabpanel" id="faq-panel-announcements" aria-labelledby="faq-tab-announcements" hidden>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>Where can I see company announcements?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>The latest announcements appear on the home page, right after <strong>Welcome to the Bloom family</strong>. Use the arrows to move between them.</p></div>
+            </details>
+            <details class="faqs__item">
+              <summary class="faqs__q"><span>How can I wish a colleague on their birthday?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Birthdays appear in <strong>Announcements</strong>. Select <strong>Send birthday wish</strong>, pick or write a message, then select <strong>Send wish</strong>.</p></div>
+            </details>
+          </div>
+
+          <div class="faq__help reveal">
+            <span class="faq__help-icon"><svg class="ico"><use href="#i-help"/></svg></span>
+            <p><strong>Still need a hand?</strong>Our support team can help with anything in BlooMultiverse.</p>
+            <button class="btn btn--primary btn--sm" type="button" data-drawer="help">Help &amp; support <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       FOOTER — the closing statement
+       ============================================================ -->
+  <footer class="footer tone-invert" id="footer">
+    <div class="footer__aurora" aria-hidden="true"></div>
+    <div class="container">
+      <p class="footer__statement" id="footer-statement"><span class="fw">Where</span> <span class="fw">Human</span> <span class="fw">and</span> <span class="fw">AI</span> <span class="fw">works</span> <em class="fw">together</em></p>
+
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <span class="brand__word brand__word--footer has-logo" role="img" aria-label="BlooMultiverse"></span>
+          <p class="footer__tag">Your apps, people and perks in one workspace.</p>
+        </div>
+        <div class="footer__apps">
+          <p class="footer__label">Take BlooMultiverse with you</p>
+          <div class="store-row">
+            <a class="store" href="#" data-toast="Opening Google Play…"><svg class="ico"><use href="#s-play"/></svg><span><small>Get it on</small>Google Play</span></a>
+            <a class="store" href="#" data-toast="Opening the App Store…"><svg class="ico"><use href="#s-apple"/></svg><span><small>Download on the</small>App Store</span></a>
+          </div>
+        </div>
+        <nav class="footer__col" aria-label="Support">
+          <p class="footer__label">Support</p>
+          <button class="footer__link" type="button" data-drawer="help">FAQs</button>
+          <button class="footer__link" type="button" data-drawer="help">Help &amp; support</button>
+        </nav>
+        <div class="footer__col">
+          <p class="footer__label">Follow us</p>
+          <ul class="socials">
+            <li><a href="#" aria-label="LinkedIn"><svg class="ico"><use href="#s-linkedin"/></svg></a></li>
+            <li><a href="#" aria-label="Instagram"><svg class="ico"><use href="#s-instagram"/></svg></a></li>
+            <li><a href="#" aria-label="X"><svg class="ico"><use href="#s-x"/></svg></a></li>
+            <li><a href="#" aria-label="Facebook"><svg class="ico"><use href="#s-facebook"/></svg></a></li>
+            <li><a href="#" aria-label="YouTube"><svg class="ico"><use href="#s-youtube"/></svg></a></li>
+            <li><a href="#" aria-label="TikTok"><svg class="ico"><use href="#s-tiktok"/></svg></a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p>© 2026 Bloom. All rights reserved.</p>
+        <p>BlooMultiverse employee experience platform</p>
+        <a class="to-top" href="#top">Back to top <svg class="ico ico--sm"><use href="#i-arrow-up"/></svg></a>
+      </div>
+    </div>
+    <div class="footer__mark has-logo" aria-hidden="true"></div>
+  </footer>
+
+  <!-- ============================================================
+       OVERLAYS — tooltip, drawer, modal, toasts
+       ============================================================ -->
+  <div class="tooltip" id="tooltip" role="tooltip"></div>
+
+  <div class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__scrim" data-close-drawer></div>
+    <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <header class="drawer__head">
+        <h2 class="h3" id="drawer-title">Drawer</h2>
+        <button class="icon-btn icon-btn--bordered" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
+      </header>
+      <div class="drawer__body" id="drawer-body"></div>
+    </section>
+  </div>
+
+  <dialog class="modal" id="wish-modal" aria-labelledby="wish-title">
+    <form method="dialog" class="modal__inner" id="wish-form">
+      <div class="modal__hero">
+        <span class="avatar avatar--xl" id="wish-avatar"></span>
+        <div><h2 class="h3" id="wish-title">Wish Ahmed a happy birthday</h2><p class="meta" id="wish-role">Contact Center Agent</p></div>
+      </div>
+      <label class="field">
+        <span class="field__label">Your message</span>
+        <textarea id="wish-text" rows="4" maxlength="280">Happy birthday! Wishing you a wonderful year ahead.</textarea>
+        <span class="field__hint"><span id="wish-count">52</span> / 280</span>
+      </label>
+      <div class="chips chips--sm" id="wish-presets">
+        <button class="chip" type="button">Have a great day! 🎉</button>
+        <button class="chip" type="button">Many happy returns</button>
+        <button class="chip" type="button">Cake is on you today</button>
+      </div>
+      <div class="modal__foot">
+        <button class="btn btn--quiet" value="cancel" type="submit" formnovalidate>Cancel</button>
+        <button class="btn btn--primary" type="button" id="wish-send"><span class="btn__label">Send wish</span><span class="spinner" aria-hidden="true"></span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+  <script>
+<!-- @include app.js -->
+  </script>
+</body>
+</html>

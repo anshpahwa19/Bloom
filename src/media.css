@@ -1,0 +1,60 @@
+/* ==================================================================
+   Media — every embedded image is declared exactly once, as a class.
+   Components read the image through var(--img) (photos) or var(--logo)
+   (app icons), so markup and scripts only ever swap class names.
+   ================================================================== */
+
+/* People */
+.img-rashid { --img: url("{{rashid.jpg}}"); }
+.img-av-crimson { --img: url("{{avatar-crimson.svg}}"); }
+.img-av-elder { --img: url("{{avatar-elder.jpg}}"); }
+.img-av-yousef { --img: url("{{avatar-yousef.jpg}}"); }
+.img-av-ha { --img: url("{{avatar-ha.svg}}"); }
+.img-av-sa { --img: url("{{avatar-sa.svg}}"); }
+.img-av-mh { --img: url("{{avatar-mh.svg}}"); }
+.img-joiner-abdulazeez { --img: url("{{joiner-abdulazeez.jpg}}"); }
+.img-joiner-mohammed { --img: url("{{joiner-mohammed.jpg}}"); }
+.img-joiner-daniel { --img: url("{{joiner-daniel.jpg}}"); }
+
+/* Policies */
+.img-pol-security { --img: url("{{policy-security.jpg}}"); }
+.img-pol-management { --img: url("{{policy-management.jpg}}"); }
+.img-pol-brand { --img: url("{{policy-brand.jpg}}"); }
+.img-pol-conduct { --img: url("{{policy-conduct.jpg}}"); }
+.img-pol-travel { --img: url("{{policy-travel.jpg}}"); }
+
+/* Sports & communities */
+.img-sport-cricket { --img: url("{{sport-cricket.jpg}}"); }
+.img-sport-yoga { --img: url("{{sport-yoga.jpg}}"); }
+.img-sport-padel { --img: url("{{sport-padel.jpg}}"); }
+.img-sport-basketball { --img: url("{{sport-basketball.jpg}}"); }
+.img-sport-badminton { --img: url("{{sport-badminton.jpg}}"); }
+.img-sport-football { --img: url("{{sport-football.jpg}}"); }
+
+/* Partners */
+.img-partner-marriott { --img: url("{{partner-marriott.png}}"); }
+.img-partner-edition { --img: url("{{partner-edition.png}}"); }
+.img-partner-eiic { --img: url("{{partner-eiic.png}}"); }
+.img-partner-efi { --img: url("{{partner-efi.png}}"); }
+.img-partner-exeed { --img: url("{{partner-exeed.png}}"); }
+.img-partner-foodquests { --img: url("{{partner-foodquests.png}}"); }
+.img-partner-petromal { --img: url("{{partner-petromal.png}}"); }
+.img-partner-rise { --img: url("{{partner-rise.png}}"); }
+
+/* Perks */
+.img-perk-medical { --img: url("{{perk-medical.jpg}}"); }
+.img-perk-air { --img: url("{{perk-air.jpg}}"); }
+.img-perk-mimojo { --img: url("{{perk-mimojo.jpg}}"); }
+.img-perk-mazaya { --img: url("{{perk-mazaya.jpg}}"); }
+
+/* Connected apps */
+.app-mark--sf { --logo: url("{{app-salesforce.png}}"); }
+.app-mark--sap { --logo: url("{{app-sap.png}}"); }
+.app-mark--ui { --logo: url("{{app-uipath.png}}"); }
+.app-mark--db { --logo: url("{{app-darwinbox.png}}"); }
+
+/* BlooMultiverse wordmark — light (navy type) and dark (white type) */
+.has-logo {
+  --logo-light: url("{{logo-light.svg}}");
+  --logo-dark: url("{{logo-dark.png}}");
+}
