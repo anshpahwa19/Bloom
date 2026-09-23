@@ -909,57 +909,46 @@
     $("#ib-stat-sub").textContent = sub;
   }
 
-  // Chart: bars by app (Inbox) or a donut by request type (other tabs)
+  // Chart: a donut on every tab — by app on Inbox, by request type elsewhere.
+  // Each app and each type keeps its own colour slot (validated as a set).
   const DONUT_R = 52, DONUT_C = 2 * Math.PI * DONUT_R, DONUT_GAP = 2.5;
+  const IB_APP_SLOTS = { salesforce: 1, darwinbox: 2, uipath: 3, sap: 4 };
+  function ibSlices() {
+    if (ib.tab === "inbox") return { total: totalPending(), slices: APP_ORDER.map((a) => ({ key: a, label: sourceNames[a], slot: IB_APP_SLOTS[a], v: counts[a], mark: sourceMarks[a] })) };
+    const items = ib.items.filter((x) => x.state === ib.tab);
+    return { total: items.length, slices: Object.entries(IB_TYPES).map(([k, t]) => ({ key: k, label: t.label, slot: t.slot, v: items.filter((x) => x.type === k).length })) };
+  }
   function ibChart() {
     $("#ib-chart-title").textContent = IB_TABS[ib.tab].chart;
-    if (ib.tab === "inbox") {
-      const total = totalPending() || 1;
-      if (!ibPlot.querySelector(".ib-bars")) {
-        ibPlot.innerHTML = `<div class="ib-bars">${APP_ORDER.map((a) => `<button class="ib-bar" type="button" data-key="${a}" aria-pressed="false"><span class="app-mark app-mark--${sourceMarks[a]}">${a === "sap" ? "SAP" : sourceNames[a].slice(0, 2)}</span><span class="ib-bar__name">${sourceNames[a]}</span><span class="ib-bar__val"></span><span class="ib-bar__track"><span class="ib-bar__fill"></span></span></button>`).join("")}</div>`;
-        void ibPlot.offsetWidth; // bars grow from zero
-      }
-      const bars = $(".ib-bars", ibPlot);
-      bars.classList.toggle("has-filter", ib.type !== "all");
-      $$(".ib-bar", bars).forEach((b) => {
-        const a = b.dataset.key;
-        $(".ib-bar__val", b).textContent = counts[a];
-        $(".ib-bar__fill", b).style.setProperty("--v", (counts[a] / total).toFixed(3));
-        b.setAttribute("aria-pressed", String(ib.type === a));
-        b.setAttribute("aria-label", `${sourceNames[a]}: ${counts[a]} waiting. Show only ${sourceNames[a]}`);
-      });
-      ibLegend.hidden = true;
-      return;
-    }
-    const items = ib.items.filter((x) => x.state === ib.tab);
-    const total = items.length;
-    const byType = Object.fromEntries(Object.keys(IB_TYPES).map((k) => [k, items.filter((x) => x.type === k).length]));
-    if (!ibPlot.querySelector(".ib-donut")) {
-      ibPlot.innerHTML = `<div class="ib-donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="ib-donut__track" cx="66" cy="66" r="${DONUT_R}"/>${Object.entries(IB_TYPES).map(([k, t]) => `<circle class="ib-donut__seg" data-key="${k}" cx="66" cy="66" r="${DONUT_R}" style="--c: var(--viz-${t.slot}); stroke-dasharray: 0 ${DONUT_C}"/>`).join("")}</svg><div class="ib-donut__center"><p class="ib-donut__num"></p><p class="ib-donut__lbl"></p></div></div>`;
+    const { total, slices } = ibSlices();
+    const set = ib.tab === "inbox" ? "apps" : "types";
+    if (!ibPlot.querySelector(".ib-donut") || ibPlot.dataset.set !== set) {
+      ibPlot.dataset.set = set;
+      ibPlot.innerHTML = `<div class="ib-donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="ib-donut__track" cx="66" cy="66" r="${DONUT_R}"/>${slices.map((x) => `<circle class="ib-donut__seg" data-key="${x.key}" cx="66" cy="66" r="${DONUT_R}" style="--c: var(--viz-${x.slot}); stroke-dasharray: 0 ${DONUT_C}"/>`).join("")}</svg><div class="ib-donut__center"><p class="ib-donut__num"></p><p class="ib-donut__lbl"></p></div></div>`;
       void ibPlot.offsetWidth; // start segments from zero so they sweep in
     }
     let acc = 0;
     $$(".ib-donut__seg", ibPlot).forEach((seg) => {
-      const v = byType[seg.dataset.key];
+      const v = slices.find((x) => x.key === seg.dataset.key).v;
       const len = total ? (v / total) * DONUT_C : 0;
       seg.style.strokeDasharray = `${Math.max(0, len - (v && v !== total ? DONUT_GAP : 0)).toFixed(2)} ${DONUT_C.toFixed(2)}`;
       seg.style.strokeDashoffset = (-acc).toFixed(2);
       acc += len;
     });
-    ibLegend.hidden = false;
-    ibLegend.innerHTML = Object.entries(IB_TYPES).map(([k, t]) => `<li><button class="ib-legend__item" type="button" data-key="${k}" aria-pressed="${ib.type === k}" style="--c: var(--viz-${t.slot})" aria-label="${t.label}: ${byType[k]} of ${total}. Show only ${t.label}"><span class="ib-legend__dot"></span><span class="ib-legend__name">${t.label}</span><span class="ib-legend__val">${byType[k]}</span><span class="ib-legend__pct">${total ? Math.round((byType[k] / total) * 100) : 0}%</span></button></li>`).join("");
+    const unit = IB_TABS[ib.tab].unit;
+    ibLegend.innerHTML = slices.map((x) => `<li><button class="ib-legend__item" type="button" data-key="${x.key}" aria-pressed="${ib.type === x.key}" style="--c: var(--viz-${x.slot})" aria-label="${x.label}: ${x.v} ${unit} of ${total}. Show only ${x.label}"><span class="ib-legend__dot"></span><span class="ib-legend__name">${x.mark ? `<span class="app-mark app-mark--${x.mark}" aria-hidden="true">${x.key === "sap" ? "SAP" : x.label.slice(0, 2)}</span>` : ""}${x.label}</span><span class="ib-legend__val">${x.v}</span><span class="ib-legend__pct">${total ? Math.round((x.v / total) * 100) : 0}%</span></button></li>`).join("");
     ibDonutFocus(ib.focusKey || (ib.type !== "all" ? ib.type : null));
   }
   function ibDonutFocus(key) {
     const donut = $(".ib-donut", ibPlot);
     if (!donut) return;
-    const items = ib.items.filter((x) => x.state === ib.tab);
-    const n = key ? items.filter((x) => x.type === key).length : items.length;
-    donut.classList.toggle("has-focus", !!key);
-    $$(".ib-donut__seg", donut).forEach((s) => s.classList.toggle("is-focus", s.dataset.key === key));
-    $$(".ib-legend__item", ibLegend).forEach((b) => b.classList.toggle("is-focus", b.dataset.key === key));
-    $(".ib-donut__num", donut).textContent = n;
-    $(".ib-donut__lbl", donut).textContent = key ? IB_TYPES[key].label : IB_TABS[ib.tab].unit;
+    const { total, slices } = ibSlices();
+    const hit = key && slices.find((x) => x.key === key);
+    donut.classList.toggle("has-focus", !!hit);
+    $$(".ib-donut__seg", donut).forEach((s) => s.classList.toggle("is-focus", !!hit && s.dataset.key === key));
+    $$(".ib-legend__item", ibLegend).forEach((b) => b.classList.toggle("is-focus", !!hit && b.dataset.key === key));
+    $(".ib-donut__num", donut).textContent = hit ? hit.v : total;
+    $(".ib-donut__lbl", donut).textContent = hit ? hit.label : IB_TABS[ib.tab].unit;
   }
 
   function ibControls() {
@@ -1069,7 +1058,7 @@
   ibTypeChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.type = c.dataset.type; renderIb({ animate: true }); } });
   ibSortChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.sort = c.dataset.sort; renderIb({ animate: true }); } });
   $("#ib-clear").addEventListener("click", () => { ib.type = "all"; ib.sort = ib.tab === "inbox" ? "urgent" : "new"; ib.q = ""; ibSearch.value = ""; renderIb({ animate: true }); });
-  // the chart is also a filter: pick a bar or a legend row
+  // the chart is also a filter: pick a slice or a legend row
   ibPlot.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
   ibLegend.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
   const ibHover = (e) => { const b = e.target.closest?.("[data-key]"); const k = b ? b.dataset.key : null; if (k !== ib.focusKey) { ib.focusKey = k; ibDonutFocus(k || (ib.type !== "all" ? ib.type : null)); } };
@@ -1683,7 +1672,7 @@
   const FC_DIR = { x: .8, y: .6 };  // at rest the flag flies down-right, like a pointer's tail
   const FC_BLUE = ["#7DD3FF", "#2F6BFF", "#0B2DBF"];
   const FC_RED = ["#FF8E7A", "#E3263B", "#A10D24"];
-  const FC_HOVER = 'a, button, summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, [data-drawer], [data-toast]';
+  const FC_HOVER = 'a, button, summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, .ib-donut__seg, [data-drawer], [data-toast]';
   const FC_TEXT = 'input:not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
   const fcSupported = canHover && !!(fcCanvas && fcCanvas.getContext);
   const fc = {

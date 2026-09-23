@@ -76,9 +76,10 @@ It has four tabs:
 Around the tabs sit a search field, a filter (type or app, plus sort) and New
 request. New request opens a form with type (TCDF, Internal Memo, RFP), title
 and details, then Save draft or Submit for approval. A summary card and a
-chart follow the tab: bars by app on Inbox, a donut by type on the others.
-Clicking a bar or legend row filters the list. The type colours are
-validated for colour blindness and contrast in both themes.
+donut chart follow the tab: by app on Inbox, by request type on the others.
+Hovering a slice or legend row shows its count; clicking one filters the
+list. The chart colours are validated for colour blindness and contrast in
+both themes.
 
 ## Kept from the original
 

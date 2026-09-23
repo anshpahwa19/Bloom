@@ -100,6 +100,7 @@
   --viz-1: #2F5BFF;         /* TCDF */
   --viz-2: #0E9FB5;         /* Internal Memo */
   --viz-3: #D9722A;         /* RFP */
+  --viz-4: #9A45C8;         /* 4th slot: apps use 1–4 on the Inbox donut */
   --dot: rgba(11, 22, 64, .16);
 
   /* Type */
@@ -218,6 +219,7 @@
   --viz-1: #4470FF;
   --viz-2: #11A0B3;
   --viz-3: #CF6B30;
+  --viz-4: #9A45C8;
   --dot: rgba(160, 180, 255, .14);
 }
 
@@ -928,27 +930,19 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .ib-donut__num { font-family: var(--font-display); font-size: 2.1rem; font-weight: 700; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .ib-donut__lbl { margin-top: 4px; font-size: var(--fs-meta); color: var(--slate-2); }
 .ib-legend { display: grid; gap: 2px; margin-top: 14px; }
-.ib-legend__item, .ib-bar {
+.ib-legend__item {
   display: grid; align-items: center; width: 100%; padding: 9px 10px; border-radius: var(--r-sm); text-align: left;
   transition: background-color var(--t-base), opacity var(--t-base);
 }
 .ib-legend__item { grid-template-columns: 10px minmax(0, 1fr) auto 38px; gap: 10px; }
-.ib-legend__item:hover, .ib-legend__item.is-focus, .ib-bar:hover { background: var(--surface-2); }
-.ib-legend__item[aria-pressed="true"], .ib-bar[aria-pressed="true"] { background: var(--accent-soft); }
+.ib-legend__item:hover, .ib-legend__item.is-focus { background: var(--surface-2); }
+.ib-legend__item[aria-pressed="true"] { background: var(--accent-soft); }
 .ib-legend__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); }
-.ib-legend__name { font-size: var(--fs-support); font-weight: 600; color: var(--ink-2); }
+.ib-legend__name { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: var(--fs-support); font-weight: 600; color: var(--ink-2); }
+.ib-legend__name .app-mark { flex: none; width: 26px; height: 26px; }
 .ib-legend__val { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .ib-legend__pct { font-size: var(--fs-meta); color: var(--slate-2); text-align: right; font-variant-numeric: tabular-nums; }
 
-/* bars — what's waiting, by app (one hue; the logos carry identity) */
-.ib-bars { display: grid; gap: 2px; }
-.ib-bar { grid-template-columns: 34px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 7px; }
-.ib-bar .app-mark { grid-row: span 2; width: 34px; height: 34px; }
-.ib-bar__name { font-size: var(--fs-support); font-weight: 600; color: var(--ink-2); }
-.ib-bar__val { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.ib-bar__track { grid-column: 2 / -1; position: relative; height: 6px; border-radius: var(--r-pill); background: var(--surface-2); overflow: hidden; }
-.ib-bar__fill { position: absolute; inset: 0; border-radius: inherit; background: var(--accent); transform-origin: left center; transform: scaleX(var(--v, 0)); transition: transform 1s var(--ease-expo); }
-.ib-bars.has-filter .ib-bar:not([aria-pressed="true"]) { opacity: .45; }
 
 /* list */
 .ib-tabs { max-width: 100%; }

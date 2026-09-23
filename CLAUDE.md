@@ -21,10 +21,12 @@
   - The flag cursor (canvas `#flag-cursor` + ring `#flag-ring`, "Flag cursor"
     section of `src/app.js`) uses the logo's fixed blue/red, not the accent.
     Anything clickable should match `FC_HOVER` so the ring appears on it.
-  - Chart colours are the `--viz-1..3` tokens (TCDF, Internal Memo, RFP).
-    They were validated as a set with the dataviz skill's validator in both
-    themes. Re-run it before changing or adding a colour. Text never uses them;
-    they mark dots, icon tiles and chart marks only.
+  - Chart colours are the `--viz-1..4` tokens. Request types use slots 1–3
+    (TCDF, Internal Memo, RFP); the Inbox donut's apps use all four
+    (Salesforce 1, Darwinbox 2, UiPath 3, SAP 4). The four were validated
+    all-pairs with the dataviz skill's validator in both themes. Re-run it
+    before changing or adding a colour. Text never uses them; they mark dots,
+    icon tiles and chart marks only.
   - The Inbox page (`#inbox-page`, "Inbox — the requests workspace" in
     `src/app.js`) reads its Inbox tab from the Attention rows. Keep one
     source of truth; don't copy task data.
