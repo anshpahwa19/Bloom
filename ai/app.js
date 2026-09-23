@@ -654,14 +654,17 @@
 
   bTrack.innerHTML = birthdays.map((p, i) => `
     <article class="bday" aria-roledescription="slide" aria-label="${i + 1} of ${birthdays.length}" ${i ? 'aria-hidden="true"' : ""}>
-      <div class="bday__avatar"><span class="avatar ${p.img}"></span>${icon("i-gift")}</div>
-      <p class="bday__kicker">Birthday today</p>
-      <h3 class="bday__title">Happy birthday, ${firstName(p.name)}</h3>
-      <p class="bday__role">${p.name}, ${p.role}</p>
-      <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
-      <button class="btn btn--light" type="button" data-wish="${i}" ${i ? 'tabindex="-1"' : ""}>${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button>
+      <div class="bday__copy">
+        <p class="bday__kicker">Birthday today</p>
+        <h3 class="bday__title">Happy birthday, <span>${firstName(p.name)}</span></h3>
+        <p class="bday__role">${p.name}, ${p.role}</p>
+        <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
+        <button class="btn btn--light" type="button" data-wish="${i}" ${i ? 'tabindex="-1"' : ""}>${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button>
+      </div>
+      <figure class="bday__photo" aria-hidden="true"><span class="bday__img ${p.img}"></span><span class="bday__badge">${icon("i-gift")}</span></figure>
     </article>`).join("");
-  bDots.innerHTML = birthdays.map((p, i) => `<button class="dot" type="button" role="tab" aria-label="Show ${p.name}" aria-selected="${i === 0}"></button>`).join("");
+  // Named avatar tabs replace the dots: who is celebrating, at a glance
+  bDots.innerHTML = birthdays.map((p, i) => `<button class="bday-tab" type="button" role="tab" aria-label="Show ${p.name}" aria-selected="${i === 0}"><span class="bday-tab__img ${p.img}"></span><span class="bday-tab__name">${firstName(p.name)}</span></button>`).join("");
 
   function goBday(i) {
     bIndex = (i + birthdays.length) % birthdays.length;
@@ -670,12 +673,12 @@
       s.setAttribute("aria-hidden", String(n !== bIndex));
       $("button", s).tabIndex = n === bIndex ? 0 : -1;
     });
-    $$(".dot", bDots).forEach((d, n) => d.setAttribute("aria-selected", String(n === bIndex)));
+    $$(".bday-tab", bDots).forEach((d, n) => d.setAttribute("aria-selected", String(n === bIndex)));
   }
   const stopBday = () => clearInterval(bTimer);
   const startBday = () => { if (!reduceMotion) { stopBday(); bTimer = setInterval(() => goBday(bIndex + 1), 6000); } };
   $$("[data-bday]").forEach((b) => b.addEventListener("click", () => { goBday(bIndex + (b.dataset.bday === "next" ? 1 : -1)); startBday(); }));
-  $$(".dot", bDots).forEach((d, i) => d.addEventListener("click", () => { goBday(i); startBday(); }));
+  $$(".bday-tab", bDots).forEach((d, i) => d.addEventListener("click", () => { goBday(i); startBday(); }));
   celebrate.addEventListener("mouseenter", stopBday);
   celebrate.addEventListener("mouseleave", startBday);
   celebrate.addEventListener("focusin", stopBday);

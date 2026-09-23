@@ -627,9 +627,20 @@
           <!-- Birthday carousel -->
           <div class="celebrate" id="celebrate" aria-roledescription="carousel" aria-label="Birthdays today" data-lens-item>
             <div class="celebrate__shine" aria-hidden="true"></div>
-            <div class="celebrate__confetti" aria-hidden="true"></div>
+            <svg class="celebrate__confetti" viewBox="0 0 320 220" aria-hidden="true">
+              <rect x="38" y="30" width="14" height="6" rx="3" fill="#FFD66B" transform="rotate(-24 45 33)"/>
+              <rect x="120" y="14" width="10" height="5" rx="2.5" fill="#fff" opacity=".85" transform="rotate(32 125 16)"/>
+              <circle cx="176" cy="44" r="3.5" fill="#FFACB3"/>
+              <rect x="226" y="22" width="16" height="6" rx="3" fill="#FFACB3" transform="rotate(18 234 25)"/>
+              <circle cx="290" cy="58" r="3" fill="#fff" opacity=".8"/>
+              <rect x="84" y="78" width="12" height="5" rx="2.5" fill="#fff" opacity=".6" transform="rotate(-40 90 80)"/>
+              <circle cx="262" cy="118" r="4" fill="#FFD66B"/>
+              <rect x="190" y="150" width="14" height="6" rx="3" fill="#fff" opacity=".7" transform="rotate(50 197 153)"/>
+              <circle cx="128" cy="140" r="2.5" fill="#FFD66B" opacity=".8"/>
+              <rect x="300" y="170" width="12" height="5" rx="2.5" fill="#FFACB3" transform="rotate(-18 306 172)"/>
+            </svg>
             <header class="celebrate__head">
-              <p class="celebrate__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>Celebrations</p>
+              <p class="celebrate__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>Celebrations<span class="celebrate__count">3 today</span></p>
               <div class="carousel-ctrl">
                 <button class="icon-btn icon-btn--glass" type="button" data-bday="prev" aria-label="Previous announcement"><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg></button>
                 <button class="icon-btn icon-btn--glass" type="button" data-bday="next" aria-label="Next announcement"><svg class="ico ico--sm"><use href="#i-chevron-right"/></svg></button>
@@ -638,7 +649,7 @@
             <div class="celebrate__viewport">
               <div class="celebrate__track" id="bday-track"><!-- rendered by app.js --></div>
             </div>
-            <div class="dots dots--light" id="bday-dots" role="tablist" aria-label="Choose announcement"></div>
+            <div class="bday-tabs" id="bday-dots" role="tablist" aria-label="Choose announcement"></div>
           </div>
 
           <!-- This week, as a timeline -->
