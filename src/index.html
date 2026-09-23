@@ -85,7 +85,7 @@
        FLOATING NAVIGATION — section-aware capsule
        ============================================================ -->
   <header class="navbar" id="navbar">
-    <div class="navbar__capsule">
+    <div class="navbar__capsule frost">
       <a class="brand" href="#top" aria-label="BlooMultiverse home">
         <span class="brand__word has-logo" aria-hidden="true"></span>
       </a>
@@ -318,9 +318,9 @@
 
           <!-- Floating fragments — today's moments, each a doorway into the story -->
           <ul class="frags" aria-label="Today at Bloom">
-            <li><a class="frag frag--joiner" href="#people" style="--z:26;--r:-3deg;--d:-2s"><span class="avatar avatar--sm img-joiner-abdulazeez"></span><span class="frag__txt"><small>Joined this week</small><strong>Abdulazeez Aladwan</strong></span></a></li>
-            <li><a class="frag frag--bday" href="#announcements" style="--z:32;--r:2.5deg;--d:-4s"><span class="frag__icon frag__icon--gift"><svg class="ico ico--sm"><use href="#i-gift"/></svg></span><span class="frag__txt"><small>Birthday today</small><strong>Ahmed Obaid</strong></span></a></li>
-            <li><a class="frag frag--policy" href="#policies" style="--z:20;--r:-2deg;--d:-1s"><span class="frag__icon"><svg class="ico ico--sm"><use href="#i-shield"/></svg></span><span class="frag__txt"><small>Policy updated</small><strong>Data Security</strong></span></a></li>
+            <li><a class="frag frost frag--joiner" href="#people" style="--z:26;--r:-3deg;--d:-2s"><span class="avatar avatar--sm img-joiner-abdulazeez"></span><span class="frag__txt"><small>Joined this week</small><strong>Abdulazeez Aladwan</strong></span></a></li>
+            <li><a class="frag frost frag--bday" href="#announcements" style="--z:32;--r:2.5deg;--d:-4s"><span class="frag__icon frag__icon--gift"><svg class="ico ico--sm"><use href="#i-gift"/></svg></span><span class="frag__txt"><small>Birthday today</small><strong>Ahmed Obaid</strong></span></a></li>
+            <li><a class="frag frost frag--policy" href="#policies" style="--z:20;--r:-2deg;--d:-1s"><span class="frag__icon"><svg class="ico ico--sm"><use href="#i-shield"/></svg></span><span class="frag__txt"><small>Policy updated</small><strong>Data Security</strong></span></a></li>
           </ul>
         </div>
       </div>
@@ -329,7 +329,7 @@
         <a class="hero__cue" href="#attention"><span class="hero__cue-line" aria-hidden="true"></span>Scroll to explore</a>
 
         <!-- QUICK LINKS — application dock -->
-        <section class="dock" id="quick-links" aria-labelledby="ql-title">
+        <section class="dock frost" id="quick-links" aria-labelledby="ql-title">
           <h2 class="dock__title" id="ql-title">Quick links</h2>
           <ul class="dock__list">
             <li><a class="dock__item" href="https://www.salesforce.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--sf">Sf</span><span class="dock__label"><span class="dock__name">Salesforce</span><span class="dock__hint">Sales &amp; CRM</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
@@ -461,7 +461,7 @@
             <div class="people__img" id="people-img"></div>
             <span class="people__wipe" aria-hidden="true"></span>
             <figcaption class="people__badge"><svg class="ico ico--xs"><use href="#i-sparkle"/></svg><span id="people-week">Joined this week</span></figcaption>
-            <span class="people__index" id="people-counter" aria-live="polite">1 / 5</span>
+            <span class="people__index" id="people-counter" aria-live="polite">01 / 05</span>
           </figure>
         </div>
 
@@ -532,7 +532,7 @@
             <h2 class="display split" id="pol-title">Explore policies</h2>
             <p class="section-sub">The guides that shape how we work, kept current by each policy owner.</p>
           </div>
-          <a class="policies__all" href="#" data-toast="Opening the policy library…">Browse all 24 policies <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+          <a class="soft-link" href="#" data-toast="Opening the policy library…">Browse all 24 policies <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
         </header>
 
         <div class="chips policy-index reveal" role="group" aria-label="Filter policies" id="policy-chips">
@@ -597,7 +597,7 @@
 
       <div class="container rail-foot">
         <div class="rail-progress" aria-hidden="true"><span id="policy-progress"></span></div>
-        <p class="rail-count" id="policy-count" aria-hidden="true">01 — 05</p>
+        <p class="rail-count" id="policy-count" aria-hidden="true">01 / 05</p>
         <div class="carousel-ctrl">
           <button class="icon-btn icon-btn--bordered" type="button" data-rail-prev="policy-strip" aria-label="Scroll policies back"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
           <button class="icon-btn icon-btn--bordered" type="button" data-rail-next="policy-strip" aria-label="Scroll policies forward"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
@@ -733,13 +733,7 @@
             <h2 class="display split" id="disc-title">Exclusive retail discounts</h2>
             <p class="section-sub">Show your Bloom ID in store, or use the code online.</p>
           </div>
-          <div class="rail-head-ctrl">
-            <a class="cta-link" href="#" data-toast="Opening all partner offers…">All partner offers <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
-            <div class="carousel-ctrl">
-              <button class="icon-btn icon-btn--bordered" type="button" data-rail-prev="partner-rail" aria-label="Scroll offers back"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
-              <button class="icon-btn icon-btn--bordered" type="button" data-rail-next="partner-rail" aria-label="Scroll offers forward"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
-            </div>
-          </div>
+          <a class="soft-link" href="#" data-toast="Opening all partner offers…">All partner offers <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
         </header>
       </div>
 
@@ -758,7 +752,11 @@
 
       <div class="container rail-foot">
         <div class="rail-progress" aria-hidden="true"><span id="partner-progress"></span></div>
-        <p class="rail-count" id="partner-count" aria-hidden="true">01 — 08</p>
+        <p class="rail-count" id="partner-count" aria-hidden="true">01 / 08</p>
+        <div class="carousel-ctrl">
+          <button class="icon-btn icon-btn--bordered" type="button" data-rail-prev="partner-rail" aria-label="Scroll offers back"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+          <button class="icon-btn icon-btn--bordered" type="button" data-rail-next="partner-rail" aria-label="Scroll offers forward"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+        </div>
       </div>
     </section>
 
@@ -790,7 +788,7 @@
                 <span class="tag tag--covered"><svg class="ico ico--xs"><use href="#i-shield"/></svg>Covered</span>
                 <h3 class="perk__title">Medical insurance</h3>
                 <p>You and your family are covered. Download the myNAS app to find clinics and submit claims.</p>
-                <a class="btn btn--primary btn--sm" href="#" data-toast="Opening the myNAS download page…">Download myNAS app <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
+                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening the myNAS download page…">Download myNAS app <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </li>
@@ -801,7 +799,7 @@
               <div class="perk__body">
                 <h3 class="perk__title">Air tickets</h3>
                 <p>Your annual ticket home is ready to book.</p>
-                <a class="cta-link" href="#" data-toast="Opening air ticket details…">See details <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening air ticket details…">See details <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </li>
@@ -812,7 +810,7 @@
               <div class="perk__body">
                 <h3 class="perk__title">Mimojo</h3>
                 <p>Cashback at cafés and stores near you.</p>
-                <a class="cta-link" href="#" data-toast="Opening Mimojo…">Open Mimojo <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening Mimojo…">Open Mimojo <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </li>
@@ -823,7 +821,7 @@
               <div class="perk__body">
                 <h3 class="perk__title">Mazaya</h3>
                 <p>Member prices on travel, dining and leisure.</p>
-                <a class="cta-link" href="#" data-toast="Opening Mazaya…">Open Mazaya <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening Mazaya…">Open Mazaya <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
               </div>
             </article>
           </li>

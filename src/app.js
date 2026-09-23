@@ -882,7 +882,7 @@
     $("#people-doj").textContent = p.doj;
     $("#people-team").textContent = p.team;
     $("#people-week").textContent = p.week;
-    $("#people-counter").textContent = `${pIndex + 1} / ${people.length}`;
+    $("#people-counter").textContent = `${pad(pIndex + 1)} / ${pad(people.length)}`;
     $$(".reel-item", reel).forEach((r, i) => r.setAttribute("aria-selected", String(i === pIndex)));
     const sent = greeted.has(pIndex);
     helloBtn.classList.toggle("is-sent", sent);
@@ -941,7 +941,7 @@
     let first = items.findIndex((it) => it.offsetLeft + it.offsetWidth * 0.5 > edge);
     if (first < 0) first = items.length - 1;
     if (max > 0 && el.scrollLeft >= max - 4) first = Math.max(first, items.length - 1);
-    r.count.textContent = `${pad(first + 1)} — ${pad(items.length)}`;
+    r.count.textContent = `${pad(first + 1)} / ${pad(items.length)}`;
     if (r.near) {
       const all = $(".chip.is-selected", chipsEl)?.dataset.cat === "all";
       const cat = items[Math.min(first, items.length - 1)]?.dataset.cat;
