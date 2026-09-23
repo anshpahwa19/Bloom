@@ -13,6 +13,9 @@ import re
 ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "src"
 OUT = ROOT / "BlooMultiverse-Interactive.html"
+# The hosted (claude.ai Artifact) copy: the host supplies <!doctype>, <html>,
+# <head>, <body>, charset and viewport, so those wrappers are stripped.
+HOSTED = ROOT / "hosted" / "BlooMultiverse.html"
 MIME = {".jpg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml"}
 
 
@@ -31,3 +34,11 @@ html = (SRC / "index.html").read_text(encoding="utf-8")
 html = re.sub(r"<!-- @include ([\w.-]+) -->", include, html)
 OUT.write_text(html, encoding="utf-8")
 print(f"wrote {OUT.name} ({OUT.stat().st_size / 1024:.0f} KB)")
+
+hosted = re.sub(
+    r"<!doctype html>\s*|</?html[^>]*>\s*|</?head>\s*|</?body>\s*"
+    r"|<meta (?:charset|name=\"(?:viewport|description|theme-color)\")[^>]*>\s*|<link rel=\"icon\"[^>]*>\s*",
+    "", html, flags=re.I)
+HOSTED.parent.mkdir(exist_ok=True)
+HOSTED.write_text(hosted.lstrip(), encoding="utf-8")
+print(f"wrote {HOSTED.relative_to(ROOT)} ({HOSTED.stat().st_size / 1024:.0f} KB)")

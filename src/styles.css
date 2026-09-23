@@ -121,7 +121,8 @@
   --gutter: clamp(16px, 4vw, 56px);
   --maxw: 1360px;
   --nav-h: 64px;
-  --nav-top: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --nav-top: calc(14px + var(--safe-top));
   --rail-pad: max(var(--gutter), calc((100% - var(--maxw)) / 2));
 }
 
@@ -596,7 +597,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   transition: max-width var(--t-slow) var(--ease-expo), height var(--t-slow) var(--ease-expo),
               background-color var(--t-slow), border-color var(--t-slow), box-shadow var(--t-slow), padding var(--t-slow) var(--ease-expo);
 }
-.nav-compact .navbar { --nav-top: 10px; }
+.nav-compact .navbar { --nav-top: calc(10px + var(--safe-top)); }
 .nav-compact .navbar__capsule,
 .menu-open .navbar__capsule {
   max-width: 1200px; height: 58px; padding-left: 16px;
@@ -1643,7 +1644,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 
 /* Mobile */
 @media (max-width: 767px) {
-  :root { --nav-h: 56px; --nav-top: 8px; }
+  :root { --nav-h: 56px; --nav-top: calc(8px + var(--safe-top)); }
   .navbar { padding-inline: 8px; }
   .navbar__capsule, .nav-compact .navbar__capsule {
     max-width: none; height: 56px; padding: 0 4px 0 14px;

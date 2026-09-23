@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>BlooMultiverse — Your Digital Workplace</title>
+  <title>BlooMultiverse Interactive</title>
   <meta name="description" content="BlooMultiverse — the interactive employee experience where your apps, people and perks come together.">
   <meta name="theme-color" content="#F6F4EF">
   <script>
     (function () {
-      try {
-        var saved = localStorage.getItem("bloo-theme");
-        var theme = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        document.documentElement.setAttribute("data-theme", theme);
-        if (localStorage.getItem("bloo-x-palette") === "crimson") document.documentElement.setAttribute("data-palette", "crimson");
-      } catch (e) {}
+      var root = document.documentElement, saved = null, palette = null;
+      try { saved = localStorage.getItem("bloo-theme"); palette = localStorage.getItem("bloo-x-palette"); } catch (e) {}
+      // an in-page choice wins, then a theme the host page stamped, then the OS setting
+      var theme = saved || root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      root.setAttribute("data-theme", theme);
+      if (palette === "crimson") root.setAttribute("data-palette", "crimson");
     })();
   </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 43'%3E%3Cpath fill='%23922A22' d='M7.77 0v42.52h3.66V3.78h11.24c8.56.14 7.47 6.41 5.85 9.52h4.26C35.48 4.41 28.7.95 25.09 0H7.77Z'/%3E%3Cpath fill='%23922A22' d='M15.16 13.3v21.7h3.61V23.3l6.2 7.1 7.16-9.58c2.32.66 3.8 4.06 4.26 5.68 1.75 8.18-4.51 11.57-7.86 12.24l-13.37.41v3.31h12.3c11.02-1.18 13.23-9.99 12.95-14.25.19-7.14-6.39-10.94-9.7-11.94l-6.33 8.34-9.22-11.3Z'/%3E%3C/svg%3E">
@@ -144,7 +144,8 @@
   --gutter: clamp(16px, 4vw, 56px);
   --maxw: 1360px;
   --nav-h: 64px;
-  --nav-top: 14px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --nav-top: calc(14px + var(--safe-top));
   --rail-pad: max(var(--gutter), calc((100% - var(--maxw)) / 2));
 }
 
@@ -619,7 +620,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   transition: max-width var(--t-slow) var(--ease-expo), height var(--t-slow) var(--ease-expo),
               background-color var(--t-slow), border-color var(--t-slow), box-shadow var(--t-slow), padding var(--t-slow) var(--ease-expo);
 }
-.nav-compact .navbar { --nav-top: 10px; }
+.nav-compact .navbar { --nav-top: calc(10px + var(--safe-top)); }
 .nav-compact .navbar__capsule,
 .menu-open .navbar__capsule {
   max-width: 1200px; height: 58px; padding-left: 16px;
@@ -1666,7 +1667,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 
 /* Mobile */
 @media (max-width: 767px) {
-  :root { --nav-h: 56px; --nav-top: 8px; }
+  :root { --nav-h: 56px; --nav-top: calc(8px + var(--safe-top)); }
   .navbar { padding-inline: 8px; }
   .navbar__capsule, .nav-compact .navbar__capsule {
     max-width: none; height: 56px; padding: 0 4px 0 14px;
@@ -2831,7 +2832,10 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
-    const isDark = theme === "dark";
+    syncThemeControls();
+  }
+  function syncThemeControls() {
+    const isDark = root.getAttribute("data-theme") === "dark";
     themeSwitches.forEach((s) => {
       s.setAttribute("aria-checked", String(isDark));
       if (s.dataset.themeSwitch === "icon") s.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
@@ -2862,6 +2866,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   }
 
   applyTheme(root.getAttribute("data-theme") || "light");
+  new MutationObserver(syncThemeControls).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   applyPalette(root.getAttribute("data-palette") === "crimson" ? "crimson" : "azure");
   themeSwitches.forEach((s) => s.addEventListener("click", () => {
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";

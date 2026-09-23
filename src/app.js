@@ -41,7 +41,10 @@
 
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
-    const isDark = theme === "dark";
+    syncThemeControls();
+  }
+  function syncThemeControls() {
+    const isDark = root.getAttribute("data-theme") === "dark";
     themeSwitches.forEach((s) => {
       s.setAttribute("aria-checked", String(isDark));
       if (s.dataset.themeSwitch === "icon") s.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
@@ -72,6 +75,7 @@
   }
 
   applyTheme(root.getAttribute("data-theme") || "light");
+  new MutationObserver(syncThemeControls).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   applyPalette(root.getAttribute("data-palette") === "crimson" ? "crimson" : "azure");
   themeSwitches.forEach((s) => s.addEventListener("click", () => {
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";

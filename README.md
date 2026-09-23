@@ -4,7 +4,11 @@ A second design direction for the BlooMultiverse prototype: a scroll-driven
 digital workplace with a floating, section-aware navigation instead of a
 sidebar dashboard. Same content, features and interactions as the original.
 
-**Open `BlooMultiverse-Interactive.html`**. It is one self-contained file;
+**Live link:** https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ (private;
+share it from the page's Share menu). Every change is republished to this
+same link.
+
+Offline, open `BlooMultiverse-Interactive.html`. It is one self-contained file;
 only Google Fonts load from the network.
 
 ## Structure
@@ -20,7 +24,10 @@ src/assets/                       images extracted from the original
 reference/                        the original prototype (Direction A)
 ```
 
-Edit anything in `src/`, then run `python3 build.py`.
+Edit anything in `src/`, then run `python3 build.py`. It writes the offline
+file and `hosted/BlooMultiverse.html`, the version that gets published to the
+live link. That version has no `<html>/<head>/<body>` wrapper because the host
+adds its own.
 
 ## The experience, top to bottom
 
