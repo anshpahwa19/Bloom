@@ -152,11 +152,11 @@
      IntersectionObserver decides the active chapter (a thin band at
      42% of the viewport); the rAF loop below fills its progress line.
      --------------------------------------------------------------- */
-  const navLinksEl = $(".navbar__links");
-  const navLinks = $$(".navbar__link");
-  const pill = $(".navbar__pill");
-  const pageProgress = $(".navbar__progress");
-  const where = $(".navbar__where");
+  const navLinks = $$(".jump__item");
+  const whereBtn = $("#where");
+  const whereRoll = $("#where-roll");
+  const whereNum = $("#where-num");
+  const whereFill = $("#where-fill");
   const moLinks = $$(".mo__link");
   const groups = navLinks.map((link, i) => ({
     link, i, label: link.dataset.label, top: 0, bottom: 1,
@@ -168,18 +168,34 @@
   let activeGroup = null;
   let spyLockUntil = 0;
 
-  function movePill() {
-    if (!activeGroup || getComputedStyle(navLinksEl).display === "none") return;
-    const l = activeGroup.link;
-    const first = !pill.classList.contains("is-ready");
-    if (first) pill.style.transition = "none";
-    pill.style.width = `${l.offsetWidth}px`;
-    pill.style.transform = `translateX(${l.offsetLeft}px)`;
-    if (first) { void pill.offsetWidth; pill.style.transition = ""; pill.classList.add("is-ready"); }
+  // The capsule shows one section name; a new one rolls in from the
+  // direction you are scrolling while the old one rolls out.
+  const sizeWhere = () => {
+    const cur = $(".where__label:not(.is-leaving)", whereRoll);
+    if (cur) whereRoll.style.width = `${cur.offsetWidth}px`;
+  };
+  function rollWhere(label, dir) {
+    const old = $(".where__label:not(.is-leaving)", whereRoll);
+    if (old && old.textContent === label) { sizeWhere(); return; }
+    const next = document.createElement("span");
+    next.className = "where__label";
+    next.textContent = label;
+    old?.classList.add("is-leaving");
+    whereRoll.appendChild(next);
+    sizeWhere();
+    if (!old) return;
+    if (reduceMotion || !next.animate) { old.remove(); return; }
+    const d = dir < 0 ? -1 : 1;
+    const opts = { duration: 620, easing: "cubic-bezier(.16,1,.3,1)" };
+    next.animate([{ transform: `translateY(${d * 105}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], opts);
+    whereNum.animate([{ opacity: 0, transform: `translateY(${d * 6}px)` }, { opacity: 1, transform: "none" }], opts);
+    old.animate([{ transform: "none", opacity: 1 }, { transform: `translateY(${-d * 105}%)`, opacity: 0 }], { ...opts, fill: "forwards" })
+      .onfinish = () => old.remove();
   }
 
   function setActiveGroup(g) {
     if (!g || g === activeGroup) return;
+    const dir = activeGroup ? g.i - activeGroup.i : 0;
     activeGroup = g;
     navLinks.forEach((l) => {
       const on = l === g.link;
@@ -187,12 +203,9 @@
       if (on) l.setAttribute("aria-current", "location"); else l.removeAttribute("aria-current");
     });
     moLinks.forEach((m) => m.classList.toggle("is-current", m.getAttribute("href") === g.link.getAttribute("href")));
-    $(".navbar__num", where).textContent = pad(g.i + 1);
-    $(".navbar__label", where).textContent = g.label;
-    where.classList.remove("is-changing");
-    void where.offsetWidth;
-    where.classList.add("is-changing");
-    movePill();
+    whereNum.textContent = pad(g.i + 1);
+    rollWhere(g.label, dir);
+    whereBtn.setAttribute("aria-label", `You are in ${g.label}. Jump to a section`);
     requestTick();
   }
 
@@ -211,7 +224,7 @@
   setActiveGroup(groups[0]);
   addEventListener("scrollend", () => { if (spyLockUntil) { spyLockUntil = 0; pickActive(); } });
 
-  // In-page links jump the pill straight to their destination
+  // In-page links move the indicator straight to their destination
   document.addEventListener("click", (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || a.hasAttribute("data-toast")) return;
@@ -1245,7 +1258,6 @@
   const addScene = (el, fn) => { if (el) scenes.push({ el, fn, top: 0, h: 0 }); };
   const docTop = (el) => { let t = 0; while (el) { t += el.offsetTop; el = el.offsetParent; } return t; };
   let vh = innerHeight;
-  let docMax = 1;
   let compact = null;
 
   // Hero — copy lifts and shrinks, constellation rises faster, light drifts
@@ -1310,7 +1322,6 @@
   function measure() {
     vh = innerHeight;
     setupHScroll();
-    docMax = Math.max(1, root.scrollHeight - vh);
     scenes.forEach((s) => { s.top = docTop(s.el); s.h = s.el.offsetHeight; });
     groups.forEach((g) => {
       g.top = Math.min(...g.els.map(docTop));
@@ -1328,13 +1339,13 @@
 
     const isCompact = y > 40;
     if (isCompact !== compact) { compact = isCompact; body.classList.toggle("nav-compact", compact); }
-    pageProgress.style.setProperty("--pp", clamp(y / docMax).toFixed(4));
     const probe = y + 38; // the capsule's vertical centre
     const onDark = darkZones.some((z) => probe >= z.top && probe < z.bottom);
     if (onDark !== navOnDark) { navOnDark = onDark; navbarEl.classList.toggle("is-on-dark", onDark); }
     if (activeGroup) {
       const g = activeGroup;
-      pill.style.setProperty("--sp", clamp((y + vh * 0.42 - g.top) / Math.max(1, g.bottom - g.top)).toFixed(4));
+      const sp = clamp((y + vh * 0.42 - g.top) / Math.max(1, g.bottom - g.top));
+      whereFill.setAttribute("stroke-dashoffset", (100 - sp * 100).toFixed(2));
     }
 
     if (!reduceMotion) {
@@ -1374,7 +1385,7 @@
   new ResizeObserver(scheduleMeasure).observe(body);
   addEventListener("resize", () => {
     scheduleMeasure();
-    movePill();
+    sizeWhere();
     moveTabIndicator();
     moveIndicator(faqTabs);
     hideTip();
@@ -1430,13 +1441,13 @@
     if (root.classList.contains("is-loaded")) return;
     root.classList.add("is-loaded");
     countUp($("#orbit-total"));
-    movePill();
+    sizeWhere();
     moveTabIndicator();
     moveIndicator(faqTabs);
     measure();
   };
   Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 900))])
     .then(() => requestAnimationFrame(markLoaded));
-  addEventListener("load", () => { measure(); movePill(); rails.forEach(updateRail); });
+  addEventListener("load", () => { measure(); sizeWhere(); rails.forEach(updateRail); });
   measure();
 })();

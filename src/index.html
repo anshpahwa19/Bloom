@@ -90,19 +90,32 @@
         <span class="brand__word has-logo" aria-hidden="true"></span>
       </a>
 
-      <p class="navbar__where" aria-hidden="true"><span class="navbar__num">01</span><span class="navbar__label">Home</span></p>
+      <span class="navbar__sep" aria-hidden="true"></span>
 
-      <nav class="navbar__links" aria-label="Sections">
-        <span class="navbar__pill" aria-hidden="true"><span class="navbar__pill-progress"></span></span>
-        <a class="navbar__link" href="#top" data-spy="top" data-label="Home"><span>Home</span></a>
-        <a class="navbar__link" href="#attention" data-spy="attention" data-label="Attention"><span>Attention</span></a>
-        <a class="navbar__link" href="#people" data-spy="people announcements" data-label="People"><span>People</span></a>
-        <a class="navbar__link" href="#policies" data-spy="policies" data-label="Policies"><span>Policies</span></a>
-        <a class="navbar__link" href="#sports" data-spy="life sports" data-label="Communities"><span>Communities</span></a>
-        <a class="navbar__link" href="#discounts" data-spy="discounts" data-label="Discounts"><span>Discounts</span></a>
-        <a class="navbar__link" href="#perks" data-spy="perks" data-label="Perks"><span>Perks</span></a>
-        <a class="navbar__link" href="#faq" data-spy="faq footer" data-label="FAQ"><span>FAQ</span></a>
-      </nav>
+      <!-- Where you are: only the current section, rolling to the next as you scroll -->
+      <div class="menu menu--jump" data-menu>
+        <button class="where" type="button" id="where" data-menu-trigger aria-expanded="false" aria-haspopup="true" aria-label="You are in Home. Jump to a section" data-tip="Jump to a section">
+          <span class="where__ring" aria-hidden="true">
+            <svg viewBox="0 0 36 36"><circle class="where__track" cx="18" cy="18" r="16"/><circle class="where__fill" id="where-fill" cx="18" cy="18" r="16" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+            <span class="where__num" id="where-num">01</span>
+          </span>
+          <span class="where__roll" id="where-roll" aria-hidden="true"><span class="where__label">Home</span></span>
+          <svg class="ico ico--sm where__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+        </button>
+        <nav class="menu__panel jump" aria-label="Sections">
+          <p class="jump__title">Jump to</p>
+          <a class="menu__item jump__item" href="#top" data-spy="top" data-label="Home" style="--i:0"><span class="jump__num">01</span><span class="jump__name">Home</span><span class="jump__desc">Your day at a glance</span></a>
+          <a class="menu__item jump__item" href="#attention" data-spy="attention" data-label="Attention" style="--i:1"><span class="jump__num">02</span><span class="jump__name">Attention</span><span class="jump__desc">Actions waiting</span></a>
+          <a class="menu__item jump__item" href="#people" data-spy="people announcements" data-label="People" style="--i:2"><span class="jump__num">03</span><span class="jump__name">People</span><span class="jump__desc">New joiners &amp; announcements</span></a>
+          <a class="menu__item jump__item" href="#policies" data-spy="policies" data-label="Policies" style="--i:3"><span class="jump__num">04</span><span class="jump__name">Policies</span><span class="jump__desc">How we work</span></a>
+          <a class="menu__item jump__item" href="#sports" data-spy="life sports" data-label="Communities" style="--i:4"><span class="jump__num">05</span><span class="jump__name">Communities</span><span class="jump__desc">Sports &amp; communities</span></a>
+          <a class="menu__item jump__item" href="#discounts" data-spy="discounts" data-label="Discounts" style="--i:5"><span class="jump__num">06</span><span class="jump__name">Discounts</span><span class="jump__desc">Retail discounts</span></a>
+          <a class="menu__item jump__item" href="#perks" data-spy="perks" data-label="Perks" style="--i:6"><span class="jump__num">07</span><span class="jump__name">Perks</span><span class="jump__desc">Your workplace perks</span></a>
+          <a class="menu__item jump__item" href="#faq" data-spy="faq footer" data-label="FAQ" style="--i:7"><span class="jump__num">08</span><span class="jump__name">FAQ</span><span class="jump__desc">Help &amp; support</span></a>
+        </nav>
+      </div>
+
+      <span class="navbar__sep navbar__sep--end" aria-hidden="true"></span>
 
       <div class="navbar__actions">
         <button class="nav-btn nav-btn--search" type="button" id="search-open" aria-label="Search" aria-keyshortcuts="Control+K Meta+K" data-tip="Search">
@@ -160,7 +173,6 @@
           <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
         </button>
       </div>
-      <span class="navbar__progress" aria-hidden="true"></span>
     </div>
   </header>
 

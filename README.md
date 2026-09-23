@@ -44,11 +44,13 @@ adds its own.
 | 08 | FAQ | Calm support chapter: category tabs and an animated accordion. |
 | — | Footer | Word-by-word statement, app stores, support, socials. |
 
-The floating capsule tracks the current chapter with IntersectionObserver.
-The active pill slides between links and fills with that chapter’s progress.
-The capsule compacts after the hero and turns dark over dark chapters. On
-tablet and phone it shows the current chapter name, and ☰ opens a full menu
-with Your space and Appearance (theme and accent).
+Navigation is one floating capsule, centered from the first frame. It shows
+only the chapter on screen (tracked with IntersectionObserver). The name rolls
+up or down to the next as you scroll, and a ring around its number fills
+through the chapter. Click the name for a jump list of all eight chapters.
+The wordmark shrinks to the Bloom mark after the hero, and the capsule turns
+dark over dark chapters. ☰ opens a full menu with Your space and Appearance
+(theme and accent).
 
 ## Kept from the original
 

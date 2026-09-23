@@ -614,20 +614,18 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   transition: top var(--t-slow) var(--ease-expo);
 }
 .navbar__capsule {
-  pointer-events: auto; position: relative; display: flex; align-items: center; gap: 8px;
-  width: 100%; max-width: 1360px; color: var(--ink); height: var(--nav-h); padding: 0 8px 0 20px;
-  border-radius: var(--r-pill); border: 1px solid transparent;
-  transition: max-width var(--t-slow) var(--ease-expo), height var(--t-slow) var(--ease-expo),
-              background-color var(--t-slow), border-color var(--t-slow), box-shadow var(--t-slow), padding var(--t-slow) var(--ease-expo);
+  pointer-events: auto; position: relative; display: flex; align-items: center; gap: 4px;
+  max-width: 100%; height: var(--nav-h); padding: 0 7px 0 18px; color: var(--ink);
+  border-radius: var(--r-pill);
+  background: var(--glass); border: 1px solid var(--glass-line); box-shadow: var(--sh-float);
+  backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  transition: height var(--t-slow) var(--ease-expo), padding var(--t-slow) var(--ease-expo),
+              background-color var(--t-slow), border-color var(--t-slow), box-shadow var(--t-slow);
 }
 .nav-compact .navbar { --nav-top: calc(10px + var(--safe-top)); }
-.nav-compact .navbar__capsule,
-.menu-open .navbar__capsule {
-  max-width: 1200px; height: 58px; padding-left: 16px;
-  background: var(--glass); border-color: var(--glass-line); box-shadow: var(--sh-float);
-  backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
-}
-.menu-open .navbar__capsule { background: transparent; box-shadow: none; border-color: transparent; backdrop-filter: none; }
+.nav-compact .navbar__capsule { height: 56px; padding-left: 14px; }
+.menu-open .navbar__capsule { background: transparent; box-shadow: none; border-color: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.navbar__sep { flex: none; width: 1px; height: 22px; margin-inline: 6px; background: var(--line-strong); opacity: .8; }
 
 /* Brand — the wordmark collapses into its own mark on scroll */
 .brand { display: flex; align-items: center; height: 40px; flex: none; border-radius: var(--r-xs); }
@@ -639,40 +637,40 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 :root[data-theme="dark"] .brand__word, .tone-invert .brand__word, .navbar.is-on-dark .brand__word { background-image: var(--logo-dark); }
 .nav-compact .navbar .brand__word { width: 24px; }
 
-/* Current section — shown instead of links when space is tight */
-.navbar__where { display: none; align-items: center; gap: 10px; margin-left: 8px; min-width: 0; overflow: hidden; }
-.navbar__num { font-family: var(--font-display); font-size: .78rem; font-weight: 600; color: var(--accent-fg); font-variant-numeric: tabular-nums; }
-.navbar__label { font-family: var(--font-display); font-weight: 600; font-size: 1rem; letter-spacing: -.02em; white-space: nowrap; }
-.navbar__where.is-changing .navbar__num, .navbar__where.is-changing .navbar__label { animation: whereIn .5s var(--ease-expo); }
+/* Where you are — one section name that rolls as you scroll */
+.where {
+  display: inline-flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px 0 6px;
+  border-radius: var(--r-pill); transition: background-color var(--t-base);
+}
+.where:hover, .menu.is-open > .where { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.where__ring { position: relative; display: grid; place-items: center; flex: none; width: 34px; height: 34px; }
+.where__ring svg { position: absolute; inset: 0; width: 100%; height: 100%; rotate: -90deg; overflow: visible; }
+.where__track { fill: none; stroke: color-mix(in srgb, var(--ink) 12%, transparent); stroke-width: 2; }
+.where__fill { fill: none; stroke: var(--accent-fg); stroke-width: 2.4; stroke-linecap: round; transition: stroke-dashoffset 120ms linear; }
+.where__num { font-family: var(--font-display); font-size: 10.5px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.where__roll {
+  display: inline-grid; align-items: center; height: 1.5em; overflow: hidden;
+  font-family: var(--font-display); font-size: 1.05rem; font-weight: 600; letter-spacing: -.025em;
+  transition: width 560ms var(--ease-expo);
+}
+.where__label { grid-area: 1 / 1; justify-self: start; width: max-content; white-space: nowrap; }
+.where__chev { color: var(--slate-2); transition: transform var(--t-base) var(--ease-out); }
+.menu.is-open > .where .where__chev { transform: rotate(180deg); }
 
-/* Section links + the travelling pill */
-.navbar__links { position: relative; display: flex; align-items: center; gap: 2px; margin-inline: auto; padding: 4px; }
-.navbar__link {
-  position: relative; z-index: 1; display: inline-grid; align-items: center; justify-items: center;
-  height: 38px; padding: 0 14px; border-radius: var(--r-pill);
-  font-size: .86rem; font-weight: 500; color: var(--slate); white-space: nowrap;
-  transition: color var(--t-base);
-}
-.navbar__link > span, .navbar__link::after { grid-area: 1 / 1; }
-.navbar__link::after { content: attr(data-label); font-weight: 700; visibility: hidden; height: 0; }
-.navbar__link:hover { color: var(--ink); }
-.navbar__link.is-active { color: var(--pill-fg); }
-.navbar__link.is-active > span { font-weight: 650; }
-.navbar__pill {
-  position: absolute; left: 0; top: 4px; bottom: 4px; width: 0; z-index: 0;
-  border-radius: var(--r-pill); background: var(--pill-bg); box-shadow: var(--pill-shadow); overflow: hidden;
-  opacity: 0;
-  transition: transform 640ms var(--ease-expo), width 640ms var(--ease-expo), opacity var(--t-base), background-color var(--t-base);
-}
-.navbar__pill.is-ready { opacity: 1; }
-.navbar__pill-progress {
-  position: absolute; left: 14px; right: 14px; bottom: 5px; height: 2px; border-radius: 2px;
-  background: var(--pill-progress); transform-origin: left center; transform: scaleX(var(--sp, 0));
-}
+/* Jump list — every section, one click away */
+.menu--jump .menu__panel { left: 50%; right: auto; width: 330px; translate: -50% 0; transform-origin: top center; }
+.jump__title { padding: 8px 12px 6px; font-size: var(--fs-label); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--slate-2); }
+.menu__item.jump__item { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: baseline; gap: 10px; padding: 10px 12px; color: var(--ink); }
+.menu__item.jump__item:hover { padding-left: 16px; }
+.jump__num { font-family: var(--font-display); font-size: .74rem; font-weight: 600; color: var(--slate-2); font-variant-numeric: tabular-nums; }
+.jump__name { font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.02em; }
+.jump__desc { font-size: var(--fs-meta); color: var(--slate-2); text-align: right; }
+.jump__item.is-active { background: var(--accent-soft); }
+.jump__item.is-active .jump__num, .jump__item.is-active .jump__name { color: var(--accent-fg); }
+.menu--jump.is-open .jump__item { animation: rise .5s var(--ease-expo) both; animation-delay: calc(var(--i) * 28ms + 40ms); }
 
 /* Actions */
-.navbar__actions { display: flex; align-items: center; gap: 2px; flex: none; margin-left: auto; }
-.navbar__links + .navbar__actions { margin-left: 0; }
+.navbar__actions { display: flex; align-items: center; gap: 2px; flex: none; }
 .nav-btn {
   position: relative; display: inline-grid; place-items: center; flex: none;
   width: 42px; height: 42px; border-radius: var(--r-pill); color: var(--ink-2);
@@ -712,14 +710,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 .menu-open .burger__lines i:first-child { top: 5px; transform: rotate(45deg); }
 .menu-open .burger__lines i:last-child { top: 5px; width: 18px; transform: rotate(-45deg); }
 
-/* Page progress hairline */
-.navbar__progress {
-  position: absolute; left: 28px; right: 28px; bottom: -1px; height: 2px; border-radius: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--cyan)); transform-origin: left center;
-  transform: scaleX(var(--pp, 0)); opacity: 0; transition: opacity var(--t-slow);
-}
-.nav-compact .navbar__progress { opacity: .9; }
-.menu-open .navbar__progress { opacity: 0; }
 
 /* ------------------------------------------------------------------
    4b. MENU OVERLAY
@@ -1604,17 +1594,13 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
    7. RESPONSIVE
    ------------------------------------------------------------------ */
 
-/* Narrow desktop: tighten the capsule */
-@media (max-width: 1360px) {
+/* Smaller screens: the search shortcut hint gives way */
+@media (max-width: 1023px) {
   .nav-kbd { display: none; }
-  .navbar__link { padding: 0 11px; }
 }
 
-/* Tablet & small laptop: capsule shows the current section, links live in the menu */
+/* Tablet & small laptop */
 @media (max-width: 1199px) {
-  .navbar__links { display: none; }
-  .navbar__where { display: flex; }
-  .navbar__links + .navbar__actions { margin-left: auto; }
   .hero__inner { grid-template-columns: minmax(0, 1fr); }
   .hero__stage { margin-top: 12px; }
   .orbit { width: min(100%, 440px); }
@@ -1669,14 +1655,14 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 @media (max-width: 767px) {
   :root { --nav-h: 56px; --nav-top: calc(8px + var(--safe-top)); }
   .navbar { padding-inline: 8px; }
-  .navbar__capsule, .nav-compact .navbar__capsule {
-    max-width: none; height: 56px; padding: 0 4px 0 14px;
-    background: var(--glass); border-color: var(--glass-line); box-shadow: var(--sh-float);
-    backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  }
+  .navbar__capsule, .nav-compact .navbar__capsule { width: 100%; height: 56px; padding: 0 4px 0 14px; gap: 2px; }
   .navbar .brand__word { width: 24px; }
+  .navbar__sep--end { display: none; }
+  .menu--jump { margin-right: auto; }
+  .where { gap: 8px; padding-right: 8px; }
+  .where__ring { width: 30px; height: 30px; }
+  .menu--jump .menu__panel { position: fixed; left: 8px; right: 8px; top: calc(var(--nav-top) + 64px); width: auto; translate: none; max-height: calc(100svh - 96px); overflow: auto; }
   .nav-btn--inbox, .theme-toggle, .menu--profile { display: none; }
-  .navbar__progress { opacity: .9; left: 20px; right: 20px; }
   .menu__panel--wide { position: fixed; left: 8px; right: 8px; top: 72px; width: auto; }
 
   .mo__inner { grid-template-columns: minmax(0, 1fr); padding-top: 96px; }
@@ -1900,19 +1886,32 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
         <span class="brand__word has-logo" aria-hidden="true"></span>
       </a>
 
-      <p class="navbar__where" aria-hidden="true"><span class="navbar__num">01</span><span class="navbar__label">Home</span></p>
+      <span class="navbar__sep" aria-hidden="true"></span>
 
-      <nav class="navbar__links" aria-label="Sections">
-        <span class="navbar__pill" aria-hidden="true"><span class="navbar__pill-progress"></span></span>
-        <a class="navbar__link" href="#top" data-spy="top" data-label="Home"><span>Home</span></a>
-        <a class="navbar__link" href="#attention" data-spy="attention" data-label="Attention"><span>Attention</span></a>
-        <a class="navbar__link" href="#people" data-spy="people announcements" data-label="People"><span>People</span></a>
-        <a class="navbar__link" href="#policies" data-spy="policies" data-label="Policies"><span>Policies</span></a>
-        <a class="navbar__link" href="#sports" data-spy="life sports" data-label="Communities"><span>Communities</span></a>
-        <a class="navbar__link" href="#discounts" data-spy="discounts" data-label="Discounts"><span>Discounts</span></a>
-        <a class="navbar__link" href="#perks" data-spy="perks" data-label="Perks"><span>Perks</span></a>
-        <a class="navbar__link" href="#faq" data-spy="faq footer" data-label="FAQ"><span>FAQ</span></a>
-      </nav>
+      <!-- Where you are: only the current section, rolling to the next as you scroll -->
+      <div class="menu menu--jump" data-menu>
+        <button class="where" type="button" id="where" data-menu-trigger aria-expanded="false" aria-haspopup="true" aria-label="You are in Home. Jump to a section" data-tip="Jump to a section">
+          <span class="where__ring" aria-hidden="true">
+            <svg viewBox="0 0 36 36"><circle class="where__track" cx="18" cy="18" r="16"/><circle class="where__fill" id="where-fill" cx="18" cy="18" r="16" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+            <span class="where__num" id="where-num">01</span>
+          </span>
+          <span class="where__roll" id="where-roll" aria-hidden="true"><span class="where__label">Home</span></span>
+          <svg class="ico ico--sm where__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+        </button>
+        <nav class="menu__panel jump" aria-label="Sections">
+          <p class="jump__title">Jump to</p>
+          <a class="menu__item jump__item" href="#top" data-spy="top" data-label="Home" style="--i:0"><span class="jump__num">01</span><span class="jump__name">Home</span><span class="jump__desc">Your day at a glance</span></a>
+          <a class="menu__item jump__item" href="#attention" data-spy="attention" data-label="Attention" style="--i:1"><span class="jump__num">02</span><span class="jump__name">Attention</span><span class="jump__desc">Actions waiting</span></a>
+          <a class="menu__item jump__item" href="#people" data-spy="people announcements" data-label="People" style="--i:2"><span class="jump__num">03</span><span class="jump__name">People</span><span class="jump__desc">New joiners &amp; announcements</span></a>
+          <a class="menu__item jump__item" href="#policies" data-spy="policies" data-label="Policies" style="--i:3"><span class="jump__num">04</span><span class="jump__name">Policies</span><span class="jump__desc">How we work</span></a>
+          <a class="menu__item jump__item" href="#sports" data-spy="life sports" data-label="Communities" style="--i:4"><span class="jump__num">05</span><span class="jump__name">Communities</span><span class="jump__desc">Sports &amp; communities</span></a>
+          <a class="menu__item jump__item" href="#discounts" data-spy="discounts" data-label="Discounts" style="--i:5"><span class="jump__num">06</span><span class="jump__name">Discounts</span><span class="jump__desc">Retail discounts</span></a>
+          <a class="menu__item jump__item" href="#perks" data-spy="perks" data-label="Perks" style="--i:6"><span class="jump__num">07</span><span class="jump__name">Perks</span><span class="jump__desc">Your workplace perks</span></a>
+          <a class="menu__item jump__item" href="#faq" data-spy="faq footer" data-label="FAQ" style="--i:7"><span class="jump__num">08</span><span class="jump__name">FAQ</span><span class="jump__desc">Help &amp; support</span></a>
+        </nav>
+      </div>
+
+      <span class="navbar__sep navbar__sep--end" aria-hidden="true"></span>
 
       <div class="navbar__actions">
         <button class="nav-btn nav-btn--search" type="button" id="search-open" aria-label="Search" aria-keyshortcuts="Control+K Meta+K" data-tip="Search">
@@ -1970,7 +1969,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
           <span class="burger__lines" aria-hidden="true"><i></i><i></i></span>
         </button>
       </div>
-      <span class="navbar__progress" aria-hidden="true"></span>
     </div>
   </header>
 
@@ -2943,11 +2941,11 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
      IntersectionObserver decides the active chapter (a thin band at
      42% of the viewport); the rAF loop below fills its progress line.
      --------------------------------------------------------------- */
-  const navLinksEl = $(".navbar__links");
-  const navLinks = $$(".navbar__link");
-  const pill = $(".navbar__pill");
-  const pageProgress = $(".navbar__progress");
-  const where = $(".navbar__where");
+  const navLinks = $$(".jump__item");
+  const whereBtn = $("#where");
+  const whereRoll = $("#where-roll");
+  const whereNum = $("#where-num");
+  const whereFill = $("#where-fill");
   const moLinks = $$(".mo__link");
   const groups = navLinks.map((link, i) => ({
     link, i, label: link.dataset.label, top: 0, bottom: 1,
@@ -2959,18 +2957,34 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   let activeGroup = null;
   let spyLockUntil = 0;
 
-  function movePill() {
-    if (!activeGroup || getComputedStyle(navLinksEl).display === "none") return;
-    const l = activeGroup.link;
-    const first = !pill.classList.contains("is-ready");
-    if (first) pill.style.transition = "none";
-    pill.style.width = `${l.offsetWidth}px`;
-    pill.style.transform = `translateX(${l.offsetLeft}px)`;
-    if (first) { void pill.offsetWidth; pill.style.transition = ""; pill.classList.add("is-ready"); }
+  // The capsule shows one section name; a new one rolls in from the
+  // direction you are scrolling while the old one rolls out.
+  const sizeWhere = () => {
+    const cur = $(".where__label:not(.is-leaving)", whereRoll);
+    if (cur) whereRoll.style.width = `${cur.offsetWidth}px`;
+  };
+  function rollWhere(label, dir) {
+    const old = $(".where__label:not(.is-leaving)", whereRoll);
+    if (old && old.textContent === label) { sizeWhere(); return; }
+    const next = document.createElement("span");
+    next.className = "where__label";
+    next.textContent = label;
+    old?.classList.add("is-leaving");
+    whereRoll.appendChild(next);
+    sizeWhere();
+    if (!old) return;
+    if (reduceMotion || !next.animate) { old.remove(); return; }
+    const d = dir < 0 ? -1 : 1;
+    const opts = { duration: 620, easing: "cubic-bezier(.16,1,.3,1)" };
+    next.animate([{ transform: `translateY(${d * 105}%)`, opacity: 0 }, { transform: "none", opacity: 1 }], opts);
+    whereNum.animate([{ opacity: 0, transform: `translateY(${d * 6}px)` }, { opacity: 1, transform: "none" }], opts);
+    old.animate([{ transform: "none", opacity: 1 }, { transform: `translateY(${-d * 105}%)`, opacity: 0 }], { ...opts, fill: "forwards" })
+      .onfinish = () => old.remove();
   }
 
   function setActiveGroup(g) {
     if (!g || g === activeGroup) return;
+    const dir = activeGroup ? g.i - activeGroup.i : 0;
     activeGroup = g;
     navLinks.forEach((l) => {
       const on = l === g.link;
@@ -2978,12 +2992,9 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
       if (on) l.setAttribute("aria-current", "location"); else l.removeAttribute("aria-current");
     });
     moLinks.forEach((m) => m.classList.toggle("is-current", m.getAttribute("href") === g.link.getAttribute("href")));
-    $(".navbar__num", where).textContent = pad(g.i + 1);
-    $(".navbar__label", where).textContent = g.label;
-    where.classList.remove("is-changing");
-    void where.offsetWidth;
-    where.classList.add("is-changing");
-    movePill();
+    whereNum.textContent = pad(g.i + 1);
+    rollWhere(g.label, dir);
+    whereBtn.setAttribute("aria-label", `You are in ${g.label}. Jump to a section`);
     requestTick();
   }
 
@@ -3002,7 +3013,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   setActiveGroup(groups[0]);
   addEventListener("scrollend", () => { if (spyLockUntil) { spyLockUntil = 0; pickActive(); } });
 
-  // In-page links jump the pill straight to their destination
+  // In-page links move the indicator straight to their destination
   document.addEventListener("click", (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a || a.hasAttribute("data-toast")) return;
@@ -4036,7 +4047,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   const addScene = (el, fn) => { if (el) scenes.push({ el, fn, top: 0, h: 0 }); };
   const docTop = (el) => { let t = 0; while (el) { t += el.offsetTop; el = el.offsetParent; } return t; };
   let vh = innerHeight;
-  let docMax = 1;
   let compact = null;
 
   // Hero — copy lifts and shrinks, constellation rises faster, light drifts
@@ -4101,7 +4111,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   function measure() {
     vh = innerHeight;
     setupHScroll();
-    docMax = Math.max(1, root.scrollHeight - vh);
     scenes.forEach((s) => { s.top = docTop(s.el); s.h = s.el.offsetHeight; });
     groups.forEach((g) => {
       g.top = Math.min(...g.els.map(docTop));
@@ -4119,13 +4128,13 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
 
     const isCompact = y > 40;
     if (isCompact !== compact) { compact = isCompact; body.classList.toggle("nav-compact", compact); }
-    pageProgress.style.setProperty("--pp", clamp(y / docMax).toFixed(4));
     const probe = y + 38; // the capsule's vertical centre
     const onDark = darkZones.some((z) => probe >= z.top && probe < z.bottom);
     if (onDark !== navOnDark) { navOnDark = onDark; navbarEl.classList.toggle("is-on-dark", onDark); }
     if (activeGroup) {
       const g = activeGroup;
-      pill.style.setProperty("--sp", clamp((y + vh * 0.42 - g.top) / Math.max(1, g.bottom - g.top)).toFixed(4));
+      const sp = clamp((y + vh * 0.42 - g.top) / Math.max(1, g.bottom - g.top));
+      whereFill.setAttribute("stroke-dashoffset", (100 - sp * 100).toFixed(2));
     }
 
     if (!reduceMotion) {
@@ -4165,7 +4174,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
   new ResizeObserver(scheduleMeasure).observe(body);
   addEventListener("resize", () => {
     scheduleMeasure();
-    movePill();
+    sizeWhere();
     moveTabIndicator();
     moveIndicator(faqTabs);
     hideTip();
@@ -4221,14 +4230,14 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: 6px; border: 1px solid var(
     if (root.classList.contains("is-loaded")) return;
     root.classList.add("is-loaded");
     countUp($("#orbit-total"));
-    movePill();
+    sizeWhere();
     moveTabIndicator();
     moveIndicator(faqTabs);
     measure();
   };
   Promise.race([document.fonts ? document.fonts.ready : Promise.resolve(), new Promise((r) => setTimeout(r, 900))])
     .then(() => requestAnimationFrame(markLoaded));
-  addEventListener("load", () => { measure(); movePill(); rails.forEach(updateRail); });
+  addEventListener("load", () => { measure(); sizeWhere(); rails.forEach(updateRail); });
   measure();
 })();
 
