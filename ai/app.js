@@ -1209,7 +1209,7 @@
         <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
         <button class="btn btn--light" type="button" data-wish="${i}" ${i ? 'tabindex="-1"' : ""}>${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button>
       </div>
-      <figure class="bday__photo" aria-hidden="true"><span class="bday__img ${p.img}"></span><span class="bday__badge">${icon("i-gift")}</span></figure>
+      <figure class="bday__photo" aria-hidden="true">${birthdays.filter((_, n) => n !== i).map((o, n) => `<span class="bday__back bday__back--${n} ${o.img}"></span>`).join("")}<span class="bday__img ${p.img}"></span><span class="bday__badge">${icon("i-gift")}</span></figure>
     </article>`).join("");
   // Named avatar tabs replace the dots: who is celebrating, at a glance
   bDots.innerHTML = birthdays.map((p, i) => `<button class="bday-tab" type="button" role="tab" aria-label="Show ${p.name}" aria-selected="${i === 0}"><span class="bday-tab__img ${p.img}"></span><span class="bday-tab__name">${firstName(p.name)}</span></button>`).join("");

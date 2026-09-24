@@ -1313,14 +1313,22 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .news__board > .ann { flex: 0 0 100%; scroll-snap-align: start; min-height: 440px; }
 /* Wide slides: every slide uses the same two halves — words on one side, the picture on the other */
 @media (min-width: 769px) {
-  .news__board > .ann { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: clamp(32px, 4vw, 64px); row-gap: 0; padding: 30px clamp(32px, 4vw, 56px); }
-  .news__board > .ann > .ann__head { grid-column: 1 / -1; }
+  .news__board > .ann:not(.celebrate) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: clamp(32px, 4vw, 64px); row-gap: 0; padding: 30px clamp(32px, 4vw, 56px); }
+  .news__board > .ann:not(.celebrate) > .ann__head { grid-column: 1 / -1; }
   .news__board .ann__copy { grid-column: 1; grid-row: 2; align-self: center; max-width: 520px; margin: 0; }
   /* anniversary: copy left, the number right */
   .news__board .anniv { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: inherit; align-items: center; }
   .news__board .anniv__copy { grid-column: 1; grid-row: 1; max-width: 520px; }
-  .news__board .anniv__years { grid-column: 2; grid-row: 1; justify-self: center; justify-items: center; text-align: center; }
-  .news__board .anniv__years strong { font-size: clamp(9rem, 5rem + 7vw, 13rem); }
+  .news__board .anniv__medal { grid-column: 2; grid-row: 1; }
+  /* Birthday slide, wide: words left, a stack of portraits right */
+  .news__board > .celebrate { padding: 30px clamp(32px, 4vw, 56px); }
+  .news__board .celebrate .carousel-ctrl { display: none; }
+  .news__board .celebrate__viewport { margin: 0 calc(-1 * clamp(32px, 4vw, 56px)); }
+  .news__board .bday { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 4vw, 64px); padding: 0 clamp(32px, 4vw, 56px); }
+  .news__board .bday__copy { max-width: 520px; }
+  .news__board .bday__title { font-size: clamp(2.2rem, 1.4rem + 1.8vw, 3.2rem); }
+  .news__board .bday__photo { justify-self: center; width: clamp(180px, 14vw, 215px); margin: 28px 0; }
+  .news__board .bday-tabs { max-width: calc(50% - 32px); }
   /* fire drill: photo in the right half, standing on the floor */
   .news__board .ann__art--drill { left: 50%; right: 0; width: auto; aspect-ratio: auto; background: var(--img) center bottom / auto 100% no-repeat; --fade: linear-gradient(90deg, transparent calc(50% - 164px), #000 calc(50% - 90px), #000 calc(50% + 110px), transparent calc(50% + 164px)); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
   .news__board .ann--drill .ann__copy { max-width: 460px; }
@@ -1357,7 +1365,7 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 }
 .ann--anniv .ann__kicker { background: rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .9); }
 .ann--anniv .ann__when { background: #fff; color: var(--deep); }
-.anniv { flex: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px clamp(20px, 2.4vw, 32px); }
+.anniv { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px clamp(20px, 2.4vw, 32px); }
 .anniv__years { display: grid; justify-items: start; align-self: center; }
 .anniv__years strong {
   font-family: var(--font-display); font-size: clamp(6.5rem, 3.6rem + 5.4vw, 10rem); font-weight: 700; line-height: .9; letter-spacing: -0.07em; padding: 0 .1em 0 .02em;
@@ -2215,6 +2223,33 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .field__cursor { display: none; }
 }
 
+/* Anniversary medal: a ring of ten ticks, one per year, around the portrait */
+.anniv__copy .anniv__who { display: block; font-size: var(--fs-support); color: rgba(255,255,255,.72); }
+.anniv__who strong { display: inline; color: #fff; font-weight: 600; }
+.anniv__facts { display: flex; flex-wrap: wrap; gap: 10px 28px; padding: 14px 0; margin: 4px 0; border-block: 1px solid rgba(255,255,255,.14); width: 100%; }
+.anniv__facts dt { font-size: var(--fs-label); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+.anniv__facts dd { margin-top: 2px; font-weight: 600; color: #fff; font-size: var(--fs-support); }
+.anniv__medal { position: relative; justify-self: center; width: clamp(220px, 20vw, 290px); aspect-ratio: 1; display: grid; place-items: center; }
+.anniv__ring { position: absolute; inset: 0; border-radius: 50%;
+  background: repeating-conic-gradient(from -18deg, #C9C1FF 0 22deg, transparent 22deg 36deg);
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+          mask: radial-gradient(closest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+  opacity: .9; animation: spin 60s linear infinite; }
+.anniv__medal::before { content: ""; position: absolute; inset: 16px; border-radius: 50%; background: radial-gradient(circle at 50% 35%, rgba(122,107,240,.45), rgba(122,107,240,.08) 70%); border: 1px solid rgba(255,255,255,.14); }
+.anniv__photo { position: relative; width: 62%; aspect-ratio: 1; border-radius: 50%; background: var(--img) center 25% / cover; box-shadow: 0 0 0 5px rgba(255,255,255,.95), 0 20px 40px -16px rgba(0,0,0,.6); }
+.anniv__badge { position: absolute; bottom: 4%; left: 50%; transform: translateX(-50%); display: inline-flex; align-items: baseline; gap: 6px; padding: 8px 18px; border-radius: var(--r-pill); background: linear-gradient(135deg, #fff, #E4DFFF); color: var(--deep); box-shadow: 0 10px 24px -10px rgba(0,0,0,.5); white-space: nowrap; }
+.anniv__badge strong { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.anniv__badge span { font-size: var(--fs-label); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+@media (prefers-reduced-motion: reduce) { .anniv__ring { animation: none; } }
+@media (max-width: 768px) { .anniv__medal { order: -1; width: 200px; justify-self: start; } }
+
+/* Birthday: today's other celebrants fan out behind the portrait */
+.bday__back { position: absolute; inset: 6%; border-radius: 28px; background: var(--img, none) center 20% / cover, linear-gradient(135deg, var(--lavender), var(--bloo-blue)); box-shadow: 0 0 0 4px rgba(255,255,255,.55); opacity: .55; filter: saturate(.6); }
+.bday__back--0 { transform: rotate(-14deg) translate(-22%, 4%); }
+.bday__back--1 { transform: rotate(12deg) translate(22%, 6%); }
+.bday__img { box-shadow: 0 0 0 5px rgba(255,255,255,.95), 0 22px 40px -22px rgba(20,0,8,.7) !important; }
+@media (max-width: 768px) { .bday__back { display: none; } }
+
   </style>
   <style>
 /* ==================================================================
@@ -2931,12 +2966,17 @@ p.inbox-empty .text-btn { margin-left: 6px; }
           <article class="ann ann--anniv" id="ann-anniv" data-ann="anniversary" data-lens-item aria-labelledby="anniv-title">
             <header class="ann__head"><p class="ann__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-award"/></svg>Work anniversary</p><span class="ann__when">Today</span></header>
             <div class="anniv">
-              <p class="anniv__years" aria-hidden="true"><strong>10</strong><span>years<br>at Bloom</span></p>
               <div class="anniv__copy">
                 <h3 class="ann__title" id="anniv-title">Happy work anniversary, <span>Khalid</span></h3>
-                <p class="anniv__who"><span class="avatar img-av-elder" aria-hidden="true"></span><span><strong>Khalid Rashed</strong>Facilities Manager, Operations</span></p>
+                <p class="anniv__who"><strong>Khalid Rashed</strong> · Facilities Manager, Operations</p>
                 <p class="ann__text">Ten years of keeping our sites running smoothly. A note of thanks goes a long way.</p>
+                <dl class="anniv__facts"><div><dt>Joined</dt><dd>24 Sep 2016</dd></div><div><dt>Team</dt><dd>Operations</dd></div><div><dt>Milestone</dt><dd>10 years</dd></div></dl>
                 <button class="btn btn--light" type="button" id="anniv-btn" data-congrats><svg class="ico ico--sm" aria-hidden="true"><use href="#i-award"/></svg><span>Congratulate Khalid</span></button>
+              </div>
+              <div class="anniv__medal" aria-hidden="true">
+                <span class="anniv__ring"></span>
+                <span class="anniv__photo img-av-elder"></span>
+                <span class="anniv__badge"><strong>10</strong><span>years</span></span>
               </div>
             </div>
           </article>
@@ -4669,7 +4709,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
         <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
         <button class="btn btn--light" type="button" data-wish="${i}" ${i ? 'tabindex="-1"' : ""}>${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button>
       </div>
-      <figure class="bday__photo" aria-hidden="true"><span class="bday__img ${p.img}"></span><span class="bday__badge">${icon("i-gift")}</span></figure>
+      <figure class="bday__photo" aria-hidden="true">${birthdays.filter((_, n) => n !== i).map((o, n) => `<span class="bday__back bday__back--${n} ${o.img}"></span>`).join("")}<span class="bday__img ${p.img}"></span><span class="bday__badge">${icon("i-gift")}</span></figure>
     </article>`).join("");
   // Named avatar tabs replace the dots: who is celebrating, at a glance
   bDots.innerHTML = birthdays.map((p, i) => `<button class="bday-tab" type="button" role="tab" aria-label="Show ${p.name}" aria-selected="${i === 0}"><span class="bday-tab__img ${p.img}"></span><span class="bday-tab__name">${firstName(p.name)}</span></button>`).join("");
