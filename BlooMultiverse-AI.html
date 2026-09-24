@@ -710,19 +710,39 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .rail__tool:hover { background: var(--surface-2); color: var(--ink); }
 .rail__tool-ico { display: grid; place-items: center; width: 34px; height: 34px; justify-self: center; border-radius: 50%; border: 1px solid var(--line); }
 .rail__tool .rail__long { font-weight: 500; }
-.rail__sun, .rail__moon { grid-area: 1 / 1; transition: transform var(--t-slow) var(--ease-spring), opacity var(--t-base); }
-.rail__tool-ico { grid-template-areas: "i"; }
-.rail__tool-ico > * { grid-area: i; }
-#theme-switch[aria-checked="false"] .rail__moon, #theme-switch[aria-checked="true"] .rail__sun { opacity: 0; transform: rotate(-90deg) scale(.5); }
-#theme-switch[aria-checked="false"] .rail__sun { color: var(--amber); }
-#theme-switch[aria-checked="true"] .rail__moon { color: var(--accent-fg); }
-.swatch { width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(#FF3C4B 0 50%, #164CFF 50% 100%); transform: rotate(-45deg); transition: transform var(--t-slow) var(--ease-spring); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
-#palette-switch[aria-checked="true"] .swatch { transform: rotate(135deg); }
-.mini-switch { position: relative; width: 30px; height: 18px; margin-right: 12px; border-radius: var(--r-pill); background: var(--line-strong); opacity: 0; transition: opacity var(--t-base), background-color var(--t-base); }
-.mini-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform var(--t-base) var(--ease-spring); }
-[aria-checked="true"] > .mini-switch { background: var(--bloo-blue); }
-[aria-checked="true"] > .mini-switch::after { transform: translateX(12px); }
-.rail.is-peek .mini-switch, .rail-pinned .rail .mini-switch { opacity: 1; }
+/* Appearance switches — each one shows its state in its own colours */
+.rail__tool--switch { grid-template-columns: 60px minmax(0, 1fr); }
+.tswitch, .pswitch {
+  position: relative; justify-self: center; width: 44px; height: 24px; border-radius: var(--r-pill);
+  transition: background-color var(--t-slow) var(--ease-out), box-shadow var(--t-slow);
+}
+.tswitch__knob, .pswitch__knob {
+  position: absolute; top: 3px; left: 3px; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%;
+  transition: transform 360ms var(--ease-spring), background-color var(--t-slow);
+}
+[aria-checked="true"] .tswitch__knob, [aria-checked="true"] .pswitch__knob { transform: translateX(20px); }
+
+/* Light / dark: a light track with a sun, or a night track with a moon */
+.tswitch { background: linear-gradient(135deg, #FFF6DC, #E7ECF7); box-shadow: inset 0 0 0 1px rgba(11, 22, 64, .14); }
+.tswitch__knob { background: #fff; box-shadow: 0 1px 3px rgba(11, 22, 64, .28); }
+.tswitch__knob .ico { grid-area: 1 / 1; width: 12px; height: 12px; transition: opacity var(--t-base), transform var(--t-slow) var(--ease-spring); }
+.tswitch__sun { color: #E9A100; }
+.tswitch__moon { color: #C9D2FF; opacity: 0; transform: rotate(-90deg) scale(.5); }
+#theme-switch[aria-checked="true"] .tswitch { background: linear-gradient(135deg, #1B2350, #070B1A); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16); }
+#theme-switch[aria-checked="true"] .tswitch__knob { background: #2A3260; box-shadow: 0 1px 3px rgba(0, 0, 0, .5); }
+#theme-switch[aria-checked="true"] .tswitch__sun { opacity: 0; transform: rotate(90deg) scale(.5); }
+#theme-switch[aria-checked="true"] .tswitch__moon { opacity: 1; transform: none; }
+
+/* Red / blue: the track is the colour that is selected */
+.pswitch { background: linear-gradient(135deg, #FF3C4B, #B6000E); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08); }
+#palette-switch[aria-checked="true"] .pswitch { background: linear-gradient(135deg, #3D6BFF, #0A31D8); }
+.pswitch__knob { background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); }
+.rail__tool--switch:focus-visible { box-shadow: none; }
+.rail__tool--switch:focus-visible .tswitch, .rail__tool--switch:focus-visible .pswitch { outline: 2px solid var(--accent-fg); outline-offset: 2px; }
+
+/* Help & support is shown, but has no click action */
+.is-inactive.is-inactive, .is-inactive.is-inactive:hover { cursor: default; color: var(--slate-2); background: none; transform: none; }
+.menu__item.is-inactive:hover { padding-left: 10px; }
 .rail__pin[aria-pressed="true"] .rail__tool-ico { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
 
 .scrim { position: fixed; inset: 0; z-index: 105; background: rgba(11, 22, 64, .4); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity var(--t-slow), visibility 0s linear var(--t-slow); }
@@ -1980,7 +2000,8 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .rail__foot { grid-template-columns: 1fr 1fr; gap: 8px; }
   .rail__foot-label { grid-column: 1 / -1; height: 26px; opacity: 1; padding-left: 4px; }
   .rail__tool { grid-template-columns: 44px minmax(0, 1fr) auto; background: var(--surface-2); height: 48px; }
-  .rail__tool .rail__long, .mini-switch { opacity: 1; transform: none; }
+  .rail__tool .rail__long { opacity: 1; transform: none; }
+  .rail__tool--switch { grid-template-columns: auto minmax(0, 1fr); gap: 12px; padding: 0 14px; }
 
   .topline { left: 0; padding: env(safe-area-inset-top, 0px) 12px 0; gap: 8px; background: color-mix(in srgb, var(--canvas) 70%, transparent); backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); border-bottom: 1px solid transparent; transition: border-color var(--t-base); }
   .show-context .topline { border-bottom-color: var(--line); }
@@ -2430,7 +2451,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
           </a>
           <ul class="rail__sub">
             <li><a class="rail__subitem" href="#faq" data-nav-link data-sub="faq">FAQ</a></li>
-            <li><button class="rail__subitem" type="button" data-drawer="help">Help &amp; support</button></li>
+            <li><span class="rail__subitem is-inactive" aria-disabled="true">Help &amp; support</span></li>
           </ul>
         </li>
       </ul>
@@ -2438,13 +2459,15 @@ p.inbox-empty .text-btn { margin-left: 6px; }
 
     <div class="rail__foot">
       <p class="rail__foot-label">Appearance</p>
-      <button class="rail__tool" type="button" id="theme-switch" role="switch" aria-checked="false" aria-label="Dark theme" data-tip="Dark theme">
-        <span class="rail__tool-ico"><svg class="ico ico--sm rail__sun"><use href="#i-sun"/></svg><svg class="ico ico--sm rail__moon"><use href="#i-moon"/></svg></span>
-        <span class="rail__long">Dark theme</span><span class="mini-switch" aria-hidden="true"></span>
+      <!-- Light / dark: the switch itself is light or dark -->
+      <button class="rail__tool rail__tool--switch" type="button" id="theme-switch" role="switch" aria-checked="false" aria-label="Dark theme" data-tip="Switch to dark mode">
+        <span class="tswitch" aria-hidden="true"><span class="tswitch__knob"><svg class="ico ico--xs tswitch__sun"><use href="#i-sun"/></svg><svg class="ico ico--xs tswitch__moon"><use href="#i-moon"/></svg></span></span>
+        <span class="rail__long" id="theme-label">Light mode</span>
       </button>
-      <button class="rail__tool" type="button" id="palette-switch" role="switch" aria-checked="false" aria-label="Blue palette" data-tip="Blue palette">
-        <span class="rail__tool-ico"><span class="swatch" aria-hidden="true"></span></span>
-        <span class="rail__long">Blue palette</span><span class="mini-switch" aria-hidden="true"></span>
+      <!-- Red / blue: the switch takes the chosen colour -->
+      <button class="rail__tool rail__tool--switch" type="button" id="palette-switch" role="switch" aria-checked="false" aria-label="Blue palette" data-tip="Switch to blue">
+        <span class="pswitch" aria-hidden="true"><span class="pswitch__knob"></span></span>
+        <span class="rail__long" id="palette-label">Red colour</span>
       </button>
       <button class="rail__tool rail__pin" type="button" id="sidebar-toggle" aria-pressed="false" aria-controls="rail" aria-label="Keep navigation open" data-tip="Keep navigation open">
         <span class="rail__tool-ico"><svg class="ico ico--sm"><use href="#i-panel"/></svg></span>
@@ -2523,7 +2546,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
             <p><strong>Rashid Khan</strong><span>rashid.khan@bloom.ae</span></p>
           </div>
           <button class="menu__item" role="menuitem" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button>
-          <button class="menu__item" role="menuitem" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
+          <button class="menu__item is-inactive" role="menuitem" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
           <hr>
           <button class="menu__item menu__item--danger" role="menuitem" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
         </div>
@@ -3345,8 +3368,8 @@ p.inbox-empty .text-btn { margin-left: 6px; }
       </div>
       <nav class="footer__col" aria-label="Support">
         <p class="footer__label">Support</p>
-        <button class="footer__link" type="button" data-drawer="help">FAQs</button>
-        <button class="footer__link" type="button" data-drawer="help">Help &amp; support</button>
+        <a class="footer__link" href="#faq">FAQs</a>
+        <span class="footer__link is-inactive" aria-disabled="true">Help &amp; support</span>
       </nav>
       <div class="footer__col">
         <p class="footer__label">Follow us</p>
@@ -3512,14 +3535,19 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   const themeSwitch = $("#theme-switch");
   const paletteSwitch = $("#palette-switch");
 
+  function syncThemeSwitch() {
+    const dark = root.getAttribute("data-theme") === "dark";
+    themeSwitch.setAttribute("aria-checked", String(dark));
+    themeSwitch.dataset.tip = dark ? "Switch to light mode" : "Switch to dark mode";
+    $("#theme-label").textContent = dark ? "Dark mode" : "Light mode";
+  }
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
-    themeSwitch.setAttribute("aria-checked", String(theme === "dark"));
+    syncThemeSwitch();
   }
   applyTheme(root.getAttribute("data-theme") || "light");
   // A host page can restamp the theme; keep the switch in step with it
-  new MutationObserver(() => themeSwitch.setAttribute("aria-checked", String(root.getAttribute("data-theme") === "dark")))
-    .observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  new MutationObserver(syncThemeSwitch).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   themeSwitch.addEventListener("click", () => {
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
     applyTheme(next);
@@ -3534,6 +3562,8 @@ p.inbox-empty .text-btn { margin-left: 6px; }
     if (palette === "azure") root.setAttribute("data-palette", "azure");
     else root.removeAttribute("data-palette");
     paletteSwitch.setAttribute("aria-checked", String(palette === "azure"));
+    paletteSwitch.dataset.tip = palette === "azure" ? "Switch to red" : "Switch to blue";
+    $("#palette-label").textContent = palette === "azure" ? "Blue colour" : "Red colour";
   }
   applyPalette(root.getAttribute("data-palette") === "azure" ? "azure" : "crimson");
   paletteSwitch.addEventListener("click", () => {
@@ -3823,7 +3853,8 @@ p.inbox-empty .text-btn { margin-left: 6px; }
     // Clicks inside the panel keep it open; menu items fall through to the
     // document handlers (drawers, toasts), which also close the menu
     $(".menu__panel", menu).addEventListener("click", (e) => {
-      if (!e.target.closest(".menu__item")) e.stopPropagation();
+      const item = e.target.closest(".menu__item");
+      if (!item || item.getAttribute("aria-disabled") === "true") e.stopPropagation();
     });
   });
   document.addEventListener("click", () => closeMenus());
@@ -5656,7 +5687,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
       text: `Ask me anything, or browse the ${FAQS.length} quick answers below. For anything else, contact support and a person will pick it up.`,
       results: [
         actionResult("Browse the FAQ", `${FAQS.length} answers`, "i-help", () => spotlight(faqSec.querySelector(".faqs"))),
-        actionResult("Help & support", "FAQs and contacts", "i-book", () => openDrawer("help")),
+        actionResult("All FAQs", "Frequently asked questions", "i-book", () => goTo(faqSec)),
         actionResult("Contact support", "A person picks it up", "i-users", () => toast("A support request has been started.", "i-sparkle"))],
       lens: { sections: [faqSec, $("#support")], matches: [], note: { key: "faq", text: "Every answer, grouped by topic", chips: FAQS.slice(0, 4).map((f) => ({ label: f.q, act: () => openFaq(f) })) } }
     };
@@ -5747,7 +5778,6 @@ p.inbox-empty .text-btn { margin-left: 6px; }
     ...PERKS.map((x) => ({ group: "Perks", label: x.title, meta: "Workplace perk", lead: { icon: "i-shield" }, plan: { intent: "perks" } })),
     ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: x.deal, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
     ...FAQS.map((f) => ({ group: "Help", label: f.q, meta: "FAQ", lead: { icon: "i-help" }, plan: { intent: "help", faq: f } })),
-    { group: "Help", label: "Help & support", meta: "FAQs and contacts", lead: { icon: "i-help" }, drawer: "help" },
     { group: "Help", label: "My profile", meta: "Role, team and contact details", lead: { icon: "i-user" }, drawer: "profile" },
     { group: "Help", label: "Inbox", meta: "Every task, one place", lead: { icon: "i-inbox" }, drawer: "inbox" }
   ];

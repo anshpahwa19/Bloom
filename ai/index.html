@@ -170,7 +170,7 @@
           </a>
           <ul class="rail__sub">
             <li><a class="rail__subitem" href="#faq" data-nav-link data-sub="faq">FAQ</a></li>
-            <li><button class="rail__subitem" type="button" data-drawer="help">Help &amp; support</button></li>
+            <li><span class="rail__subitem is-inactive" aria-disabled="true">Help &amp; support</span></li>
           </ul>
         </li>
       </ul>
@@ -178,13 +178,15 @@
 
     <div class="rail__foot">
       <p class="rail__foot-label">Appearance</p>
-      <button class="rail__tool" type="button" id="theme-switch" role="switch" aria-checked="false" aria-label="Dark theme" data-tip="Dark theme">
-        <span class="rail__tool-ico"><svg class="ico ico--sm rail__sun"><use href="#i-sun"/></svg><svg class="ico ico--sm rail__moon"><use href="#i-moon"/></svg></span>
-        <span class="rail__long">Dark theme</span><span class="mini-switch" aria-hidden="true"></span>
+      <!-- Light / dark: the switch itself is light or dark -->
+      <button class="rail__tool rail__tool--switch" type="button" id="theme-switch" role="switch" aria-checked="false" aria-label="Dark theme" data-tip="Switch to dark mode">
+        <span class="tswitch" aria-hidden="true"><span class="tswitch__knob"><svg class="ico ico--xs tswitch__sun"><use href="#i-sun"/></svg><svg class="ico ico--xs tswitch__moon"><use href="#i-moon"/></svg></span></span>
+        <span class="rail__long" id="theme-label">Light mode</span>
       </button>
-      <button class="rail__tool" type="button" id="palette-switch" role="switch" aria-checked="false" aria-label="Blue palette" data-tip="Blue palette">
-        <span class="rail__tool-ico"><span class="swatch" aria-hidden="true"></span></span>
-        <span class="rail__long">Blue palette</span><span class="mini-switch" aria-hidden="true"></span>
+      <!-- Red / blue: the switch takes the chosen colour -->
+      <button class="rail__tool rail__tool--switch" type="button" id="palette-switch" role="switch" aria-checked="false" aria-label="Blue palette" data-tip="Switch to blue">
+        <span class="pswitch" aria-hidden="true"><span class="pswitch__knob"></span></span>
+        <span class="rail__long" id="palette-label">Red colour</span>
       </button>
       <button class="rail__tool rail__pin" type="button" id="sidebar-toggle" aria-pressed="false" aria-controls="rail" aria-label="Keep navigation open" data-tip="Keep navigation open">
         <span class="rail__tool-ico"><svg class="ico ico--sm"><use href="#i-panel"/></svg></span>
@@ -263,7 +265,7 @@
             <p><strong>Rashid Khan</strong><span>rashid.khan@bloom.ae</span></p>
           </div>
           <button class="menu__item" role="menuitem" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button>
-          <button class="menu__item" role="menuitem" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
+          <button class="menu__item is-inactive" role="menuitem" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
           <hr>
           <button class="menu__item menu__item--danger" role="menuitem" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
         </div>
@@ -1085,8 +1087,8 @@
       </div>
       <nav class="footer__col" aria-label="Support">
         <p class="footer__label">Support</p>
-        <button class="footer__link" type="button" data-drawer="help">FAQs</button>
-        <button class="footer__link" type="button" data-drawer="help">Help &amp; support</button>
+        <a class="footer__link" href="#faq">FAQs</a>
+        <span class="footer__link is-inactive" aria-disabled="true">Help &amp; support</span>
       </nav>
       <div class="footer__col">
         <p class="footer__label">Follow us</p>

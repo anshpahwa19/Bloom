@@ -54,14 +54,19 @@
   const themeSwitch = $("#theme-switch");
   const paletteSwitch = $("#palette-switch");
 
+  function syncThemeSwitch() {
+    const dark = root.getAttribute("data-theme") === "dark";
+    themeSwitch.setAttribute("aria-checked", String(dark));
+    themeSwitch.dataset.tip = dark ? "Switch to light mode" : "Switch to dark mode";
+    $("#theme-label").textContent = dark ? "Dark mode" : "Light mode";
+  }
   function applyTheme(theme) {
     root.setAttribute("data-theme", theme);
-    themeSwitch.setAttribute("aria-checked", String(theme === "dark"));
+    syncThemeSwitch();
   }
   applyTheme(root.getAttribute("data-theme") || "light");
   // A host page can restamp the theme; keep the switch in step with it
-  new MutationObserver(() => themeSwitch.setAttribute("aria-checked", String(root.getAttribute("data-theme") === "dark")))
-    .observe(root, { attributes: true, attributeFilter: ["data-theme"] });
+  new MutationObserver(syncThemeSwitch).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   themeSwitch.addEventListener("click", () => {
     const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
     applyTheme(next);
@@ -76,6 +81,8 @@
     if (palette === "azure") root.setAttribute("data-palette", "azure");
     else root.removeAttribute("data-palette");
     paletteSwitch.setAttribute("aria-checked", String(palette === "azure"));
+    paletteSwitch.dataset.tip = palette === "azure" ? "Switch to red" : "Switch to blue";
+    $("#palette-label").textContent = palette === "azure" ? "Blue colour" : "Red colour";
   }
   applyPalette(root.getAttribute("data-palette") === "azure" ? "azure" : "crimson");
   paletteSwitch.addEventListener("click", () => {
@@ -365,7 +372,8 @@
     // Clicks inside the panel keep it open; menu items fall through to the
     // document handlers (drawers, toasts), which also close the menu
     $(".menu__panel", menu).addEventListener("click", (e) => {
-      if (!e.target.closest(".menu__item")) e.stopPropagation();
+      const item = e.target.closest(".menu__item");
+      if (!item || item.getAttribute("aria-disabled") === "true") e.stopPropagation();
     });
   });
   document.addEventListener("click", () => closeMenus());
@@ -2198,7 +2206,7 @@
       text: `Ask me anything, or browse the ${FAQS.length} quick answers below. For anything else, contact support and a person will pick it up.`,
       results: [
         actionResult("Browse the FAQ", `${FAQS.length} answers`, "i-help", () => spotlight(faqSec.querySelector(".faqs"))),
-        actionResult("Help & support", "FAQs and contacts", "i-book", () => openDrawer("help")),
+        actionResult("All FAQs", "Frequently asked questions", "i-book", () => goTo(faqSec)),
         actionResult("Contact support", "A person picks it up", "i-users", () => toast("A support request has been started.", "i-sparkle"))],
       lens: { sections: [faqSec, $("#support")], matches: [], note: { key: "faq", text: "Every answer, grouped by topic", chips: FAQS.slice(0, 4).map((f) => ({ label: f.q, act: () => openFaq(f) })) } }
     };
@@ -2289,7 +2297,6 @@
     ...PERKS.map((x) => ({ group: "Perks", label: x.title, meta: "Workplace perk", lead: { icon: "i-shield" }, plan: { intent: "perks" } })),
     ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: x.deal, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
     ...FAQS.map((f) => ({ group: "Help", label: f.q, meta: "FAQ", lead: { icon: "i-help" }, plan: { intent: "help", faq: f } })),
-    { group: "Help", label: "Help & support", meta: "FAQs and contacts", lead: { icon: "i-help" }, drawer: "help" },
     { group: "Help", label: "My profile", meta: "Role, team and contact details", lead: { icon: "i-user" }, drawer: "profile" },
     { group: "Help", label: "Inbox", meta: "Every task, one place", lead: { icon: "i-inbox" }, drawer: "inbox" }
   ];
