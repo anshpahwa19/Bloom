@@ -526,6 +526,10 @@ em { font-style: normal; }
 }
 .menu__item:hover { background: var(--surface-2); color: var(--ink); padding-left: 14px; }
 .menu__item--danger:hover { color: var(--warm-fg); }
+/* Switched off: shown, but it doesn't respond */
+.menu__item[aria-disabled="true"], .mo__util[aria-disabled="true"] { opacity: .45; cursor: default; }
+.menu__item[aria-disabled="true"]:hover { background: none; color: var(--slate); padding-left: 10px; }
+.mo__util[aria-disabled="true"]:hover { background: none; padding-left: 12px; }
 .menu hr { border: 0; border-top: 1px solid var(--line); margin: 6px 0; }
 
 .notif-list { max-height: 360px; overflow: auto; padding: 0 8px 8px; }
@@ -842,6 +846,30 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .pref { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface-2); font-size: .92rem; font-weight: 500; }
 .pref__label { display: inline-flex; align-items: center; gap: 10px; }
 .pref__label .ico { color: var(--slate-2); }
+.pref__value { margin-left: 2px; padding: 2px 9px; border-radius: var(--r-pill); background: var(--surface); border: 1px solid var(--line); font-size: var(--fs-meta); font-weight: 600; color: var(--slate); }
+.pref__on, [aria-checked="true"] .pref__off, .pref__moon, [aria-checked="true"] .pref__sun { display: none; }
+[aria-checked="true"] .pref__on, [aria-checked="true"] .pref__moon { display: inline; }
+.pref__sun { color: #E8940C; }
+.pref--accent .sw { transition: opacity var(--t-base), scale var(--t-base) var(--ease-spring); }
+.pref--accent:not([aria-checked="true"]) .sw--crimson, .pref--accent[aria-checked="true"] .sw--azure { opacity: .35; scale: .8; }
+/* Theme switch — sky and sun when light, night and moon when dark */
+.switch--theme { width: 56px; height: 30px; background: linear-gradient(135deg, #BFE2FF, #FFE9B5); box-shadow: inset 0 0 0 1px rgba(11, 22, 64, .1); transition: background-color var(--t-base); }
+.switch--theme .switch__thumb { top: 3px; left: 3px; display: grid; place-items: center; width: 24px; height: 24px; color: #E8940C; transition: transform var(--t-slow) var(--ease-spring); }
+.switch--theme .switch__thumb .ico { width: 14px; height: 14px; stroke-width: 2; grid-area: 1 / 1; transition: opacity var(--t-base), rotate var(--t-slow) var(--ease-spring); }
+.switch__moon { opacity: 0; rotate: -90deg; }
+.switch__star { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: 0; transition: opacity var(--t-base); }
+.switch__star:first-child { left: 10px; top: 9px; }
+.switch__star:nth-child(2) { left: 18px; top: 18px; width: 2px; height: 2px; }
+[aria-checked="true"] > .switch--theme { background: linear-gradient(135deg, #1E2A5A, #0B1640); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .22); }
+[aria-checked="true"] > .switch--theme .switch__thumb { transform: translateX(26px); background: #EEF1FF; color: #1E2A5A; }
+[aria-checked="true"] > .switch--theme .switch__sun { opacity: 0; rotate: 90deg; }
+[aria-checked="true"] > .switch--theme .switch__moon { opacity: 1; rotate: none; }
+[aria-checked="true"] > .switch--theme .switch__star { opacity: .85; }
+/* Accent switch — always the colour that is selected */
+.switch--accent { width: 56px; height: 30px; background: linear-gradient(135deg, #5D83FF, #1F4BFF 55%, #0A31D8); }
+.switch--accent .switch__thumb { top: 3px; left: 3px; width: 24px; height: 24px; transition: transform var(--t-slow) var(--ease-spring); }
+[aria-checked="true"] > .switch--accent { background: linear-gradient(135deg, #FF5B69, #D62839 55%, #B6000E); }
+[aria-checked="true"] > .switch--accent .switch__thumb { transform: translateX(26px); }
 .pref__swatches { display: inline-flex; }
 .sw { width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface-2); }
 .sw + .sw { margin-left: -5px; }
@@ -2385,7 +2413,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
               <p><strong>Rashid Khan</strong><span>rashid.khan@bloom.ae</span></p>
             </div>
             <button class="menu__item" role="menuitem" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button>
-            <button class="menu__item" role="menuitem" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
+            <button class="menu__item" role="menuitem" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
             <hr>
             <button class="menu__item menu__item--danger" role="menuitem" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
           </div>
@@ -2429,18 +2457,20 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
           <li><button class="mo__util" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button></li>
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
           <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
-          <li><button class="mo__util" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
+          <li><button class="mo__util" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
         </ul>
 
         <p class="mo__label">Appearance</p>
         <div class="mo__prefs">
-          <button class="pref" type="button" data-theme-switch role="switch" aria-checked="false">
-            <span class="pref__label"><svg class="ico"><use href="#i-moon"/></svg>Dark theme</span>
-            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <!-- Theme: the switch itself is light (sky + sun) or dark (night + moon) -->
+          <button class="pref pref--theme" type="button" data-theme-switch role="switch" aria-checked="false" aria-label="Dark theme">
+            <span class="pref__label"><svg class="ico pref__sun"><use href="#i-sun"/></svg><svg class="ico pref__moon"><use href="#i-moon"/></svg>Theme<span class="pref__value" aria-hidden="true"><span class="pref__off">Light</span><span class="pref__on">Dark</span></span></span>
+            <span class="switch switch--theme" aria-hidden="true"><i class="switch__star"></i><i class="switch__star"></i><span class="switch__thumb"><svg class="ico switch__sun"><use href="#i-sun"/></svg><svg class="ico switch__moon"><use href="#i-moon"/></svg></span></span>
           </button>
-          <button class="pref" type="button" id="palette-switch" data-palette-switch role="switch" aria-checked="false">
-            <span class="pref__label"><span class="pref__swatches" aria-hidden="true"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span>Crimson accent</span>
-            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <!-- Accent: the switch wears the colour that is selected, blue or red -->
+          <button class="pref pref--accent" type="button" id="palette-switch" data-palette-switch role="switch" aria-checked="false" aria-label="Red accent">
+            <span class="pref__label"><span class="pref__swatches" aria-hidden="true"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span>Accent<span class="pref__value" aria-hidden="true"><span class="pref__off">Blue</span><span class="pref__on">Red</span></span></span>
+            <span class="switch switch--accent" aria-hidden="true"><span class="switch__thumb"></span></span>
           </button>
           <button class="pref" type="button" id="cursor-switch" data-cursor-switch role="switch" aria-checked="true" hidden>
             <span class="pref__label"><span class="pref__flag" aria-hidden="true"><i></i><i></i></span>Flag cursor</span>
@@ -3607,7 +3637,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   });
   // Items inside a panel keep bubbling, so their data-drawer / data-toast actions still run
   document.addEventListener("click", (e) => {
-    if (!e.target.closest("[data-menu]") || e.target.closest(".menu__item")) closeMenus();
+    if (!e.target.closest("[data-menu]") || e.target.closest('.menu__item:not([aria-disabled="true"])')) closeMenus();
   });
 
   $("#mark-read").addEventListener("click", () => {
@@ -5230,7 +5260,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   const FC_DIR = { x: .8, y: .6 };  // at rest the flag flies down-right, like a pointer's tail
   const FC_BLUE = ["#7DD3FF", "#2F6BFF", "#0B2DBF"];
   const FC_RED = ["#FF8E7A", "#E3263B", "#A10D24"];
-  const FC_HOVER = 'a, button, summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, .ib-donut__seg, [data-drawer], [data-toast]';
+  const FC_HOVER = 'a, button:not([aria-disabled="true"]), summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, .ib-donut__seg, [data-drawer], [data-toast]';
   const FC_TEXT = 'input:not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
   const fcSupported = canHover && !!(fcCanvas && fcCanvas.getContext);
   const fc = {

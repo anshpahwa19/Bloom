@@ -322,7 +322,7 @@
   });
   // Items inside a panel keep bubbling, so their data-drawer / data-toast actions still run
   document.addEventListener("click", (e) => {
-    if (!e.target.closest("[data-menu]") || e.target.closest(".menu__item")) closeMenus();
+    if (!e.target.closest("[data-menu]") || e.target.closest('.menu__item:not([aria-disabled="true"])')) closeMenus();
   });
 
   $("#mark-read").addEventListener("click", () => {
@@ -1945,7 +1945,7 @@
   const FC_DIR = { x: .8, y: .6 };  // at rest the flag flies down-right, like a pointer's tail
   const FC_BLUE = ["#7DD3FF", "#2F6BFF", "#0B2DBF"];
   const FC_RED = ["#FF8E7A", "#E3263B", "#A10D24"];
-  const FC_HOVER = 'a, button, summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, .ib-donut__seg, [data-drawer], [data-toast]';
+  const FC_HOVER = 'a, button:not([aria-disabled="true"]), summary, label, [role="tab"], [role="switch"], .chip, .sport, .orbit__node, .reel-item, .frag, .ib-donut__seg, [data-drawer], [data-toast]';
   const FC_TEXT = 'input:not([type="checkbox"]):not([type="radio"]), textarea, [contenteditable="true"]';
   const fcSupported = canHover && !!(fcCanvas && fcCanvas.getContext);
   const fc = {

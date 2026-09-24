@@ -182,7 +182,7 @@
               <p><strong>Rashid Khan</strong><span>rashid.khan@bloom.ae</span></p>
             </div>
             <button class="menu__item" role="menuitem" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button>
-            <button class="menu__item" role="menuitem" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
+            <button class="menu__item" role="menuitem" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button>
             <hr>
             <button class="menu__item menu__item--danger" role="menuitem" type="button" data-toast="You’ve been signed out of this demo."><svg class="ico"><use href="#i-logout"/></svg>Sign out</button>
           </div>
@@ -226,18 +226,20 @@
           <li><button class="mo__util" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button></li>
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
           <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
-          <li><button class="mo__util" type="button" data-drawer="help"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
+          <li><button class="mo__util" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
         </ul>
 
         <p class="mo__label">Appearance</p>
         <div class="mo__prefs">
-          <button class="pref" type="button" data-theme-switch role="switch" aria-checked="false">
-            <span class="pref__label"><svg class="ico"><use href="#i-moon"/></svg>Dark theme</span>
-            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <!-- Theme: the switch itself is light (sky + sun) or dark (night + moon) -->
+          <button class="pref pref--theme" type="button" data-theme-switch role="switch" aria-checked="false" aria-label="Dark theme">
+            <span class="pref__label"><svg class="ico pref__sun"><use href="#i-sun"/></svg><svg class="ico pref__moon"><use href="#i-moon"/></svg>Theme<span class="pref__value" aria-hidden="true"><span class="pref__off">Light</span><span class="pref__on">Dark</span></span></span>
+            <span class="switch switch--theme" aria-hidden="true"><i class="switch__star"></i><i class="switch__star"></i><span class="switch__thumb"><svg class="ico switch__sun"><use href="#i-sun"/></svg><svg class="ico switch__moon"><use href="#i-moon"/></svg></span></span>
           </button>
-          <button class="pref" type="button" id="palette-switch" data-palette-switch role="switch" aria-checked="false">
-            <span class="pref__label"><span class="pref__swatches" aria-hidden="true"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span>Crimson accent</span>
-            <span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>
+          <!-- Accent: the switch wears the colour that is selected, blue or red -->
+          <button class="pref pref--accent" type="button" id="palette-switch" data-palette-switch role="switch" aria-checked="false" aria-label="Red accent">
+            <span class="pref__label"><span class="pref__swatches" aria-hidden="true"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span>Accent<span class="pref__value" aria-hidden="true"><span class="pref__off">Blue</span><span class="pref__on">Red</span></span></span>
+            <span class="switch switch--accent" aria-hidden="true"><span class="switch__thumb"></span></span>
           </button>
           <button class="pref" type="button" id="cursor-switch" data-cursor-switch role="switch" aria-checked="true" hidden>
             <span class="pref__label"><span class="pref__flag" aria-hidden="true"><i></i><i></i></span>Flag cursor</span>
