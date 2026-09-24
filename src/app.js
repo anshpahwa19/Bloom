@@ -106,12 +106,14 @@
       el.addEventListener("animationend", () => el.remove(), { once: true });
     }, 2800);
   }
-  // Any element with data-toast shows a demo message (links to pages outside the prototype)
+  // Any element with data-toast leads to a page outside the prototype. They all
+  // say the same thing; the attribute keeps a note of where each one will go.
+  const SOON = "Designing soon";
   document.addEventListener("click", (e) => {
     const t = e.target.closest("[data-toast]");
     if (!t) return;
     if (t.tagName === "A") e.preventDefault();
-    toast(t.dataset.toast, "i-sparkle");
+    toast(SOON, "i-sparkle");
   });
 
   const fxLayer = document.createElement("div");
