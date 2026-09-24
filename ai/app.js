@@ -1294,6 +1294,31 @@
   });
   modal.addEventListener("close", startBday);
 
+  // Announcement carousel: one tile at a time
+  const annTrack = $("#ann-track");
+  const annTiles = $$(".ann", annTrack);
+  const annTabs = $$(".ann-tab");
+  let annIndex = 0;
+  function showAnn(i, smooth = true) {
+    annIndex = (i + annTiles.length) % annTiles.length;
+    annTrack.scrollTo({ left: annTiles[annIndex].offsetLeft - annTiles[0].offsetLeft, behavior: smooth && !reduceMotion ? "smooth" : "auto" });
+    markAnn();
+  }
+  function markAnn() {
+    annTabs.forEach((t, n) => t.setAttribute("aria-selected", String(n === annIndex)));
+    annTiles.forEach((t, n) => t.toggleAttribute("inert", n !== annIndex));
+    $("#ann-count").textContent = `${annIndex + 1} / ${annTiles.length}`;
+  }
+  annTabs.forEach((t) => t.addEventListener("click", () => showAnn(Number(t.dataset.annGo))));
+  $$("[data-ann-step]").forEach((b) => b.addEventListener("click", () => showAnn(annIndex + Number(b.dataset.annStep))));
+  let annScrollT = 0;
+  annTrack.addEventListener("scroll", () => { clearTimeout(annScrollT); annScrollT = setTimeout(() => {
+    const i = Math.round(annTrack.scrollLeft / annTrack.clientWidth);
+    if (i !== annIndex) { annIndex = Math.min(i, annTiles.length - 1); markAnn(); }
+  }, 90); });
+  annTiles.forEach((t, n) => t.addEventListener("focusin", () => { if (n !== annIndex) showAnn(n); }));
+  markAnn();
+
   // Fire drill and Eid tiles
   const drillBtn = $("#drill-cal");
   function addDrill() {
@@ -1308,7 +1333,7 @@
   // Timeline shortcuts
   document.addEventListener("click", (e) => {
     const b = e.target.closest("[data-goto-bday]");
-    if (b) { goBday(Number(b.dataset.gotoBday)); goTo(celebrate, "center"); setTimeout(() => $(`[data-wish="${bIndex}"]`, bTrack).focus({ preventScroll: true }), reduceMotion ? 0 : 600); }
+    if (b) { showAnn(0); goBday(Number(b.dataset.gotoBday)); goTo(celebrate, "center"); setTimeout(() => $(`[data-wish="${bIndex}"]`, bTrack).focus({ preventScroll: true }), reduceMotion ? 0 : 600); }
     const p = e.target.closest("[data-goto-person]");
     if (p) { showPerson(Number(p.dataset.gotoPerson)); goTo($("#people")); }
     const pol = e.target.closest("[data-goto-policy]");
@@ -1991,21 +2016,21 @@
         title: "Fire drill on <em>26 Sep</em>",
         text: "The workplace fire safety drill runs from 10:30 to 11:00 AM. Regular drills keep everyone safe and prepared.",
         results: [actionResult("Add the drill to your calendar", "26 Sep · 10:30 – 11:00 AM", "i-calendar", addDrill)],
-        focus: NEWS.drill, lens: one(NEWS.drill, "26 Sep", "<strong>Fire drill</strong> · 26 Sep, 10:30 – 11:00 AM", [{ label: "Add to calendar", act: addDrill }]) };
+        before: () => showAnn(2), focus: NEWS.drill, lens: one(NEWS.drill, "26 Sep", "<strong>Fire drill</strong> · 26 Sep, 10:30 – 11:00 AM", [{ label: "Add to calendar", act: addDrill }]) };
     }
     if (p.annc === "eid") {
       return { ...base, think: ["Checking holidays"],
         title: "<em>Eid al-Adha</em> leave: 25 – 29 May",
         text: "Eid leaves run from 25 May to 29 May. Eid Mubarak!",
         results: [actionResult("View rewards", "Perks and partner offers", "i-gift", () => goTo($("#discounts")))],
-        focus: NEWS.eid, lens: one(NEWS.eid, "Holiday", "<strong>Eid al-Adha</strong> · leave from 25 to 29 May", [{ label: "View rewards", act: () => goTo($("#discounts")) }]) };
+        before: () => showAnn(3), focus: NEWS.eid, lens: one(NEWS.eid, "Holiday", "<strong>Eid al-Adha</strong> · leave from 25 to 29 May", [{ label: "View rewards", act: () => goTo($("#discounts")) }]) };
     }
     if (p.annc === "anniversary") {
       return { ...base, think: ["Checking today’s celebrations"],
         title: `<em>${firstName(ANNIV.name)}</em>’s ${ANNIV.years}-year work anniversary`,
         text: `${ANNIV.name}, ${ANNIV.role}, marks ${ANNIV.years} years at Bloom today. A note of thanks goes a long way.`,
         results: [actionResult(`Congratulate ${firstName(ANNIV.name)}`, "Opens the card", "i-award", openCongrats)],
-        focus: NEWS.anniversary, lens: one(NEWS.anniversary, "Today", `<strong>${firstName(ANNIV.name)}</strong> · ${ANNIV.years} years at Bloom`, [{ label: `Congratulate ${firstName(ANNIV.name)}`, act: openCongrats }]) };
+        before: () => showAnn(1), focus: NEWS.anniversary, lens: one(NEWS.anniversary, "Today", `<strong>${firstName(ANNIV.name)}</strong> · ${ANNIV.years} years at Bloom`, [{ label: `Congratulate ${firstName(ANNIV.name)}`, act: openCongrats }]) };
     }
     if (p.annc === "newsletter") {
       const read = () => toast("Opening the company newsletter…", "i-news");
@@ -2022,7 +2047,7 @@
         title: `It’s <em>${firstName(b.name)}</em>’s birthday today`,
         text: `${b.name}, ${b.role}. Send a wish before the day ends — it takes a few seconds.`,
         results: [actionResult(`Send ${firstName(b.name)} a birthday wish`, "Opens the wish card", "i-gift", () => openWish(i))],
-        before: () => { goBday(i); stopBday(); },
+        before: () => { showAnn(0); goBday(i); stopBday(); },
         lens: { sections: [$("#announcements")], matches: [celebrate, NEWS.birthdays], tag: "Today",
           note: { key: "announcements", text: `<strong>${firstName(b.name)}</strong> is celebrating today`, chips: [{ label: "Send a wish", act: () => openWish(i) }] } }
       };
@@ -2354,6 +2379,7 @@
 
   // Move attention to an element: scroll it into view, then pulse it
   function spotlight(el, then) {
+    const tile = el?.closest?.("#ann-track > .ann"); if (tile) showAnn(annTiles.indexOf(tile));
     if (!el) return;
     closeAskLayer({ restoreFocus: false });
     const ch = el.closest("[data-chapter]");

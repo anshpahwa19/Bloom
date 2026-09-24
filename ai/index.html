@@ -634,7 +634,21 @@
         <div class="lens-note" data-lens-note="announcements" hidden></div>
 
         <!-- Four announcement tiles: birthday, work anniversary, fire drill, Eid -->
-        <div class="news__board">
+        <div class="ann-carousel" aria-roledescription="carousel" aria-label="Announcements">
+          <div class="ann-carousel__bar">
+            <div class="ann-tabs" role="tablist" aria-label="Choose announcement">
+              <button class="ann-tab" type="button" role="tab" aria-selected="true" data-ann-go="0"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>Birthdays</button>
+              <button class="ann-tab" type="button" role="tab" aria-selected="false" data-ann-go="1"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-award"/></svg>Work anniversary</button>
+              <button class="ann-tab" type="button" role="tab" aria-selected="false" data-ann-go="2"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-flame"/></svg>Fire drill</button>
+              <button class="ann-tab" type="button" role="tab" aria-selected="false" data-ann-go="3"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-moon"/></svg>Eid al-Adha</button>
+            </div>
+            <div class="carousel-ctrl">
+              <span class="ann-count" id="ann-count">1 / 4</span>
+              <button class="icon-btn" type="button" data-ann-step="-1" aria-label="Previous announcement"><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg></button>
+              <button class="icon-btn" type="button" data-ann-step="1" aria-label="Next announcement"><svg class="ico ico--sm"><use href="#i-chevron-right"/></svg></button>
+            </div>
+          </div>
+        <div class="news__board" id="ann-track">
           <!-- 1 · Birthday carousel -->
           <div class="celebrate ann" id="celebrate" aria-roledescription="carousel" aria-label="Birthdays today" data-ann="birthday" data-lens-item>
             <div class="celebrate__shine" aria-hidden="true"></div>
@@ -699,6 +713,7 @@
               <button class="btn eid__btn" type="button" id="eid-rewards"><span>View rewards</span><svg class="ico ico--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
             </div>
           </article>
+        </div>
         </div>
 
         <!-- Everything else this week, as a timeline -->

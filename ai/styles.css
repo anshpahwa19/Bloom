@@ -1272,7 +1272,18 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .img-ann-eid { --img: url("{{ann-eid.jpg}}"); }
 
 /* Announcement board — four tiles, each with its own fixed treatment (like a photo, it keeps its colours in both themes) */
-.news__board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 1.8vw, 24px); margin-top: 56px; }
+.ann-carousel { margin-top: 56px; }
+.ann-carousel__bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.ann-tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 3px; margin: -3px; }
+.ann-tabs::-webkit-scrollbar { display: none; }
+.ann-tab { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--white); font-size: var(--fs-support); font-weight: 600; color: var(--slate); transition: background-color var(--t-base), color var(--t-base), border-color var(--t-base); }
+.ann-tab:hover { color: var(--ink); border-color: var(--line-strong); }
+.ann-tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
+.ann-count { font-size: var(--fs-meta); color: var(--slate-2); font-variant-numeric: tabular-nums; }
+/* one tile at a time; swipe, tabs or arrows move between them */
+.news__board { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; padding: 6px; margin: -6px; overscroll-behavior-x: contain; }
+.news__board::-webkit-scrollbar { display: none; }
+.news__board > .ann { flex: 0 0 100%; scroll-snap-align: start; min-height: 460px; }
 .ann {
   --pad: 30px;
   position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; gap: 18px;
@@ -1890,7 +1901,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .brief { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .suggests { grid-row: span 3; }
   .policies { grid-template-columns: minmax(0, 1fr); grid-template-areas: "popular" "recs" "library"; }
-  .news__board, .people__stage, .faq-grid { grid-template-columns: minmax(0, 1fr); }
+  .people__stage, .faq-grid { grid-template-columns: minmax(0, 1fr); }
   .faq-grid .chap-head { position: relative; top: 0; }
   .inbox { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "summary bloo" "main main" "chart chart"; grid-template-rows: auto; }
   .inbox-chart { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "head head" "donut legend"; align-items: center; gap: 0 24px; }
@@ -2043,7 +2054,9 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .policy--row { grid-template-columns: 60px minmax(0, 1fr) auto; gap: 14px; }
   .policy__thumb { width: 60px; height: 60px; }
 
-  .news__board { margin-top: 36px; gap: 14px; }
+  .ann-carousel { margin-top: 36px; }
+  .ann-carousel__bar .carousel-ctrl { display: none; }
+  .news__board > .ann { min-height: 0; }
   .ann { --pad: 22px; min-height: 0; padding: 22px var(--pad) var(--pad); border-radius: 28px; }
   .anniv { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   .anniv__years { grid-auto-flow: column; justify-content: start; align-items: end; gap: 14px; }
