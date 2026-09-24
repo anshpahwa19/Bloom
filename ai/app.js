@@ -106,12 +106,13 @@
       if (reduceMotion) el.remove();
     }, 2800);
   }
-  // Any element with data-toast shows a demo message (pages outside the prototype)
+  // Pages and actions outside the prototype say so
+  const soon = () => toast("Designing soon", "i-sparkle");
   document.addEventListener("click", (e) => {
-    const t = e.target.closest("[data-toast]");
+    const t = e.target.closest("[data-soon]");
     if (!t) return;
     if (t.tagName === "A") e.preventDefault();
-    toast(t.dataset.toast, "i-sparkle");
+    soon();
   });
 
   const now = new Date();
@@ -568,7 +569,7 @@
           <div><dt>Location</dt><dd>Abu Dhabi</dd></div>
           <div><dt>Email</dt><dd>rashid.khan@bloom.ae</dd></div>
         </dl>
-        <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="Opening your full profile…">View full profile</button></div>`
+        <div class="d-actions"><button class="btn btn--primary" type="button" data-soon>View full profile</button></div>`
     }),
     help: () => ({
       title: "Help & support",
@@ -578,7 +579,7 @@
             `<details class="faq"${g === 0 && i === 0 ? " open" : ""}><summary>${$(".faqs__q span", d).innerHTML}${icon("i-chevron-down")}</summary><p>${$(".faqs__a p", d).innerHTML}</p></details>`).join("");
           return `<h3 class="d-faq__label">${label}</h3>${items}`;
         }).join("")}
-        <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="A support request has been started.">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
+        <div class="d-actions"><button class="btn btn--primary" type="button" data-soon>Contact support</button><button class="btn btn--quiet" type="button" data-soon>Visit help centre</button></div>`
     }),
     task: (row) => {
       const src = row.dataset.source;
@@ -590,7 +591,7 @@
           <p class="d-note"><span class="bloo-orb" aria-hidden="true"></span><span>Approving here updates the task in ${sourceNames[src]}. You can also open it there for the full record.</span></p>
           <div class="d-actions">
             <button class="btn btn--primary" type="button" id="approve-task"${row.classList.contains("is-done") ? " disabled" : ""}><span class="btn__label">${row.classList.contains("is-done") ? "Done" : "Approve"}</span><span class="spinner" aria-hidden="true"></span></button>
-            <button class="btn btn--quiet" type="button" data-toast="Opening ${sourceNames[src]} in a new tab…">Open in ${sourceNames[src]} ${icon("i-external", "ico ico--sm")}</button>
+            <button class="btn btn--quiet" type="button" data-soon>Open in ${sourceNames[src]} ${icon("i-external", "ico ico--sm")}</button>
             <button class="btn btn--quiet" type="button" disabled title="Only the task owner can reassign">Reassign</button>
           </div>`
       };
@@ -2018,7 +2019,7 @@
         before: () => showAnn(1), focus: NEWS.anniversary, lens: one(NEWS.anniversary, "Today", `<strong>${firstName(ANNIV.name)}</strong> · ${ANNIV.years} years at Bloom`, [{ label: `Congratulate ${firstName(ANNIV.name)}`, act: openCongrats }]) };
     }
     if (p.annc === "newsletter") {
-      const read = () => toast("Opening the company newsletter…", "i-news");
+      const read = soon;
       return { ...base, think: ["Checking this week’s notices"],
         title: "The company <em>newsletter</em> is out",
         text: "Your updates on news, achievements and stories that matter.",
@@ -2196,7 +2197,7 @@
       const f = p.faq;
       return { ...base, kicker: "From the FAQ", think: ["Looking through the FAQ"],
         title: escapeHtml(f.q), text: escapeHtml(f.a),
-        results: [faqResult(f), actionResult("Contact support", "A person picks it up", "i-help", () => toast("A support request has been started.", "i-sparkle"))],
+        results: [faqResult(f), actionResult("Contact support", "A person picks it up", "i-help", soon)],
         focus: f.el, before: () => { selectFaq(f.tab); f.el.open = true; },
         lens: { sections: [faqSec], matches: [f.el], tag: "Answer", note: { key: "faq", text: "The answer is open below", chips: [] } }
       };
@@ -2207,7 +2208,7 @@
       results: [
         actionResult("Browse the FAQ", `${FAQS.length} answers`, "i-help", () => spotlight(faqSec.querySelector(".faqs"))),
         actionResult("All FAQs", "Frequently asked questions", "i-book", () => goTo(faqSec)),
-        actionResult("Contact support", "A person picks it up", "i-users", () => toast("A support request has been started.", "i-sparkle"))],
+        actionResult("Contact support", "A person picks it up", "i-users", soon)],
       lens: { sections: [faqSec, $("#support")], matches: [], note: { key: "faq", text: "Every answer, grouped by topic", chips: FAQS.slice(0, 4).map((f) => ({ label: f.q, act: () => openFaq(f) })) } }
     };
   }

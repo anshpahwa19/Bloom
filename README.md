@@ -158,6 +158,9 @@ Content notes:
   (moon), and the colour switch turns red or blue to match the colour chosen.
 - Help & support has no click action for now: the rail, profile menu and
   footer entries are shown but inactive, and Bloo points to the FAQ instead.
+- Anything that leads outside the prototype (quick links, policy pages, partner
+  and perk pages, app stores, Contact support, sign out, social links…) shows a
+  "Designing soon" message. Actions that work here keep their own confirmation.
 - Partner offers: Marriott, Abu Dhabi Edition, Emirates Food Industries and Food
   Quests keep their percentage. EIIC, Exeed, Petromal and Rise show "Special offer"
   instead, and their codes lost the number. To switch a partner back, put
