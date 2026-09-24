@@ -518,9 +518,6 @@
     const app = $(`.app[data-app="${source}"]`);
     $(".js-count", app).textContent = counts[source];
     $(".app__count", app).setAttribute("aria-label", `Show ${counts[source]} ${sourceNames[source]} tasks`);
-    const signal = $(`.signal[data-signal="${source}"]`);
-    $(".signal__count", signal).textContent = pad(counts[source]);
-    signal.setAttribute("aria-label", `${sourceNames[source]}, ${counts[source]} waiting. Ask Bloo about them`);
     refreshAttention();
     if (inboxOpen) renderAppFilter();
   }
@@ -1574,7 +1571,7 @@
   const spineFill = $("#spine-fill");
   const contextFill = $("#context-fill");
   const glows = $$(".field__glow").map((el) => ({ el, speed: Number(el.dataset.speed) || 0 }));
-  const heroFade = $$(".signals, .command__index");
+  const heroFade = $$(".command__index");
   const interlude = $("#life");
   const driftEl = $("[data-drift]");
   let geo = { vh: innerHeight, chapters: new Map(), flow: { top: 0, h: 1 }, hero: 1, parallax: [], nums: [], drift: null };
@@ -1588,7 +1585,6 @@
     geo.parallax = $$("[data-parallax]").map((el) => ({ el, f: Number(el.dataset.parallax), top: docTop(el.parentElement), h: el.parentElement.offsetHeight }));
     geo.nums = $$(".chap-head__num").map((el) => ({ el, top: docTop(el.parentElement) }));
     geo.drift = { top: docTop(interlude), h: interlude.offsetHeight };
-    drawLines();
     moveRailIndicator();
     frame();
   }
@@ -1640,9 +1636,8 @@
   addEventListener("load", measure);
   document.fonts?.ready.then(measure);
 
-  // Hero field — cursor light and the lines from each app into the prompt
+  // Hero field — cursor light
   const fieldCursor = $("#field-cursor");
-  const linesSvg = $("#field-lines");
   const composer = $("#composer");
   if (canHover && !reduceMotion) {
     let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
@@ -1660,24 +1655,6 @@
     });
     command.addEventListener("pointerleave", () => command.classList.remove("has-pointer"));
   }
-  function drawLines() {
-    if (innerWidth <= 1280 || !command.contains(composer)) { linesSvg.innerHTML = ""; return; }
-    const box = command.getBoundingClientRect();
-    const c = composer.getBoundingClientRect();
-    if (!c.width) return;
-    linesSvg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
-    const cyMid = c.top - box.top + c.height / 2;
-    linesSvg.innerHTML = $$(".signal .app-mark").map((m) => {
-      const r = m.getBoundingClientRect();
-      const sx = r.left - box.left + r.width / 2;
-      const sy = r.top - box.top + r.height / 2;
-      const left = sx < box.width / 2;
-      const ex = left ? c.left - box.left - 4 : c.right - box.left + 4;
-      const k = (ex - sx) * 0.55;
-      return `<path d="M${sx.toFixed(1)},${sy.toFixed(1)} C${(sx + k).toFixed(1)},${sy.toFixed(1)} ${(ex - k).toFixed(1)},${cyMid.toFixed(1)} ${ex.toFixed(1)},${cyMid.toFixed(1)}"/><circle cx="${ex.toFixed(1)}" cy="${cyMid.toFixed(1)}" r="2.5"/>`;
-    }).join("");
-  }
-
   /* ---------------------------------------------------------------
      13. Bloo AI
      A deterministic front-end simulation: intent detection over the
@@ -2580,7 +2557,6 @@
     root.classList.remove("is-asking");
     if (res.lens) applyLens(res, text);
     if (res.target || res.go) scheduleGo(turn, res);
-    requestAnimationFrame(drawLines);
   }
 
   // Result, lens-note and "take me there" buttons
@@ -2766,7 +2742,6 @@
     body.style.overflow = drawer.classList.contains("is-open") ? "hidden" : "";
     root.classList.remove("is-asking-layer");
     if (restoreFocus && askReturn?.isConnected) askReturn.focus({ preventScroll: true });
-    requestAnimationFrame(drawLines);
   }
   function requestAsk() {
     const r = convoHome.getBoundingClientRect();

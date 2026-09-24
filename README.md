@@ -56,8 +56,8 @@ There is no backend. `ai/app.js` runs a deterministic simulation over the page's
    policies, announcements, people, communities, perks, discounts, help, profile,
    inbox or theme. It also picks out entities: app names, people, sports, partners,
    leave topics and FAQ matches. Anything else falls back to a search of the whole index.
-2. **Thinking.** The orb spins, the prompt shows a progress beam, the hero's
-   app lines pulse, and short "Reading Salesforce, UiPath…" steps shimmer in.
+2. **Thinking.** The orb spins, the prompt shows a progress beam, and short
+   "Reading Salesforce, UiPath…" steps shimmer in.
 3. **Answer.** Bloo gives a headline, a sentence of context and result rows.
    All of it is built from the live DOM, so counts change as you approve tasks.
 4. **AI Lens.** Relevant chapters brighten and get a context note with chips.
