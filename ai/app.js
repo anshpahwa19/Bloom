@@ -1237,45 +1237,73 @@
   const wishText = $("#wish-text");
   const wishCount = $("#wish-count");
   const wishSend = $("#wish-send");
-  let wishFor = 0;
+  // The same card sends birthday wishes and anniversary congratulations
+  const ANNIV = { name: "Khalid Rashed", role: "Facilities Manager, Operations", img: "img-av-elder", initials: "KR", years: 10 };
+  const annivBtn = $("#anniv-btn");
+  const CARDS = {
+    birthday: { text: "Happy birthday! Wishing you a wonderful year ahead.", presets: ["Have a great day! 🎉", "Many happy returns", "Cake is on you today"], sent: "Wish sent" },
+    anniversary: { text: `Congratulations on ${ANNIV.years} years, ${firstName(ANNIV.name)}! Thank you for everything you do.`, presets: ["Here’s to the next ten! 🎉", "Thank you for everything", "Congratulations!"], sent: "Congratulated" }
+  };
+  let wishTo = null;
   const updateCount = () => { wishCount.textContent = wishText.value.length; wishSend.disabled = !wishText.value.trim(); };
   wishText.addEventListener("input", updateCount);
-  $$("#wish-presets .chip").forEach((c) => c.addEventListener("click", () => { wishText.value = c.textContent; updateCount(); wishText.focus(); }));
+  $("#wish-presets").addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { wishText.value = c.textContent; updateCount(); wishText.focus(); } });
 
-  function openWish(i) {
-    const btn = $(`[data-wish="${i}"]`, bTrack);
-    if (btn.classList.contains("is-sent")) { toast(`You’ve already wished ${firstName(birthdays[i].name)} today`, "i-gift"); return; }
+  function openCard(kind, person, btn, title) {
     closeAskLayer({ restoreFocus: false });
-    wishFor = i;
-    const p = birthdays[i];
-    $("#wish-title").textContent = `Wish ${firstName(p.name)} a happy birthday`;
-    $("#wish-role").textContent = `${p.name}, ${p.role}`;
+    wishTo = { kind, person, btn };
+    $("#wish-title").textContent = title;
+    $("#wish-role").textContent = `${person.name}, ${person.role}`;
     const av = $("#wish-avatar");
-    av.className = `avatar avatar--xl ${p.img}`;
-    av.textContent = p.initials;
+    av.className = `avatar avatar--xl ${person.img}`;
+    av.textContent = person.initials;
+    wishText.value = CARDS[kind].text;
+    $("#wish-presets").innerHTML = CARDS[kind].presets.map((t) => `<button class="chip" type="button">${escapeHtml(t)}</button>`).join("");
+    $("#wish-send .btn__label").textContent = kind === "birthday" ? "Send wish" : "Send congratulations";
     updateCount();
     stopBday();
     modal.showModal();
   }
+  function openWish(i) {
+    const btn = $(`[data-wish="${i}"]`, bTrack);
+    if (btn.classList.contains("is-sent")) { toast(`You’ve already wished ${firstName(birthdays[i].name)} today`, "i-gift"); return; }
+    openCard("birthday", birthdays[i], btn, `Wish ${firstName(birthdays[i].name)} a happy birthday`);
+  }
+  function openCongrats() {
+    if (annivBtn.classList.contains("is-sent")) { toast(`You’ve already congratulated ${firstName(ANNIV.name)}`, "i-award"); return; }
+    openCard("anniversary", ANNIV, annivBtn, `Congratulate ${firstName(ANNIV.name)} on ${ANNIV.years} years`);
+  }
+  annivBtn.addEventListener("click", openCongrats);
   bTrack.addEventListener("click", (e) => {
     const b = e.target.closest("[data-wish]");
     if (b && !b.classList.contains("is-sent")) openWish(Number(b.dataset.wish));
   });
   wishSend.addEventListener("click", () => {
+    if (!wishTo) return;
     wishSend.classList.add("is-loading");
     $(".btn__label", wishSend).textContent = "Sending";
     setTimeout(() => {
       wishSend.classList.remove("is-loading");
-      $(".btn__label", wishSend).textContent = "Send wish";
       modal.close();
-      const btn = $(`[data-wish="${wishFor}"]`, bTrack);
+      const { kind, person, btn } = wishTo;
       btn.classList.add("is-sent");
-      btn.innerHTML = `${icon("i-check", "ico ico--sm")}<span>Wish sent</span>`;
-      toast(`Your wish is on its way to ${firstName(birthdays[wishFor].name)}`, "i-gift");
+      btn.innerHTML = `${icon("i-check", "ico ico--sm")}<span>${CARDS[kind].sent}</span>`;
+      toast(kind === "birthday" ? `Your wish is on its way to ${firstName(person.name)}` : `Your congratulations are on their way to ${firstName(person.name)}`, kind === "birthday" ? "i-gift" : "i-award");
       startBday();
     }, reduceMotion ? 0 : 900);
   });
   modal.addEventListener("close", startBday);
+
+  // Fire drill and Eid tiles
+  const drillBtn = $("#drill-cal");
+  function addDrill() {
+    if (drillBtn.classList.contains("is-sent")) { toast("The fire drill is already in your calendar", "i-calendar"); return; }
+    drillBtn.classList.add("is-sent");
+    drillBtn.innerHTML = `${icon("i-check", "ico ico--sm")}<span>In your calendar</span>`;
+    toast("Fire drill added to your calendar · 26 Sep, 10:30 AM", "i-calendar");
+  }
+  drillBtn.addEventListener("click", addDrill);
+  $("#eid-rewards").addEventListener("click", () => goTo($("#discounts")));
 
   // Timeline shortcuts
   document.addEventListener("click", (e) => {
@@ -1668,7 +1696,11 @@
   const NEWS = {
     birthdays: $('.tl[data-news="birthdays"]'),
     joiner: $('.tl[data-news="joiner"]'),
-    policy: $('.tl[data-news="policy"]')
+    policy: $('.tl[data-news="policy"]'),
+    newsletter: $('.tl[data-news="newsletter"]'),
+    anniversary: $("#ann-anniv"),
+    drill: $("#ann-drill"),
+    eid: $("#ann-eid")
   };
 
   /* Language helpers */
@@ -1685,7 +1717,7 @@
       strong: ["policy", "policies", "leave", "holiday", "vacation", "sick", "work from home", "wfh", "remote work", "guideline", "guidelines", "conduct", "handbook", "expense", "expenses", "rules"],
       weak: ["security", "brand", "travel", "management", "allowed", "can i", "document", "documents", "annual", "remote"] },
     { id: "news", label: "Announcements",
-      strong: ["what's new", "whats new", "what is new", "news", "announcement", "announcements", "update", "updates", "updated", "changed", "birthday", "birthdays", "happening", "latest"],
+      strong: ["what's new", "whats new", "what is new", "news", "announcement", "announcements", "update", "updates", "updated", "changed", "birthday", "birthdays", "happening", "latest", "anniversary", "anniversaries", "fire drill", "drill", "eid", "newsletter"],
       weak: ["new", "this week", "week", "celebrate", "celebrating", "wish"] },
     { id: "people", label: "New joiners",
       strong: ["colleague", "colleagues", "who joined", "joined", "joiner", "joiners", "new hire", "new hires", "new people", "meet", "say hello", "someone"],
@@ -1751,13 +1783,19 @@
     const partner = PARTNERS.find((p) => has(q, normalize(p.name)) || has(q, p.key));
     const perk = PERKS.find((p) => has(q, p.key));
     const faq = bestFaq(q);
+    // Which announcement tile, if any (Eid leave beats the leave policies)
+    const annc = /\b(fire drill|drill|evacuation|fire safety|fire alarm)\b/.test(q) ? "drill"
+      : /\beid\b|\badha\b/.test(q) ? "eid"
+      : /\banniversar/.test(q) || has(q, "khalid") ? "anniversary"
+      : /\bnewsletter\b/.test(q) ? "newsletter" : null;
+    if (annc) scores.news += 6;
     if (app) scores.attention += 4;
     if (person) scores[person.kind === "birthday" ? "news" : "people"] += 5;
     if (partner) scores.discounts += 4;
     if (faq) scores.help += 6;
     const best = INTENTS.reduce((a, b) => (scores[b.id] > scores[a.id] ? b : a));
     if (!scores[best.id]) return { intent: "search", q };
-    return { intent: best.id, q, app, person, sport, partner, perk, faq };
+    return { intent: best.id, q, app, person, sport, partner, perk, faq, annc };
   }
 
   /* Result builders */
@@ -1939,9 +1977,44 @@
     };
   }
 
+  // birthdays + this week's joiners + policy change + anniversary, fire drill, Eid and newsletter
+  const newsUpdates = () => birthdays.length + people.filter((x) => x.week === "Joined this week").length + 1 + 4;
+  $("#news-count").textContent = `${newsUpdates()} updates`;
+
   function respondNews(p) {
     const q = p.q || "";
-    const base = { kicker: "What’s new", source: "Read this week’s announcements", target: $("#announcements"), nav: "Announcements" };
+    const annSec = $("#announcements");
+    const base = { kicker: "What’s new", source: "Read this week’s announcements", target: annSec, nav: "Announcements" };
+    const one = (el, tag, note, chips = []) => ({ sections: [annSec], matches: [el], tag, note: { key: "announcements", text: note, chips } });
+    if (p.annc === "drill") {
+      return { ...base, think: ["Checking this week’s notices"],
+        title: "Fire drill on <em>26 Sep</em>",
+        text: "The workplace fire safety drill runs from 10:30 to 11:00 AM. Regular drills keep everyone safe and prepared.",
+        results: [actionResult("Add the drill to your calendar", "26 Sep · 10:30 – 11:00 AM", "i-calendar", addDrill)],
+        focus: NEWS.drill, lens: one(NEWS.drill, "26 Sep", "<strong>Fire drill</strong> · 26 Sep, 10:30 – 11:00 AM", [{ label: "Add to calendar", act: addDrill }]) };
+    }
+    if (p.annc === "eid") {
+      return { ...base, think: ["Checking holidays"],
+        title: "<em>Eid al-Adha</em> leave: 25 – 29 May",
+        text: "Eid leaves run from 25 May to 29 May. Eid Mubarak!",
+        results: [actionResult("View rewards", "Perks and partner offers", "i-gift", () => goTo($("#discounts")))],
+        focus: NEWS.eid, lens: one(NEWS.eid, "Holiday", "<strong>Eid al-Adha</strong> · leave from 25 to 29 May", [{ label: "View rewards", act: () => goTo($("#discounts")) }]) };
+    }
+    if (p.annc === "anniversary") {
+      return { ...base, think: ["Checking today’s celebrations"],
+        title: `<em>${firstName(ANNIV.name)}</em>’s ${ANNIV.years}-year work anniversary`,
+        text: `${ANNIV.name}, ${ANNIV.role}, marks ${ANNIV.years} years at Bloom today. A note of thanks goes a long way.`,
+        results: [actionResult(`Congratulate ${firstName(ANNIV.name)}`, "Opens the card", "i-award", openCongrats)],
+        focus: NEWS.anniversary, lens: one(NEWS.anniversary, "Today", `<strong>${firstName(ANNIV.name)}</strong> · ${ANNIV.years} years at Bloom`, [{ label: `Congratulate ${firstName(ANNIV.name)}`, act: openCongrats }]) };
+    }
+    if (p.annc === "newsletter") {
+      const read = () => toast("Opening the company newsletter…", "i-news");
+      return { ...base, think: ["Checking this week’s notices"],
+        title: "The company <em>newsletter</em> is out",
+        text: "Your updates on news, achievements and stories that matter.",
+        results: [actionResult("Read it now", "Company newsletter", "i-news", read)],
+        focus: NEWS.newsletter, lens: one(NEWS.newsletter, "New", "<strong>Company newsletter</strong> · out this week", [{ label: "Read it now", act: read }]) };
+    }
     if (p.person?.kind === "birthday") {
       const i = p.person.index;
       const b = birthdays[i];
@@ -1965,18 +2038,23 @@
     }
     const joinedThisWeek = people.map((x, i) => ({ x, i })).filter(({ x }) => x.week === "Joined this week");
     const policy = POLICIES.find((x) => x.key === "security");
-    const updates = birthdays.length + joinedThisWeek.length + 1;
+    const updates = newsUpdates();
     return { ...base, think: ["Scanning announcements", "Checking people and policy changes"],
       title: `<em>${updates}</em> updates this week`,
-      text: `${plural(birthdays.length, "birthday", "birthdays")} today, ${plural(joinedThisWeek.length, "new joiner", "new joiners")} and a Data Security policy update.`,
+      text: `${plural(birthdays.length, "birthday", "birthdays")} and ${firstName(ANNIV.name)}’s ${ANNIV.years}-year anniversary today, a fire drill on 26 Sep, Eid leave from 25 to 29 May, ${plural(joinedThisWeek.length, "new joiner", "new joiners")}, the company newsletter and a Data Security policy update.`,
       results: [
         ...birthdays.map((_, i) => bdayResult(i)),
+        actionResult(`${firstName(ANNIV.name)}’s ${ANNIV.years}-year anniversary`, "Work anniversary", "i-award", () => spotlight(NEWS.anniversary)),
+        actionResult("Fire safety drill", "26 Sep · 10:30 – 11:00 AM", "i-flame", () => spotlight(NEWS.drill)),
+        actionResult("Eid al-Adha leave", "25 May to 29 May", "i-moon", () => spotlight(NEWS.eid)),
         ...joinedThisWeek.map(({ i }) => result(`${people[i].name} joined ${people[i].team}`, "New joiner", { avatar: people[i].img }, () => { showPerson(i); spotlight(portrait); })),
+        actionResult("The company newsletter is out", "Newsletter", "i-news", () => spotlight(NEWS.newsletter)),
         result("Data Security policy updated", "Reporting suspicious messages", { icon: "i-shield" }, () => spotlight(policy.el))],
       lens: { sections: [$("#announcements"), peopleSec, policiesSec],
-        matches: [celebrate, NEWS.birthdays, NEWS.joiner, NEWS.policy, ...joinedThisWeek.map(({ i }) => reelItems[i]), policy.el], tag: "New",
+        matches: [celebrate, NEWS.anniversary, NEWS.drill, NEWS.eid, NEWS.birthdays, NEWS.joiner, NEWS.policy, NEWS.newsletter, ...joinedThisWeek.map(({ i }) => reelItems[i]), policy.el], tag: "New",
         note: { key: "announcements", text: `<strong>${updates} things changed</strong> this week — they’re highlighted across the page`, chips: [
           { label: "Send wishes", act: () => { goBday(0); spotlight(celebrate); } },
+          { label: `Congratulate ${firstName(ANNIV.name)}`, act: openCongrats },
           { label: `Say hello to ${firstName(people[joinedThisWeek[0]?.i ?? 0].name)}`, act: () => { showPerson(joinedThisWeek[0]?.i ?? 0); spotlight(portrait); } },
           { label: "What changed in Data Security", act: () => ask("What changed in the Data Security policy?") }] } }
     };
@@ -2201,6 +2279,10 @@
     ...POLICIES.map((x) => ({ group: "Policies", label: x.title, meta: x.leave ? "Time off" : x.cat[0].toUpperCase() + x.cat.slice(1), lead: { icon: "i-book" }, plan: { intent: "policies", keys: [x.key] } })),
     ...people.map((x, i) => ({ group: "People", label: x.name, meta: x.role, lead: { avatar: x.img }, plan: { intent: "people", person: { kind: "joiner", index: i } } })),
     ...birthdays.map((x, i) => ({ group: "People", label: x.name, meta: "Birthday today", lead: { avatar: x.img }, plan: { intent: "news", person: { kind: "birthday", index: i } } })),
+    { group: "People", label: ANNIV.name, meta: `${ANNIV.years}-year work anniversary`, lead: { avatar: ANNIV.img }, plan: { intent: "news", annc: "anniversary" } },
+    { group: "Announcements", label: "Fire safety drill", meta: "26 Sep · 10:30 AM", lead: { icon: "i-flame" }, plan: { intent: "news", annc: "drill" } },
+    { group: "Announcements", label: "Eid al-Adha leave", meta: "25 – 29 May", lead: { icon: "i-moon" }, plan: { intent: "news", annc: "eid" } },
+    { group: "Announcements", label: "Company newsletter", meta: "Out this week", lead: { icon: "i-news" }, plan: { intent: "news", annc: "newsletter" } },
     ...SPORTS.map((s) => ({ group: "Communities", label: s.name, meta: `${s.members} members`, lead: { icon: "i-ball" }, plan: { intent: "communities", sport: s } })),
     ...PERKS.map((x) => ({ group: "Perks", label: x.title, meta: "Workplace perk", lead: { icon: "i-shield" }, plan: { intent: "perks" } })),
     ...PARTNERS.map((x) => ({ group: "Discounts", label: x.name, meta: x.deal, lead: { logo: x.img }, plan: { intent: "discounts", partner: x } })),
@@ -2332,6 +2414,7 @@
     else if (el.matches(".policy--row")) $(".tag", el).after(tag);
     else if (el.matches(".policy--index")) el.prepend(tag);
     else if (el.matches(".celebrate")) $(".celebrate__count", el).after(tag);
+    else if (el.matches(".ann")) $(".ann__kicker", el).after(tag);
     else ($(".policy__frame, .perk__frame", el) || (el.tagName === "DETAILS" ? $("summary", el) : el)).appendChild(tag);
   }
 

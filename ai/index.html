@@ -64,6 +64,9 @@
       <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M9.5 4.5v15"/><path d="m15.5 10-2 2 2 2"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 21c-3.9 0-6.5-2.6-6.5-6.1 0-2.9 1.9-4.8 3.4-6.6.3 1.6 1.1 2.7 2.2 3.2C11 8.2 12.3 5 15 3c-.3 2.9 3.5 5.3 3.5 11.1C18.5 18.1 15.9 21 12 21Z"/><path d="M12 21c-1.7 0-2.9-1.2-2.9-2.8 0-1.8 1.5-2.6 2.2-4.2.9 1.1 3.6 2.2 3.6 4.4 0 1.5-1.2 2.6-2.9 2.6Z"/></symbol>
+      <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="9" r="5.5"/><path d="m8.6 13.4-1.6 7.1 5-2.6 5 2.6-1.6-7.1"/><path d="m12 6.6.8 1.6 1.7.2-1.2 1.2.3 1.7-1.6-.8-1.6.8.3-1.7-1.2-1.2 1.7-.2Z"/></symbol>
+      <symbol id="i-news" viewBox="0 0 24 24"><path d="M5 4.5h11.5a1 1 0 0 1 1 1V18a2.5 2.5 0 0 0 2.5 2.5H6.5A2.5 2.5 0 0 1 4 18V5.5a1 1 0 0 1 1-1Z"/><path d="M17.5 9.5H20a.5.5 0 0 1 .5.5v8a2.5 2.5 0 0 1-2.5 2.5M7.5 8.5h6.5M7.5 12h6.5M7.5 15.5h4"/></symbol>
       <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
       <symbol id="i-wave" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7.5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L2.8 15.6a1.6 1.6 0 0 1 2.4-2.1L8 16"/></symbol>
       <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
@@ -626,13 +629,14 @@
           <span class="chap-head__num" aria-hidden="true">04</span>
           <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>What’s new</p>
           <h2 class="chap-head__title" id="ann-title">Announcements</h2>
-          <p class="chap-head__sub">Birthdays, new faces and policy changes — <strong id="news-count">5 updates</strong> this week.</p>
+          <p class="chap-head__sub">Celebrations, safety and holidays — <strong id="news-count">9 updates</strong> this week.</p>
         </header>
         <div class="lens-note" data-lens-note="announcements" hidden></div>
 
-        <div class="news__grid">
-          <!-- Birthday carousel -->
-          <div class="celebrate" id="celebrate" aria-roledescription="carousel" aria-label="Birthdays today" data-lens-item>
+        <!-- Four announcement tiles: birthday, work anniversary, fire drill, Eid -->
+        <div class="news__board">
+          <!-- 1 · Birthday carousel -->
+          <div class="celebrate ann" id="celebrate" aria-roledescription="carousel" aria-label="Birthdays today" data-ann="birthday" data-lens-item>
             <div class="celebrate__shine" aria-hidden="true"></div>
             <svg class="celebrate__confetti" viewBox="0 0 320 220" aria-hidden="true">
               <rect x="38" y="30" width="14" height="6" rx="3" fill="#FFD66B" transform="rotate(-24 45 33)"/>
@@ -647,7 +651,7 @@
               <rect x="300" y="170" width="12" height="5" rx="2.5" fill="#FFACB3" transform="rotate(-18 306 172)"/>
             </svg>
             <header class="celebrate__head">
-              <p class="celebrate__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>Celebrations<span class="celebrate__count">3 today</span></p>
+              <p class="celebrate__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-gift"/></svg>Birthdays<span class="celebrate__count">3 today</span></p>
               <div class="carousel-ctrl">
                 <button class="icon-btn icon-btn--glass" type="button" data-bday="prev" aria-label="Previous announcement"><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg></button>
                 <button class="icon-btn icon-btn--glass" type="button" data-bday="next" aria-label="Next announcement"><svg class="ico ico--sm"><use href="#i-chevron-right"/></svg></button>
@@ -659,7 +663,47 @@
             <div class="bday-tabs" id="bday-dots" role="tablist" aria-label="Choose announcement"></div>
           </div>
 
-          <!-- This week, as a timeline -->
+          <!-- 2 · Work anniversary -->
+          <article class="ann ann--anniv" id="ann-anniv" data-ann="anniversary" data-lens-item aria-labelledby="anniv-title">
+            <header class="ann__head"><p class="ann__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-award"/></svg>Work anniversary</p><span class="ann__when">Today</span></header>
+            <div class="anniv">
+              <p class="anniv__years" aria-hidden="true"><strong>10</strong><span>years<br>at Bloom</span></p>
+              <div class="anniv__copy">
+                <h3 class="ann__title" id="anniv-title">Happy work anniversary, <span>Khalid</span></h3>
+                <p class="anniv__who"><span class="avatar img-av-elder" aria-hidden="true"></span><span><strong>Khalid Rashed</strong>Facilities Manager, Operations</span></p>
+                <p class="ann__text">Ten years of keeping our sites running smoothly. A note of thanks goes a long way.</p>
+                <button class="btn btn--light" type="button" id="anniv-btn" data-congrats><svg class="ico ico--sm" aria-hidden="true"><use href="#i-award"/></svg><span>Congratulate Khalid</span></button>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3 · Fire drill -->
+          <article class="ann ann--drill" id="ann-drill" data-ann="drill" data-lens-item aria-labelledby="drill-title">
+            <span class="ann__art ann__art--drill img-ann-drill" aria-hidden="true"></span>
+            <header class="ann__head"><p class="ann__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-flame"/></svg>Fire drill</p></header>
+            <div class="ann__copy">
+              <h3 class="ann__title" id="drill-title">Workplace fire safety drill</h3>
+              <p class="ann__text">We conduct regular fire drills to ensure a safe and prepared workplace for everyone.</p>
+              <p class="drill__when"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-calendar"/></svg><span><strong>26 Sep</strong> · 10:30 AM – 11:00 AM</span></p>
+              <button class="btn btn--primary" type="button" id="drill-cal"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg><span>Add to calendar</span></button>
+            </div>
+          </article>
+
+          <!-- 4 · Eid al-Adha -->
+          <article class="ann ann--eid" id="ann-eid" data-ann="eid" data-lens-item aria-labelledby="eid-title">
+            <span class="ann__art ann__art--eid img-ann-eid" aria-hidden="true"></span>
+            <header class="ann__head"><p class="ann__kicker"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-moon"/></svg>Holiday</p></header>
+            <div class="ann__copy">
+              <h3 class="eid__title" id="eid-title">Eid al-Adha <span>Mubarak</span></h3>
+              <p class="eid__leave"><span>Eid leaves</span><strong>25 May to 29 May</strong></p>
+              <button class="btn eid__btn" type="button" id="eid-rewards"><span>View rewards</span><svg class="ico ico--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            </div>
+          </article>
+        </div>
+
+        <!-- Everything else this week, as a timeline -->
+        <div class="news__week">
+          <p class="news__week-label">Also this week</p>
           <ol class="timeline" id="timeline" aria-label="This week at Bloom">
             <li class="tl reveal-item" data-news="birthdays" data-lens-item>
               <span class="tl__when">Today</span>
@@ -684,6 +728,15 @@
                 <p class="tl__title">The Data Security policy was updated</p>
                 <p class="tl__text">Including the updated guide for reporting suspicious messages.</p>
                 <div class="tl__foot"><button class="tl__link" type="button" data-goto-policy="security">Read what changed <svg class="ico ico--xs"><use href="#i-arrow"/></svg></button></div>
+              </div>
+            </li>
+            <li class="tl reveal-item" data-news="newsletter" data-lens-item>
+              <span class="tl__when">This week</span>
+              <div class="tl__body">
+                <p class="tl__kind"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-news"/></svg>Newsletter</p>
+                <p class="tl__title">The company newsletter is out</p>
+                <p class="tl__text">Your updates on news, achievements and stories that matter.</p>
+                <div class="tl__foot"><button class="tl__link" type="button" data-toast="Opening the company newsletter…">Read it now <svg class="ico ico--xs"><use href="#i-arrow"/></svg></button></div>
               </div>
             </li>
             <li class="tl tl--past reveal-item" data-news="joiner-earlier">

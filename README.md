@@ -148,6 +148,12 @@ Content notes:
   Their copy is placeholder.
 - FAQ answers that pointed at the old layout ("search bar at the top", "next to
   Quick links") were reworded for the new one.
+- Announcements are four tiles: birthdays (the carousel), a work anniversary,
+  the fire drill and Eid al-Adha, with the rest of the week as a timeline below.
+  The Eid artwork and the firefighter photo are crops of the supplied banners
+  (`src/assets/ann-eid.jpg`, `ann-firedrill.jpg`), with the banner text removed.
+  The anniversary (Khalid Rashed, 10 years) is placeholder content. Bloo answers
+  "When is the fire drill?", "Eid leave", "work anniversary" and "newsletter".
 - Partner offers: Marriott, Abu Dhabi Edition, Emirates Food Industries and Food
   Quests keep their percentage. EIIC, Exeed, Petromal and Rise show "Special offer"
   instead, and their codes lost the number. To switch a partner back, put

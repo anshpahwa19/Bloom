@@ -1268,7 +1268,104 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .policies__all:hover .ico { transform: translateX(4px); }
 
 /* 04 — Announcements ------------------------------------------------ */
-.news__grid { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr); gap: clamp(32px, 5vw, 72px); align-items: stretch; margin-top: 56px; }
+.img-ann-drill { --img: url("{{ann-firedrill.jpg}}"); }
+.img-ann-eid { --img: url("{{ann-eid.jpg}}"); }
+
+/* Announcement board — four tiles, each with its own fixed treatment (like a photo, it keeps its colours in both themes) */
+.news__board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 1.8vw, 24px); margin-top: 56px; }
+.ann {
+  --pad: 30px;
+  position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; gap: 18px;
+  min-height: 440px; padding: 26px var(--pad) var(--pad); border-radius: 34px;
+}
+.ann__head { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ann__kicker { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 13px 0 11px; border-radius: var(--r-pill); font-size: var(--fs-label); font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.ann__when { padding: 3px 9px; border-radius: var(--r-pill); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.ann__title { font-family: var(--font-display); font-size: clamp(1.7rem, 1.1rem + 1.1vw, 2.35rem); font-weight: 600; letter-spacing: -0.035em; line-height: 1.04; text-wrap: balance; }
+.ann__text { max-width: 34ch; font-size: var(--fs-support); }
+.ann__copy { position: relative; z-index: 1; display: grid; justify-items: start; gap: 12px; }
+.ann__copy .btn { margin-top: 6px; }
+.ann__art { position: absolute; z-index: 0; top: 0; bottom: 0; background: var(--img, none) center bottom / 100% auto no-repeat; pointer-events: none; }
+.ann.is-match { outline: 2px solid var(--accent-fg); outline-offset: 3px; }
+.ann .match-tag { position: relative; z-index: 2; margin-right: auto; }
+.ann--eid .match-tag, .celebrate .match-tag { margin-right: 0; }
+
+/* 2 · Work anniversary — brand navy with a lavender glow */
+.ann--anniv {
+  color: #fff;
+  background:
+    radial-gradient(70% 60% at 100% 0%, rgba(122, 107, 240, .38), transparent 62%),
+    radial-gradient(60% 55% at 0% 100%, rgba(15, 163, 201, .16), transparent 70%),
+    linear-gradient(150deg, #17245C, var(--deep) 55%, #070E2A);
+  box-shadow: 0 24px 44px -30px rgba(11, 22, 64, .55);
+}
+.ann--anniv .ann__kicker { background: rgba(255, 255, 255, .12); color: rgba(255, 255, 255, .9); }
+.ann--anniv .ann__when { background: #fff; color: var(--deep); }
+.anniv { flex: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px clamp(20px, 2.4vw, 32px); }
+.anniv__years { display: grid; justify-items: start; align-self: center; }
+.anniv__years strong {
+  font-family: var(--font-display); font-size: clamp(6.5rem, 3.6rem + 5.4vw, 10rem); font-weight: 700; line-height: .82; letter-spacing: -0.07em;
+  background: linear-gradient(172deg, #fff 18%, #C9C1FF 62%, #8B7DF4); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.anniv__years span { margin-top: 14px; font-size: var(--fs-label); font-weight: 700; line-height: 1.35; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, .72); }
+.anniv__copy { display: grid; justify-items: start; gap: 12px; }
+.ann--anniv .ann__title { color: rgba(255, 255, 255, .78); }
+.ann--anniv .ann__title span { color: #fff; }
+.anniv__who { display: flex; align-items: center; gap: 12px; font-size: var(--fs-meta); color: rgba(255, 255, 255, .72); }
+.anniv__who .avatar { flex: none; width: 42px; height: 42px; box-shadow: 0 0 0 2px rgba(255, 255, 255, .9); }
+.anniv__who strong { display: block; font-size: var(--fs-support); font-weight: 600; color: #fff; }
+.ann--anniv .ann__text { color: rgba(255, 255, 255, .84); }
+.ann--anniv .btn.is-sent, .celebrate .btn.is-sent { --bg: rgba(255, 255, 255, .18); --fg: #fff; }
+
+/* 3 · Fire drill — the photo's own wall and floor, so the firefighter stands in the tile */
+.ann--drill {
+  --wall: linear-gradient(180deg, #F3F2F0 0%, #EEEDE7 62%, #EAE7E1 76.6%, #E1DBD4 77.2%, #E8E4DC 78.6%, #E5E1DA 92%, #EAE8E3 100%);
+  color: #1B1D26; background: var(--wall);
+  box-shadow: inset 0 0 0 1px rgba(27, 29, 38, .08);
+}
+.ann__art--drill { right: 0; aspect-ratio: 482 / 648; background-size: 100% 100%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%); mask-image: linear-gradient(90deg, transparent, #000 16%); }
+.ann--drill .ann__kicker { background: #fff; border: 1px solid rgba(214, 46, 32, .45); color: #B42318; }
+.ann--drill .ann__copy { max-width: 47%; margin-top: 6px; }
+.ann--drill .ann__text { color: #5B5E6B; }
+.drill__when { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; font-size: var(--fs-support); color: #1B1D26; }
+.drill__when .ico { color: #B42318; }
+.drill__when strong { font-weight: 700; }
+.ann--drill .btn--primary { --bg: #1B1D26; --fg: #fff; }
+.ann--drill .btn--primary:hover { --bg: #000; box-shadow: none; }
+.ann--drill .btn.is-sent { --bg: #fff; --fg: #1B1D26; box-shadow: inset 0 0 0 1px rgba(27, 29, 38, .16); }
+
+/* 4 · Eid al-Adha — deep green and gold */
+.ann--eid {
+  color: #fff;
+  background: radial-gradient(120% 110% at 0% 22%, #033631 0%, #02241F 34%, #011512 58%, #010807 80%, #000 100%);
+  box-shadow: 0 24px 44px -30px rgba(0, 20, 16, .6);
+}
+.ann__art--eid { left: 0; aspect-ratio: 560 / 687; background-size: 100% 100%; -webkit-mask-image: linear-gradient(90deg, #000 70%, transparent 99%); mask-image: linear-gradient(90deg, #000 70%, transparent 99%); }
+.ann--eid .ann__head { justify-content: center; align-self: flex-end; width: 54%; }
+.ann--eid .ann__kicker { border: 1px solid rgba(233, 180, 88, .55); background: rgba(0, 0, 0, .25); color: #F2CD85; }
+.ann--eid .ann__copy { flex: 1; align-content: center; justify-items: center; gap: 16px; align-self: flex-end; width: 54%; text-align: center; }
+.eid__title {
+  display: grid; gap: 8px; font-family: var(--font-display); font-size: clamp(1.9rem, 1rem + 1.7vw, 2.6rem); font-weight: 700; line-height: 1; letter-spacing: -0.01em; text-transform: uppercase;
+  background: linear-gradient(180deg, #FBD98A 10%, #E9AE48 58%, #C8822B); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.eid__title span { font-size: .48em; font-weight: 600; letter-spacing: .34em; margin-right: -.34em; }
+.eid__leave { display: grid; gap: 2px; padding: 12px 22px 14px; border: 1px solid rgba(233, 180, 88, .6); border-radius: 14px; background: rgba(0, 0, 0, .28); }
+.eid__leave span { font-size: var(--fs-meta); color: rgba(255, 255, 255, .78); }
+.eid__leave strong { font-family: var(--font-display); font-size: clamp(1.15rem, .9rem + .5vw, 1.4rem); font-weight: 600; letter-spacing: -0.01em; }
+.eid__btn { --bg: #fff; --fg: #06201B; }
+.eid__btn:hover { --bg: #F2CD85; }
+
+/* Everything else this week */
+.news__week { margin-top: clamp(48px, 5vw, 72px); }
+.news__week-label { font-size: var(--fs-label); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--slate-2); margin-bottom: 14px; }
+@media (min-width: 1101px) {
+  .news__week .timeline { grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; padding: 30px 0 0; }
+  .news__week .timeline::before { left: 0; right: 0; top: 6px; bottom: auto; width: auto; height: 1px; background: linear-gradient(90deg, var(--accent-fg), var(--line) 36%, var(--line)); }
+  .news__week .tl { align-content: start; }
+  .news__week .tl::before { left: 16px; top: -30px; }
+  .news__week .tl__title { font-size: 1.08rem; }
+  .news__week .tl__text { font-size: var(--fs-meta); }
+}
 /* Celebrations — copy on the left, the person's photo as a tilted tile
    with the gift badge fixed to its corner, named tabs along the foot.
    Every row shares the card's 30px inner edge. */
@@ -1793,7 +1890,7 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .brief { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .suggests { grid-row: span 3; }
   .policies { grid-template-columns: minmax(0, 1fr); grid-template-areas: "popular" "recs" "library"; }
-  .news__grid, .people__stage, .faq-grid { grid-template-columns: minmax(0, 1fr); }
+  .news__board, .people__stage, .faq-grid { grid-template-columns: minmax(0, 1fr); }
   .faq-grid .chap-head { position: relative; top: 0; }
   .inbox { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "summary bloo" "main main" "chart chart"; grid-template-rows: auto; }
   .inbox-chart { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-areas: "head head" "donut legend"; align-items: center; gap: 0 24px; }
@@ -1946,7 +2043,23 @@ p.inbox-empty .text-btn { margin-left: 6px; }
   .policy--row { grid-template-columns: 60px minmax(0, 1fr) auto; gap: 14px; }
   .policy__thumb { width: 60px; height: 60px; }
 
-  .news__grid { margin-top: 36px; }
+  .news__board { margin-top: 36px; gap: 14px; }
+  .ann { --pad: 22px; min-height: 0; padding: 22px var(--pad) var(--pad); border-radius: 28px; }
+  .anniv { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .anniv__years { grid-auto-flow: column; justify-content: start; align-items: end; gap: 14px; }
+  .anniv__years strong { font-size: 6rem; }
+  .anniv__years span { margin: 0 0 8px; }
+  /* photo tiles: copy first, the artwork becomes the bottom of the card */
+  .ann--drill .ann__copy, .ann--eid .ann__copy, .ann--eid .ann__head { max-width: none; width: auto; align-self: stretch; }
+  .ann__art { position: relative; order: 3; top: auto; bottom: auto; height: 250px; aspect-ratio: auto; margin: 0 calc(-1 * var(--pad)) calc(-1 * var(--pad)); background-size: auto 100%; }
+  .ann--drill { background: #F3F2F0; }
+  .ann__art--drill { background: var(--wall); -webkit-mask-image: none; mask-image: none; }
+  /* the photo sits on its own wall and floor; its left edge fades into them */
+  .ann__art--drill::after { content: ""; position: absolute; inset: 0; background: var(--img) right bottom / auto 100% no-repeat; -webkit-mask-image: linear-gradient(90deg, transparent calc(100% - 196px), #000 calc(100% - 126px)); mask-image: linear-gradient(90deg, transparent calc(100% - 196px), #000 calc(100% - 126px)); }
+  .ann__art--eid { background-position: left bottom; margin-top: -24px;
+    -webkit-mask-image: linear-gradient(180deg, transparent, #000 22%), linear-gradient(90deg, #000 130px, transparent 204px); -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(180deg, transparent, #000 22%), linear-gradient(90deg, #000 130px, transparent 204px); mask-composite: intersect; }
+
   .celebrate { --pad: 22px; min-height: 0; padding-top: 22px; border-radius: 28px; }
   .bday { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .bday__photo { order: -1; width: 112px; margin-left: 6px; }
