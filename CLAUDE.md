@@ -30,6 +30,11 @@
   - The Inbox page (`#inbox-page`, "Inbox — the requests workspace" in
     `src/app.js`) reads its Inbox tab from the Attention rows. Keep one
     source of truth; don't copy task data.
+  - Perks come from the one `perks` list in `src/app.js`, which feeds the
+    chips, index, spotlight and search. Add a perk there, never in the
+    markup. Only the first four are real (from the original); the rest are
+    placeholders that show the layout at scale. A perk without `img` gets
+    generated art in its category hue (`--pc-*`, decoration only).
   - Counters read `01 / 05`. Carousels put progress, counter and arrows in
     `.rail-foot`, and each chapter's "see all" link is a `.soft-link`.
   - Nothing gets cut at the side:

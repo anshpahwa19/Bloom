@@ -351,7 +351,6 @@
     { group: "Communities", label: "Cricket", meta: "42 members", sport: "Cricket" },
     { group: "Communities", label: "Padel", meta: "28 members", sport: "Padel" },
     { group: "Communities", label: "Football", meta: "58 members", sport: "Football" },
-    { group: "Perks", label: "Medical insurance", meta: "Workplace perk", href: "#perks" },
     { group: "Perks", label: "Marriott Hotel Downtown", meta: "30% off", href: "#discounts" },
     { group: "Requests", label: "Inbox", meta: "Waiting on you", inbox: "inbox" },
     { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
@@ -411,6 +410,7 @@
     if (typeof it.person === "number") { showPerson(it.person); document.getElementById("people").scrollIntoView({ behavior: smooth() }); return; }
     if (it.policy) { revealPolicy(it.policy); return; }
     if (it.sport) { revealSport(it.sport); return; }
+    if (it.perk) { revealPerk(it.perk); return; }
     if (it.href) document.querySelector(it.href).scrollIntoView({ behavior: smooth() });
   }
 
@@ -1579,32 +1579,189 @@
   }
 
   /* ---------------------------------------------------------------
-     Workplace perks — scroll picks the perk, the visual follows
+     Workplace perks — one list drives the chips, the index, the
+     spotlight and search, so the chapter holds 4 perks or 40.
+     The index shows PERK_LIMIT rows, then "Show all". The spotlight
+     autoplays through the visible rows (the active row's rule is the
+     timer) until you pick a perk yourself.
      --------------------------------------------------------------- */
-  const perkEls = $$(".perk");
-  const shots = $$(".perks__shot");
-  const perkCaption = $(".perks__caption");
-  let perkIndex = 0;
-  function setPerk(i) {
-    if (i === perkIndex) return;
-    const prev = perkIndex;
-    perkIndex = i;
-    perkEls.forEach((p, n) => p.classList.toggle("is-active", n === i));
-    shots.forEach((s, n) => { s.classList.toggle("was-active", n === prev); s.classList.toggle("is-active", n === i); });
-    $("#perk-num").textContent = pad(i + 1);
-    $("#perk-caption").textContent = $(".perk__title", perkEls[i]).textContent;
-    perkCaption.classList.remove("is-changing");
-    void perkCaption.offsetWidth;
-    perkCaption.classList.add("is-changing");
+  const PERK_CATS = { health: "Health", travel: "Travel", savings: "Savings", wellbeing: "Wellbeing", growth: "Growth" };
+  const PERK_TAGS = { covered: "i-shield", ready: "i-check", new: "i-sparkle" };
+  const perks = [
+    { id: "medical", cat: "health", icon: "i-shield", img: "img-perk-medical", tag: ["covered", "Covered"], title: "Medical insurance", text: "You and your family are covered. Download the myNAS app to find clinics and submit claims.", cta: "Download myNAS app", toast: "Opening the myNAS download page…" },
+    { id: "air", cat: "travel", icon: "i-plane", img: "img-perk-air", tag: ["ready", "Ready to book"], title: "Air tickets", text: "Your annual ticket home is ready to book.", cta: "See details", toast: "Opening air ticket details…" },
+    { id: "mimojo", cat: "savings", icon: "i-wallet", img: "img-perk-mimojo", title: "Mimojo", text: "Cashback at cafés and stores near you.", cta: "Open Mimojo", toast: "Opening Mimojo…" },
+    { id: "mazaya", cat: "savings", icon: "i-tag", img: "img-perk-mazaya", title: "Mazaya", text: "Member prices on travel, dining and leisure.", cta: "Open Mazaya", toast: "Opening Mazaya…" },
+    // Sample perks that show the layout at scale. A perk without a photo gets generated art.
+    { id: "checkup", cat: "health", icon: "i-pulse", tag: ["new", "New"], title: "Annual health check", text: "A free yearly check-up at partner clinics, booked around your calendar.", cta: "Book a check-up", toast: "Opening health check booking…" },
+    { id: "travel-cover", cat: "travel", icon: "i-globe", tag: ["covered", "Covered"], title: "Travel insurance", text: "Covered worldwide whenever you travel for work.", cta: "View your cover", toast: "Opening your travel cover…" },
+    { id: "mobile", cat: "savings", icon: "i-phone", title: "Family mobile plan", text: "Discounted lines for you and your family on a partner network.", cta: "See plans", toast: "Opening mobile plans…" },
+    { id: "gym", cat: "wellbeing", icon: "i-heart", title: "Gym & wellness", text: "Corporate rates at partner gyms, pools and studios.", cta: "Find a gym", toast: "Opening partner gyms…" },
+    { id: "counselling", cat: "wellbeing", icon: "i-leaf", title: "Counselling", text: "Free, confidential sessions with a wellbeing counsellor.", cta: "Book a session", toast: "Opening counselling bookings…" },
+    { id: "birthday-leave", cat: "wellbeing", icon: "i-cake", tag: ["new", "New"], title: "Birthday leave", text: "Take your birthday off, on us.", cta: "Plan your day", toast: "Opening leave planner…" },
+    { id: "learning", cat: "growth", icon: "i-cap", title: "Learning budget", text: "A yearly budget for courses, books and certifications.", cta: "Browse courses", toast: "Opening the course catalogue…" },
+    { id: "referral", cat: "growth", icon: "i-users", title: "Referral bonus", text: "Recommend someone great. You’re rewarded when they join.", cta: "Refer a friend", toast: "Opening referrals…" }
+  ];
+  const PERK_LIMIT = 6;
+  const perksSec = $("#perks");
+  const perkChips = $("#perk-chips");
+  const perkList = $("#perk-list");
+  const perkMore = $("#perks-more");
+  const perkSpotEl = $("#perk-spot");
+  const perkShots = $("#perk-shots");
+  const perkBody = $("#perk-body");
+  const perkStage = $(".perks__stage");
+  const pk = { cat: "all", open: false, id: perks[0].id, auto: !reduceMotion, hover: false, focus: false, inView: false };
+  const perkById = (id) => perks.find((x) => x.id === id);
+  const perkPool = () => (pk.cat === "all" ? perks : perks.filter((x) => x.cat === pk.cat));
+  const perkShown = () => (pk.open ? perkPool() : perkPool().slice(0, PERK_LIMIT));
+
+  function renderPerkChips() {
+    const n = (c) => perks.filter((x) => x.cat === c).length;
+    perkChips.innerHTML = [["all", "All", perks.length], ...Object.keys(PERK_CATS).filter(n).map((c) => [c, PERK_CATS[c], n(c)])]
+      .map(([c, label, count]) => `<button class="chip${pk.cat === c ? " is-selected" : ""}" type="button" aria-pressed="${pk.cat === c}" data-cat="${c}"${c === "all" ? "" : ` data-pc="${c}"`}>${c === "all" ? "" : '<span class="chip__dot" aria-hidden="true"></span>'}${label}<span class="chip__count">${count}</span></button>`).join("");
   }
-  const perkIO = new IntersectionObserver((entries) => {
-    entries.forEach((en) => { if (en.isIntersecting) setPerk(perkEls.indexOf(en.target)); });
-  }, { rootMargin: "-46% 0px -46% 0px" });
-  perkEls.forEach((p, i) => {
-    perkIO.observe(p);
-    if (canHover) p.addEventListener("pointerenter", () => setPerk(i));
-    p.addEventListener("focusin", () => setPerk(i));
+  function renderPerkList(animateFrom = -1) {
+    const pool = perkPool();
+    perkList.innerHTML = perkShown().map((x, i) => {
+      const on = x.id === pk.id;
+      const rise = animateFrom >= 0 && i >= animateFrom ? ` class="is-in" style="--i:${i - animateFrom}"` : "";
+      return `<li role="presentation"${rise}><button class="perk-row${on ? " is-active" : ""}" type="button" role="tab" id="perk-tab-${x.id}" aria-selected="${on}" aria-controls="perk-spot" tabindex="${on ? 0 : -1}" data-perk="${x.id}" data-pc="${x.cat}">
+        <span class="perk-row__num">${pad(i + 1)}</span><span class="perk-row__tile">${icon(x.icon)}</span>
+        <span class="perk-row__text"><span class="perk-row__title">${escapeHtml(x.title)}</span><span class="perk-row__meta">${PERK_CATS[x.cat]}${x.tag ? ` · ${x.tag[1]}` : ""}</span></span>
+        ${icon("i-arrow", "ico perk-row__go")}</button></li>`;
+    }).join("");
+    perkMore.hidden = pool.length <= PERK_LIMIT;
+    perkMore.setAttribute("aria-expanded", String(pk.open));
+    $("span", perkMore).textContent = pk.open ? "Show fewer" : `Show all ${pool.length} perks`;
+  }
+  function renderPerkSpot(animate) {
+    const x = perkById(pk.id);
+    const shot = document.createElement("div");
+    shot.className = `perk-shot ${x.img || "perk-shot--art"}${animate ? "" : " is-active"}`;
+    shot.dataset.pc = x.cat;
+    if (!x.img) shot.innerHTML = `${icon(x.icon, "ico perk-shot__icon")}${icon("i-sparkle", "ico perk-shot__spark")}`;
+    if (animate) {
+      $$(".perk-shot", perkShots).forEach((s) => { s.classList.remove("is-active"); s.classList.add("was-active"); });
+      perkShots.append(shot);
+      void shot.offsetWidth; // start the wipe from below
+      shot.classList.add("is-active");
+      $$(".perk-shot", perkShots).slice(0, -2).forEach((s) => s.remove());
+    } else {
+      perkShots.replaceChildren(shot);
+    }
+    perkBody.innerHTML = `<p class="perk-spot__top"><span class="perk-spot__cat" data-pc="${x.cat}"><span class="chip__dot" aria-hidden="true"></span>${PERK_CATS[x.cat]}</span>${x.tag ? `<span class="tag perk-spot__tag">${icon(PERK_TAGS[x.tag[0]], "ico ico--xs")}${x.tag[1]}</span>` : ""}</p>
+      <h3 class="perk-spot__title">${escapeHtml(x.title)}</h3>
+      <p class="perk-spot__text">${escapeHtml(x.text)}</p>
+      <a class="btn btn--light btn--sm perk-spot__cta" href="#" data-toast="${escapeHtml(x.toast)}">${escapeHtml(x.cta)} ${icon("i-arrow", "ico ico--sm btn__arrow")}</a>`;
+    if (animate) { perkBody.classList.remove("is-changing"); void perkBody.offsetWidth; perkBody.classList.add("is-changing"); }
+    perkSpotEl.setAttribute("aria-labelledby", `perk-tab-${x.id}`);
+    const pool = perkPool();
+    const i = pool.findIndex((p) => p.id === x.id);
+    $("#perk-count").textContent = `${pad(i + 1)} / ${pad(pool.length)}`;
+    $("#perk-progress").style.setProperty("--rp", ((i + 1) / pool.length).toFixed(3));
+    $("#perk-prev").disabled = $("#perk-next").disabled = pool.length < 2;
+  }
+  function stopPerkAuto() { pk.auto = false; perkList.classList.remove("is-auto"); }
+  function syncPerkPause() { perkList.classList.toggle("is-paused", !pk.inView || pk.hover || pk.focus || document.hidden); }
+  function setPerk(id, { user = false, reveal = false } = {}) {
+    if (user) stopPerkAuto();
+    const pool = perkPool();
+    const at = pool.findIndex((x) => x.id === id);
+    if (at < 0) return;
+    const changed = id !== pk.id || !perkShots.firstChild;
+    pk.id = id;
+    if (!pk.open && at >= PERK_LIMIT) { pk.open = true; renderPerkList(PERK_LIMIT); }
+    $$(".perk-row", perkList).forEach((r) => {
+      const on = r.dataset.perk === id;
+      r.classList.toggle("is-active", on);
+      r.setAttribute("aria-selected", String(on));
+      r.tabIndex = on ? 0 : -1;
+    });
+    if (changed) renderPerkSpot(!!perkShots.firstChild);
+    // Phones stack the spotlight above the index: bring it into view
+    if (reveal && matchMedia("(max-width: 1023px)").matches) {
+      const r = perkStage.getBoundingClientRect();
+      if (r.top < 80 || r.bottom > innerHeight) perkStage.scrollIntoView({ behavior: smooth(), block: "center" });
+    }
+  }
+  function stepPerk(d) {
+    const pool = perkPool();
+    const i = pool.findIndex((x) => x.id === pk.id);
+    setPerk(pool[(i + d + pool.length) % pool.length].id, { user: true });
+  }
+  function pickPerkCat(cat) {
+    stopPerkAuto();
+    pk.cat = cat;
+    pk.open = false;
+    pk.id = perkPool()[0].id;
+    renderPerkChips();
+    renderPerkList(0);
+    renderPerkSpot(true);
+  }
+  // Search finds any perk; picking one selects it here
+  function revealPerk(id) {
+    const x = perkById(id);
+    if (!x) return;
+    if (pk.cat !== "all" && pk.cat !== x.cat) { pk.cat = "all"; pk.open = false; renderPerkChips(); renderPerkList(); }
+    setPerk(id, { user: true });
+    perksSec.scrollIntoView({ behavior: smooth() });
+  }
+  searchIndex.splice(searchIndex.findIndex((it) => it.group === "Perks"), 0, ...perks.map((x) => ({ group: "Perks", label: x.title, meta: `${PERK_CATS[x.cat]} perk`, perk: x.id })));
+
+  renderPerkChips();
+  renderPerkList();
+  renderPerkSpot(false);
+  perkList.classList.toggle("is-auto", pk.auto);
+
+  perkChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c && c.dataset.cat !== pk.cat) pickPerkCat(c.dataset.cat); });
+  perkList.addEventListener("click", (e) => { const r = e.target.closest(".perk-row"); if (r) setPerk(r.dataset.perk, { user: true, reveal: true }); });
+  perkList.addEventListener("keydown", (e) => {
+    const rows = $$(".perk-row", perkList);
+    const i = rows.indexOf(document.activeElement);
+    const next = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: rows.length - 1 }[e.key];
+    if (next === undefined || i < 0) return;
+    e.preventDefault();
+    const row = rows[(next + rows.length) % rows.length];
+    setPerk(row.dataset.perk, { user: true });
+    row.focus();
   });
+  // Autoplay: when the active row's timer rule finishes, move to the next visible row
+  perkList.addEventListener("animationend", (e) => {
+    if (!pk.auto || e.animationName !== "timer" || !e.target.classList.contains("is-active")) return;
+    const rows = perkShown();
+    const i = rows.findIndex((x) => x.id === pk.id);
+    setPerk(rows[(i + 1) % rows.length].id);
+  });
+  perkMore.addEventListener("click", () => {
+    stopPerkAuto();
+    pk.open = !pk.open;
+    if (!pk.open && perkPool().findIndex((x) => x.id === pk.id) >= PERK_LIMIT) { pk.id = perkPool()[0].id; renderPerkSpot(true); }
+    renderPerkList(pk.open ? PERK_LIMIT : -1);
+    if (!pk.open && perkList.getBoundingClientRect().top < 0) perkList.scrollIntoView({ behavior: smooth(), block: "start" });
+  });
+  $("#perk-prev").addEventListener("click", () => stepPerk(-1));
+  $("#perk-next").addEventListener("click", () => stepPerk(1));
+  // Swipe the spotlight on touch screens
+  let perkSwipe = null;
+  perkSpotEl.addEventListener("pointerdown", (e) => { if (e.pointerType !== "mouse") perkSwipe = [e.clientX, e.clientY]; });
+  perkSpotEl.addEventListener("pointercancel", () => { perkSwipe = null; });
+  perkSpotEl.addEventListener("pointerup", (e) => {
+    if (!perkSwipe) return;
+    const dx = e.clientX - perkSwipe[0], dy = e.clientY - perkSwipe[1];
+    perkSwipe = null;
+    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) stepPerk(dx < 0 ? 1 : -1);
+  });
+  // Pause the timer while you read, point at, or tab through the chapter
+  [$(".perks__index"), perkStage].forEach((el) => {
+    el.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { pk.hover = true; syncPerkPause(); } });
+    el.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") { pk.hover = false; syncPerkPause(); } });
+  });
+  perksSec.addEventListener("focusin", () => { pk.focus = true; syncPerkPause(); });
+  perksSec.addEventListener("focusout", (e) => { if (!perksSec.contains(e.relatedTarget)) { pk.focus = false; syncPerkPause(); } });
+  document.addEventListener("visibilitychange", syncPerkPause);
+  new IntersectionObserver(([en]) => { pk.inView = en.isIntersecting; syncPerkPause(); }, { threshold: 0.35 }).observe(perkStage);
+  syncPerkPause();
 
   /* ---------------------------------------------------------------
      FAQ — category tabs + animated accordion

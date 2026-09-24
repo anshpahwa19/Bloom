@@ -40,7 +40,7 @@ adds its own.
 | — | Life at Bloom | Typographic interlude with drifting outline words. |
 | 05 | Communities | Pinned horizontal reel: vertical scroll moves the cards sideways. Cards expand on hover, with a pointer spotlight. |
 | 06 | Discounts | Draggable partner marketplace with tilt, big offer numbers and reveal-then-copy codes. |
-| 07 | Perks | Editorial list; a sticky image masks between perks as you scroll. |
+| 07 | Perks | Category chips, a compact perk index and a sticky spotlight. The spotlight wipes to each perk and autoplays until you pick one. Built from one list, so it scales to any number of perks. |
 | 08 | FAQ | Calm support chapter: category tabs and an animated accordion. |
 | — | Footer | Word-by-word statement, app stores, support, socials. |
 
@@ -60,6 +60,20 @@ the ring reads "Drag". A click makes the flag flutter and sends out a
 blue-and-red ripple. Text fields and dialogs keep the system cursor. It is off
 on touch devices and with reduced motion, and ☰ → Appearance → Flag cursor
 turns it off.
+
+**Perks at any scale.** The chapter is rendered from one `perks` list in
+`src/app.js`, which also feeds search. The index shows six perks with
+**Show all** for the rest. Category chips (with counts) filter it, and the
+spotlight's arrows, counter and progress follow the filter.
+- **Autoplay:** the spotlight steps through the visible perks, and the rule
+  above the active row fills as its timer. It pauses while you point at or
+  tab through the chapter, and stops once you pick a perk.
+- **Perks without a photo** get generated art in their category colour.
+- **Phones:** the chips become one swipeable line, the spotlight takes
+  swipes, and tapping a row brings the spotlight into view.
+- **Sample perks:** only the first four are from the original. The other
+  eight are placeholders that show the layout with more perks; delete them
+  from the list to go back to four.
 
 **Inbox (requests workspace).** The inbox button in the nav, the hero and the
 menu opens a full-screen page, revealed in a circle from the button pressed.

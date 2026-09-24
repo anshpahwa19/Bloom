@@ -64,6 +64,15 @@
       <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2"/><path d="M15.5 8.5v-3a1 1 0 0 0-1-1h-9a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3"/></symbol>
       <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
       <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9.5 20H6a1.5 1.5 0 0 1-1.5-1.5v-13A1.5 1.5 0 0 1 6 4h3.5"/><path d="M15 16.5 19.5 12 15 7.5M19.5 12H9.5"/></symbol>
+      <symbol id="i-plane" viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2Z"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.3 2.4 3.5 5.2 3.5 8.5s-1.2 6.1-3.5 8.5c-2.3-2.4-3.5-5.2-3.5-8.5s1.2-6.1 3.5-8.5Z"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.6-8-10.3A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.6c0 5.7-8 10.3-8 10.3Z"/></symbol>
+      <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3.5 12h4l2-5 4 10 2-5h5"/></symbol>
+      <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="4" y="8" width="16.5" height="11" rx="2.5"/><path d="M20.5 12h-3.5a1.5 1.5 0 0 0 0 3h3.5"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="3" width="11" height="18" rx="2.5"/><path d="M10.5 18h3"/></symbol>
+      <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19c3-4 6-6.5 9.5-8.5"/></symbol>
+      <symbol id="i-cake" viewBox="0 0 24 24"><path d="M4.5 20.5v-7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7M3.5 20.5h17"/><path d="M4.5 15.5c1.5 1.3 3 1.3 4.5 0s3-1.3 4.5 0 3 1.3 4.5 0 1.5-1 1.5-1M12 11.5V8"/><path d="M12 8c-1.1 0-1.8-.9-1.4-2L12 3.5 13.4 6c.4 1.1-.3 2-1.4 2Z"/></symbol>
+      <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5Z"/><path d="M6.5 11.6v4.4c1.5 1.6 3.4 2.5 5.5 2.5s4-.9 5.5-2.5v-4.4M21.5 9.5v5"/></symbol>
       <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.9 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1.1 3-3Z"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
       <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h4"/></symbol>
@@ -774,7 +783,8 @@
     </section>
 
     <!-- ==========================================================
-         07 — PERKS: editorial service list with a sticky visual
+         07 — PERKS: a filterable index beside a spotlight. Rendered
+         from one list in app.js, so it holds 4 perks or 40.
          ========================================================== -->
     <section class="chapter perks-sec" id="perks" aria-labelledby="perks-title">
       <div class="container perks">
@@ -784,61 +794,27 @@
           <p class="section-sub">Benefits included with your role, and where to use them.</p>
         </header>
 
-        <div class="perks__visual" aria-hidden="true">
-          <div class="perks__shot img-perk-medical is-active" data-shot="0"></div>
-          <div class="perks__shot img-perk-air" data-shot="1"></div>
-          <div class="perks__shot img-perk-mimojo" data-shot="2"></div>
-          <div class="perks__shot img-perk-mazaya" data-shot="3"></div>
-          <div class="perks__caption"><span class="perks__caption-num" id="perk-num">01</span><span class="perks__caption-title" id="perk-caption">Medical insurance</span></div>
+        <div class="chips perks__chips reveal" role="group" aria-label="Filter perks" id="perk-chips"><!-- rendered by script --></div>
+
+        <div class="perks__index">
+          <ol class="perk-list" id="perk-list" role="tablist" aria-orientation="vertical" aria-label="Perks"><!-- rendered by script --></ol>
+          <button class="btn btn--quiet perks__more" type="button" id="perks-more" aria-expanded="false" hidden><span>Show all perks</span><svg class="ico ico--sm"><use href="#i-chevron-down"/></svg></button>
         </div>
 
-        <ol class="perks__list">
-          <li>
-            <article class="perk is-active" data-perk="medical">
-              <span class="perk__num">01</span>
-              <div class="perk__media img-perk-medical"></div>
-              <div class="perk__body">
-                <span class="tag tag--covered"><svg class="ico ico--xs"><use href="#i-shield"/></svg>Covered</span>
-                <h3 class="perk__title">Medical insurance</h3>
-                <p>You and your family are covered. Download the myNAS app to find clinics and submit claims.</p>
-                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening the myNAS download page…">Download myNAS app <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article class="perk" data-perk="air">
-              <span class="perk__num">02</span>
-              <div class="perk__media img-perk-air"></div>
-              <div class="perk__body">
-                <h3 class="perk__title">Air tickets</h3>
-                <p>Your annual ticket home is ready to book.</p>
-                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening air ticket details…">See details <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article class="perk" data-perk="mimojo">
-              <span class="perk__num">03</span>
-              <div class="perk__media img-perk-mimojo"></div>
-              <div class="perk__body">
-                <h3 class="perk__title">Mimojo</h3>
-                <p>Cashback at cafés and stores near you.</p>
-                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening Mimojo…">Open Mimojo <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
-              </div>
-            </article>
-          </li>
-          <li>
-            <article class="perk" data-perk="mazaya">
-              <span class="perk__num">04</span>
-              <div class="perk__media img-perk-mazaya"></div>
-              <div class="perk__body">
-                <h3 class="perk__title">Mazaya</h3>
-                <p>Member prices on travel, dining and leisure.</p>
-                <a class="btn btn--ghost btn--sm perk__cta" href="#" data-toast="Opening Mazaya…">Open Mazaya <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></a>
-              </div>
-            </article>
-          </li>
-        </ol>
+        <div class="perks__stage">
+          <article class="perk-spot" id="perk-spot" role="tabpanel" aria-live="polite">
+            <div class="perk-spot__shots" id="perk-shots" aria-hidden="true"></div>
+            <div class="perk-spot__body" id="perk-body"></div>
+          </article>
+          <div class="rail-foot perks__foot">
+            <div class="rail-progress" aria-hidden="true"><span id="perk-progress"></span></div>
+            <p class="rail-count" id="perk-count" aria-hidden="true">01 / 04</p>
+            <div class="carousel-ctrl">
+              <button class="icon-btn icon-btn--bordered" type="button" id="perk-prev" aria-label="Previous perk"><svg class="ico"><use href="#i-chevron-left"/></svg></button>
+              <button class="icon-btn icon-btn--bordered" type="button" id="perk-next" aria-label="Next perk"><svg class="ico"><use href="#i-chevron-right"/></svg></button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
