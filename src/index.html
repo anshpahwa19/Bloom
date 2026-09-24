@@ -73,6 +73,7 @@
       <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19c3-4 6-6.5 9.5-8.5"/></symbol>
       <symbol id="i-cake" viewBox="0 0 24 24"><path d="M4.5 20.5v-7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7M3.5 20.5h17"/><path d="M4.5 15.5c1.5 1.3 3 1.3 4.5 0s3-1.3 4.5 0 3 1.3 4.5 0 1.5-1 1.5-1M12 11.5V8"/><path d="M12 8c-1.1 0-1.8-.9-1.4-2L12 3.5 13.4 6c.4 1.1-.3 2-1.4 2Z"/></symbol>
       <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5Z"/><path d="M6.5 11.6v4.4c1.5 1.6 3.4 2.5 5.5 2.5s4-.9 5.5-2.5v-4.4M21.5 9.5v5"/></symbol>
+      <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/></symbol>
       <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.9 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1.1 3-3Z"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
       <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h4"/></symbol>
@@ -518,9 +519,10 @@
       </div>
     </section>
 
-    <!-- ANNOUNCEMENTS — celebratory editorial feed -->
-    <section class="chapter announce" id="announcements" aria-labelledby="ann-title" aria-roledescription="carousel">
-      <div class="announce__bg" aria-hidden="true"><span class="announce__glow"></span><span class="announce__dots"></span></div>
+    <!-- ANNOUNCEMENTS — birthdays, work anniversaries, safety and holidays.
+         Each kind has its own slide and tints the chapter (data-mood). -->
+    <section class="chapter announce" id="announcements" aria-labelledby="ann-title" aria-roledescription="carousel" data-mood="bday">
+      <div class="announce__bg" aria-hidden="true"><span class="announce__mood announce__mood--anniv"></span><span class="announce__mood announce__mood--drill"></span><span class="announce__mood announce__mood--eid"></span><span class="announce__glow"></span><span class="announce__dots"></span></div>
       <div class="container announce__grid">
         <header class="announce__head">
           <p class="kicker kicker--light"><span class="kicker__num">03.2</span><span class="kicker__line"></span>Today at Bloom</p>
@@ -1036,11 +1038,7 @@
         <textarea id="wish-text" rows="4" maxlength="280">Happy birthday! Wishing you a wonderful year ahead.</textarea>
         <span class="field__hint"><span id="wish-count">52</span> / 280</span>
       </label>
-      <div class="chips chips--sm" id="wish-presets">
-        <button class="chip" type="button">Have a great day! 🎉</button>
-        <button class="chip" type="button">Many happy returns</button>
-        <button class="chip" type="button">Cake is on you today</button>
-      </div>
+      <div class="chips chips--sm" id="wish-presets"><!-- rendered by script: birthday or anniversary presets --></div>
       <div class="modal__foot">
         <button class="btn btn--quiet" value="cancel" type="submit" formnovalidate>Cancel</button>
         <button class="btn btn--primary" type="button" id="wish-send"><span class="btn__label">Send wish</span><span class="spinner" aria-hidden="true"></span></button>

@@ -347,7 +347,10 @@
     { group: "Policies", label: "Travel & Expenses", meta: "Operations", policy: "Travel & Expenses" },
     { group: "People", label: "Abdulazeez Aladwan", meta: "Projects Affairs Manager", person: 0 },
     { group: "People", label: "Sara Al Mansoori", meta: "Product Designer", person: 1 },
-    { group: "People", label: "Ahmed Obaid", meta: "Birthday today", href: "#announcements" },
+    { group: "People", label: "Ahmed Obaid", meta: "Birthday today", ann: 0 },
+    { group: "People", label: "Khalid Al Mazrouei", meta: "10-year work anniversary", ann: 3 },
+    { group: "Announcements", label: "Fire safety drill", meta: "26 Sep · 10:30 AM", ann: 4 },
+    { group: "Announcements", label: "Eid Al Adha", meta: "Holiday · 25 – 29 May", ann: 5 },
     { group: "Communities", label: "Cricket", meta: "42 members", sport: "Cricket" },
     { group: "Communities", label: "Padel", meta: "28 members", sport: "Padel" },
     { group: "Communities", label: "Football", meta: "58 members", sport: "Football" },
@@ -388,7 +391,7 @@
       if (it.group !== group) { group = it.group; html += `<p class="search__group">${q ? group : group === "Apps" ? "Jump to an app" : "Suggested"}</p>`; }
       const lead = it.mark
         ? `<span class="app-mark app-mark--${it.mark}">${it.mark === "sap" ? "SAP" : it.label.slice(0, 2)}</span>`
-        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Requests" ? "i-doc" : "i-help", "ico ico--sm")}</span>`;
+        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Announcements" ? "i-megaphone" : it.group === "Requests" ? "i-doc" : "i-help", "ico ico--sm")}</span>`;
       html += `<button type="button" class="search__item${i === 0 ? " is-active" : ""}" role="option" data-i="${i}">${lead}<span>${highlight(it.label, q)}</span><small>${escapeHtml(it.meta)}</small></button>`;
     });
     sPanel.innerHTML = html;
@@ -411,6 +414,7 @@
     if (it.policy) { revealPolicy(it.policy); return; }
     if (it.sport) { revealSport(it.sport); return; }
     if (it.perk) { revealPerk(it.perk); return; }
+    if (typeof it.ann === "number") { showAnnouncement(it.ann); return; }
     if (it.href) document.querySelector(it.href).scrollIntoView({ behavior: smooth() });
   }
 
@@ -1174,12 +1178,25 @@
   $("#ib-new").addEventListener("click", () => openRequestForm());
 
   /* ---------------------------------------------------------------
-     Announcements — birthday feed carousel + wish modal
+     Announcements — birthdays, a work anniversary, a fire drill and
+     Eid. One slide each (birthdays get one per person); the feed has
+     one tile per kind, and the chapter takes that kind's mood.
      --------------------------------------------------------------- */
   const birthdays = [
     { name: "Ahmed Obaid", role: "Contact Center Agent", img: "img-rashid", initials: "AO" },
     { name: "Mariam Al Hashimi", role: "Finance Analyst", img: "img-av-mh", initials: "MH" },
     { name: "Yousef Karim", role: "Site Engineer", img: "img-av-yousef", initials: "YK" }
+  ];
+  const anniversary = { name: "Khalid Al Mazrouei", role: "Facilities Supervisor", img: "img-av-elder", initials: "KM", years: 10, since: "24 Sep 2016" };
+  const firstName = (p) => p.name.split(" ")[0];
+  const slides = [...birthdays.map((p, i) => ({ group: "bday", i })), { group: "anniv" }, { group: "drill" }, { group: "eid" }];
+  const ANN_TILES = [
+    { group: "bday", label: "Birthdays", title: `${birthdays.length} birthdays today`, sub: `${birthdays.slice(0, -1).map(firstName).join(", ")} & ${firstName(birthdays[birthdays.length - 1])}`,
+      lead: `<span class="feed__stack">${birthdays.map((p) => `<span class="avatar ${p.img}">${p.initials}</span>`).join("")}</span>` },
+    { group: "anniv", label: "Work anniversary", title: "Work anniversary", sub: `${anniversary.name} · ${anniversary.years} years`,
+      lead: `<span class="avatar ${anniversary.img}">${anniversary.initials}</span><span class="feed__badge">${anniversary.years}</span>` },
+    { group: "drill", label: "Fire drill", title: "Fire safety drill", sub: "26 Sep · 10:30 – 11:00 AM", lead: `<span class="feed__icon feed__icon--drill">${icon("i-flame")}</span>` },
+    { group: "eid", label: "Holiday", title: "Eid Al Adha", sub: "Holiday · 25 – 29 May", lead: `<span class="feed__icon feed__icon--eid">${icon("i-moon")}</span>` }
   ];
   const ann = $("#announcements");
   const bTrack = $("#bday-track");
@@ -1189,50 +1206,118 @@
   let bTimer = null;
   let annVisible = false;
   const letters = (s) => [...s].map((ch, i) => `<span class="l" style="--i:${i}">${escapeHtml(ch)}</span>`).join("");
+  const bigName = (s) => `<span class="bday__name"><span class="sr-only">${escapeHtml(s)}</span><span aria-hidden="true">${letters(s)}</span></span>`;
+  const EID_ART = `<svg class="eid__svg" viewBox="0 0 240 240">
+      <defs>
+        <linearGradient id="eid-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE9B5"/><stop offset=".5" stop-color="#F3B547"/><stop offset="1" stop-color="#C98320"/></linearGradient>
+        <mask id="eid-cut"><rect x="-40" y="-40" width="320" height="320" fill="#fff"/><circle cx="160" cy="92" r="92" fill="#000"/></mask>
+      </defs>
+      <circle cx="108" cy="134" r="110" fill="url(#eid-gold)" mask="url(#eid-cut)"/>
+      <path class="eid__string" d="M122 0v40" stroke-dasharray="1.5 4"/><path class="eid__star" d="M122 40l2.4 5.6 5.6 2.4-5.6 2.4-2.4 5.6-2.4-5.6-5.6-2.4 5.6-2.4Z"/>
+      <g class="eid__lantern" style="transform-origin: 158px 0">
+        <path class="eid__string" d="M158 0v52"/><path class="eid__metal" d="M151 52h14l-2 5h-10Z"/>
+        <path class="eid__glass" d="M149 58h18l6 11v28l-6 11h-18l-6-11V69Z"/><path class="eid__line" d="M158 58v50M143 83h30M149 58l-6 25 6 25M167 58l6 25-6 25"/>
+        <circle class="eid__flame" cx="158" cy="84" r="5"/><path class="eid__metal" d="M153 108h10l-5 7Z"/>
+      </g>
+      <g class="eid__lantern eid__lantern--2" style="transform-origin: 204px 0">
+        <path class="eid__string" d="M204 0v96"/><path class="eid__metal" d="M199 96h10l-1.5 4h-7Z"/>
+        <path class="eid__glass" d="M198 101h12l4 8v19l-4 8h-12l-4-8v-19Z"/><path class="eid__line" d="M204 101v35M194 118h20"/>
+        <circle class="eid__flame" cx="204" cy="118" r="3.5"/><path class="eid__metal" d="M200 136h8l-4 5Z"/>
+      </g>
+    </svg>`;
 
-  bTrack.innerHTML = birthdays.map((p, i) => {
-    const first = p.name.split(" ")[0];
-    return `<article class="bday${i ? "" : " is-current"}" aria-roledescription="slide" aria-label="${i + 1} of ${birthdays.length}" ${i ? 'aria-hidden="true"' : ""}>
-      <div class="bday__avatar"><span class="avatar ${p.img}">${p.initials}</span>${icon("i-gift")}</div>
-      <div class="bday__text">
-        <p class="bday__kicker">Birthday today</p>
-        <h3 class="bday__title"><span class="bday__hb">Happy birthday,</span> <span class="bday__name"><span class="sr-only">${first}</span><span aria-hidden="true">${letters(first)}</span></span></h3>
-        <p class="bday__role">${p.name}, ${p.role}</p>
-        <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
-        <button class="btn btn--light btn--lg" type="button" data-wish="${i}" ${i ? 'tabindex="-1"' : ""}>${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button>
-      </div>
-    </article>`;
-  }).join("");
-  bDots.innerHTML = birthdays.map((p, i) => `<button class="dot feed__item" type="button" role="tab" aria-label="Show ${p.name}" aria-selected="${i === 0}"><span class="avatar ${p.img}"></span><span class="feed__txt"><strong>${p.name}</strong><small>Birthday · ${p.role}</small></span><span class="feed__timer" aria-hidden="true"></span></button>`).join("");
+  const slideOpen = (n, kind) => `<article class="slide slide--${kind}${n ? "" : " is-current"}" data-group="${kind}" aria-roledescription="slide" aria-label="${n + 1} of ${slides.length}"${n ? ' aria-hidden="true"' : ""}>`;
+  function slideHTML(sl, n) {
+    if (sl.group === "bday") {
+      const p = birthdays[sl.i];
+      const also = birthdays.map((q, j) => (j === sl.i ? "" : `<button class="also__btn" type="button" data-go="${j}" aria-label="Show ${q.name}’s birthday"><span class="avatar ${q.img}">${q.initials}</span></button>`)).join("");
+      return `${slideOpen(n, "bday")}
+        <div class="bday__avatar slide__art"><span class="avatar ${p.img}">${p.initials}</span>${icon("i-gift")}</div>
+        <div class="slide__text">
+          <p class="bday__kicker">Birthday today</p>
+          <h3 class="bday__title"><span class="bday__hb">Happy birthday,</span> ${bigName(firstName(p))}</h3>
+          <p class="bday__role">${p.name}, ${p.role}</p>
+          <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
+          <div class="slide__actions"><button class="btn btn--light btn--lg" type="button" data-wish="b${sl.i}">${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button><p class="slide__also"><span>Also today</span>${also}</p></div>
+        </div></article>`;
+    }
+    if (sl.group === "anniv") {
+      const p = anniversary;
+      const dots = Array.from({ length: p.years }, (_, k) => `<i style="--k:${k}"></i>`).join("");
+      return `${slideOpen(n, "anniv")}
+        <div class="bday__avatar slide__art anniv__art"><span class="anniv__orbit" style="--n:${p.years}" aria-hidden="true">${dots}</span><span class="avatar ${p.img}">${p.initials}</span><span class="anniv__badge"><strong>${p.years}</strong><small>years</small></span></div>
+        <div class="slide__text">
+          <p class="bday__kicker">Work anniversary</p>
+          <h3 class="bday__title"><span class="bday__hb">${p.years} years at Bloom,</span> ${bigName(firstName(p))}</h3>
+          <p class="bday__role">${p.name}, ${p.role} · since ${p.since}</p>
+          <p class="bday__msg">A decade of keeping our sites running smoothly. Say thank you.</p>
+          <div class="slide__actions"><button class="btn btn--light btn--lg" type="button" data-wish="a">${icon("i-sparkle", "ico ico--sm")}<span>Say congratulations</span></button></div>
+        </div></article>`;
+    }
+    if (sl.group === "drill") {
+      return `${slideOpen(n, "drill")}
+        <div class="slide__art drill__art" aria-hidden="true"><span class="drill__ring"></span><span class="drill__ring"></span><span class="drill__disc">${icon("i-flame")}</span></div>
+        <div class="slide__text">
+          <p class="bday__kicker">Safety · Fire drill</p>
+          <h3 class="slide__title">Workplace fire safety drill</h3>
+          <p class="bday__msg">We run regular drills so everyone knows the way out. When the alarm sounds, leave your things and follow your floor warden to the assembly point.</p>
+          <div class="drill__when"><span class="drill__cal"><small>Sep</small><strong>26</strong></span><span class="drill__time"><strong>10:30 – 11:00 AM</strong><small>All floors · Assembly point A</small></span></div>
+          <div class="slide__actions"><button class="btn btn--light btn--lg" type="button" data-remind>${icon("i-bellring", "ico ico--sm")}<span>Remind me</span></button><a class="btn btn--glass btn--lg" href="#" data-toast="Opening the evacuation plan…">Evacuation plan</a></div>
+        </div></article>`;
+    }
+    return `${slideOpen(n, "eid")}
+        <div class="slide__art eid__art" aria-hidden="true">${EID_ART}</div>
+        <div class="slide__text">
+          <p class="bday__kicker">Holiday</p>
+          <h3 class="bday__title eid__title"><span class="eid__name">Eid Al Adha</span> <span class="bday__hb eid__mubarak">Mubarak</span></h3>
+          <p class="eid__leave"><small>Eid holidays</small><strong>25 May – 29 May</strong></p>
+          <p class="bday__msg">Wishing you and your family a blessed Eid.</p>
+          <div class="slide__actions"><a class="btn btn--light btn--lg" href="#" data-toast="Opening Eid rewards…">${icon("i-gift", "ico ico--sm")}<span>View rewards</span></a></div>
+        </div></article>`;
+  }
+  bTrack.innerHTML = slides.map(slideHTML).join("");
+  bDots.innerHTML = ANN_TILES.map((t, i) => `<button class="dot feed__item" type="button" role="tab" data-group="${t.group}" aria-selected="${i === 0}" aria-label="${t.label}: ${t.title}, ${t.sub}"><span class="feed__lead">${t.lead}</span><span class="feed__txt"><strong>${t.title}</strong><small>${t.sub}</small></span>${t.group === "bday" ? `<span class="feed__meta" aria-hidden="true">01 / ${pad(birthdays.length)}</span>` : ""}<span class="feed__timer" aria-hidden="true"></span></button>`).join("");
+  const slideEls = $$(".slide", bTrack);
+  const tileEls = $$(".dot", bDots);
+  const groupStart = (g) => slides.findIndex((sl) => sl.group === g);
 
   function restartTimer() {
     const timers = $$(".feed__timer", bDots);
     timers.forEach((t) => t.classList.remove("is-running"));
     if (reduceMotion || !annVisible) return;
-    void timers[bIndex].offsetWidth;
-    timers[bIndex].classList.add("is-running");
+    const t = timers[ANN_TILES.findIndex((x) => x.group === slides[bIndex].group)];
+    void t.offsetWidth;
+    t.classList.add("is-running");
   }
   function celebrate() {
     if (reduceMotion || !annVisible) return;
-    const av = $(".bday.is-current .bday__avatar", bTrack);
+    const av = $(".slide.is-current .bday__avatar", bTrack);
     if (!av) return;
     const s = confetti.getBoundingClientRect();
     const r = av.getBoundingClientRect();
     burst(confetti, r.left - s.left + r.width / 2, r.top - s.top + r.height / 2, 16, 170);
   }
   function goBday(i) {
-    bIndex = (i + birthdays.length) % birthdays.length;
+    bIndex = (i + slides.length) % slides.length;
+    const sl = slides[bIndex];
     bTrack.style.transform = `translateX(calc(${bIndex * -100}% - ${bIndex * 96}px))`;
-    $$(".bday", bTrack).forEach((s, n) => {
+    slideEls.forEach((s, n) => {
       const on = n === bIndex;
       s.setAttribute("aria-hidden", String(!on));
-      $("button", s).tabIndex = on ? 0 : -1;
+      $$("button, a", s).forEach((b) => { b.tabIndex = on ? 0 : -1; });
       s.classList.remove("is-current");
       if (on) { void s.offsetWidth; s.classList.add("is-current"); }
     });
-    $$(".dot", bDots).forEach((d, n) => d.setAttribute("aria-selected", String(n === bIndex)));
+    ann.dataset.mood = sl.group;
+    tileEls.forEach((d) => d.setAttribute("aria-selected", String(d.dataset.group === sl.group)));
+    if (sl.group === "bday") $(".feed__meta", bDots).textContent = `${pad(sl.i + 1)} / ${pad(birthdays.length)}`;
     restartTimer();
     setTimeout(celebrate, 380);
+  }
+  // Search can open any announcement
+  function showAnnouncement(n) {
+    goBday(n);
+    ann.scrollIntoView({ behavior: smooth() });
   }
   const stopBday = () => { clearInterval(bTimer); ann.classList.add("is-paused"); };
   const startBday = () => {
@@ -1242,7 +1327,26 @@
     if (!reduceMotion && annVisible) bTimer = setInterval(() => goBday(bIndex + 1), 6000);
   };
   $$("[data-bday]").forEach((b) => b.addEventListener("click", () => { goBday(bIndex + (b.dataset.bday === "next" ? 1 : -1)); startBday(); }));
-  $$(".dot", bDots).forEach((d, i) => d.addEventListener("click", () => { goBday(i); startBday(); }));
+  // A tile opens its kind; tapping Birthdays again moves to the next person
+  tileEls.forEach((d) => d.addEventListener("click", () => {
+    const g = d.dataset.group;
+    const cur = slides[bIndex];
+    goBday(g === "bday" && cur.group === "bday" ? (cur.i + 1) % birthdays.length : groupStart(g));
+    startBday();
+    // Stacked layouts put the stage above the feed: bring it into view
+    const stage = $(".announce__stage");
+    if (matchMedia("(max-width: 1199px)").matches && stage.getBoundingClientRect().top < 70) stage.scrollIntoView({ behavior: smooth(), block: "center" });
+  }));
+  bTrack.addEventListener("click", (e) => {
+    const go = e.target.closest("[data-go]");
+    if (go) { goBday(Number(go.dataset.go)); return; }
+    const remind = e.target.closest("[data-remind]");
+    if (remind && !remind.classList.contains("is-sent")) {
+      remind.classList.add("is-sent");
+      remind.innerHTML = `${icon("i-check", "ico ico--sm")}<span>Reminder set</span>`;
+      toast("We’ll remind you at 10:15 AM on 26 Sep", "i-bellring");
+    }
+  });
   ann.addEventListener("mouseenter", stopBday);
   ann.addEventListener("mouseleave", startBday);
   ann.addEventListener("focusin", stopBday);
@@ -1254,41 +1358,53 @@
     if (!annVisible) stopBday();
   }, { threshold: 0.35 }).observe(ann);
 
+  // Wish dialog — birthday wishes and anniversary congratulations
   const modal = $("#wish-modal");
   const wishText = $("#wish-text");
   const wishCount = $("#wish-count");
   const wishSend = $("#wish-send");
-  let wishFor = 0;
+  const wishPresets = $("#wish-presets");
+  const WISH = {
+    b: { title: (f) => `Wish ${f} a happy birthday`, text: "Happy birthday! Wishing you a wonderful year ahead.", presets: ["Have a great day! 🎉", "Many happy returns", "Cake is on you today"], send: "Send wish", sent: "Wish sent", toast: (f) => `Your wish is on its way to ${f}` },
+    a: { title: (f) => `Congratulate ${f} on ${anniversary.years} years`, text: `Happy work anniversary! Thank you for ${anniversary.years} great years.`, presets: [`Congrats on ${anniversary.years} years! 🎉`, "Here’s to many more", "Thanks for all you do"], send: "Send congrats", sent: "Congrats sent", toast: (f) => `Your congratulations are on their way to ${f}` }
+  };
+  let wishFor = "b0";
+  const wishPerson = (key) => (key[0] === "a" ? anniversary : birthdays[Number(key.slice(1))]);
 
   const updateCount = () => { wishCount.textContent = wishText.value.length; wishSend.disabled = !wishText.value.trim(); };
   wishText.addEventListener("input", updateCount);
-  $$("#wish-presets .chip").forEach((c) => c.addEventListener("click", () => { wishText.value = c.textContent; updateCount(); wishText.focus(); }));
+  wishPresets.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { wishText.value = c.textContent; updateCount(); wishText.focus(); } });
 
   bTrack.addEventListener("click", (e) => {
     const b = e.target.closest("[data-wish]");
     if (!b || b.classList.contains("is-sent")) return;
-    wishFor = Number(b.dataset.wish);
-    const p = birthdays[wishFor];
-    $("#wish-title").textContent = `Wish ${p.name.split(" ")[0]} a happy birthday`;
+    wishFor = b.dataset.wish;
+    const p = wishPerson(wishFor);
+    const w = WISH[wishFor[0]];
+    $("#wish-title").textContent = w.title(firstName(p));
     $("#wish-role").textContent = `${p.name}, ${p.role}`;
     const av = $("#wish-avatar");
     av.className = `avatar avatar--xl ${p.img}`;
     av.textContent = p.initials;
+    wishText.value = w.text;
+    wishPresets.innerHTML = w.presets.map((t) => `<button class="chip" type="button">${escapeHtml(t)}</button>`).join("");
+    $(".btn__label", wishSend).textContent = w.send;
     updateCount();
     stopBday();
     modal.showModal();
   });
   wishSend.addEventListener("click", () => {
+    const w = WISH[wishFor[0]];
     wishSend.classList.add("is-loading");
     $(".btn__label", wishSend).textContent = "Sending";
     setTimeout(() => {
       wishSend.classList.remove("is-loading");
-      $(".btn__label", wishSend).textContent = "Send wish";
+      $(".btn__label", wishSend).textContent = w.send;
       modal.close();
       const btn = $(`[data-wish="${wishFor}"]`, bTrack);
       btn.classList.add("is-sent");
-      btn.innerHTML = `${icon("i-check", "ico ico--sm")}<span>Wish sent</span>`;
-      toast(`Your wish is on its way to ${birthdays[wishFor].name.split(" ")[0]}`, "i-gift");
+      btn.innerHTML = `${icon("i-check", "ico ico--sm")}<span>${w.sent}</span>`;
+      toast(w.toast(firstName(wishPerson(wishFor))), "i-gift");
       burstFrom(btn, 26, 240);
       startBday();
     }, 900);

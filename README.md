@@ -35,7 +35,7 @@ adds its own.
 |---|---------|--------------|
 | 01 | Home | Oversized greeting, live app constellation (click a node to filter tasks), floating “today” fragments, quick-links dock with magnification. The hero lifts and fades as you scroll. |
 | 02 | Attention | Dark “live control center”: a large count, apps with share bars, and a task list. Hover an app to spotlight its tasks; select it to filter. Approve and reject work as before. |
-| 03 | People | Editorial new-joiner spread: sticky portrait with a colour-wipe transition, quote, facts and a reel. Announcements follow as a birthday feed with confetti. |
+| 03 | People | Editorial new-joiner spread: sticky portrait with a colour-wipe transition, quote, facts and a reel. Announcements follow with four tiles (birthdays, a work anniversary, a fire drill and Eid Al Adha). Each opens its own slide and tints the chapter. |
 | 04 | Policies | Horizontal discovery strip. Category index, the hovered card expands, and a progress rail. |
 | — | Life at Bloom | Typographic interlude with drifting outline words. |
 | 05 | Communities | Pinned horizontal reel: vertical scroll moves the cards sideways. Cards expand on hover, with a pointer spotlight. |
@@ -60,6 +60,21 @@ the ring reads "Drag". A click makes the flag flutter and sends out a
 blue-and-red ripple. Text fields and dialogs keep the system cursor. It is off
 on touch devices and with reduced motion, and ☰ → Appearance → Flag cursor
 turns it off.
+
+**Announcements.** The feed has one tile per kind:
+- **Birthdays:** one slide per person. The tile counts through them
+  (`02 / 03`) and "Also today" jumps between them. Send a wish from the
+  wish dialog.
+- **Work anniversary:** one dot per year circles the portrait. "Say
+  congratulations" uses the same dialog, with its own wording.
+- **Fire drill:** a pulsing alarm, the date and time, "Remind me" and the
+  evacuation plan.
+- **Eid Al Adha:** a gold crescent with swinging lanterns, the holiday dates
+  and View rewards.
+
+The chapter takes each kind's colour (brand blue, violet, fire red, emerald).
+It autoplays with a timer on the active tile and pauses while you hover or
+focus. Search finds each announcement.
 
 **Perks at any scale.** The chapter is rendered from one `perks` list in
 `src/app.js`, which also feeds search. The index shows six perks with

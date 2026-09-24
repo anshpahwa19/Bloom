@@ -30,6 +30,12 @@
   - The Inbox page (`#inbox-page`, "Inbox — the requests workspace" in
     `src/app.js`) reads its Inbox tab from the Attention rows. Keep one
     source of truth; don't copy task data.
+  - Announcements are one `slides` list in `src/app.js`: one slide per
+    birthday, then the anniversary, fire drill and Eid. The feed has one tile
+    per kind (`ANN_TILES`); birthdays share a tile. Each kind sets
+    `data-mood` on the chapter, which tints it (`.announce__mood--*`).
+    Birthday wishes and anniversary congratulations share the wish dialog
+    (`WISH`).
   - Perks come from the one `perks` list in `src/app.js`, which feeds the
     chips, index, spotlight and search. Add a perk there, never in the
     markup. Only the first four are real (from the original); the rest are
