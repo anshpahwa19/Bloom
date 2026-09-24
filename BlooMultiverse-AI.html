@@ -1307,9 +1307,28 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .ann-tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--canvas); }
 .ann-count { font-size: var(--fs-meta); color: var(--slate-2); font-variant-numeric: tabular-nums; }
 /* one tile at a time; swipe, tabs or arrows move between them */
-.news__board { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; padding: 6px; margin: -6px; overscroll-behavior-x: contain; }
+.news__board { display: flex; gap: 20px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; overscroll-behavior-x: contain; }
+.news__board .ann.is-match { outline-offset: -6px; outline-color: rgba(255,255,255,.85); }
 .news__board::-webkit-scrollbar { display: none; }
-.news__board > .ann { flex: 0 0 100%; scroll-snap-align: start; min-height: 460px; }
+.news__board > .ann { flex: 0 0 100%; scroll-snap-align: start; min-height: 440px; }
+/* Wide slides: every slide uses the same two halves — words on one side, the picture on the other */
+@media (min-width: 769px) {
+  .news__board > .ann { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: clamp(32px, 4vw, 64px); row-gap: 0; padding: 30px clamp(32px, 4vw, 56px); }
+  .news__board > .ann > .ann__head { grid-column: 1 / -1; }
+  .news__board .ann__copy { grid-column: 1; grid-row: 2; align-self: center; max-width: 520px; margin: 0; }
+  /* anniversary: copy left, the number right */
+  .news__board .anniv { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: inherit; align-items: center; }
+  .news__board .anniv__copy { grid-column: 1; grid-row: 1; max-width: 520px; }
+  .news__board .anniv__years { grid-column: 2; grid-row: 1; justify-self: center; justify-items: center; text-align: center; }
+  .news__board .anniv__years strong { font-size: clamp(9rem, 5rem + 7vw, 13rem); }
+  /* fire drill: photo in the right half, standing on the floor */
+  .news__board .ann__art--drill { left: 50%; right: 0; width: auto; aspect-ratio: auto; background: var(--img) center bottom / auto 100% no-repeat; --fade: linear-gradient(90deg, transparent calc(50% - 164px), #000 calc(50% - 90px), #000 calc(50% + 110px), transparent calc(50% + 164px)); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+  .news__board .ann--drill .ann__copy { max-width: 460px; }
+  /* Eid: art in the left half, words centred in the right half */
+  .news__board .ann__art--eid { left: 0; width: 50%; aspect-ratio: auto; background: var(--img) center bottom / auto 100% no-repeat; --fade: linear-gradient(90deg, transparent calc(50% - 180px), #000 calc(50% - 150px), #000 calc(50% + 90px), transparent calc(50% + 180px)); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+  .news__board .ann--eid .ann__head { grid-column: 2; width: auto; align-self: start; justify-content: center; }
+  .news__board .ann--eid .ann__copy { grid-column: 2; width: auto; max-width: none; justify-self: center; }
+}
 .ann {
   --pad: 30px;
   position: relative; overflow: hidden; isolation: isolate; display: flex; flex-direction: column; gap: 18px;
@@ -1341,7 +1360,7 @@ fieldset.field > legend { padding: 0; margin-bottom: 6px; }
 .anniv { flex: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 12px clamp(20px, 2.4vw, 32px); }
 .anniv__years { display: grid; justify-items: start; align-self: center; }
 .anniv__years strong {
-  font-family: var(--font-display); font-size: clamp(6.5rem, 3.6rem + 5.4vw, 10rem); font-weight: 700; line-height: .82; letter-spacing: -0.07em;
+  font-family: var(--font-display); font-size: clamp(6.5rem, 3.6rem + 5.4vw, 10rem); font-weight: 700; line-height: .9; letter-spacing: -0.07em; padding: 0 .1em 0 .02em;
   background: linear-gradient(172deg, #fff 18%, #C9C1FF 62%, #8B7DF4); -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 .anniv__years span { margin-top: 14px; font-size: var(--fs-label); font-weight: 700; line-height: 1.35; letter-spacing: .14em; text-transform: uppercase; color: rgba(255, 255, 255, .72); }
