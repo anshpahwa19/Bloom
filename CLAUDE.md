@@ -63,6 +63,9 @@
     ≤419px the jump chevron hides; at ≤359px Search moves into the ☰ menu
     (`.mo__only-narrow`) and the logo hides once past the hero. Re-check
     every section label at 320 and 375 after adding anything to the capsule.
+  - Under 600px the Attention task list is a stack of cards (the
+    `max-width: 599px` block, scoped to `.task-list`); 600px and up keep
+    the list. The Inbox rows share the task buttons, so keep that scope.
   - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
     `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
     halos; `--accent-glow` is kept faint for ambient light inside panels.

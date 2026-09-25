@@ -2368,6 +2368,29 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   .d-facts { grid-template-columns: 1fr; }
 }
 
+/* Under 600px the attention list becomes a stack of cards:
+   app and due date on top, the task in full, actions along the bottom */
+@media (max-width: 599px) {
+  .task-list { gap: 12px; }
+  .task-list .task {
+    grid-template-columns: 42px minmax(0, 1fr); grid-template-areas: "mark due" "body body" "act act";
+    gap: 14px 12px; padding: 16px; border-radius: var(--r-lg);
+    background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
+  }
+  .task-list .task + .task::before { display: none; }
+  .task-list .task:hover { background: var(--surface); border-color: color-mix(in srgb, var(--accent-fg) 30%, var(--line)); }
+  .task-list .task > .app-mark { grid-area: mark; }
+  .task-list .task__body { grid-area: body; }
+  .task-list .task__title { font-size: 1.08rem; }
+  .task-list .task__meta { margin-top: 6px; }
+  .task-list .due { grid-area: due; justify-self: end; }
+  .task-list .task__actions { grid-area: act; gap: 8px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .task-list .task__approve, .task-list .task__reject { flex: 1 1 0; justify-content: center; height: 40px; }
+  .task-list .task__more { width: 40px; height: 40px; flex: none; }
+  .task-list.has-spot .task.is-lit { box-shadow: 0 0 0 2px var(--accent-fg), var(--sh-1); }
+  .task-list.is-loading .task--skeleton { grid-template-areas: none; grid-template-columns: 42px minmax(0, 1fr) auto; }
+}
+
 /* Small phones (iPhone SE and alike): the capsule sheds what the menu already has */
 @media (max-width: 419px) {
   .where__chev { display: none; }
