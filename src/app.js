@@ -426,6 +426,8 @@
   }
 
   searchOpenBtn.addEventListener("click", focusSearch);
+  // The ☰ menu carries Search on the narrowest phones, where the capsule drops it
+  $$("[data-open-search]").forEach((b) => b.addEventListener("click", () => { closeNav(false); focusSearch(); }));
   sInput.addEventListener("focus", openSearch);
   sInput.addEventListener("input", renderSearch);
   sInput.addEventListener("keydown", (e) => {
@@ -2576,9 +2578,11 @@
   const interRows = $$(".interlude__row", interlude);
   const stickers = $$(".sticker", interlude);
   const interTitle = $(".interlude__title", interlude);
+  const phoneMQ = matchMedia("(max-width: 767px)"); // stickers drift less where they sit close to the words
   addScene(interlude, (p) => {
+    const drift = phoneMQ.matches ? 0.3 : 1;
     interRows.forEach((r) => { r.style.translate = `${((p - 0.5) * 36 * Number(r.dataset.dir)).toFixed(2)}vw 0`; });
-    stickers.forEach((st) => { st.style.translate = `0 ${((p - 0.5) * Number(st.dataset.speed) * 2).toFixed(1)}px`; });
+    stickers.forEach((st) => { st.style.translate = `0 ${((p - 0.5) * Number(st.dataset.speed) * 2 * drift).toFixed(1)}px`; });
     interTitle.style.scale = (0.9 + 0.1 * easeOut(clamp(p * 2.2))).toFixed(4);
   });
 

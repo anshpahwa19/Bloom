@@ -58,6 +58,11 @@
     - Scroll strips and clipping carousels leave padding for selected rings,
       focus rings, hover lifts and halos.
     - Tab bars fit their width on phones.
+  - Phones down to 320px (iPhone SE) are supported. The nav capsule never
+    pushes the ☰ button off-screen: the section name gives way first. At
+    ≤419px the jump chevron hides; at ≤359px Search moves into the ☰ menu
+    (`.mo__only-narrow`) and the logo hides once past the hero. Re-check
+    every section label at 320 and 375 after adding anything to the capsule.
   - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
     `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
     halos; `--accent-glow` is kept faint for ambient light inside panels.

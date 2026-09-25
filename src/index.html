@@ -228,6 +228,7 @@
         <p class="mo__label">Your space</p>
         <ul class="mo__utils">
           <li><button class="mo__util" type="button" data-open-gpt><span class="orb orb--xs" aria-hidden="true"></span>Bloom GPT<span class="mo__new">AI</span></button></li>
+          <li class="mo__only-narrow"><button class="mo__util" type="button" data-open-search><svg class="ico"><use href="#i-search"/></svg>Search</button></li>
           <li><button class="mo__util" type="button" data-open-inbox><svg class="ico"><use href="#i-inbox"/></svg>Inbox<span class="nav-badge nav-badge--inline js-inbox-badge">4</span></button></li>
           <li><button class="mo__util" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button></li>
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
@@ -1033,7 +1034,7 @@
     <div class="gpt__bar container">
       <button class="inbox__back" type="button" data-close-gpt><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg>Back to home</button>
       <div class="gpt__bar-tools">
-        <button class="btn btn--quiet btn--sm" type="button" id="gpt-new" hidden><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New chat</button>
+        <button class="btn btn--quiet btn--sm gpt__new" type="button" id="gpt-new" aria-label="New chat" hidden><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg><span class="gpt__new-label">New chat</span></button>
         <button class="icon-btn icon-btn--bordered" type="button" data-close-gpt aria-label="Close Bloom GPT"><svg class="ico"><use href="#i-x"/></svg></button>
       </div>
     </div>
