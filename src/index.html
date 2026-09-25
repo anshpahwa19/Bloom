@@ -74,6 +74,8 @@
       <symbol id="i-cake" viewBox="0 0 24 24"><path d="M4.5 20.5v-7a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v7M3.5 20.5h17"/><path d="M4.5 15.5c1.5 1.3 3 1.3 4.5 0s3-1.3 4.5 0 3 1.3 4.5 0 1.5-1 1.5-1M12 11.5V8"/><path d="M12 8c-1.1 0-1.8-.9-1.4-2L12 3.5 13.4 6c.4 1.1-.3 2-1.4 2Z"/></symbol>
       <symbol id="i-cap" viewBox="0 0 24 24"><path d="m2.5 9.5 9.5-5 9.5 5-9.5 5Z"/><path d="M6.5 11.6v4.4c1.5 1.6 3.4 2.5 5.5 2.5s4-.9 5.5-2.5v-4.4M21.5 9.5v5"/></symbol>
       <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1.1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5 4.5 13.5h6.5l-1 8 8.5-11h-6.5Z"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></symbol>
       <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5c.6 4.2 2.3 5.9 6.5 6.5-4.2.6-5.9 2.3-6.5 6.5-.6-4.2-2.3-5.9-6.5-6.5 4.2-.6 5.9-2.3 6.5-6.5Z"/><path d="M18.5 15.5c.3 1.9 1 2.7 3 3-2 .3-2.7 1-3 3-.3-2-1-2.7-3-3 2-.3 2.7-1.1 3-3Z"/></symbol>
       <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
       <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h4"/></symbol>
@@ -137,6 +139,9 @@
       <span class="navbar__sep navbar__sep--end" aria-hidden="true"></span>
 
       <div class="navbar__actions">
+        <button class="nav-gpt" type="button" data-open-gpt aria-label="Bloom GPT, your AI assistant" data-tip="Ask Bloom GPT">
+          <span class="orb orb--xs" aria-hidden="true"></span><span class="nav-gpt__label">Bloom GPT</span>
+        </button>
         <button class="nav-btn nav-btn--search" type="button" id="search-open" aria-label="Search" aria-keyshortcuts="Control+K Meta+K" data-tip="Search">
           <svg class="ico"><use href="#i-search"/></svg><kbd class="nav-kbd search__kbd" aria-hidden="true">Ctrl K</kbd>
         </button>
@@ -222,6 +227,7 @@
 
         <p class="mo__label">Your space</p>
         <ul class="mo__utils">
+          <li><button class="mo__util" type="button" data-open-gpt><span class="orb orb--xs" aria-hidden="true"></span>Bloom GPT<span class="mo__new">AI</span></button></li>
           <li><button class="mo__util" type="button" data-open-inbox><svg class="ico"><use href="#i-inbox"/></svg>Inbox<span class="nav-badge nav-badge--inline js-inbox-badge">4</span></button></li>
           <li><button class="mo__util" type="button" data-drawer="profile"><svg class="ico"><use href="#i-user"/></svg>My profile</button></li>
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
@@ -1015,6 +1021,46 @@
           <footer class="ib-foot"><span id="ib-showing"></span><span>Synced 2 minutes ago</span></footer>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       BLOOM GPT — the platform's assistant. It answers from the same
+       data as the page (tasks, people, policies, perks, discounts…)
+       and can act: approve, open, filter, remind.
+       ============================================================ -->
+  <div class="gpt" id="gpt-page" role="dialog" aria-modal="true" aria-labelledby="gpt-title" aria-hidden="true">
+    <div class="gpt__bar container">
+      <button class="inbox__back" type="button" data-close-gpt><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg>Back to home</button>
+      <div class="gpt__bar-tools">
+        <button class="btn btn--quiet btn--sm" type="button" id="gpt-new" hidden><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New chat</button>
+        <button class="icon-btn icon-btn--bordered" type="button" data-close-gpt aria-label="Close Bloom GPT"><svg class="ico"><use href="#i-x"/></svg></button>
+      </div>
+    </div>
+    <div class="gpt__main container">
+      <header class="gpt__hello">
+        <p class="gpt__pill"><span class="orb orb--sm" aria-hidden="true"></span><span id="gpt-greet">Good afternoon, Rashid</span><i aria-hidden="true"></i><span id="gpt-date"></span></p>
+        <p class="gpt__kicker"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-sparkle"/></svg>Bloom GPT</p>
+        <h2 class="gpt__title" id="gpt-title"><span class="gpt__line">Your workday,</span> <span class="gpt__line gpt__line--grad">in one conversation.<i class="gpt__caret" aria-hidden="true"></i></span></h2>
+        <p class="gpt__sub">Ask Bloom GPT to find, explain or help you get something done.</p>
+      </header>
+
+      <ol class="gpt__thread" id="gpt-thread" aria-live="polite" aria-label="Conversation"></ol>
+
+      <div class="gpt__dock">
+        <form class="gpt__composer" id="gpt-form" autocomplete="off">
+          <span class="orb" aria-hidden="true"></span>
+          <input class="gpt__input" id="gpt-input" type="text" placeholder="Ask anything about your workday…" aria-label="Ask Bloom GPT" enterkeyhint="send">
+          <kbd class="gpt__kbd" aria-hidden="true">Enter ↵</kbd>
+          <button class="gpt__send" type="submit" aria-label="Send"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up"/></svg></button>
+        </form>
+      </div>
+
+      <section class="gpt__try" aria-labelledby="gpt-try-label">
+        <p class="gpt__label" id="gpt-try-label">Try asking</p>
+        <div class="gpt__chips" id="gpt-chips"><!-- rendered by script --></div>
+      </section>
+      <p class="gpt__noticed" id="gpt-noticed"><!-- rendered by script --></p>
     </div>
   </div>
 

@@ -19,7 +19,7 @@
   - Floating chrome (nav capsule, dock, hero fragments) uses the `.frost`
     glass class; nav dropdowns use the `--frost-panel` recipe.
   - The flag cursor (canvas `#flag-cursor` + ring `#flag-ring`, "Flag cursor"
-    section of `src/app.js`) uses the logo's fixed blue/red, not the accent.
+    section of `src/app.js`) uses the logo's fixed red/blue (red on top, as on the logo), not the accent.
     Anything clickable should match `FC_HOVER` so the ring appears on it.
   - Chart colours are the `--viz-1..4` tokens. Request types use slots 1–3
     (TCDF, Internal Memo, RFP); the Inbox donut's apps use all four
@@ -41,6 +41,14 @@
     markup. Only the first four are real (from the original); the rest are
     placeholders that show the layout at scale. A perk without `img` gets
     generated art in its category hue (`--pc-*`, decoration only).
+  - The logo's flag is red on top, blue below (both logo files; the flag
+    cursor and its menu icon follow it). The colours are the logo's own.
+  - Bloom GPT (`#gpt-page`, "Bloom GPT" section of `src/app.js`) answers
+    from the page's data through `GPT_SKILLS`, picked by `GPT_ROUTES` (first
+    match wins, order matters), and acts through `GPT_ACTS`. Anything that
+    leaves the page closes Bloom GPT first (`gptLeave`). Add a new kind of
+    answer as a skill plus a route; never hard-code data the page already
+    has.
   - Counters read `01 / 05`. Carousels put progress, counter and arrows in
     `.rail-foot`, and each chapter's "see all" link is a `.soft-link`.
   - Nothing gets cut at the side:

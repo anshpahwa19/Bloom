@@ -361,7 +361,8 @@
     { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
     { group: "Requests", label: "Drafts", meta: "Requests you haven’t sent", inbox: "draft" },
     { group: "Requests", label: "My requests", meta: "Waiting on approvers", inbox: "mine" },
-    { group: "Help", label: "Help & support", meta: "FAQs and contacts", drawer: "help" }
+    { group: "Help", label: "Help & support", meta: "FAQs and contacts", drawer: "help" },
+    { group: "Bloom GPT", label: "Ask Bloom GPT", meta: "Your AI assistant", gpt: true }
   ];
   const search = $("#search");
   const sInput = $("#search-input");
@@ -381,7 +382,8 @@
     const q = sInput.value.trim();
     sResults = q
       ? searchIndex.filter((it) => (it.label + " " + it.meta + " " + it.group).toLowerCase().includes(q.toLowerCase()))
-      : searchIndex.filter((it) => it.group === "Apps" || it.label === "Data Security" || it.label === "Help & support");
+      : searchIndex.filter((it) => it.group === "Apps" || it.label === "Data Security" || it.label === "Help & support" || it.gpt === true);
+    if (q) sResults.push({ group: "Bloom GPT", label: `Ask Bloom GPT “${q}”`, meta: "Get an answer", gpt: q });
     sActive = 0;
     if (!sResults.length) {
       sPanel.innerHTML = `<p class="search__empty">No results for “${escapeHtml(q)}”. Try a person’s name, a policy or an app.</p>`;
@@ -391,7 +393,9 @@
     let group = "";
     sResults.forEach((it, i) => {
       if (it.group !== group) { group = it.group; html += `<p class="search__group">${q ? group : group === "Apps" ? "Jump to an app" : "Suggested"}</p>`; }
-      const lead = it.mark
+      const lead = it.gpt
+        ? `<span class="app-mark app-mark--gpt"><span class="orb orb--xs"></span></span>`
+        : it.mark
         ? `<span class="app-mark app-mark--${it.mark}">${it.mark === "sap" ? "SAP" : it.label.slice(0, 2)}</span>`
         : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Announcements" ? "i-megaphone" : it.group === "Requests" ? "i-doc" : "i-help", "ico ico--sm")}</span>`;
       html += `<button type="button" class="search__item${i === 0 ? " is-active" : ""}" role="option" data-i="${i}">${lead}<span>${highlight(it.label, q)}</span><small>${escapeHtml(it.meta)}</small></button>`;
@@ -409,6 +413,7 @@
     closeSearch();
     sInput.value = "";
     sInput.blur();
+    if (it.gpt) { openGpt(null, it.gpt === true ? "" : it.gpt); return; }
     if (it.filter) { filterAttention(it.filter, true); return; }
     if (it.drawer) { openDrawer(it.drawer); return; }
     if (it.inbox) { openInbox(null, it.inbox === "new" ? ib.tab : it.inbox); if (it.inbox === "new") openRequestForm(); return; }
@@ -717,7 +722,7 @@
     if (!drawer.classList.contains("is-open")) return;
     drawer.classList.remove("is-open");
     drawer.setAttribute("aria-hidden", "true");
-    if (!body.classList.contains("menu-open") && !ib.open) body.style.overflow = "";
+    if (!body.classList.contains("menu-open") && !ib.open && !gpt.open) body.style.overflow = "";
     if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
   }
   document.addEventListener("click", (e) => {
@@ -740,6 +745,7 @@
     if (e.key !== "Escape" || e.target.closest?.("dialog")) return; // dialogs close themselves
     if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
     if (menus.some((m) => m.classList.contains("is-open"))) { closeMenus(); return; }
+    if (gpt.open) { closeGpt(); return; }
     if (ib.open) { closeInbox(); return; }
     closeNav();
   });
@@ -1032,7 +1038,7 @@
     inboxEl.classList.remove("is-open");
     inboxEl.setAttribute("aria-hidden", "true");
     closeMenus();
-    if (!body.classList.contains("menu-open") && !drawer.classList.contains("is-open")) body.style.overflow = "";
+    if (!body.classList.contains("menu-open") && !drawer.classList.contains("is-open") && !gpt.open) body.style.overflow = "";
     if (ib.returnFocus && document.contains(ib.returnFocus)) ib.returnFocus.focus({ preventScroll: true });
   }
   document.addEventListener("click", (e) => {
@@ -1882,6 +1888,319 @@
   syncPerkPause();
 
   /* ---------------------------------------------------------------
+     Bloom GPT — the platform's assistant
+     A scripted agent: it reads the same data the page shows (tasks,
+     people, announcements, policies, perks, discounts, communities,
+     drafts, FAQs), answers with cards, and acts on them: approve a
+     task, open a person or policy, set a reminder, copy a code.
+     --------------------------------------------------------------- */
+  const gptEl = $("#gpt-page");
+  const gptThread = $("#gpt-thread");
+  const gptInput = $("#gpt-input");
+  const gptNew = $("#gpt-new");
+  const gpt = { open: false, busy: false, returnFocus: null, typing: null };
+  const GPT_ASK = [
+    ["What needs my attention?", "i-bolt"], ["Show my tasks", "i-check"], ["Find a policy", "i-doc"], ["Leave policies", "i-calendar"],
+    ["What’s new?", "i-megaphone"], ["Find a colleague", "i-users"], ["My drafts", "i-edit"], ["Show my benefits", "i-shield"],
+    ["Travel discounts", "i-tag"], ["Find communities", "i-ball"], ["Take me to my profile", "i-user"], ["Help", "i-help"]
+  ];
+  const GPT_ICON = Object.fromEntries(GPT_ASK);
+  const GPT_HINTS = ["Who joined the team this week?", "What needs my attention?", "When is the fire drill?", "Show my benefits", "What changed in Data Security?"];
+  const PC_HUE = { health: "var(--pc-health)", travel: "var(--pc-travel)", savings: "var(--pc-savings)", wellbeing: "var(--pc-wellbeing)", growth: "var(--pc-growth)" };
+  const gptChip = (q, cls = "") => `<button class="chip gpt-chip${cls}" type="button" data-gpt-ask="${escapeHtml(q)}">${icon(GPT_ICON[q] || "i-sparkle", "ico ico--sm")}${escapeHtml(q)}</button>`;
+  $("#gpt-chips").innerHTML = GPT_ASK.map(([q]) => gptChip(q)).join("");
+
+  // answer building blocks
+  const B = (t) => `<strong>${escapeHtml(t)}</strong>`;
+  const act = (label, a, v = "", cls = "btn--quiet") => `<button class="btn btn--sm ${cls}" type="button" data-gpt-act="${a}" data-v="${escapeHtml(String(v))}">${escapeHtml(label)}</button>`;
+  const gRow = ({ lead, title, meta = "", actions = "" }) => `<li class="gpt-row"><span class="gpt-row__lead">${lead}</span><span class="gpt-row__txt"><strong>${escapeHtml(title)}</strong>${meta ? `<small>${escapeHtml(meta)}</small>` : ""}</span><span class="gpt-row__act">${actions}</span></li>`;
+  const gCard = (rows) => `<ul class="gpt-card">${rows.join("")}</ul>`;
+  const gTile = (ic, hue = "var(--accent)") => `<span class="gpt-tile" style="--hue:${hue}">${icon(ic)}</span>`;
+  const initialsOf = (name) => name.split(" ").map((w) => w[0]).slice(0, 2).join("");
+  const gAv = (p) => `<span class="avatar ${p.img}">${initialsOf(p.name)}</span>`;
+  const gMark = (src) => `<span class="app-mark app-mark--${sourceMarks[src]}">${sourceNames[src].slice(0, 2)}</span>`;
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const openTasks = () => taskRows().filter((r) => !r.classList.contains("is-done"));
+  const policyInfo = (card) => ({ name: card.dataset.name, cat: $(".tag", card)?.textContent.trim() || "Policy", desc: $(".policy__desc", card).textContent.trim(), meta: $(".policy__foot .meta", card)?.textContent.trim() || "" });
+  const POLICY_KEYS = { "Data Security": /security|data/, "Management Process": /management|process/, "Brand Guidelines": /brand|guideline/, "Code of Conduct": /conduct/, "Travel & Expenses": /expense|travel/ };
+  const partnersData = () => $$(".partner").map((p) => ({ name: $(".partner__name", p).textContent, cat: $(".partner__cat", p).textContent, off: $(".offer strong", p).textContent, code: $(".partner__code", p).dataset.code, logo: [...$(".partner__logo", p).classList].find((c) => c.startsWith("img-")) }));
+  const sportsData = () => sportsEls.map((x) => ({ name: $(".sport__name", x).textContent, members: parseInt($(".sport__foot > span:last-child", x)?.textContent, 10) || 0 }));
+  const everyone = () => [...people.map((p, i) => ({ ...p, kind: "joiner", i })), ...birthdays.map((p, i) => ({ ...p, kind: "birthday", i })), { ...anniversary, kind: "anniv" }];
+
+  const GPT_SKILLS = {
+    attention() {
+      const open = openTasks();
+      const overdue = open.filter((r) => $(".due--overdue", r));
+      const today = open.filter((r) => $(".due--today", r));
+      const pick = [...overdue, ...today].slice(0, 4);
+      const all = taskRows();
+      return {
+        text: `You have ${B(`${totalPending()} actions`)} across ${plural(APP_ORDER.filter((a) => counts[a]).length, "app", "apps")}. ${overdue.length ? `${B(`${overdue.length} ${overdue.length === 1 ? "is" : "are"} overdue`)} and ` : ""}${today.length} ${today.length === 1 ? "is" : "are"} due today. Start with these:`,
+        body: pick.length ? gCard(pick.map((r) => { const i = all.indexOf(r); return gRow({ lead: gMark(r.dataset.source), title: $(".task__title", r).textContent, meta: `${sourceNames[r.dataset.source]} · ${$(".due", r).textContent.trim()}`, actions: act("Review", "task", i) + act("Approve", "approve", i, "btn--primary") }); })) : "",
+        follow: ["Show my tasks", "My drafts"]
+      };
+    },
+    tasks: () => ({
+      text: `${B(`${totalPending()} actions`)} are waiting on you. Here they are by app:`,
+      body: gCard(APP_ORDER.map((a) => gRow({ lead: gMark(a), title: sourceNames[a], meta: `${counts[a]} waiting`, actions: act("Show", "filter", a) }))),
+      actions: act("Open inbox", "inbox", "inbox", "btn--primary"),
+      follow: ["What needs my attention?", "My drafts"]
+    }),
+    policy(t) {
+      const named = Object.keys(POLICY_KEYS).find((n) => POLICY_KEYS[n].test(t) && !/^find a polic/.test(t));
+      if (named) {
+        const p = policyInfo(policies.find((c) => c.dataset.name === named));
+        return { text: `${B(p.name)} · ${escapeHtml(p.cat)}. ${escapeHtml(p.desc)}${/updated/i.test(p.meta) ? ` <span class="msg__meta">${escapeHtml(p.meta)}</span>` : ""}`, actions: act("Open policy", "policy", p.name, "btn--primary"), follow: ["Find a policy", "What’s new?"] };
+      }
+      return {
+        text: `Here’s the policy library. ${B("Data Security")} was updated most recently.`,
+        body: gCard(policies.map((c) => { const p = policyInfo(c); return gRow({ lead: gTile("i-book"), title: p.name, meta: p.cat, actions: act("Open", "policy", p.name) }); })),
+        follow: ["Leave policies", "What changed in Data Security?"]
+      };
+    },
+    leave: () => ({
+      text: `There isn’t a leave policy in the library yet. Leave requests and balances are handled in ${B("Darwinbox")}. Coming up: ${B("Eid Al Adha holidays, 25 – 29 May")}.`,
+      body: gCard([
+        gRow({ lead: gTile("i-moon", "#13806A"), title: "Eid Al Adha holidays", meta: "25 May – 29 May", actions: act("View", "ann", groupStart("eid")) }),
+        gRow({ lead: gMark("darwinbox"), title: "Request leave in Darwinbox", meta: "Balances and approvals", actions: `<button class="btn btn--sm btn--quiet" type="button" data-toast="Darwinbox leave">Open</button>` }),
+        gRow({ lead: gTile("i-book"), title: "Travel & Expenses", meta: "Operations policy", actions: act("Open", "policy", "Travel & Expenses") })
+      ]),
+      follow: ["Find a policy", "What’s new?"]
+    }),
+    news: () => ({
+      text: "Here’s what’s new at Bloom today:",
+      body: gCard([
+        gRow({ lead: gAv(birthdays[0]), title: `${birthdays.length} birthdays today`, meta: birthdays.map(firstName).join(", "), actions: act("Wish", "wish", 0) }),
+        gRow({ lead: gAv(anniversary), title: `${anniversary.name}, ${anniversary.years} years`, meta: "Work anniversary", actions: act("View", "ann", groupStart("anniv")) }),
+        gRow({ lead: gTile("i-flame", "#E0472B"), title: "Fire safety drill", meta: "26 Sep · 10:30 – 11:00 AM", actions: act("View", "ann", groupStart("drill")) }),
+        gRow({ lead: gAv(people[0]), title: `${people[0].name} joined`, meta: people[0].role, actions: act("Meet", "person", 0) }),
+        gRow({ lead: gTile("i-shield"), title: "Data Security was updated", meta: "Security policy", actions: act("Read", "policy", "Data Security") })
+      ]),
+      follow: ["Who joined the team this week?", "When is the fire drill?"]
+    }),
+    birthday: () => ({
+      text: `It’s ${B(birthdays[0].name)}’s birthday today, and ${birthdays.slice(1).map((p) => `${escapeHtml(firstName(p))}’s`).join(" and ")} too.`,
+      body: gCard(birthdays.map((p, i) => gRow({ lead: gAv(p), title: p.name, meta: p.role, actions: act("Send wish", "wish", i, "btn--primary") }))),
+      follow: ["What’s new?", "Find a colleague"]
+    }),
+    anniv: () => ({
+      text: `${B(anniversary.name)}, ${escapeHtml(anniversary.role)}, celebrates ${B(`${anniversary.years} years`)} at Bloom today. He joined on ${escapeHtml(anniversary.since)}.`,
+      actions: act("Say congratulations", "congrats", "", "btn--primary"),
+      follow: ["What’s new?"]
+    }),
+    drill: () => ({
+      text: `The ${B("fire safety drill")} is on ${B("26 Sep, 10:30 – 11:00 AM")}, on all floors. When the alarm sounds, leave your things and follow your floor warden to Assembly point A.`,
+      actions: act("Remind me", "remind", "", "btn--primary") + act("View announcement", "ann", groupStart("drill")),
+      follow: ["What’s new?"]
+    }),
+    colleague(t) {
+      const who = everyone().find((p) => t.includes(firstName(p).toLowerCase()));
+      if (who) {
+        const extra = who.kind === "joiner" ? `${who.team} · ${who.week.toLowerCase()}` : who.kind === "birthday" ? "Birthday today" : `${anniversary.years}-year work anniversary`;
+        const action = who.kind === "joiner" ? act("Meet", "person", who.i, "btn--primary") : who.kind === "birthday" ? act("Send wish", "wish", who.i, "btn--primary") : act("Say congratulations", "congrats", "", "btn--primary");
+        return { text: `Here’s ${B(who.name)}:`, body: gCard([gRow({ lead: gAv(who), title: who.name, meta: `${who.role} · ${extra}`, actions: action })]), follow: ["Find a colleague", "What’s new?"] };
+      }
+      return {
+        text: `${B(`${people.length} people`)} joined Bloom this month. This week: ${B(people[0].name)}, ${escapeHtml(people[0].role)}.`,
+        body: gCard(people.map((p, i) => gRow({ lead: gAv(p), title: p.name, meta: `${p.role} · ${p.team}`, actions: act("Meet", "person", i) }))),
+        follow: ["Whose birthday is it today?", "What’s new?"]
+      };
+    },
+    drafts() {
+      const d = ib.items.filter((x) => x.state === "draft").sort((a, b) => a.ago - b.ago);
+      return {
+        text: d.length ? `You have ${B(plural(d.length, "draft", "drafts"))}. The most recent:` : "You have no drafts. Start one with New request in the inbox.",
+        body: d.length ? gCard(d.slice(0, 3).map((x) => gRow({ lead: `<span class="ib-row__icon" style="--c: var(--viz-${IB_TYPES[x.type].slot})">${icon("i-doc")}</span>`, title: x.title, meta: `${IB_TYPES[x.type].label} · edited ${ibAgo(x.ago)}`, actions: act("Edit", "draft", x.id) }))) : "",
+        actions: act("Open drafts", "inbox", "draft", "btn--primary"),
+        follow: ["Show my tasks", "What needs my attention?"]
+      };
+    },
+    benefits: () => ({
+      text: `You have ${B(`${perks.length} perks`)}. Your core benefits:`,
+      body: gCard(perks.slice(0, 4).map((p) => gRow({ lead: gTile(p.icon, PC_HUE[p.cat]), title: p.title, meta: `${PERK_CATS[p.cat]}${p.tag ? ` · ${p.tag[1]}` : ""}`, actions: act("Open", "perk", p.id) }))),
+      actions: act("See all perks", "goto", "#perks"),
+      follow: ["Travel discounts", "Find communities"]
+    }),
+    discounts(t) {
+      const all = partnersData();
+      const travel = /travel|hotel|stay|trip/.test(t);
+      const list = travel ? all.filter((p) => /stay|hotel|spa/i.test(p.cat)) : all.slice().sort((a, b) => parseInt(b.off, 10) - parseInt(a.off, 10)).slice(0, 4);
+      const rows = list.map((p) => gRow({ lead: `<span class="gpt-logo"><span class="partner__logo ${p.logo}"></span></span>`, title: p.name, meta: `${p.cat} · ${p.off} off`, actions: act("Get code", "code", p.code, "btn--primary") }));
+      if (travel) { const air = perks.find((p) => p.id === "air"); rows.push(gRow({ lead: gTile(air.icon, PC_HUE.travel), title: air.title, meta: "Perk · Ready to book", actions: act("Open", "perk", "air") })); }
+      return { text: travel ? "For travel and stays, these apply to you:" : `Your best partner offers, from ${B(`${all.length} partners`)}:`, body: gCard(rows), actions: act("All discounts", "goto", "#discounts"), follow: ["Show my benefits", "Find communities"] };
+    },
+    communities(t) {
+      const all = sportsData();
+      const one = all.find((s) => t.includes(s.name.toLowerCase()));
+      const list = one ? [one] : all;
+      const top = all.slice().sort((a, b) => b.members - a.members)[0];
+      return {
+        text: one ? `The ${B(one.name)} community has ${B(`${one.members} members`)}.` : `There are ${B(`${all.length} communities`)} to join. ${escapeHtml(top.name)} is the biggest, with ${top.members} members.`,
+        body: gCard(list.map((s) => gRow({ lead: gTile("i-ball", "#2E5BFF"), title: s.name, meta: `${s.members} members`, actions: act("View", "sport", s.name) }))),
+        follow: ["Show my benefits", "What’s new?"]
+      };
+    },
+    profile: () => ({
+      text: "Opening your profile…",
+      body: gCard([gRow({ lead: `<span class="avatar img-rashid">RK</span>`, title: "Rashid Khan", meta: "Sr. Engineer · rashid.khan@bloom.ae", actions: act("Open profile", "drawer", "profile", "btn--primary") })]),
+      then: () => setTimeout(() => { if (gpt.open) GPT_ACTS.drawer("profile"); }, reduceMotion ? 300 : 1200)
+    }),
+    help: () => ({
+      text: "Here are quick answers to common questions:",
+      body: `<div class="gpt-faqs">${$$("#faq .faqs__item").slice(0, 3).map((d) => `<details class="gpt-faq"><summary>${escapeHtml($("summary", d).textContent.trim())}</summary><p>${escapeHtml($(".faqs__a", d).textContent.trim())}</p></details>`).join("")}</div>`,
+      actions: act("See all FAQs", "goto", "#faq"),
+      follow: ["Find a policy", "Take me to my profile"]
+    }),
+    hello: () => ({ text: "Hi Rashid! I can find people, policies, tasks and benefits, and take you straight to them. Try one of these:", follow: ["What needs my attention?", "What’s new?", "Show my benefits"] }),
+    thanks: () => ({ text: "Anytime. Anything else I can help with?", follow: ["What needs my attention?", "Find a colleague"] }),
+    fallback: () => ({ text: "I can’t answer that yet. I know about your tasks, people, announcements, policies, benefits, discounts and communities. Try one of these:", follow: ["What needs my attention?", "Find a colleague", "Find a policy", "Show my benefits"] })
+  };
+  // the first rule that matches decides; order matters
+  const GPT_ROUTES = [
+    [/\bprofile\b|my account|my details/, "profile"], [/\bdrafts?\b/, "drafts"], [/birthday/, "birthday"], [/anniversar/, "anniv"],
+    [/\bfire\b|drill|evacuat/, "drill"], [/\bleave\b|holiday|vacation|time off|\beid\b/, "leave"],
+    [/attention|urgent|overdue|priorit|important/, "attention"], [/\btasks?\b|approv|pending|to-?do|waiting|inbox/, "tasks"],
+    [/polic|guideline|conduct|security|expense|handbook/, "policy"], [/discount|offer|deal|coupon|\bcode\b|hotel|dining|restaurant/, "discounts"],
+    [/benefit|perk|insurance|medical|mimojo|mazaya|ticket|allowance/, "benefits"],
+    [/communit|sport|club|cricket|padel|yoga|football|basketball|badminton/, "communities"],
+    [/colleague|\bwho\b|joined|joiner|new (people|hire|starter|member)|people|person|\bteam\b|\bmeet\b|abdul|sara|mohammed|hana|daniel|ahmed|mariam|yousef|khalid/, "colleague"],
+    [/what.?s new|news|announce|happening|update|today/, "news"], [/\bhelp\b|faq|support|how do|how can/, "help"],
+    [/^(hi|hey|hello|salam|marhaba|good (morning|afternoon|evening))\b/, "hello"], [/thank|cheers/, "thanks"]
+  ];
+  const gptReply = (q) => { const t = q.toLowerCase().replace(/[’‘]/g, "'"); const r = GPT_ROUTES.find(([re]) => re.test(t)); return GPT_SKILLS[r ? r[1] : "fallback"](t); };
+
+  // actions the answers can take; anything that leaves the page closes Bloom GPT first
+  const gptLeave = (fn) => { closeGpt(); setTimeout(fn, reduceMotion ? 0 : 380); };
+  const gptDone = (btn, label) => { btn.outerHTML = `<span class="gpt-done">${icon("i-check", "ico ico--sm")}${escapeHtml(label)}</span>`; };
+  const GPT_ACTS = {
+    task: (v) => gptLeave(() => openDrawer("task", taskRows()[Number(v)])),
+    approve: (v, btn) => { const r = taskRows()[Number(v)]; if (r && !r.classList.contains("is-done")) quickResolve(r, "approve"); $('[data-gpt-act="task"]', btn.parentElement)?.remove(); gptDone(btn, "Approved"); },
+    filter: (v) => gptLeave(() => filterAttention(v, true)),
+    inbox: (v) => gptLeave(() => openInbox(null, v)),
+    draft: (v) => gptLeave(() => { openInbox(null, "draft"); const x = ibFind(v); if (x) setTimeout(() => openRequestForm(x, "edit"), 500); }),
+    policy: (v) => gptLeave(() => revealPolicy(v)),
+    person: (v) => gptLeave(() => { showPerson(Number(v)); document.getElementById("people").scrollIntoView({ behavior: smooth() }); }),
+    ann: (v) => gptLeave(() => showAnnouncement(Number(v))),
+    wish: (v) => gptLeave(() => { showAnnouncement(Number(v)); setTimeout(() => $(".slide.is-current [data-wish]", bTrack)?.click(), reduceMotion ? 50 : 900); }),
+    congrats: () => gptLeave(() => { showAnnouncement(groupStart("anniv")); setTimeout(() => $(".slide.is-current [data-wish]", bTrack)?.click(), reduceMotion ? 50 : 900); }),
+    perk: (v) => gptLeave(() => revealPerk(v)),
+    sport: (v) => gptLeave(() => revealSport(v)),
+    drawer: (v) => gptLeave(() => openDrawer(v)),
+    goto: (v) => gptLeave(() => $(v).scrollIntoView({ behavior: smooth() })),
+    async code(v, btn) { try { await navigator.clipboard.writeText(v); toast(`Code ${v} copied`, "i-copy"); } catch { toast(`Your code is ${v}`, "i-copy"); } btn.outerHTML = `<span class="gpt-code">${escapeHtml(v)}</span>`; },
+    remind(v, btn) { const rb = $("[data-remind]", bTrack); if (rb && !rb.classList.contains("is-sent")) rb.click(); else toast("Your reminder is already set", "i-bellring"); gptDone(btn, "Reminder set"); }
+  };
+
+  function gptScroll() { gptEl.scrollTo({ top: gptEl.scrollHeight, behavior: smooth() }); }
+  function gptAsk(q) {
+    q = q.trim();
+    if (!q || gpt.busy) return;
+    gpt.busy = true;
+    stopHints();
+    gptInput.value = "";
+    gptInput.placeholder = "Ask a follow-up…";
+    gptEl.classList.add("is-chatting");
+    gptNew.hidden = false;
+    gptThread.insertAdjacentHTML("beforeend", `<li class="msg msg--me"><p>${escapeHtml(q)}</p></li>`);
+    const bot = document.createElement("li");
+    bot.className = "msg msg--bot is-thinking";
+    bot.innerHTML = `<span class="orb" aria-hidden="true"></span><div class="msg__body"><span class="gpt-dots" role="status" aria-label="Bloom GPT is thinking"><i></i><i></i><i></i></span></div>`;
+    gptThread.append(bot);
+    gptScroll();
+    setTimeout(() => {
+      const r = gptReply(q);
+      bot.classList.remove("is-thinking");
+      $(".msg__body", bot).innerHTML = `<p class="msg__text">${r.text}</p>${r.body || ""}${r.actions ? `<div class="msg__actions">${r.actions}</div>` : ""}${r.follow ? `<div class="msg__follow">${r.follow.map((f) => gptChip(f, " chip--follow")).join("")}</div>` : ""}`;
+      gpt.busy = false;
+      gptScroll();
+      r.then?.();
+    }, reduceMotion ? 200 : 650 + Math.random() * 450);
+  }
+  function gptReset() {
+    gptThread.innerHTML = "";
+    gptEl.classList.remove("is-chatting");
+    gptNew.hidden = true;
+    gptInput.value = "";
+    startHints();
+    gptInput.focus({ preventScroll: true });
+  }
+  // the placeholder types example questions
+  function startHints() {
+    stopHints();
+    if (reduceMotion) { gptInput.placeholder = GPT_HINTS[0]; return; }
+    let i = 0, j = 0, dir = 1;
+    const tick = () => {
+      const s = GPT_HINTS[i];
+      j += dir;
+      gptInput.placeholder = s.slice(0, j);
+      if (dir > 0 && j >= s.length) { dir = -1; gpt.typing = setTimeout(tick, 1900); return; }
+      if (dir < 0 && j <= 0) { dir = 1; i = (i + 1) % GPT_HINTS.length; gpt.typing = setTimeout(tick, 320); return; }
+      gpt.typing = setTimeout(tick, dir > 0 ? 48 : 22);
+    };
+    gpt.typing = setTimeout(tick, 500);
+  }
+  function stopHints() { clearTimeout(gpt.typing); }
+  function gptNoticed() {
+    const overdue = openTasks().filter((r) => $(".due--overdue", r)).length;
+    const items = [];
+    if (overdue) items.push(`<button type="button" data-gpt-ask="Show my overdue approvals"><span class="pulse-dot" aria-hidden="true"></span>${overdue} approval${overdue === 1 ? " is" : "s are"} overdue</button>`);
+    items.push(`<button type="button" data-gpt-ask="Whose birthday is it today?">${icon("i-gift", "ico ico--sm")}It’s ${escapeHtml(firstName(birthdays[0]))}’s birthday today</button>`);
+    items.push(`<button type="button" data-gpt-ask="What changed in Data Security?">${icon("i-shield", "ico ico--sm")}Data Security was updated</button>`);
+    $("#gpt-noticed").innerHTML = `<span class="gpt__noticed-label">${icon("i-sparkle", "ico ico--sm")}Bloom GPT noticed</span>${items.join('<i aria-hidden="true"></i>')}`;
+  }
+  function openGpt(trigger, q) {
+    if (!gpt.open) {
+      gpt.returnFocus = document.activeElement;
+      const r = trigger?.getBoundingClientRect?.();
+      gptEl.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+      gptEl.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
+      closeNav(false); closeMenus(); closeSearch(); hideTip();
+      if (ib.open) closeInbox();
+      const hr = new Date().getHours();
+      $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
+      $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+      gptNoticed();
+      gpt.open = true;
+      gptEl.classList.add("is-open");
+      gptEl.setAttribute("aria-hidden", "false");
+      body.style.overflow = "hidden";
+      if (!gptEl.classList.contains("is-chatting")) { gptEl.scrollTop = 0; startHints(); }
+      setTimeout(() => gptInput.focus({ preventScroll: true }), 350);
+    }
+    if (q) gptAsk(q);
+  }
+  function closeGpt() {
+    if (!gpt.open) return;
+    gpt.open = false;
+    stopHints();
+    gptEl.classList.remove("is-open");
+    gptEl.setAttribute("aria-hidden", "true");
+    if (!body.classList.contains("menu-open") && !drawer.classList.contains("is-open") && !ib.open) body.style.overflow = "";
+    if (gpt.returnFocus && document.contains(gpt.returnFocus)) gpt.returnFocus.focus({ preventScroll: true });
+  }
+  document.addEventListener("click", (e) => {
+    const opener = e.target.closest("[data-open-gpt]");
+    if (opener) { e.preventDefault(); openGpt(opener); }
+    if (e.target.closest("[data-close-gpt]")) closeGpt();
+  });
+  gptEl.addEventListener("click", (e) => {
+    const a = e.target.closest("[data-gpt-act]");
+    if (a) { GPT_ACTS[a.dataset.gptAct]?.(a.dataset.v, a); return; }
+    const q = e.target.closest("[data-gpt-ask]");
+    if (q) gptAsk(q.dataset.gptAsk);
+  });
+  $("#gpt-form").addEventListener("submit", (e) => { e.preventDefault(); gptAsk(gptInput.value); });
+  gptNew.addEventListener("click", gptReset);
+  // keep keyboard focus inside Bloom GPT while it is the top layer
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !gpt.open || drawer.classList.contains("is-open") || $("dialog[open]")) return;
+    const items = $$("button:not([disabled]), input, a[href], summary", gptEl).filter((el) => el.offsetParent !== null);
+    const i = items.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); items[items.length - 1].focus(); }
+    else if (!e.shiftKey && i === items.length - 1) { e.preventDefault(); items[0].focus(); }
+  });
+
+  /* ---------------------------------------------------------------
      FAQ — category tabs + animated accordion
      --------------------------------------------------------------- */
   const faqTabs = $("#faq-tabs");
@@ -1930,7 +2249,7 @@
   });
 
   /* ---------------------------------------------------------------
-     Flag cursor — the logo's ribbon flag (blue over red, a white gap
+     Flag cursor — the logo's ribbon flag (red over blue, a white gap
      between) flies from the pointer. At rest it waves beside the
      pointer; in motion it streams along the path; over anything you
      can click it furls into a two-colour ring; a click makes it
@@ -2039,14 +2358,14 @@
         const w = amp * t * Math.sin(t * 5.2 - time * 8.5);
         mid.push({ x: n[i].x + ty * w, y: n[i].y - tx * w, t });
       }
-      // keep the blue stripe on top, as on a real flag (with a little hysteresis)
+      // keep the red stripe on top, as on the logo (with a little hysteresis)
       const vx = mid[FC_N - 1].x - mid[0].x;
       if (vx > 4) fc.flip = 1; else if (vx < -4) fc.flip = -1;
       let len = 0;
       for (let i = 1; i < FC_N; i++) len += Math.hypot(mid[i].x - mid[i - 1].x, mid[i].y - mid[i - 1].y);
       // a resting flag is chunky like the logo; a long streak thins into a ribbon
       const stretch = clamp((len - 34) / 160);
-      const blueO = [], blueI = [], redO = [], redI = [];
+      const topO = [], topI = [], botO = [], botI = [];
       const bandScale = (.55 + .45 * fc.rest) * (1 - .38 * stretch);
       for (let i = 0; i < FC_N; i++) {
         const m = mid[i];
@@ -2058,10 +2377,10 @@
         const twist = .8 + .2 * Math.cos(m.t * 4 - time * 5);        // a hint of ribbon twist
         const T = 5.6 * (1 - .22 * m.t) * bandScale * twist;
         const G = 1.9 * (1 - .22 * m.t) * bandScale * twist;
-        blueI.push({ x: m.x + nx * G / 2, y: m.y + ny * G / 2 });
-        blueO.push({ x: m.x + nx * (G / 2 + T), y: m.y + ny * (G / 2 + T) });
-        redI.push({ x: m.x - nx * G / 2, y: m.y - ny * G / 2 });
-        redO.push({ x: m.x - nx * (G / 2 + T), y: m.y - ny * (G / 2 + T) });
+        topI.push({ x: m.x + nx * G / 2, y: m.y + ny * G / 2 });
+        topO.push({ x: m.x + nx * (G / 2 + T), y: m.y + ny * (G / 2 + T) });
+        botI.push({ x: m.x - nx * G / 2, y: m.y - ny * G / 2 });
+        botO.push({ x: m.x - nx * (G / 2 + T), y: m.y - ny * (G / 2 + T) });
       }
       // a long streak fades toward its tail; the resting flag stays solid
       const tail = clamp(1 - (len - 70) / 170, .12, 1);
@@ -2085,8 +2404,9 @@
       };
       ctx.globalAlpha = fc.alpha;
       ctx.shadowColor = "rgba(11, 22, 64, .22)"; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2;
-      band(redO, redI, FC_RED);
-      band(blueO, blueI, FC_BLUE);
+      // top band red, bottom band blue, as on the logo
+      band(botO, botI, FC_BLUE);
+      band(topO, topI, FC_RED);
       ctx.shadowColor = "transparent";
 
       // the pole-top: a precise dot at the hotspot
@@ -2104,8 +2424,8 @@
       const q = r.age / .55, rad = 6 + easeOut(q) * 34;
       ctx.globalAlpha = (1 - q) * .9;
       ctx.lineWidth = 1.6;
-      ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, Math.PI * 2); ctx.strokeStyle = FC_BLUE[1]; ctx.stroke();
-      ctx.beginPath(); ctx.arc(r.x, r.y, rad * .7, 0, Math.PI * 2); ctx.strokeStyle = FC_RED[1]; ctx.stroke();
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad, 0, Math.PI * 2); ctx.strokeStyle = FC_RED[1]; ctx.stroke();
+      ctx.beginPath(); ctx.arc(r.x, r.y, rad * .7, 0, Math.PI * 2); ctx.strokeStyle = FC_BLUE[1]; ctx.stroke();
     });
     ctx.globalAlpha = 1;
 

@@ -52,12 +52,30 @@ The wordmark shrinks to the Bloom mark after the hero, and the capsule turns
 dark over dark chapters. ☰ opens a full menu with Your space and Appearance
 (theme and accent).
 
+**Bloom GPT.** The AI assistant has its own button in the nav capsule (and
+☰ menu). It opens a full page from that button:
+- **Landing:** a greeting, "Your workday, in one conversation", a composer
+  whose placeholder types example questions, twelve suggested prompts, and a
+  "Bloom GPT noticed" strip (overdue approvals, today's birthday, the updated
+  Data Security policy).
+- **Answers:** it answers from the page's own data (tasks, people,
+  announcements, policies, perks, discounts, communities, drafts, FAQs) with
+  cards.
+- **Actions:** approve a task (the counts everywhere update), open a person,
+  policy, perk or community, copy a discount code, set the fire-drill
+  reminder, jump to your drafts or profile.
+- **Search:** every search (Ctrl/⌘ K) also offers "Ask Bloom GPT" with what
+  you typed.
+
+It is scripted, not a live model; unknown questions get a list of what it
+can do.
+
 **Flag cursor.** On mouse and trackpad devices the pointer carries the logo's
-ribbon flag: blue over red with a white gap. At rest it waves beside the
+ribbon flag: red over blue with a white gap. At rest it waves beside the
 pointer. In motion it streams along your path and thins into a ribbon. Over
 anything clickable it furls into a two-colour ring, and over draggable strips
 the ring reads "Drag". A click makes the flag flutter and sends out a
-blue-and-red ripple. Text fields and dialogs keep the system cursor. It is off
+red-and-blue ripple. Text fields and dialogs keep the system cursor. It is off
 on touch devices and with reduced motion, and ☰ → Appearance → Flag cursor
 turns it off.
 

@@ -854,8 +854,8 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .sw--crimson { background: linear-gradient(135deg, #FF3C4B, #45000F); }
 .pref__flag { display: inline-grid; gap: 2px; width: 18px; transform: skewY(-12deg); }
 .pref__flag i { display: block; height: 5px; border-radius: var(--r-pill); }
-.pref__flag i:first-child { background: linear-gradient(90deg, #7DD3FF, #2F6BFF 55%, #0B2DBF); }
-.pref__flag i:last-child { background: linear-gradient(90deg, #FF8E7A, #E3263B 55%, #A10D24); }
+.pref__flag i:first-child { background: linear-gradient(90deg, #FF8E7A, #E3263B 55%, #A10D24); }
+.pref__flag i:last-child { background: linear-gradient(90deg, #7DD3FF, #2F6BFF 55%, #0B2DBF); }
 .mo__promo { display: flex; gap: 12px; margin-top: 8px; padding: 16px; border-radius: var(--r-md); background: linear-gradient(135deg, var(--accent-soft), var(--lavender-soft)); font-size: var(--fs-meta); color: var(--slate); }
 .mo__promo .ico { color: var(--accent-fg); margin-top: 2px; }
 .mo__promo span { display: grid; gap: 2px; }
@@ -1025,6 +1025,149 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 /* entrance */
 .inbox.is-open .inbox__heading, .inbox.is-open .inbox__tools, .inbox.is-open .ib-stat, .inbox.is-open .ib-chart, .inbox.is-open .ib-tabs { animation: rise .8s var(--ease-expo) both; }
 .inbox.is-open .inbox__tools { animation-delay: .06s; }
+
+/* ------------------------------------------------------------------
+   BLOOM GPT — the assistant. Opens like the inbox, from its button.
+   Landing: greeting, headline, composer, prompts, what it noticed.
+   Chatting: a thread above a composer docked to the bottom.
+   ------------------------------------------------------------------ */
+.orb {
+  position: relative; flex: none; display: inline-block; width: 28px; height: 28px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #fff 0 7%, color-mix(in srgb, var(--accent) 35%, #fff) 17%, var(--accent) 54%, color-mix(in srgb, var(--accent) 55%, #000) 100%);
+  box-shadow: inset 0 -2px 5px rgba(0, 0, 0, .25), 0 2px 6px -2px rgba(11, 22, 64, .35);
+}
+.orb--sm { width: 22px; height: 22px; }
+.orb--xs { width: 20px; height: 20px; }
+.nav-gpt {
+  display: inline-flex; align-items: center; gap: 8px; height: 40px; margin-right: 4px; padding: 0 14px 0 5px; border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--accent) 9%, transparent); border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  font-family: var(--font-display); font-size: .92rem; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; color: var(--ink);
+  transition: background-color var(--t-base), border-color var(--t-base), transform var(--t-fast) var(--ease-out);
+}
+.nav-gpt:hover { background: color-mix(in srgb, var(--accent) 16%, transparent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.nav-gpt:active { transform: scale(.96); }
+.nav-gpt .orb { transition: rotate var(--t-slow) var(--ease-spring); }
+.nav-gpt:hover .orb { rotate: -25deg; }
+.mo__util .orb { margin: 0 1px; }
+.mo__new { margin-left: auto; padding: 1px 8px; border-radius: var(--r-pill); background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: .08em; }
+.app-mark--gpt { --bg: var(--accent-soft); }
+
+.gpt {
+  position: fixed; inset: 0; z-index: 132; display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--canvas); visibility: hidden;
+  clip-path: circle(0px at var(--ox, 50%) var(--oy, 40px));
+  transition: clip-path 760ms var(--ease-expo), visibility 0s linear 760ms;
+}
+.gpt.is-open { visibility: visible; clip-path: circle(150vmax at var(--ox, 50%) var(--oy, 40px)); transition-delay: 0s; }
+.gpt::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(40% 46% at 50% 0%, color-mix(in srgb, var(--blob-1) 17%, transparent), transparent 72%),
+    radial-gradient(30% 38% at 100% 72%, color-mix(in srgb, var(--blob-3) 13%, transparent), transparent 70%),
+    radial-gradient(28% 36% at 0% 36%, color-mix(in srgb, var(--blob-2) 10%, transparent), transparent 70%);
+}
+.gpt::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, var(--dot) 1px, transparent 1.4px) 0 0 / 26px 26px;
+  -webkit-mask-image: radial-gradient(60% 55% at 50% 45%, #000, transparent); mask-image: radial-gradient(60% 55% at 50% 45%, #000, transparent);
+}
+.gpt__bar { position: sticky; top: 0; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: calc(16px + var(--safe-top)) 10px; }
+.gpt.is-chatting .gpt__bar { background: linear-gradient(var(--canvas) 55%, transparent); }
+.gpt__bar-tools { display: flex; align-items: center; gap: 10px; }
+.gpt__main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-block: 8px 48px; text-align: center; }
+.gpt.is-chatting .gpt__main { justify-content: flex-end; padding-bottom: 0; }
+
+.gpt__pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 16px 5px 5px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--surface) 72%, transparent); border: 1px solid var(--line); box-shadow: var(--sh-1); font-size: var(--fs-support); color: var(--slate); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.gpt__pill > i { width: 4px; height: 4px; border-radius: 50%; background: var(--slate-3); }
+.gpt__kicker { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 34px; font-size: var(--fs-label); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-fg); }
+.gpt__title { margin-top: 16px; font-size: clamp(2.6rem, 1rem + 5.2vw, 6.4rem); font-weight: 700; line-height: 1; letter-spacing: -.02em; text-wrap: balance; }
+.gpt__line { display: block; }
+.gpt__line--grad { padding-bottom: .06em; background: linear-gradient(90deg, var(--ink) 0%, var(--ink) 28%, var(--accent-fg) 96%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.gpt__caret { display: inline-block; width: .055em; height: .8em; margin-left: .06em; vertical-align: -.02em; border-radius: var(--r-pill); background: var(--accent-fg); animation: caret 1.1s steps(1) infinite; }
+.gpt__sub { margin: 22px auto 0; max-width: 46ch; font-size: clamp(1.02rem, .95rem + .4vw, 1.3rem); color: var(--slate); text-wrap: pretty; }
+
+.gpt__dock { width: min(100%, 860px); margin-top: 40px; }
+.gpt.is-chatting .gpt__dock { position: sticky; bottom: 0; z-index: 2; margin-top: 8px; padding: 14px 0 calc(18px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent, var(--canvas) 38%); }
+.gpt__composer {
+  display: flex; align-items: center; gap: 12px; height: 72px; padding: 0 10px 0 16px; border-radius: var(--r-pill);
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2);
+  transition: border-color var(--t-base), box-shadow var(--t-base);
+}
+.gpt__composer:focus-within { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); box-shadow: var(--ring), var(--sh-2); }
+.gpt__composer > .orb { width: 34px; height: 34px; }
+.gpt__input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; background: none; font: inherit; font-size: clamp(1rem, .9rem + .45vw, 1.22rem); color: var(--ink); }
+.gpt__input:focus, .gpt__input:focus-visible { outline: none; box-shadow: none; }
+.gpt__input::placeholder { color: var(--slate-2); opacity: 1; }
+.gpt__kbd { flex: none; padding: 3px 8px; border-radius: var(--r-2xs); border: 1px solid var(--line); background: var(--surface-2); font-size: var(--fs-label); font-weight: 600; color: var(--slate-2); }
+.gpt__send {
+  display: grid; place-items: center; flex: none; width: 52px; height: 52px; border-radius: 50%; color: #fff;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 68%, #fff), var(--accent) 46%, color-mix(in srgb, var(--accent) 72%, #000));
+  box-shadow: 0 10px 20px -12px rgba(11, 22, 64, .45); transition: transform var(--t-base) var(--ease-spring);
+}
+.gpt__send:hover { transform: translateY(-2px); }
+.gpt__send:active { transform: scale(.94); }
+
+.gpt__try { width: min(100%, 1120px); margin-top: 44px; }
+.gpt__label { font-size: var(--fs-label); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--slate-2); }
+.gpt__chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 18px; }
+.gpt-chip { height: 46px; padding: 0 20px 0 16px; gap: 10px; background: color-mix(in srgb, var(--surface) 82%, transparent); color: var(--ink-2); font-size: .95rem; font-weight: 500; }
+.gpt-chip .ico { color: var(--accent-fg); }
+.gpt-chip:hover { transform: translateY(-2px); }
+.gpt-chip.chip--follow { height: 36px; padding: 0 14px 0 12px; gap: 8px; font-size: var(--fs-meta); }
+.gpt__noticed { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 12px; margin-top: 40px; font-size: var(--fs-support); color: var(--slate); }
+.gpt__noticed-label { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; color: var(--accent-fg); }
+.gpt__noticed > i { width: 3px; height: 3px; border-radius: 50%; background: var(--slate-3); }
+.gpt__noticed button { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: var(--r-pill); color: var(--slate); transition: background-color var(--t-base), color var(--t-base); }
+.gpt__noticed button:hover { background: var(--surface-2); color: var(--ink); }
+.gpt__noticed .ico { color: var(--slate-2); }
+.gpt.is-chatting .gpt__hello, .gpt.is-chatting .gpt__try, .gpt.is-chatting .gpt__noticed { display: none; }
+.gpt.is-open .gpt__hello > *, .gpt.is-open .gpt__dock, .gpt.is-open .gpt__try, .gpt.is-open .gpt__noticed { animation: rise .8s var(--ease-expo) both; }
+.gpt.is-open .gpt__kicker { animation-delay: .06s; }
+.gpt.is-open .gpt__title { animation-delay: .12s; }
+.gpt.is-open .gpt__sub { animation-delay: .18s; }
+.gpt.is-open .gpt__dock { animation-delay: .24s; }
+.gpt.is-open .gpt__try { animation-delay: .3s; }
+.gpt.is-open .gpt__noticed { animation-delay: .36s; }
+
+/* the conversation */
+.gpt__thread { display: none; }
+.gpt.is-chatting .gpt__thread { display: grid; align-content: start; gap: 24px; width: min(100%, 860px); padding: 20px 0 8px; text-align: left; }
+.msg { animation: rise .5s var(--ease-expo) both; }
+.msg--me { justify-self: end; max-width: min(78%, 560px); padding: 12px 18px; border-radius: var(--r-lg); background: var(--ink); color: var(--canvas); font-size: 1rem; overflow-wrap: anywhere; }
+.msg--bot { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px; align-items: start; }
+.msg--bot > .orb { width: 34px; height: 34px; }
+.msg--bot.is-thinking > .orb { animation: orbPulse .9s ease-in-out infinite alternate; }
+.msg__body { min-width: 0; padding-top: 5px; }
+.msg__text { font-size: 1.02rem; line-height: 1.6; color: var(--ink-2); text-wrap: pretty; }
+.msg__text strong { font-weight: 600; color: var(--ink); }
+.msg__meta { display: block; margin-top: 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+.msg__actions, .msg__follow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; }
+.msg__follow { margin-top: 16px; }
+.gpt-dots { display: inline-flex; gap: 5px; padding: 11px 0; }
+.gpt-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--slate-3); animation: dots 1s ease-in-out infinite; }
+.gpt-dots i:nth-child(2) { animation-delay: .15s; }
+.gpt-dots i:nth-child(3) { animation-delay: .3s; }
+/* answer cards: a nested surface with rows inside (concentric: 18 − 6 = 12) */
+.gpt-card { display: grid; gap: 2px; margin-top: 14px; padding: 6px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1); }
+.gpt-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 10px 10px 10px 8px; border-radius: var(--r-sm); transition: background-color var(--t-fast); }
+.gpt-row:hover { background: var(--surface-2); }
+.gpt-row__lead { display: grid; place-items: center; }
+.gpt-row__lead .avatar, .gpt-row__lead .app-mark, .gpt-row__lead .ib-row__icon { width: 40px; height: 40px; }
+.gpt-row__txt { display: grid; min-width: 0; line-height: 1.35; }
+.gpt-row__txt strong { font-size: .95rem; font-weight: 600; color: var(--ink); }
+.gpt-row__txt small { font-size: var(--fs-meta); color: var(--slate-2); }
+.gpt-row__act { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px; }
+.gpt-row__act .btn--sm, .msg__actions .btn--sm { height: 36px; padding: 0 16px; }
+.gpt-tile { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-icon); background: color-mix(in srgb, var(--hue) 13%, var(--surface)); color: color-mix(in srgb, var(--hue) 82%, var(--ink)); }
+.gpt-logo { display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-icon); background: #fff; box-shadow: inset 0 0 0 1px rgba(11, 22, 64, .08); }
+.gpt-logo .partner__logo { width: 76%; height: 76%; }
+.gpt-done { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: var(--r-pill); background: var(--ok-soft); color: var(--ok-fg); font-size: var(--fs-meta); font-weight: 600; }
+.gpt-code { display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: var(--r-pill); background: var(--ink); color: var(--canvas); font-family: var(--font-display); font-size: var(--fs-meta); font-weight: 600; letter-spacing: .04em; }
+.gpt-faqs { display: grid; gap: 8px; margin-top: 14px; }
+.gpt-faq { padding: 0 16px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); }
+.gpt-faq summary { list-style: none; padding: 14px 0; font-weight: 600; cursor: pointer; }
+.gpt-faq summary::-webkit-details-marker { display: none; }
+.gpt-faq p { padding: 0 0 14px; font-size: var(--fs-support); color: var(--slate); }
 .inbox.is-open .ib-stat { animation-delay: .12s; }
 .inbox.is-open .ib-tabs { animation-delay: .14s; }
 .inbox.is-open .ib-chart { animation-delay: .2s; }
@@ -1698,8 +1841,8 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 /* 07 — PERKS: filterable index + spotlight. Rows stay compact, so the
    chapter reads the same with 4 perks or 40. Category hues tint the icon
    tiles and the generated art (decoration only, never text). */
+:root { --pc-health: #12A07E; --pc-travel: #2F5BFF; --pc-savings: #E0741C; --pc-wellbeing: #D2457E; --pc-growth: #7B4FD6; }
 .perks {
-  --pc-health: #12A07E; --pc-travel: #2F5BFF; --pc-savings: #E0741C; --pc-wellbeing: #D2457E; --pc-growth: #7B4FD6;
   display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   grid-template-areas: "intro intro" "chips chips" "index stage";
   column-gap: clamp(32px, 5vw, 88px); align-items: start;
@@ -1957,6 +2100,9 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 @keyframes whereIn { from { opacity: 0; translate: 0 70%; } to { opacity: 1; translate: none; } }
 @keyframes timer { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes sparkle { from { opacity: .45; } to { opacity: .75; } }
+@keyframes caret { 50% { opacity: 0; } }
+@keyframes dots { 0%, 80%, 100% { opacity: .3; translate: 0 0; } 40% { opacity: 1; translate: 0 -4px; } }
+@keyframes orbPulse { from { scale: .9; } to { scale: 1.06; } }
 @keyframes dotOut { from { scale: 0; } to { scale: 1; } }
 @keyframes alarm { 0% { opacity: .9; scale: 1; } 100% { opacity: 0; scale: 1.2; } }
 @keyframes flicker { 0%, 100% { scale: 1; rotate: 0deg; } 30% { scale: 1.06 .96; rotate: -3deg; } 60% { scale: .97 1.05; rotate: 2deg; } }
@@ -2125,6 +2271,16 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   .perks__chips .chip { flex: none; }
   .rail-foot.perks__foot .carousel-ctrl { display: flex; }
   .perk-row { grid-template-columns: 22px 44px minmax(0, 1fr) 18px; gap: 12px; padding: 14px 4px; }
+  .nav-gpt { width: 42px; margin-right: 0; padding: 0; justify-content: center; }
+  .nav-gpt__label, .gpt__kbd, .gpt__composer > .orb { display: none; }
+  .gpt__composer { height: 60px; padding: 0 7px 0 20px; }
+  .gpt__send { width: 46px; height: 46px; }
+  .gpt__dock, .gpt__try { margin-top: 28px; }
+  .gpt-chip { height: 40px; padding: 0 14px 0 12px; font-size: var(--fs-support); }
+  .gpt__noticed { flex-direction: column; gap: 4px; }
+  .gpt__noticed > i { display: none; }
+  .gpt-row { grid-template-columns: 40px minmax(0, 1fr); }
+  .gpt-row__act { grid-column: 2; justify-content: flex-start; }
   .perk-row__tile { width: 44px; height: 44px; }
   .perk-spot__text { font-size: .98rem; }
 
