@@ -16,6 +16,12 @@
     `--r-lg` cards and floating panels, `--r-xl` feature media, `--r-2xl`
     full-width chapter panels. Nested surfaces stay concentric (inner =
     outer − inset). Never add a literal px radius.
+  - Every font size lands on an even pixel. Fixed sizes are even px (written
+    in rem or px, e.g. `.75rem` = 12px); never add an odd or decimal size.
+    Fluid sizes are `clamp()` with even bounds, written twice: the plain
+    value, then `round(clamp(…), 2px)` (browsers without `round()` keep the
+    first). Fluid `--fs-*` tokens get their rounded form in the
+    `@supports (font-size: round(1px, 2px))` block under `:root`.
   - Floating chrome (nav capsule, dock, hero fragments) uses the `.frost`
     glass class; nav dropdowns use the `--frost-panel` recipe.
   - The flag cursor (canvas `#flag-cursor` + ring `#flag-ring`, "Flag cursor"
