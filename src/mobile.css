@@ -88,12 +88,17 @@
 }
 .app-ibtn:active, .pg-bar__btn:active { transform: scale(.9); background: color-mix(in srgb, var(--ink) 7%, transparent); }
 .app-ibtn .badge-dot { top: 5px; right: 4px; animation: none; }
-.app-avatar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
-.app-avatar .avatar { width: 32px; height: 32px; box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px color-mix(in srgb, var(--accent) 60%, transparent); }
-.app-avatar:active { transform: scale(.94); }
+/* The header's Search and Notifications sit on round surfaces, as the page's bordered icon buttons */
+.pg-bar--brand .pg-bar__acts { gap: 8px; margin-right: 8px; }
+.pg-bar--brand .app-ibtn { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--sh-1); }
+.pg-bar--brand .app-ibtn:active { background: var(--accent-soft); color: var(--accent-fg); }
+.pg-bar--brand .app-ibtn .badge-dot { top: 0; right: -2px; }
 
 /* Pushed pages: back, and the page's title once its big one scrolls away */
-.pg-bar--back, .pg-bar--modal { display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(44px, auto); padding-left: 8px; }
+/* Equal side columns keep a short title dead centre, whatever sits on the right (Mark all read);
+   a long title still takes the room between them and ellipsizes */
+.pg-bar--back, .pg-bar--modal { display: grid; grid-template-columns: minmax(max-content, 1fr) minmax(0, auto) minmax(max-content, 1fr); padding-left: 8px; }
+.pg-bar--back .pg-bar__acts, .pg-bar--modal .pg-bar__acts { min-width: 44px; justify-content: flex-end; }
 .pg-bar__title {
   min-width: 0; overflow: hidden; text-align: center; white-space: nowrap; text-overflow: ellipsis;
   font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.015em;
@@ -124,13 +129,19 @@
   border-radius: var(--r-pill); color: var(--slate-2); font-size: .75rem; font-weight: 600; letter-spacing: .01em;
   transition: color var(--t-base), transform var(--t-fast) var(--ease-out);
 }
+.app-nav__item { grid-template-rows: 24px auto; }  /* one icon row, so every label shares a baseline */
 .app-nav__item .ico { width: 22px; height: 22px; }
+.app-nav__ic { align-self: center; }
 .app-nav__item:active { transform: scale(.94); }
 .app-nav__item[aria-current="page"] { color: var(--accent-fg); }
 .app-nav__item[aria-current="page"] .ico { stroke-width: 2; }
-/* Help leads with Bloom GPT, so it wears its logo; it turns as on the page's nav */
+/* Home wears the logo's flag, Help the Bloom GPT orb (it turns as on the page's nav),
+   Profile your photo, ringed in the accent while it's the current tab */
+.app-nav__flag { width: 22px; height: 22px; flex: none; }
 .app-nav__orb { transition: rotate var(--t-slow) var(--ease-spring); }
 .app-nav__item[aria-current="page"] .app-nav__orb { rotate: -25deg; }
+.app-nav__dp { width: 24px; height: 24px; outline: 1.5px solid transparent; outline-offset: 2px; transition: outline-color var(--t-base); }
+.app-nav__item[aria-current="page"] .app-nav__dp { outline: 2px solid var(--accent-fg); }
 .app-nav__label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
 .app-nav__badge { top: 1px; right: calc(50% - 26px); border-color: transparent; }
 
@@ -610,13 +621,6 @@ button.m-card:active { transform: scale(.985); }
 .m-tile__txt strong { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.03em; }
 .m-tile__txt small { font-size: .75rem; color: var(--slate-2); }
 .m-tile__go { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; padding: 7px; border-radius: 50%; background: var(--surface); color: var(--ink); rotate: -45deg; box-shadow: var(--sh-1); }
-.m-tile--people { grid-column: 1 / -1; min-height: 184px; background: linear-gradient(135deg, var(--accent-soft), var(--lavender-soft)); }
-.m-tile__faces { position: absolute; left: 18px; top: 18px; display: flex; }
-.m-tile__face { --img: none; width: 60px; height: 76px; border-radius: var(--r-md); background: var(--img) center 18% / cover no-repeat, var(--surface-2); box-shadow: 0 0 0 3px var(--surface), var(--sh-1); }
-.m-tile__face + .m-tile__face { margin-left: -16px; }
-.m-tile__face:nth-child(1) { rotate: -6deg; }
-.m-tile__face:nth-child(2) { rotate: 3deg; translate: 0 8px; }
-.m-tile__face:nth-child(3) { rotate: 8deg; }
 .m-tile--photo { border: 0; color: #fff; }
 .m-tile--photo .m-tile__img { position: absolute; inset: 0; z-index: -2; }
 .m-tile--photo::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 30%, rgba(5, 8, 24, .82)); }
@@ -774,6 +778,7 @@ button.m-card:active { transform: scale(.985); }
 /* NOTIFICATIONS --------------------------------------------------- */
 .m-link { padding: 10px 8px; font-size: .875rem; white-space: nowrap; }
 .m-link[aria-disabled="true"] { opacity: .45; }
+.m-markall__ic { display: none; }
 .pg--notifications .m-chips { margin-top: 6px; }
 .m-notif {
   position: relative; display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 12px 30px 12px 10px;
@@ -945,6 +950,10 @@ button.m-card:active { transform: scale(.985); }
   .m-offer .offer strong, .m-deal .offer strong { font-size: 1.75rem; }
   .m-me__stat span { font-size: .625rem; }
   .m-actionbar .carousel-ctrl .icon-btn { width: 44px; height: 44px; }
+  /* Mark all read becomes a 44px icon, so the Notifications title keeps the centre */
+  .m-markall { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; }
+  .m-markall__ic { display: block; width: 22px; height: 22px; }
+  .m-markall__txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pg--modal, .pg--modal.is-open { clip-path: none; }

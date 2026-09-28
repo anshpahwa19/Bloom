@@ -160,13 +160,15 @@ carousels and the joiner portrait can be dragged with a mouse, and
 scrollbars stay hidden, as on a phone. On the `#desktop` page,
 ☰ → **Mobile app** opens the same iPhone over the page.
 
-- **Header:** the logo, then Search, Notifications and your photo. It
-  frosts once content slides under it. Pushed pages swap it for Back and
-  their title.
-- **Bottom bar:** Home, Tasks, Explore, Help and Profile in a frosted
+- **Header:** the logo, then Search and Notifications on round surfaces.
+  It frosts once content slides under it. Pushed pages swap it for Back
+  and their title, centred.
+- **Bottom bar:** Home, Tasks, Help, Explore and Profile in a frosted
   capsule above the home indicator, with a sliding accent pill and a
-  count on Tasks. Each tab keeps its own stack of pages and its scroll
-  position. Tapping the current tab goes back to its top.
+  count on Tasks. Home wears the logo's flag (redrawn as a vector, so it
+  stays sharp), Help sits in the middle with the Bloom GPT orb, and
+  Profile shows your photo. Each tab keeps its own stack of pages and its
+  scroll position. Tapping the current tab goes back to its top.
 - **Home:** the greeting with today's moments, a dark "Needs your
   attention" card (the pending count, the apps, then the pending approval,
   the important action and the pending task), Quick links as a
@@ -180,10 +182,11 @@ scrollbars stay hidden, as on a phone. On the `#desktop` page,
   "Next task" after you approve.
   **There is no New request on phones**, and no Duplicate (it makes a new
   request). Everything else on requests is there.
-- **Explore:** People, Policies, Communities, Discounts and Perks, each
-  with a list page and a detail page (colleague directory and profiles,
-  policy library with search and categories, groups you can join, offers
-  with codes, perks by category).
+- **Explore:** Policies, Communities, Discounts and Perks, each with a
+  list page and a detail page (policy library with search and categories,
+  groups you can join, offers with codes, perks by category). People, the
+  colleague directory and profiles, opens from Home's new joiners and
+  from search.
 - **Help:** Bloom GPT (the page's own assistant, with suggested prompts),
   the FAQ and Help & support. Bloom GPT's actions open app screens.
 - **Profile:** you, My profile, My details, My team, notification

@@ -2541,12 +2541,17 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 }
 .app-ibtn:active, .pg-bar__btn:active { transform: scale(.9); background: color-mix(in srgb, var(--ink) 7%, transparent); }
 .app-ibtn .badge-dot { top: 5px; right: 4px; animation: none; }
-.app-avatar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; }
-.app-avatar .avatar { width: 32px; height: 32px; box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px color-mix(in srgb, var(--accent) 60%, transparent); }
-.app-avatar:active { transform: scale(.94); }
+/* The header's Search and Notifications sit on round surfaces, as the page's bordered icon buttons */
+.pg-bar--brand .pg-bar__acts { gap: 8px; margin-right: 8px; }
+.pg-bar--brand .app-ibtn { background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--sh-1); }
+.pg-bar--brand .app-ibtn:active { background: var(--accent-soft); color: var(--accent-fg); }
+.pg-bar--brand .app-ibtn .badge-dot { top: 0; right: -2px; }
 
 /* Pushed pages: back, and the page's title once its big one scrolls away */
-.pg-bar--back, .pg-bar--modal { display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(44px, auto); padding-left: 8px; }
+/* Equal side columns keep a short title dead centre, whatever sits on the right (Mark all read);
+   a long title still takes the room between them and ellipsizes */
+.pg-bar--back, .pg-bar--modal { display: grid; grid-template-columns: minmax(max-content, 1fr) minmax(0, auto) minmax(max-content, 1fr); padding-left: 8px; }
+.pg-bar--back .pg-bar__acts, .pg-bar--modal .pg-bar__acts { min-width: 44px; justify-content: flex-end; }
 .pg-bar__title {
   min-width: 0; overflow: hidden; text-align: center; white-space: nowrap; text-overflow: ellipsis;
   font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.015em;
@@ -2577,13 +2582,19 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   border-radius: var(--r-pill); color: var(--slate-2); font-size: .75rem; font-weight: 600; letter-spacing: .01em;
   transition: color var(--t-base), transform var(--t-fast) var(--ease-out);
 }
+.app-nav__item { grid-template-rows: 24px auto; }  /* one icon row, so every label shares a baseline */
 .app-nav__item .ico { width: 22px; height: 22px; }
+.app-nav__ic { align-self: center; }
 .app-nav__item:active { transform: scale(.94); }
 .app-nav__item[aria-current="page"] { color: var(--accent-fg); }
 .app-nav__item[aria-current="page"] .ico { stroke-width: 2; }
-/* Help leads with Bloom GPT, so it wears its logo; it turns as on the page's nav */
+/* Home wears the logo's flag, Help the Bloom GPT orb (it turns as on the page's nav),
+   Profile your photo, ringed in the accent while it's the current tab */
+.app-nav__flag { width: 22px; height: 22px; flex: none; }
 .app-nav__orb { transition: rotate var(--t-slow) var(--ease-spring); }
 .app-nav__item[aria-current="page"] .app-nav__orb { rotate: -25deg; }
+.app-nav__dp { width: 24px; height: 24px; outline: 1.5px solid transparent; outline-offset: 2px; transition: outline-color var(--t-base); }
+.app-nav__item[aria-current="page"] .app-nav__dp { outline: 2px solid var(--accent-fg); }
 .app-nav__label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
 .app-nav__badge { top: 1px; right: calc(50% - 26px); border-color: transparent; }
 
@@ -3063,13 +3074,6 @@ button.m-card:active { transform: scale(.985); }
 .m-tile__txt strong { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.03em; }
 .m-tile__txt small { font-size: .75rem; color: var(--slate-2); }
 .m-tile__go { position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; padding: 7px; border-radius: 50%; background: var(--surface); color: var(--ink); rotate: -45deg; box-shadow: var(--sh-1); }
-.m-tile--people { grid-column: 1 / -1; min-height: 184px; background: linear-gradient(135deg, var(--accent-soft), var(--lavender-soft)); }
-.m-tile__faces { position: absolute; left: 18px; top: 18px; display: flex; }
-.m-tile__face { --img: none; width: 60px; height: 76px; border-radius: var(--r-md); background: var(--img) center 18% / cover no-repeat, var(--surface-2); box-shadow: 0 0 0 3px var(--surface), var(--sh-1); }
-.m-tile__face + .m-tile__face { margin-left: -16px; }
-.m-tile__face:nth-child(1) { rotate: -6deg; }
-.m-tile__face:nth-child(2) { rotate: 3deg; translate: 0 8px; }
-.m-tile__face:nth-child(3) { rotate: 8deg; }
 .m-tile--photo { border: 0; color: #fff; }
 .m-tile--photo .m-tile__img { position: absolute; inset: 0; z-index: -2; }
 .m-tile--photo::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 30%, rgba(5, 8, 24, .82)); }
@@ -3227,6 +3231,7 @@ button.m-card:active { transform: scale(.985); }
 /* NOTIFICATIONS --------------------------------------------------- */
 .m-link { padding: 10px 8px; font-size: .875rem; white-space: nowrap; }
 .m-link[aria-disabled="true"] { opacity: .45; }
+.m-markall__ic { display: none; }
 .pg--notifications .m-chips { margin-top: 6px; }
 .m-notif {
   position: relative; display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 12px 30px 12px 10px;
@@ -3398,6 +3403,10 @@ button.m-card:active { transform: scale(.985); }
   .m-offer .offer strong, .m-deal .offer strong { font-size: 1.75rem; }
   .m-me__stat span { font-size: .625rem; }
   .m-actionbar .carousel-ctrl .icon-btn { width: 44px; height: 44px; }
+  /* Mark all read becomes a 44px icon, so the Notifications title keeps the centre */
+  .m-markall { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; }
+  .m-markall__ic { display: block; width: 22px; height: 22px; }
+  .m-markall__txt { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pg--modal, .pg--modal.is-open { clip-path: none; }
@@ -3500,6 +3509,7 @@ button.m-card:active { transform: scale(.985); }
       <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-check-all" viewBox="0 0 24 24"><path d="m2 12.5 4.5 4.5L16 7.5"/><path d="m11.5 16.5.5.5 9.5-9.5"/></symbol>
       <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
       <symbol id="i-wave" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7.5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L2.8 15.6a1.6 1.6 0 0 1 2.4-2.1L8 16"/></symbol>
       <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 19.5c1-3.1 3.4-4.8 6.5-4.8s5.5 1.7 6.5 4.8"/><path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.9c1.7.7 2.9 2.2 3.5 4.6"/></symbol>
@@ -3529,7 +3539,6 @@ button.m-card:active { transform: scale(.985); }
       <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14 4.5 9.5 9 5"/><path d="M4.5 9.5h10a5 5 0 0 1 0 10H11"/></symbol>
       <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></symbol>
       <symbol id="i-bellring" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21a2 2 0 0 0 4 0M3 7.5A9 9 0 0 1 6 3.5M21 7.5a9 9 0 0 0-3-4"/></symbol>
-      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V19a1.5 1.5 0 0 0 1.5 1.5h3.5v-6h3v6H17a1.5 1.5 0 0 0 1.5-1.5V9.5"/></symbol>
       <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="m7.8 9.2 1.6 1.6 2.9-3M14.2 9.5h2.3M7.8 15.2l1.6 1.6 2.9-3M14.2 15.5h2.3"/></symbol>
       <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m15.6 8.4-2.1 5.1-5.1 2.1 2.1-5.1Z"/></symbol>
       <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5"/><path d="M4.5 16.5v2a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2"/></symbol>
@@ -4621,11 +4630,13 @@ button.m-card:active { transform: scale(.985); }
     <nav class="app-nav" id="app-nav" aria-label="Main">
       <div class="app-nav__bar frost">
         <span class="app-nav__ind" aria-hidden="true"></span>
-        <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="ico"><use href="#i-home"/></svg><span class="app-nav__label">Home</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">Help</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="profile"><svg class="ico"><use href="#i-user"/></svg><span class="app-nav__label">Profile</span></button>
+        <!-- Home wears the logo's flag (a vector of it, crisp at any size), Help the Bloom GPT orb,
+             Profile your photo (mobile.js adds it from `me`) -->
+        <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="app-nav__ic app-nav__flag" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="nav-flag-red" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#FF8E7A"/><stop offset=".32" stop-color="#E3263B"/><stop offset=".9" stop-color="#A10D24"/></linearGradient><linearGradient id="nav-flag-blue" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#7DD3FF"/><stop offset=".42" stop-color="#2F6BFF"/><stop offset=".95" stop-color="#0B2DBF"/></linearGradient></defs><path fill="url(#nav-flag-red)" d="M0 12Q0 0 12 0Q15 0 17.4 1.8L42 20Q50 26 58 20L82.6 1.8Q85 0 88 0Q100 0 100 12L100 37Q100 41 96.9 38.4L90.1 32.7Q84 27.5 77.6 32.3L58 47Q50 53 42.2 46.7L18.7 27.8Q14 24 8 23.6L4 23.3Q0 23 0 19Z"/><path fill="url(#nav-flag-blue)" d="M0 36.5Q0 33.5 2.4 35.3L42 65Q50 71 58 65L81.6 47.3Q84 45.5 88 45.5Q100 45.5 100 57.5L100 98Q100 100 98.4 98.8L78 83.5Q74 80.5 70 83.6L57.9 92.9Q50 99 42.1 92.8L4.7 63.7Q0 60 0 54Z"/></svg><span class="app-nav__label">Home</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico app-nav__ic"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__ic app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">Help</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico app-nav__ic"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="profile"><span class="app-nav__label">Profile</span></button>
       </div>
     </nav>
 
@@ -7641,7 +7652,7 @@ button.m-card:active { transform: scale(.985); }
   const sheetBody = $("#app-sheet-body");
   const appMQ = matchMedia(APP_QUERY);
   const EXPO = "cubic-bezier(.16,1,.3,1)";
-  const TABS = ["home", "tasks", "explore", "help", "profile"];
+  const TABS = ["home", "tasks", "help", "explore", "profile"];
   const esc = escapeHtml;
   const PAGES = {};
   const A = {
@@ -7767,7 +7778,6 @@ button.m-card:active { transform: scale(.985); }
         <div class="pg-bar__acts">
           <button class="app-ibtn" type="button" data-go="search" aria-label="Search">${icon("i-search")}</button>
           <button class="app-ibtn js-bell" type="button" data-go="notifications" aria-label="${unread ? `Notifications, ${unread} unread` : "Notifications"}">${icon("i-bell")}<span class="badge-dot js-bell-count${unread ? "" : " is-cleared"}" aria-hidden="true">${unread}</span></button>
-          <button class="app-avatar" type="button" data-app-tab="profile" aria-label="Your profile">${avatarHTML(me)}</button>
         </div></header>`;
     }
     if (def.modal) return def.bar(ctx);
@@ -8100,6 +8110,8 @@ button.m-card:active { transform: scale(.985); }
     $$(".js-bell-count", appEl).forEach((b) => { b.textContent = unread; b.classList.toggle("is-cleared", !unread); });
     $$(".js-bell", appEl).forEach((b) => b.setAttribute("aria-label", unread ? `Notifications, ${unread} unread` : "Notifications"));
   }
+  // The Profile tab wears your photo
+  $('[data-app-tab="profile"]', appNav).insertAdjacentHTML("afterbegin", avatarHTML(me, "app-nav__ic app-nav__dp").replace("<span ", '<span aria-hidden="true" '));
   function syncNav(pop = false) {
     const items = $$(".app-nav__item", appNav);
     items.forEach((b) => { if (b.dataset.appTab === A.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
@@ -8108,7 +8120,7 @@ button.m-card:active { transform: scale(.985); }
     if (!cur || !cur.offsetWidth) return;
     ind.style.width = `${cur.offsetWidth}px`;
     ind.style.transform = `translateX(${cur.offsetLeft}px)`;
-    if (pop) motion($(".ico", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
+    if (pop) motion($(".app-nav__ic", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
   }
 
   /* One click handler for the whole app */
@@ -8802,13 +8814,10 @@ button.m-card:active { transform: scale(.985); }
           <div class="m-outline" aria-hidden="true"><p>${$$(".interlude__row")[1].textContent}</p></div>
           ${kicker($("#life-title").textContent)}
           <h1 class="m-intro__title" tabindex="-1">Explore</h1>
-          <p class="m-intro__sub">People, policies and ${esc($("#life .interlude__text").textContent.charAt(0).toLowerCase() + $("#life .interlude__text").textContent.slice(1))}</p>
+          <p class="m-intro__sub">Policies, ${esc($("#life .interlude__text").textContent.charAt(0).toLowerCase() + $("#life .interlude__text").textContent.slice(1))}</p>
         </header>
-        <button class="m-searchbar" type="button" data-go="search">${icon("i-search", "ico ico--sm")}<span>Search people, policies, perks…</span></button>
+        <button class="m-searchbar" type="button" data-go="search">${icon("i-search", "ico ico--sm")}<span>Search policies, groups, perks…</span></button>
         <div class="m-bento">
-          <button class="m-tile m-tile--people" type="button" data-go="people">
-            <span class="m-tile__faces" aria-hidden="true">${people.slice(0, 3).map((p) => `<span class="m-tile__face ${p.img}"></span>`).join("")}</span>
-            <span class="m-tile__txt"><strong>People</strong><small>${people.length} new joiners · ${birthdays.length} birthdays today</small></span>${icon("i-arrow", "ico m-tile__go")}</button>
           <button class="m-tile m-tile--photo" type="button" data-go="policies">
             <span class="m-tile__img m-media ${(updated || pols[0]).img}" aria-hidden="true"></span>
             <span class="m-tile__txt"><strong>Policies</strong><small>${pols.length} guides${updated ? ` · ${esc(updated.name)} updated` : ""}</small></span>${icon("i-arrow", "ico m-tile__go")}</button>
@@ -9353,7 +9362,8 @@ button.m-card:active { transform: scale(.985); }
     live: { notifAll: () => notifAllHTML(), notifChips: () => notifChipsHTML(), notifList: () => notifListHTML() },
     opened(el) { setTimeout(() => $("h1", el)?.focus({ preventScroll: true }), 80); }
   };
-  const notifAllHTML = () => `<button class="link-btn m-link" type="button" data-act="notif-all"${$$("#notif-list .notif.is-unread").length ? "" : ' aria-disabled="true"'}>Mark all read</button>`;
+  // On the smallest phones it's an icon, as wide as the close button, so the title stays centred
+  const notifAllHTML = () => `<button class="link-btn m-link m-markall" type="button" data-act="notif-all"${$$("#notif-list .notif.is-unread").length ? "" : ' aria-disabled="true"'}>${icon("i-check-all", "ico m-markall__ic")}<span class="m-markall__txt">Mark all read</span></button>`;
   function notifChipsHTML() {
     const all = notifsData();
     return NOTIF_KINDS.map(([k, l]) => {

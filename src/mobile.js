@@ -20,7 +20,7 @@
   const sheetBody = $("#app-sheet-body");
   const appMQ = matchMedia(APP_QUERY);
   const EXPO = "cubic-bezier(.16,1,.3,1)";
-  const TABS = ["home", "tasks", "explore", "help", "profile"];
+  const TABS = ["home", "tasks", "help", "explore", "profile"];
   const esc = escapeHtml;
   const PAGES = {};
   const A = {
@@ -146,7 +146,6 @@
         <div class="pg-bar__acts">
           <button class="app-ibtn" type="button" data-go="search" aria-label="Search">${icon("i-search")}</button>
           <button class="app-ibtn js-bell" type="button" data-go="notifications" aria-label="${unread ? `Notifications, ${unread} unread` : "Notifications"}">${icon("i-bell")}<span class="badge-dot js-bell-count${unread ? "" : " is-cleared"}" aria-hidden="true">${unread}</span></button>
-          <button class="app-avatar" type="button" data-app-tab="profile" aria-label="Your profile">${avatarHTML(me)}</button>
         </div></header>`;
     }
     if (def.modal) return def.bar(ctx);
@@ -479,6 +478,8 @@
     $$(".js-bell-count", appEl).forEach((b) => { b.textContent = unread; b.classList.toggle("is-cleared", !unread); });
     $$(".js-bell", appEl).forEach((b) => b.setAttribute("aria-label", unread ? `Notifications, ${unread} unread` : "Notifications"));
   }
+  // The Profile tab wears your photo
+  $('[data-app-tab="profile"]', appNav).insertAdjacentHTML("afterbegin", avatarHTML(me, "app-nav__ic app-nav__dp").replace("<span ", '<span aria-hidden="true" '));
   function syncNav(pop = false) {
     const items = $$(".app-nav__item", appNav);
     items.forEach((b) => { if (b.dataset.appTab === A.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
@@ -487,7 +488,7 @@
     if (!cur || !cur.offsetWidth) return;
     ind.style.width = `${cur.offsetWidth}px`;
     ind.style.transform = `translateX(${cur.offsetLeft}px)`;
-    if (pop) motion($(".ico", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
+    if (pop) motion($(".app-nav__ic", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
   }
 
   /* One click handler for the whole app */
@@ -1181,13 +1182,10 @@
           <div class="m-outline" aria-hidden="true"><p>${$$(".interlude__row")[1].textContent}</p></div>
           ${kicker($("#life-title").textContent)}
           <h1 class="m-intro__title" tabindex="-1">Explore</h1>
-          <p class="m-intro__sub">People, policies and ${esc($("#life .interlude__text").textContent.charAt(0).toLowerCase() + $("#life .interlude__text").textContent.slice(1))}</p>
+          <p class="m-intro__sub">Policies, ${esc($("#life .interlude__text").textContent.charAt(0).toLowerCase() + $("#life .interlude__text").textContent.slice(1))}</p>
         </header>
-        <button class="m-searchbar" type="button" data-go="search">${icon("i-search", "ico ico--sm")}<span>Search people, policies, perks…</span></button>
+        <button class="m-searchbar" type="button" data-go="search">${icon("i-search", "ico ico--sm")}<span>Search policies, groups, perks…</span></button>
         <div class="m-bento">
-          <button class="m-tile m-tile--people" type="button" data-go="people">
-            <span class="m-tile__faces" aria-hidden="true">${people.slice(0, 3).map((p) => `<span class="m-tile__face ${p.img}"></span>`).join("")}</span>
-            <span class="m-tile__txt"><strong>People</strong><small>${people.length} new joiners · ${birthdays.length} birthdays today</small></span>${icon("i-arrow", "ico m-tile__go")}</button>
           <button class="m-tile m-tile--photo" type="button" data-go="policies">
             <span class="m-tile__img m-media ${(updated || pols[0]).img}" aria-hidden="true"></span>
             <span class="m-tile__txt"><strong>Policies</strong><small>${pols.length} guides${updated ? ` · ${esc(updated.name)} updated` : ""}</small></span>${icon("i-arrow", "ico m-tile__go")}</button>
@@ -1732,7 +1730,8 @@
     live: { notifAll: () => notifAllHTML(), notifChips: () => notifChipsHTML(), notifList: () => notifListHTML() },
     opened(el) { setTimeout(() => $("h1", el)?.focus({ preventScroll: true }), 80); }
   };
-  const notifAllHTML = () => `<button class="link-btn m-link" type="button" data-act="notif-all"${$$("#notif-list .notif.is-unread").length ? "" : ' aria-disabled="true"'}>Mark all read</button>`;
+  // On the smallest phones it's an icon, as wide as the close button, so the title stays centred
+  const notifAllHTML = () => `<button class="link-btn m-link m-markall" type="button" data-act="notif-all"${$$("#notif-list .notif.is-unread").length ? "" : ' aria-disabled="true"'}>${icon("i-check-all", "ico m-markall__ic")}<span class="m-markall__txt">Mark all read</span></button>`;
   function notifChipsHTML() {
     const all = notifsData();
     return NOTIF_KINDS.map(([k, l]) => {

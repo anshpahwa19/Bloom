@@ -115,8 +115,14 @@
     (`policy/Data Security`, `tasks/approvals/sap`, `ann/3`…) and act with
     `data-act`. Bloom GPT's actions route to app screens in app mode
     (`APP_ACTS`).
-  - Bottom bar: exactly Home, Tasks, Explore, Help, Profile. Notifications
-    and search live in the header. No footer on phones.
+  - Bottom bar: exactly Home, Tasks, Help, Explore, Profile, in that order
+    (Help in the middle). Home wears the logo's flag (an inline vector in
+    index.html, in the logo's own red/blue), Help the Bloom GPT orb, and
+    Profile your photo (added from `me` in mobile.js). The header holds only
+    the logo, Search and Notifications (round surfaces); no avatar, since
+    Profile is in the bar. No footer on phones.
+  - Explore has no People tile (People stays reachable from Home and
+    search).
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
     window or device mode), in both themes, and in the iPhone mockup on a
