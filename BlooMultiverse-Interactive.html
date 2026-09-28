@@ -2581,6 +2581,9 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .app-nav__item:active { transform: scale(.94); }
 .app-nav__item[aria-current="page"] { color: var(--accent-fg); }
 .app-nav__item[aria-current="page"] .ico { stroke-width: 2; }
+/* Help leads with Bloom GPT, so it wears its logo; it turns as on the page's nav */
+.app-nav__orb { transition: rotate var(--t-slow) var(--ease-spring); }
+.app-nav__item[aria-current="page"] .app-nav__orb { rotate: -25deg; }
 .app-nav__label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2; }
 .app-nav__badge { top: 1px; right: calc(50% - 26px); border-color: transparent; }
 
@@ -4621,7 +4624,7 @@ button.m-card:active { transform: scale(.985); }
         <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="ico"><use href="#i-home"/></svg><span class="app-nav__label">Home</span></button>
         <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
         <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="help"><svg class="ico"><use href="#i-help"/></svg><span class="app-nav__label">Help</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">Help</span></button>
         <button class="app-nav__item" type="button" data-app-tab="profile"><svg class="ico"><use href="#i-user"/></svg><span class="app-nav__label">Profile</span></button>
       </div>
     </nav>
