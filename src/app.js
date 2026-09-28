@@ -4,10 +4,15 @@
    section-aware floating navigation, search, drawers, carousels,
    filters and the scroll choreography — one requestAnimationFrame
    loop reading cached geometry, writing only transforms & opacity.
+   index.html wraps this file and mobile.js (the phone app) in one
+   scope, so the phone app reads the same data and functions.
    ================================================================== */
-(() => {
-  "use strict";
-
+  // Phones get the app (mobile.js) instead of this page. Keep in step with
+  // the query in index.html's head script, which sets the class before paint.
+  const APP_QUERY = "(max-width: 767px), (pointer: coarse) and (max-height: 520px)";
+  // A clean copy of the page, taken before anything below changes it: the
+  // desktop "Mobile app" preview loads it into a phone-sized frame.
+  const PRISTINE = matchMedia(APP_QUERY).matches ? "" : document.documentElement.outerHTML;
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const root = document.documentElement;
@@ -29,14 +34,22 @@
   let ticking = false;
   const requestTick = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
   const escapeHtml = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const isApp = () => root.classList.contains("is-app");
+  // Views that mirror this page's data (the phone app) register here and
+  // re-render whenever an action changes that data: one source of truth.
+  const syncers = new Set();
+  const sync = (e = {}) => syncers.forEach((fn) => fn(e));
+  // The signed-in employee
+  const me = { name: "Rashid Khan", first: "Rashid", initials: "RK", role: "Sr. Engineer", team: "Digital Platforms", email: "rashid.khan@bloom.ae", manager: "Mathew Raymond", doj: "4 March 2021", location: "Abu Dhabi", img: "img-rashid" };
 
   /* ---------------------------------------------------------------
      Theme (light / dark) and accent palette (azure / crimson)
      --------------------------------------------------------------- */
   const THEME_KEY = "bloo-theme";
   const PALETTE_KEY = "bloo-x-palette";
-  const themeSwitches = $$("[data-theme-switch]");
-  const paletteSwitches = $$("[data-palette-switch]");
+  // Switches are looked up each time: the phone app renders its own copies
+  const themeSwitches = () => $$("[data-theme-switch]");
+  const paletteSwitches = () => $$("[data-palette-switch]");
   const themeMeta = $('meta[name="theme-color"]');
 
   function applyTheme(theme) {
@@ -45,17 +58,20 @@
   }
   function syncThemeControls() {
     const isDark = root.getAttribute("data-theme") === "dark";
-    themeSwitches.forEach((s) => {
+    themeSwitches().forEach((s) => {
       s.setAttribute("aria-checked", String(isDark));
       if (s.dataset.themeSwitch === "icon") s.setAttribute("aria-label", isDark ? "Switch to light theme" : "Switch to dark theme");
     });
     if (themeMeta) themeMeta.content = isDark ? "#05081A" : "#F6F4EF";
   }
+  function syncPaletteControls() {
+    const crimson = root.getAttribute("data-palette") === "crimson";
+    paletteSwitches().forEach((s) => s.setAttribute("aria-checked", String(crimson)));
+  }
   function applyPalette(palette) {
-    const crimson = palette === "crimson";
-    if (crimson) root.setAttribute("data-palette", "crimson");
+    if (palette === "crimson") root.setAttribute("data-palette", "crimson");
     else root.removeAttribute("data-palette");
-    paletteSwitches.forEach((s) => s.setAttribute("aria-checked", String(crimson)));
+    syncPaletteControls();
   }
 
   // The new theme grows out of the control that was pressed (View Transitions API)
@@ -77,16 +93,19 @@
   applyTheme(root.getAttribute("data-theme") || "light");
   new MutationObserver(syncThemeControls).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
   applyPalette(root.getAttribute("data-palette") === "crimson" ? "crimson" : "azure");
-  themeSwitches.forEach((s) => s.addEventListener("click", () => {
-    const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    withReveal(() => applyTheme(next), s);
-    store.set(THEME_KEY, next);
-  }));
-  paletteSwitches.forEach((s) => s.addEventListener("click", () => {
-    const next = root.getAttribute("data-palette") === "crimson" ? "azure" : "crimson";
-    withReveal(() => applyPalette(next), s);
-    store.set(PALETTE_KEY, next);
-  }));
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("[data-theme-switch]");
+    const p = e.target.closest("[data-palette-switch]");
+    if (t) {
+      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      withReveal(() => applyTheme(next), t);
+      store.set(THEME_KEY, next);
+    } else if (p) {
+      const next = root.getAttribute("data-palette") === "crimson" ? "azure" : "crimson";
+      withReveal(() => applyPalette(next), p);
+      store.set(PALETTE_KEY, next);
+    }
+  });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
     if (store.get(THEME_KEY)) return; // an explicit choice wins over the OS setting
     applyTheme(e.matches ? "dark" : "light");
@@ -327,12 +346,21 @@
     if (!e.target.closest("[data-menu]") || e.target.closest('.menu__item:not([aria-disabled="true"])')) closeMenus();
   });
 
-  $("#mark-read").addEventListener("click", () => {
-    $$(".notif.is-unread").forEach((n) => n.classList.remove("is-unread"));
-    $("#bell-badge").classList.add("is-cleared");
-    $("#bell").setAttribute("aria-label", "Notifications, none unread");
+  // The list's unread rows are the one record of what is unread
+  function syncBell() {
+    const n = $$("#notif-list .notif.is-unread").length;
+    const badge = $("#bell-badge");
+    badge.textContent = n;
+    badge.classList.toggle("is-cleared", !n);
+    $("#bell").setAttribute("aria-label", n ? `Notifications, ${n} unread` : "Notifications, none unread");
+    sync();
+  }
+  function markAllRead() {
+    $$("#notif-list .notif.is-unread").forEach((n) => n.classList.remove("is-unread"));
+    syncBell();
     toast("All notifications marked as read");
-  });
+  }
+  $("#mark-read").addEventListener("click", markAllRead);
 
   /* ---------------------------------------------------------------
      Search — command palette
@@ -614,6 +642,7 @@
     decrementCount(row.dataset.source);
     toast(`${verb} and synced to ${sourceNames[row.dataset.source]}`, action === "approve" ? "i-check" : "i-x");
     if (ib.open) renderIb();
+    sync({ type: "task", row, action });
   }
 
   /* ---------------------------------------------------------------
@@ -627,12 +656,12 @@
   const drawerViews = {
     profile: () => ({
       title: "My profile",
-      html: `<div class="d-profile"><span class="avatar img-rashid"></span><h3>Rashid Khan</h3><p class="meta">Sr. Engineer, Digital Platforms</p></div>
+      html: `<div class="d-profile"><span class="avatar ${me.img}"></span><h3>${me.name}</h3><p class="meta">${me.role}, ${me.team}</p></div>
         <dl class="d-facts">
-          <div><dt>Reporting manager</dt><dd>Mathew Raymond</dd></div>
-          <div><dt>Date of joining</dt><dd>4 March 2021</dd></div>
-          <div><dt>Location</dt><dd>Abu Dhabi</dd></div>
-          <div><dt>Email</dt><dd>rashid.khan@bloom.ae</dd></div>
+          <div><dt>Reporting manager</dt><dd>${me.manager}</dd></div>
+          <div><dt>Date of joining</dt><dd>${me.doj}</dd></div>
+          <div><dt>Location</dt><dd>${me.location}</dd></div>
+          <div><dt>Email</dt><dd>${me.email}</dd></div>
         </dl>
         <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="Opening your full profile…">View full profile</button></div>`
     }),
@@ -641,7 +670,7 @@
       html: `${$$("#faq .faqs__panel").map((panel, g) => {
           const label = $("#" + panel.getAttribute("aria-labelledby")).firstChild.textContent.trim().replace(/&/g, "&amp;");
           const items = $$(".faqs__item", panel).map((d, i) =>
-            `<details class="faq"${g === 0 && i === 0 ? " open" : ""}><summary>${$(".faqs__q span", d).innerHTML}${icon("i-chevron-down")}</summary><p>${$(".faqs__a p", d).innerHTML}</p></details>`).join("");
+            `<details class="faq"${g === 0 && i === 0 ? " open" : ""}><summary>${$(".faqs__q span", d).innerHTML}${icon("i-chevron-down")}</summary><p>${faqAnswer(d).innerHTML}</p></details>`).join("");
           return `<h3 class="d-faq__label">${label}</h3>${items}`;
         }).join("")}
         <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="A support request has been started.">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
@@ -1087,6 +1116,7 @@
     x.reminded = true;
     toast(`Reminder sent to ${x.steps[x.step - 1]}`, "i-bellring");
     if (ib.open) renderIb();
+    sync();
   }
   ibList.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-ib]");
@@ -1110,6 +1140,7 @@
       ib.items.unshift(copy);
       toast("Copied to Drafts", "i-copy");
       renderIb();
+      sync();
       const draftTab = $('[data-ib-tab="draft"] .tab__count', ibTabs);
       if (!reduceMotion) draftTab.animate([{ transform: "scale(1.6)" }, { transform: "none" }], { duration: 500, easing: "cubic-bezier(.34,1.56,.64,1)" });
     } else if (act === "delete") {
@@ -1120,7 +1151,7 @@
         setTimeout(() => { if (btn.isConnected && btn.classList.contains("is-confirm")) { btn.classList.remove("is-confirm"); btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Delete`; btn.setAttribute("aria-label", `Delete draft ${x.title}`); } }, 3200);
         return;
       }
-      const done = () => { ib.items = ib.items.filter((y) => y !== x); renderIb(); toast("Draft deleted", "i-trash"); };
+      const done = () => { ib.items = ib.items.filter((y) => y !== x); renderIb(); toast("Draft deleted", "i-trash"); sync(); };
       if (reduceMotion || !li.animate) { done(); return; }
       li.style.overflow = "hidden";
       li.animate([{ height: `${li.offsetHeight}px`, opacity: 1 }, { height: "0px", opacity: 0, paddingTop: "0px", paddingBottom: "0px", marginBottom: "-10px" }], { duration: 380, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).onfinish = done;
@@ -1156,6 +1187,7 @@
   rqName.addEventListener("input", () => { if (rqName.value.trim()) rqError(false); });
 
   function openRequestForm(item = null, mode = "new") {
+    if (!item && isApp()) return; // the phone app never starts a new request
     rqEditing = item;
     rqMode = mode;
     $("#rq-title").textContent = { new: "New request", edit: "Edit draft", revise: "Revise and resubmit" }[mode];
@@ -1177,6 +1209,12 @@
     if (submit) Object.assign(x, { state: "mine", status: "review", step: 1, steps: ROUTE[rqType], note: "", reminded: false });
     rqModal.close();
     ib.fresh = x.id;
+    // The phone app only edits requests that exist; it shows the result itself
+    if (isApp()) {
+      toast(submit ? `Sent to ${ROUTE[rqType][0]} for approval` : "Draft saved", submit ? "i-send" : "i-edit");
+      sync({ type: "request", item: x, submit });
+      return;
+    }
     if (ib.open) setIbTab(x.state); else openInbox(null, x.state);
     ib.fresh = x.id;
     renderIb();
@@ -1213,6 +1251,12 @@
   const bDots = $("#bday-dots");
   const confetti = $("#confetti");
   let bIndex = 0;
+  const WISH = {
+    b: { title: (f) => `Wish ${f} a happy birthday`, text: "Happy birthday! Wishing you a wonderful year ahead.", presets: ["Have a great day! 🎉", "Many happy returns", "Cake is on you today"], send: "Send wish", sent: "Wish sent", toast: (f) => `Your wish is on its way to ${f}` },
+    a: { title: (f) => `Congratulate ${f} on ${anniversary.years} years`, text: `Happy work anniversary! Thank you for ${anniversary.years} great years.`, presets: [`Congrats on ${anniversary.years} years! 🎉`, "Here’s to many more", "Thanks for all you do"], send: "Send congrats", sent: "Congrats sent", toast: (f) => `Your congratulations are on their way to ${f}` }
+  };
+  const wished = new Set(); // keys of wishes already sent: "b0"… for birthdays, "a" for the anniversary
+  let drillReminded = false; // the fire-drill reminder, shown by every Remind me button
   let bTimer = null;
   let annVisible = false;
   const letters = (s) => [...s].map((ch, i) => `<span class="l" style="--i:${i}">${escapeHtml(ch)}</span>`).join("");
@@ -1236,6 +1280,19 @@
       </g>
     </svg>`;
 
+  // The call to action for a slide, in its current state (the phone app reuses it)
+  function slideActions(sl) {
+    if (sl.group === "bday" || sl.group === "anniv") {
+      const key = sl.group === "anniv" ? "a" : `b${sl.i}`;
+      const sent = wished.has(key);
+      const label = sent ? WISH[key[0]].sent : sl.group === "anniv" ? "Say congratulations" : "Send birthday wish";
+      return `<button class="btn btn--light btn--lg${sent ? " is-sent" : ""}" type="button" data-wish="${key}">${icon(sent ? "i-check" : sl.group === "anniv" ? "i-sparkle" : "i-gift", "ico ico--sm")}<span>${label}</span></button>`;
+    }
+    if (sl.group === "drill") {
+      return `<button class="btn btn--light btn--lg${drillReminded ? " is-sent" : ""}" type="button" data-remind>${icon(drillReminded ? "i-check" : "i-bellring", "ico ico--sm")}<span>${drillReminded ? "Reminder set" : "Remind me"}</span></button><a class="btn btn--glass btn--lg" href="#" data-toast="Opening the evacuation plan…">Evacuation plan</a>`;
+    }
+    return `<a class="btn btn--light btn--lg" href="#" data-toast="Opening Eid rewards…">${icon("i-gift", "ico ico--sm")}<span>View rewards</span></a>`;
+  }
   const slideOpen = (n, kind) => `<article class="slide slide--${kind}${n ? "" : " is-current"}" data-group="${kind}" aria-roledescription="slide" aria-label="${n + 1} of ${slides.length}"${n ? ' aria-hidden="true"' : ""}>`;
   function slideHTML(sl, n) {
     if (sl.group === "bday") {
@@ -1248,7 +1305,7 @@
           <h3 class="bday__title"><span class="bday__hb">Happy birthday,</span> ${bigName(firstName(p))}</h3>
           <p class="bday__role">${p.name}, ${p.role}</p>
           <p class="bday__msg">Let’s make the day memorable with your warm wishes.</p>
-          <div class="slide__actions"><button class="btn btn--light btn--lg" type="button" data-wish="b${sl.i}">${icon("i-gift", "ico ico--sm")}<span>Send birthday wish</span></button><p class="slide__also"><span>Also today</span>${also}</p></div>
+          <div class="slide__actions"><span class="slide__cta">${slideActions(sl)}</span><p class="slide__also"><span>Also today</span>${also}</p></div>
         </div></article>`;
     }
     if (sl.group === "anniv") {
@@ -1261,7 +1318,7 @@
           <h3 class="bday__title"><span class="bday__hb">${p.years} years at Bloom,</span> ${bigName(firstName(p))}</h3>
           <p class="bday__role">${p.name}, ${p.role} · since ${p.since}</p>
           <p class="bday__msg">A decade of keeping our sites running smoothly. Say thank you.</p>
-          <div class="slide__actions"><button class="btn btn--light btn--lg" type="button" data-wish="a">${icon("i-sparkle", "ico ico--sm")}<span>Say congratulations</span></button></div>
+          <div class="slide__actions"><span class="slide__cta">${slideActions(sl)}</span></div>
         </div></article>`;
     }
     if (sl.group === "drill") {
@@ -1272,7 +1329,7 @@
           <h3 class="slide__title">Workplace fire safety drill</h3>
           <p class="bday__msg">We run regular drills so everyone knows the way out. When the alarm sounds, leave your things and follow your floor warden to the assembly point.</p>
           <div class="drill__when"><span class="drill__cal"><small>Sep</small><strong>26</strong></span><span class="drill__time"><strong>10:30 – 11:00 AM</strong><small>All floors · Assembly point A</small></span></div>
-          <div class="slide__actions"><button class="btn btn--light btn--lg" type="button" data-remind>${icon("i-bellring", "ico ico--sm")}<span>Remind me</span></button><a class="btn btn--glass btn--lg" href="#" data-toast="Opening the evacuation plan…">Evacuation plan</a></div>
+          <div class="slide__actions"><span class="slide__cta">${slideActions(sl)}</span></div>
         </div></article>`;
     }
     return `${slideOpen(n, "eid")}
@@ -1282,7 +1339,7 @@
           <h3 class="bday__title eid__title"><span class="eid__name">Eid Al Adha</span> <span class="bday__hb eid__mubarak">Mubarak</span></h3>
           <p class="eid__leave"><small>Eid holidays</small><strong>25 May – 29 May</strong></p>
           <p class="bday__msg">Wishing you and your family a blessed Eid.</p>
-          <div class="slide__actions"><a class="btn btn--light btn--lg" href="#" data-toast="Opening Eid rewards…">${icon("i-gift", "ico ico--sm")}<span>View rewards</span></a></div>
+          <div class="slide__actions"><span class="slide__cta">${slideActions(sl)}</span></div>
         </div></article>`;
   }
   bTrack.innerHTML = slides.map(slideHTML).join("");
@@ -1347,15 +1404,22 @@
     const stage = $(".announce__stage");
     if (matchMedia("(max-width: 1199px)").matches && stage.getBoundingClientRect().top < 70) stage.scrollIntoView({ behavior: smooth(), block: "center" });
   }));
+  // The fire-drill reminder: one flag, shown by every Remind me button
+  function setDrillReminder() {
+    if (drillReminded) { toast("Your reminder is already set", "i-bellring"); return; }
+    drillReminded = true;
+    $$("[data-remind]", bTrack).forEach((b) => {
+      b.classList.add("is-sent");
+      b.innerHTML = `${icon("i-check", "ico ico--sm")}<span>Reminder set</span>`;
+    });
+    toast("We’ll remind you at 10:15 AM on 26 Sep", "i-bellring");
+    sync();
+  }
   bTrack.addEventListener("click", (e) => {
     const go = e.target.closest("[data-go]");
     if (go) { goBday(Number(go.dataset.go)); return; }
     const remind = e.target.closest("[data-remind]");
-    if (remind && !remind.classList.contains("is-sent")) {
-      remind.classList.add("is-sent");
-      remind.innerHTML = `${icon("i-check", "ico ico--sm")}<span>Reminder set</span>`;
-      toast("We’ll remind you at 10:15 AM on 26 Sep", "i-bellring");
-    }
+    if (remind && !remind.classList.contains("is-sent")) setDrillReminder();
   });
   ann.addEventListener("mouseenter", stopBday);
   ann.addEventListener("mouseleave", startBday);
@@ -1374,11 +1438,8 @@
   const wishCount = $("#wish-count");
   const wishSend = $("#wish-send");
   const wishPresets = $("#wish-presets");
-  const WISH = {
-    b: { title: (f) => `Wish ${f} a happy birthday`, text: "Happy birthday! Wishing you a wonderful year ahead.", presets: ["Have a great day! 🎉", "Many happy returns", "Cake is on you today"], send: "Send wish", sent: "Wish sent", toast: (f) => `Your wish is on its way to ${f}` },
-    a: { title: (f) => `Congratulate ${f} on ${anniversary.years} years`, text: `Happy work anniversary! Thank you for ${anniversary.years} great years.`, presets: [`Congrats on ${anniversary.years} years! 🎉`, "Here’s to many more", "Thanks for all you do"], send: "Send congrats", sent: "Congrats sent", toast: (f) => `Your congratulations are on their way to ${f}` }
-  };
   let wishFor = "b0";
+  let wishFrom = null;      // the button that opened the dialog (confetti starts there)
   const wishPerson = (key) => (key[0] === "a" ? anniversary : birthdays[Number(key.slice(1))]);
 
   const updateCount = () => { wishCount.textContent = wishText.value.length; wishSend.disabled = !wishText.value.trim(); };
@@ -1387,8 +1448,12 @@
 
   bTrack.addEventListener("click", (e) => {
     const b = e.target.closest("[data-wish]");
-    if (!b || b.classList.contains("is-sent")) return;
-    wishFor = b.dataset.wish;
+    if (b && !b.classList.contains("is-sent")) openWish(b.dataset.wish, b);
+  });
+  function openWish(key, from = null) {
+    if (wished.has(key)) { toast(`Already sent to ${firstName(wishPerson(key))}`, "i-gift"); return; }
+    wishFor = key;
+    wishFrom = from;
     const p = wishPerson(wishFor);
     const w = WISH[wishFor[0]];
     $("#wish-title").textContent = w.title(firstName(p));
@@ -1402,7 +1467,7 @@
     updateCount();
     stopBday();
     modal.showModal();
-  });
+  }
   wishSend.addEventListener("click", () => {
     const w = WISH[wishFor[0]];
     wishSend.classList.add("is-loading");
@@ -1411,12 +1476,14 @@
       wishSend.classList.remove("is-loading");
       $(".btn__label", wishSend).textContent = w.send;
       modal.close();
+      wished.add(wishFor);
       const btn = $(`[data-wish="${wishFor}"]`, bTrack);
       btn.classList.add("is-sent");
       btn.innerHTML = `${icon("i-check", "ico ico--sm")}<span>${w.sent}</span>`;
       toast(w.toast(firstName(wishPerson(wishFor))), "i-gift");
-      burstFrom(btn, 26, 240);
+      burstFrom(wishFrom?.isConnected && wishFrom.offsetParent ? wishFrom : btn, 26, 240);
       startBday();
+      sync();
     }, 900);
   });
   modal.addEventListener("close", startBday);
@@ -1481,13 +1548,15 @@
   }
   $$("[data-people]").forEach((b) => b.addEventListener("click", () => showPerson(pIndex + (b.dataset.people === "next" ? 1 : -1))));
   $$(".reel-item", reel).forEach((r, i) => r.addEventListener("click", () => { if (i !== pIndex) showPerson(i); }));
-  helloBtn.addEventListener("click", () => {
-    if (greeted.has(pIndex)) return;
-    greeted.add(pIndex);
+  function sayHello(i, from) {
+    if (greeted.has(i)) return;
+    greeted.add(i);
     paintPerson();
-    burstFrom(helloBtn, 16, 150);
-    toast(`You said hello to ${people[pIndex].name.split(" ")[0]}`, "i-wave");
-  });
+    burstFrom(from, 16, 150);
+    toast(`You said hello to ${people[i].name.split(" ")[0]}`, "i-wave");
+    sync();
+  }
+  helloBtn.addEventListener("click", () => sayHello(pIndex, helloBtn));
   paintPerson();
 
   /* ---------------------------------------------------------------
@@ -1605,17 +1674,26 @@
   }
 
   /* Discounts — reveal then copy code; tilt on pointer -------------- */
-  document.addEventListener("click", async (e) => {
+  // A code's button on the marketplace is the one record of whether it was revealed
+  const codeBtn = (code) => $(`.partner__code[data-code="${code}"]`);
+  const isRevealed = (code) => !!codeBtn(code)?.classList.contains("is-revealed");
+  function revealCode(code) {
+    const b = codeBtn(code);
+    if (!b || b.classList.contains("is-revealed")) return;
+    b.classList.add("is-revealed");
+    b.innerHTML = `${code} ${icon("i-copy", "ico ico--xs")}`;
+    b.setAttribute("aria-label", `Copy code ${code}`);
+    sync();
+  }
+  async function copyCode(code) {
+    try { await navigator.clipboard.writeText(code); toast(`Code ${code} copied`, "i-copy"); }
+    catch { toast(`Your code is ${code}`, "i-copy"); }
+  }
+  document.addEventListener("click", (e) => {
     const b = e.target.closest(".partner__code");
     if (!b) return;
-    if (!b.classList.contains("is-revealed")) {
-      b.classList.add("is-revealed");
-      b.innerHTML = `${b.dataset.code} ${icon("i-copy", "ico ico--xs")}`;
-      b.setAttribute("aria-label", `Copy code ${b.dataset.code}`);
-      return;
-    }
-    try { await navigator.clipboard.writeText(b.dataset.code); toast(`Code ${b.dataset.code} copied`, "i-copy"); }
-    catch { toast(`Your code is ${b.dataset.code}`, "i-copy"); }
+    if (b.classList.contains("is-revealed")) copyCode(b.dataset.code);
+    else revealCode(b.dataset.code);
   });
   if (canHover && !reduceMotion) {
     $$(".partner").forEach((c) => {
@@ -1685,15 +1763,19 @@
     document.getElementById("sports").scrollIntoView({ behavior: smooth() });
     setTimeout(() => sportsList.scrollTo({ left: s.offsetLeft - 16, behavior: smooth() }), reduceMotion ? 0 : 450);
   }
-  document.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-join]");
-    if (!b) return;
-    const joined = b.getAttribute("aria-pressed") !== "true";
+  // A group's Join button is the one record of whether you joined it
+  function setJoined(sport, joined, from) {
+    const b = $("[data-join]", sport);
     b.setAttribute("aria-pressed", String(joined));
     b.textContent = joined ? "Joined" : "Join group";
-    const name = $(".sport__name", b.closest(".sport")).textContent;
-    if (joined) burstFrom(b, 14, 130);
+    const name = $(".sport__name", sport).textContent;
+    if (joined) burstFrom(from || b, 14, 130);
     toast(joined ? `You joined ${name}. The schedule is on its way to your inbox.` : `You left ${name}.`, joined ? "i-check" : "i-x");
+    sync();
+  }
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-join]");
+    if (b) setJoined(b.closest(".sport"), b.getAttribute("aria-pressed") !== "true");
   });
 
   function setupHScroll() {
@@ -1926,7 +2008,7 @@
   const policyInfo = (card) => ({ name: card.dataset.name, cat: $(".tag", card)?.textContent.trim() || "Policy", desc: $(".policy__desc", card).textContent.trim(), meta: $(".policy__foot .meta", card)?.textContent.trim() || "" });
   const POLICY_KEYS = { "Data Security": /security|data/, "Management Process": /management|process/, "Brand Guidelines": /brand|guideline/, "Code of Conduct": /conduct/, "Travel & Expenses": /expense|travel/ };
   const partnersData = () => $$(".partner").map((p) => ({ name: $(".partner__name", p).textContent, cat: $(".partner__cat", p).textContent, off: $(".offer strong", p).textContent, code: $(".partner__code", p).dataset.code, logo: [...$(".partner__logo", p).classList].find((c) => c.startsWith("img-")) }));
-  const sportsData = () => sportsEls.map((x) => ({ name: $(".sport__name", x).textContent, members: parseInt($(".sport__foot > span:last-child", x)?.textContent, 10) || 0 }));
+  const sportsData = () => sportsEls.map((x) => ({ name: $(".sport__name", x).textContent, members: parseInt($(".sport__foot > span:last-of-type", x)?.textContent, 10) || 0 }));
   const everyone = () => [...people.map((p, i) => ({ ...p, kind: "joiner", i })), ...birthdays.map((p, i) => ({ ...p, kind: "birthday", i })), { ...anniversary, kind: "anniv" }];
 
   const GPT_SKILLS = {
@@ -1945,7 +2027,7 @@
     tasks: () => ({
       text: `${B(`${totalPending()} actions`)} are waiting on you. Here they are by app:`,
       body: gCard(APP_ORDER.map((a) => gRow({ lead: gMark(a), title: sourceNames[a], meta: `${counts[a]} waiting`, actions: act("Show", "filter", a) }))),
-      actions: act("Open inbox", "inbox", "inbox", "btn--primary"),
+      actions: act(isApp() ? "Open tasks" : "Open inbox", "inbox", "inbox", "btn--primary"),
       follow: ["What needs my attention?", "My drafts"]
     }),
     policy(t) {
@@ -2011,7 +2093,7 @@
     drafts() {
       const d = ib.items.filter((x) => x.state === "draft").sort((a, b) => a.ago - b.ago);
       return {
-        text: d.length ? `You have ${B(plural(d.length, "draft", "drafts"))}. The most recent:` : "You have no drafts. Start one with New request in the inbox.",
+        text: d.length ? `You have ${B(plural(d.length, "draft", "drafts"))}. The most recent:` : isApp() ? "You have no drafts right now." : "You have no drafts. Start one with New request in the inbox.",
         body: d.length ? gCard(d.slice(0, 3).map((x) => gRow({ lead: `<span class="ib-row__icon" style="--c: var(--viz-${IB_TYPES[x.type].slot})">${icon("i-doc")}</span>`, title: x.title, meta: `${IB_TYPES[x.type].label} · edited ${ibAgo(x.ago)}`, actions: act("Edit", "draft", x.id) }))) : "",
         actions: act("Open drafts", "inbox", "draft", "btn--primary"),
         follow: ["Show my tasks", "What needs my attention?"]
@@ -2049,7 +2131,7 @@
     }),
     help: () => ({
       text: "Here are quick answers to common questions:",
-      body: `<div class="gpt-faqs">${$$("#faq .faqs__item").slice(0, 3).map((d) => `<details class="gpt-faq"><summary>${escapeHtml($("summary", d).textContent.trim())}</summary><p>${escapeHtml($(".faqs__a", d).textContent.trim())}</p></details>`).join("")}</div>`,
+      body: `<div class="gpt-faqs">${$$("#faq .faqs__item").slice(0, 3).map((d) => `<details class="gpt-faq"><summary>${escapeHtml($("summary", d).textContent.trim())}</summary><p>${escapeHtml(faqAnswer(d).textContent.trim())}</p></details>`).join("")}</div>`,
       actions: act("See all FAQs", "goto", "#faq"),
       follow: ["Find a policy", "Take me to my profile"]
     }),
@@ -2089,8 +2171,8 @@
     sport: (v) => gptLeave(() => revealSport(v)),
     drawer: (v) => gptLeave(() => openDrawer(v)),
     goto: (v) => gptLeave(() => $(v).scrollIntoView({ behavior: smooth() })),
-    async code(v, btn) { try { await navigator.clipboard.writeText(v); toast(`Code ${v} copied`, "i-copy"); } catch { toast(`Your code is ${v}`, "i-copy"); } btn.outerHTML = `<span class="gpt-code">${escapeHtml(v)}</span>`; },
-    remind(v, btn) { const rb = $("[data-remind]", bTrack); if (rb && !rb.classList.contains("is-sent")) rb.click(); else toast("Your reminder is already set", "i-bellring"); gptDone(btn, "Reminder set"); }
+    code(v, btn) { revealCode(v); copyCode(v); btn.outerHTML = `<span class="gpt-code">${escapeHtml(v)}</span>`; },
+    remind(v, btn) { setDrillReminder(); gptDone(btn, "Reminder set"); }
   };
 
   function gptScroll() { gptEl.scrollTo({ top: gptEl.scrollHeight, behavior: smooth() }); }
@@ -2142,13 +2224,13 @@
     gpt.typing = setTimeout(tick, 500);
   }
   function stopHints() { clearTimeout(gpt.typing); }
-  function gptNoticed() {
+  function gptNoticedHTML() {
     const overdue = openTasks().filter((r) => $(".due--overdue", r)).length;
     const items = [];
     if (overdue) items.push(`<button type="button" data-gpt-ask="Show my overdue approvals"><span class="pulse-dot" aria-hidden="true"></span>${overdue} approval${overdue === 1 ? " is" : "s are"} overdue</button>`);
     items.push(`<button type="button" data-gpt-ask="Whose birthday is it today?">${icon("i-gift", "ico ico--sm")}It’s ${escapeHtml(firstName(birthdays[0]))}’s birthday today</button>`);
     items.push(`<button type="button" data-gpt-ask="What changed in Data Security?">${icon("i-shield", "ico ico--sm")}Data Security was updated</button>`);
-    $("#gpt-noticed").innerHTML = `<span class="gpt__noticed-label">${icon("i-sparkle", "ico ico--sm")}Bloom GPT noticed</span>${items.join('<i aria-hidden="true"></i>')}`;
+    return `<span class="gpt__noticed-label">${icon("i-sparkle", "ico ico--sm")}Bloom GPT noticed</span>${items.join('<i aria-hidden="true"></i>')}`;
   }
   function openGpt(trigger, q) {
     if (!gpt.open) {
@@ -2161,13 +2243,14 @@
       const hr = new Date().getHours();
       $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
       $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-      gptNoticed();
+      $("#gpt-noticed").innerHTML = gptNoticedHTML();
       gpt.open = true;
       gptEl.classList.add("is-open");
       gptEl.setAttribute("aria-hidden", "false");
       body.style.overflow = "hidden";
       if (!gptEl.classList.contains("is-chatting")) { gptEl.scrollTop = 0; startHints(); }
-      setTimeout(() => gptInput.focus({ preventScroll: true }), 350);
+      // phones: focus the heading, so the keyboard doesn't cover the prompts
+      setTimeout(() => (isApp() ? $("#gpt-title") : gptInput).focus({ preventScroll: true }), 350);
     }
     if (q) gptAsk(q);
   }
@@ -2205,6 +2288,9 @@
   /* ---------------------------------------------------------------
      FAQ — category tabs + animated accordion
      --------------------------------------------------------------- */
+  // Where an answer names desktop controls (Ctrl K, the top-right menu),
+  // the markup carries the phone app's own line as p[data-for="app"]
+  function faqAnswer(d) { return (isApp() && $('.faqs__a p[data-for="app"]', d)) || $(".faqs__a p:not([data-for])", d); }
   const faqTabs = $("#faq-tabs");
   function selectFaq(tab, focus = false) {
     $$(".tab", faqTabs).forEach((t) => {
@@ -2438,7 +2524,7 @@
   }
 
   function setFlagCursor(pref) {
-    const on = pref && fcSupported && !reduceMotion;
+    const on = pref && fcSupported && !reduceMotion && !isApp(); // the phone app is touch-first
     if (fcSwitch) {
       fcSwitch.hidden = !fcSupported || reduceMotion;
       fcSwitch.setAttribute("aria-checked", String(pref));
@@ -2728,4 +2814,3 @@
     .then(() => requestAnimationFrame(markLoaded));
   addEventListener("load", () => { measure(); sizeWhere(); rails.forEach(updateRail); });
   measure();
-})();

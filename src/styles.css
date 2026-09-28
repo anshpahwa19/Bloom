@@ -1568,6 +1568,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .bday__role { margin-top: 14px; font-size: 1rem; color: rgba(255, 255, 255, .82); }
 .bday__msg { margin-top: 8px; max-width: 38ch; color: rgba(255, 255, 255, .9); }
 .slide__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: 24px; }
+.slide__cta { display: contents; }
 .slide .btn.is-sent { --bg: rgba(255, 255, 255, .18); --fg: #fff; box-shadow: none; }
 .slide__title { margin-top: 12px; max-width: 16ch; font-size: clamp(2.25rem, 1.2rem + 2.8vw, 4.25rem); font-size: round(clamp(2.25rem, 1.2rem + 2.8vw, 4.25rem), 2px); font-weight: 700; line-height: .98; letter-spacing: -.05em; text-wrap: balance; }
 .slide.is-current .slide__title, .slide.is-current .eid__name { animation: whereIn .8s var(--ease-expo) .1s both; }

@@ -6,9 +6,11 @@
   <title>BlooMultiverse Interactive</title>
   <meta name="description" content="BlooMultiverse — the interactive employee experience where your apps, people and perks come together.">
   <meta name="theme-color" content="#F6F4EF">
-  <script>
+  <script data-bloom>
     (function () {
       var root = document.documentElement, saved = null, palette = null;
+      // Phones get the app instead of the page (keep in step with APP_QUERY in app.js)
+      if (matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 520px)").matches) root.classList.add("is-app");
       try { saved = localStorage.getItem("bloo-theme"); palette = localStorage.getItem("bloo-x-palette"); } catch (e) {}
       // an in-page choice wins, then a theme the host page stamped, then the OS setting
       var theme = saved || root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
@@ -24,9 +26,12 @@
 <!-- @include styles.css -->
   </style>
   <style>
+<!-- @include mobile.css -->
+  </style>
+  <style>
 <!-- @include media.css -->
   </style>
-  <script>document.documentElement.classList.add("js");</script>
+  <script data-bloom>document.documentElement.classList.add("js");</script>
 </head>
 
 <body>
@@ -87,6 +92,15 @@
       <symbol id="i-return" viewBox="0 0 24 24"><path d="M9 14 4.5 9.5 9 5"/><path d="M4.5 9.5h10a5 5 0 0 1 0 10H11"/></symbol>
       <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></symbol>
       <symbol id="i-bellring" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21a2 2 0 0 0 4 0M3 7.5A9 9 0 0 1 6 3.5M21 7.5a9 9 0 0 0-3-4"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3.5 11 12 4l8.5 7"/><path d="M5.5 9.5V19a1.5 1.5 0 0 0 1.5 1.5h3.5v-6h3v6H17a1.5 1.5 0 0 0 1.5-1.5V9.5"/></symbol>
+      <symbol id="i-tasks" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="3"/><path d="m7.8 9.2 1.6 1.6 2.9-3M14.2 9.5h2.3M7.8 15.2l1.6 1.6 2.9-3M14.2 15.5h2.3"/></symbol>
+      <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="m15.6 8.4-2.1 5.1-5.1 2.1 2.1-5.1Z"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5"/><path d="M4.5 16.5v2a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-2"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.8 4.5v4.2h-4.2"/></symbol>
+      <symbol id="i-cloud-off" viewBox="0 0 24 24"><path d="M8.5 18.5H7a4.5 4.5 0 0 1-.9-8.9M9.6 6.2a6 6 0 0 1 8.2 4.1 4 4 0 0 1 1.9 7.2"/><path d="m4 4 16 16"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="m4 7.5 8 5.5 8-5.5"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.7-6.5-11a6.5 6.5 0 0 1 13 0c0 5.3-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+      <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5M3.5 12.5h17"/></symbol>
       <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
       <!-- Social / store glyphs (simplified, filled) -->
       <symbol id="s-linkedin" viewBox="0 0 24 24"><path class="fill" d="M5 8.5h3V19H5Zm1.5-4.7a1.75 1.75 0 1 1 0 3.5 1.75 1.75 0 0 1 0-3.5ZM10 8.5h2.9v1.5c.4-.8 1.4-1.7 3-1.7 3.1 0 3.6 2 3.6 4.7V19h-3v-5.3c0-1.3 0-2.9-1.8-2.9s-2 1.4-2 2.8V19H10Z"/></symbol>
@@ -162,10 +176,10 @@
               <button class="link-btn" type="button" id="mark-read">Mark all as read</button>
             </div>
             <ul class="notif-list" id="notif-list">
-              <li class="notif is-unread"><span class="app-mark app-mark--sf">Sf</span><p><strong>Layla Hassan</strong> asked you to approve a discount on Al Noor Trading.<time>12 min ago</time></p></li>
-              <li class="notif is-unread"><span class="avatar avatar--sm img-rashid">AO</span><p>It’s <strong>Ahmed Obaid</strong>’s birthday today. Send a wish before the day ends.<time>1 h ago</time></p></li>
-              <li class="notif is-unread"><span class="app-mark app-mark--ui">Ui</span><p>Invoice Matcher bot paused with <strong>3 exceptions</strong>.<time>2 h ago</time></p></li>
-              <li class="notif"><span class="app-mark app-mark--policy"><svg class="ico"><use href="#i-shield"/></svg></span><p>The <strong>Data Security</strong> policy was updated.<time>Yesterday</time></p></li>
+              <li class="notif is-unread" data-kind="tasks" data-go="task/0"><span class="app-mark app-mark--sf">Sf</span><p><strong>Layla Hassan</strong> asked you to approve a discount on Al Noor Trading.<time>12 min ago</time></p></li>
+              <li class="notif is-unread" data-kind="people" data-go="ann/0"><span class="avatar avatar--sm img-rashid">AO</span><p>It’s <strong>Ahmed Obaid</strong>’s birthday today. Send a wish before the day ends.<time>1 h ago</time></p></li>
+              <li class="notif is-unread" data-kind="tasks" data-go="task/1"><span class="app-mark app-mark--ui">Ui</span><p>Invoice Matcher bot paused with <strong>3 exceptions</strong>.<time>2 h ago</time></p></li>
+              <li class="notif" data-kind="policies" data-go="policy/Data Security"><span class="app-mark app-mark--policy"><svg class="ico"><use href="#i-shield"/></svg></span><p>The <strong>Data Security</strong> policy was updated.<time>Yesterday</time></p></li>
             </ul>
           </div>
         </div>
@@ -234,6 +248,7 @@
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
           <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
           <li><button class="mo__util" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
+          <li><button class="mo__util" type="button" data-open-preview><svg class="ico"><use href="#i-phone"/></svg>Mobile app<span class="mo__new">Preview</span></button></li>
         </ul>
 
         <p class="mo__label">Appearance</p>
@@ -772,14 +787,14 @@
 
       <div class="rail partner-rail" id="partner-rail" data-drag>
         <ul class="partners">
-          <li class="partner" style="--i:0"><span class="partner__plate"><span class="partner__logo img-partner-marriott" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Stays and dining</p><p class="partner__name">Marriott Hotel Downtown</p></div><span class="offer"><strong>30%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-MAR30">Get code</button></li>
-          <li class="partner" style="--i:1"><span class="partner__plate"><span class="partner__logo img-partner-edition" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Hotel and spa</p><p class="partner__name">Abu Dhabi Edition</p></div><span class="offer"><strong>30%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EDT30">Get code</button></li>
-          <li class="partner" style="--i:2"><span class="partner__plate"><span class="partner__logo img-partner-eiic" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Industrial supplies</p><p class="partner__name">EIIC</p></div><span class="offer"><strong>15%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EIIC15">Get code</button></li>
-          <li class="partner" style="--i:3"><span class="partner__plate"><span class="partner__logo img-partner-efi" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Groceries</p><p class="partner__name">Emirates Food Industries</p></div><span class="offer"><strong>20%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EFI20">Get code</button></li>
-          <li class="partner" style="--i:4"><span class="partner__plate"><span class="partner__logo img-partner-exeed" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Building materials</p><p class="partner__name">Exeed Industries</p></div><span class="offer"><strong>10%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EXD10">Get code</button></li>
-          <li class="partner" style="--i:5"><span class="partner__plate"><span class="partner__logo img-partner-foodquests" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Restaurants</p><p class="partner__name">Food Quests</p></div><span class="offer"><strong>25%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-FQ25">Get code</button></li>
-          <li class="partner" style="--i:6"><span class="partner__plate"><span class="partner__logo img-partner-petromal" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Fuel and services</p><p class="partner__name">Petromal</p></div><span class="offer"><strong>5%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-PTM05">Get code</button></li>
-          <li class="partner" style="--i:7"><span class="partner__plate"><span class="partner__logo img-partner-rise" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Lifestyle</p><p class="partner__name">Rise</p></div><span class="offer"><strong>20%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-RISE20">Get code</button></li>
+          <li class="partner" style="--i:0" data-group="stays"><span class="partner__plate"><span class="partner__logo img-partner-marriott" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Stays and dining</p><p class="partner__name">Marriott Hotel Downtown</p></div><span class="offer"><strong>30%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-MAR30">Get code</button></li>
+          <li class="partner" style="--i:1" data-group="stays"><span class="partner__plate"><span class="partner__logo img-partner-edition" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Hotel and spa</p><p class="partner__name">Abu Dhabi Edition</p></div><span class="offer"><strong>30%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EDT30">Get code</button></li>
+          <li class="partner" style="--i:2" data-group="home"><span class="partner__plate"><span class="partner__logo img-partner-eiic" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Industrial supplies</p><p class="partner__name">EIIC</p></div><span class="offer"><strong>15%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EIIC15">Get code</button></li>
+          <li class="partner" style="--i:3" data-group="food"><span class="partner__plate"><span class="partner__logo img-partner-efi" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Groceries</p><p class="partner__name">Emirates Food Industries</p></div><span class="offer"><strong>20%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EFI20">Get code</button></li>
+          <li class="partner" style="--i:4" data-group="home"><span class="partner__plate"><span class="partner__logo img-partner-exeed" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Building materials</p><p class="partner__name">Exeed Industries</p></div><span class="offer"><strong>10%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-EXD10">Get code</button></li>
+          <li class="partner" style="--i:5" data-group="food"><span class="partner__plate"><span class="partner__logo img-partner-foodquests" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Restaurants</p><p class="partner__name">Food Quests</p></div><span class="offer"><strong>25%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-FQ25">Get code</button></li>
+          <li class="partner" style="--i:6" data-group="everyday"><span class="partner__plate"><span class="partner__logo img-partner-petromal" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Fuel and services</p><p class="partner__name">Petromal</p></div><span class="offer"><strong>5%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-PTM05">Get code</button></li>
+          <li class="partner" style="--i:7" data-group="everyday"><span class="partner__plate"><span class="partner__logo img-partner-rise" aria-hidden="true"></span></span><div class="partner__txt"><p class="partner__cat">Lifestyle</p><p class="partner__name">Rise</p></div><span class="offer"><strong>20%</strong> off</span><button class="partner__code" type="button" data-code="BLOOM-RISE20">Get code</button></li>
         </ul>
       </div>
 
@@ -854,7 +869,7 @@
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>How do I access my profile?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-              <div class="faqs__a"><p>Select your name in the top-right corner, then choose <strong>My profile</strong>. You’ll see your role, team and contact details.</p></div>
+              <div class="faqs__a"><p>Select your name in the top-right corner, then choose <strong>My profile</strong>. You’ll see your role, team and contact details.</p><p data-for="app" hidden>Tap your photo at the top of any screen, or <strong>Profile</strong> in the bar at the bottom. You’ll see your role, team and contact details.</p></div>
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>How do I update my personal information?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -862,13 +877,13 @@
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>How do I search for information?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-              <div class="faqs__a"><p>Use the search bar at the top of any page, or press <kbd>Ctrl K</kbd>. You can find people, policies and apps from one place.</p></div>
+              <div class="faqs__a"><p>Use the search bar at the top of any page, or press <kbd>Ctrl K</kbd>. You can find people, policies and apps from one place.</p><p data-for="app" hidden>Tap the search icon at the top of any screen. You can find people, policies, apps and requests from one place.</p></div>
             </details>
           </div>
           <div class="faqs__panel" role="tabpanel" id="faq-panel-policies" aria-labelledby="faq-tab-policies" hidden>
             <details class="faqs__item">
               <summary class="faqs__q"><span>Where can I find company policies?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-              <div class="faqs__a"><p>Go to <strong>Explore policies</strong> on the home page. Filter by category, or select <strong>Browse all policies</strong> to see the full library.</p></div>
+              <div class="faqs__a"><p>Go to <strong>Explore policies</strong> on the home page. Filter by category, or select <strong>Browse all policies</strong> to see the full library.</p><p data-for="app" hidden>Go to <strong>Explore</strong>, then <strong>Policies</strong>. Filter by category, or search for a policy by name.</p></div>
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>How can I view or download a policy?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -876,13 +891,13 @@
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>Where can I find company guidelines?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-              <div class="faqs__a"><p>Guidelines, such as the Brand Guidelines, are listed with the policies in <strong>Explore policies</strong>. You can also search for a guideline by name.</p></div>
+              <div class="faqs__a"><p>Guidelines, such as the Brand Guidelines, are listed with the policies in <strong>Explore policies</strong>. You can also search for a guideline by name.</p><p data-for="app" hidden>Guidelines, such as the Brand Guidelines, are listed with the policies in <strong>Explore</strong>. You can also search for a guideline by name.</p></div>
             </details>
           </div>
           <div class="faqs__panel" role="tabpanel" id="faq-panel-announcements" aria-labelledby="faq-tab-announcements" hidden>
             <details class="faqs__item">
               <summary class="faqs__q"><span>Where can I see company announcements?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-              <div class="faqs__a"><p>The latest announcements appear on the home page, right after <strong>Welcome to the Bloom family</strong>. Use the arrows to move between them.</p></div>
+              <div class="faqs__a"><p>The latest announcements appear on the home page, right after <strong>Welcome to the Bloom family</strong>. Use the arrows to move between them.</p><p data-for="app" hidden>The latest announcements are on <strong>Home</strong>. Swipe through them, or tap a kind to jump straight to it.</p></div>
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>How can I wish a colleague on their birthday?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -1032,7 +1047,7 @@
        ============================================================ -->
   <div class="gpt" id="gpt-page" role="dialog" aria-modal="true" aria-labelledby="gpt-title" aria-hidden="true">
     <div class="gpt__bar container">
-      <button class="inbox__back" type="button" data-close-gpt><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg>Back to home</button>
+      <button class="inbox__back" type="button" data-close-gpt><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg><span class="for-desk">Back to home</span><span class="for-app">Back</span></button>
       <div class="gpt__bar-tools">
         <button class="btn btn--quiet btn--sm gpt__new" type="button" id="gpt-new" aria-label="New chat" hidden><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg><span class="gpt__new-label">New chat</span></button>
         <button class="icon-btn icon-btn--bordered" type="button" data-close-gpt aria-label="Close Bloom GPT"><svg class="ico"><use href="#i-x"/></svg></button>
@@ -1042,7 +1057,7 @@
       <header class="gpt__hello">
         <p class="gpt__pill"><span class="orb orb--sm" aria-hidden="true"></span><span id="gpt-greet">Good afternoon, Rashid</span><i aria-hidden="true"></i><span id="gpt-date"></span></p>
         <p class="gpt__kicker"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-sparkle"/></svg>Bloom GPT</p>
-        <h2 class="gpt__title" id="gpt-title"><span class="gpt__line">Your workday,</span> <span class="gpt__line gpt__line--grad">in one conversation.<i class="gpt__caret" aria-hidden="true"></i></span></h2>
+        <h2 class="gpt__title" id="gpt-title" tabindex="-1"><span class="gpt__line">Your workday,</span> <span class="gpt__line gpt__line--grad">in one conversation.<i class="gpt__caret" aria-hidden="true"></i></span></h2>
         <p class="gpt__sub">Ask Bloom GPT to find, explain or help you get something done.</p>
       </header>
 
@@ -1122,14 +1137,66 @@
     </form>
   </dialog>
 
+  <!-- ============================================================
+       PHONE APP — the same product, recomposed for one hand. It
+       replaces the page on phones (the is-app class). mobile.js renders
+       each screen from the page's own data; each tab keeps a stack of
+       pages, and sheets rise from the bottom.
+       ============================================================ -->
+  <div class="app" id="app">
+    <div class="app-views" id="app-views" role="main">
+      <div class="app-stack is-active" data-stack="home"></div>
+      <div class="app-stack" data-stack="tasks" inert></div>
+      <div class="app-stack" data-stack="explore" inert></div>
+      <div class="app-stack" data-stack="help" inert></div>
+      <div class="app-stack" data-stack="profile" inert></div>
+    </div>
+
+    <nav class="app-nav" id="app-nav" aria-label="Main">
+      <div class="app-nav__bar frost">
+        <span class="app-nav__ind" aria-hidden="true"></span>
+        <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="ico"><use href="#i-home"/></svg><span class="app-nav__label">Home</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="help"><svg class="ico"><use href="#i-help"/></svg><span class="app-nav__label">Help</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="profile"><svg class="ico"><use href="#i-user"/></svg><span class="app-nav__label">Profile</span></button>
+      </div>
+    </nav>
+
+    <!-- full-screen layers over the tabs: search and notifications -->
+    <div class="app-layer" id="app-layer"></div>
+
+    <div class="app-offline" id="app-offline" role="status" hidden>
+      <svg class="ico ico--sm" aria-hidden="true"><use href="#i-cloud-off"/></svg>
+      <span>You’re offline. Showing what synced <span class="js-synced">2 minutes ago</span>.</span>
+      <button class="link-btn" type="button" data-act="retry">Retry</button>
+    </div>
+
+    <div class="app-sheet" id="app-sheet" aria-hidden="true">
+      <div class="app-sheet__scrim" data-sheet-close></div>
+      <section class="app-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="app-sheet-title">
+        <div class="app-sheet__grab" aria-hidden="true"></div>
+        <header class="app-sheet__head">
+          <h2 class="app-sheet__title" id="app-sheet-title"></h2>
+          <button class="icon-btn icon-btn--bordered app-sheet__x" type="button" data-sheet-close aria-label="Close"><svg class="ico ico--sm"><use href="#i-x"/></svg></button>
+        </header>
+        <div class="app-sheet__body" id="app-sheet-body"></div>
+      </section>
+    </div>
+  </div>
+
   <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
 
   <!-- Flag cursor — the Bloom ribbon flag rides on the pointer (fine pointers only) -->
   <canvas class="fc-canvas" id="flag-cursor" aria-hidden="true"></canvas>
   <div class="fc-ring" id="flag-ring" aria-hidden="true"><span class="fc-label"></span></div>
 
-  <script>
+  <script data-bloom>
+  (() => {
+    "use strict";
 <!-- @include app.js -->
+<!-- @include mobile.js -->
+  })();
   </script>
 </body>
 </html>

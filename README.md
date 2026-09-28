@@ -18,11 +18,16 @@ BlooMultiverse-Interactive.html   built deliverable (open this)
 build.py                          inlines src/ into the single file
 src/index.html                    markup, with @include markers
 src/styles.css                    tokens, light/dark, chapters, motion, responsive
+src/mobile.css                    the phone app: shell, sheets, screens
 src/media.css                     every embedded image, declared once
 src/app.js                        behaviour (vanilla JS)
+src/mobile.js                     the phone app (shares app.js's scope)
 src/assets/                       images extracted from the original
 reference/                        the original prototype (Direction A)
 ```
+
+index.html wraps `app.js` and `mobile.js` in one function, so the phone
+app reads the same data and calls the same functions as the page.
 
 Edit anything in `src/`, then run `python3 build.py`. It writes the offline
 file and `hosted/BlooMultiverse.html`, the version that gets published to the
@@ -127,6 +132,56 @@ donut chart follow the tab: by app on Inbox, by request type on the others.
 Hovering a slice or legend row shows its count; clicking one filters the
 list. The chart colours are validated for colour blindness and contrast in
 both themes.
+
+## On phones: the BlooMultiverse app
+
+Under 768px wide (and on phones held sideways) the page gives way to an
+app built from the same design system: the same tokens, fonts, radii,
+glass, cards, chips, tabs, buttons, avatars, images and motion, recomposed
+for one hand. On a desktop, ☰ → **Mobile app** opens it in a phone-sized
+frame (four screen sizes, from 320px to 430px).
+
+- **Header:** the logo, then Search, Notifications and your photo. It
+  frosts once content slides under it. Pushed pages swap it for Back and
+  their title.
+- **Bottom bar:** Home, Tasks, Explore, Help and Profile in a frosted
+  capsule above the home indicator, with a sliding accent pill and a
+  count on Tasks. Each tab keeps its own stack of pages and its scroll
+  position. Tapping the current tab goes back to its top.
+- **Home:** the greeting with today's moments, a dark "Needs your
+  attention" card (the pending count, the apps, then the pending approval,
+  the important action and the pending task), Quick links as a
+  launcher, the announcements as swipeable cards, new joiners, the
+  updated policy, and a perk and two offers. Pull down to sync.
+- **Tasks:** a summary with the donut (by app, or by request type), search,
+  a filter-and-sort sheet, and five tabs: All, Approvals, Pending, Drafts
+  and My requests. Approve, Reject (with a confirmation), View, Remind,
+  Revise, Edit and Delete (with a confirmation). Task and request details
+  are full pages with their actions docked above the bottom bar, and
+  "Next task" after you approve.
+  **There is no New request on phones**, and no Duplicate (it makes a new
+  request). Everything else on requests is there.
+- **Explore:** People, Policies, Communities, Discounts and Perks, each
+  with a list page and a detail page (colleague directory and profiles,
+  policy library with search and categories, groups you can join, offers
+  with codes, perks by category).
+- **Help:** Bloom GPT (the page's own assistant, with suggested prompts),
+  the FAQ and Help & support. Bloom GPT's actions open app screens.
+- **Profile:** you, My profile, My details, My team, notification
+  settings, theme and accent, language, Help, FAQ and Sign out.
+- **Notifications** and **Search** open full-screen from the header.
+  Search keeps recent searches, suggests, groups results as you type, has
+  a full results view with filters, and offers Bloom GPT when nothing
+  matches.
+- **Native patterns:** bottom sheets you can drag down, swipe back from
+  the left edge, Android's back button closes the top layer, pull to
+  refresh, skeletons while tasks load, empty and no-result states, an
+  offline banner, and safe areas on every edge. The footer is left out.
+
+The app never copies data. Approving on a phone updates the page's own
+task rows, a wish updates the page's slide, joining a group presses the
+page's own Join button, and so on; `sync()` in `app.js` tells the app to
+re-render.
 
 ## Kept from the original
 

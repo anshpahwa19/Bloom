@@ -1,7 +1,8 @@
 # BlooMultiverse — working notes
 
-- The design lives in `src/` (index.html, styles.css, media.css, app.js, assets/).
-  Never hand-edit the built files; change `src/` and run `python3 build.py`.
+- The design lives in `src/` (index.html, styles.css, mobile.css, media.css,
+  app.js, mobile.js, assets/). Never hand-edit the built files; change `src/`
+  and run `python3 build.py`.
 - **Publish every change to the existing live link, never a new one:**
   https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ
   Build first, then publish `hosted/BlooMultiverse.html` with the Artifact tool,
@@ -75,3 +76,32 @@
   - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
     `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
     halos; `--accent-glow` is kept faint for ambient light inside panels.
+- The phone app (`src/mobile.js`, `src/mobile.css`) replaces the page under
+  768px and on phones held sideways (`APP_QUERY` in app.js, repeated in the
+  head script, sets `is-app` on `<html>`). It is the same product, not a
+  redesign: reuse the page's tokens and components, and add a mobile variant
+  of a component only where the desktop one can't work on a phone.
+  - index.html wraps app.js and mobile.js in one function, so they share
+    scope. Watch for name clashes: a function declared in both files
+    silently replaces the page's one.
+  - One source of truth: the app reads the page's data (task rows, `ib`,
+    `people`, `slides`, policy cards, partners, sports, `perks`, the FAQ,
+    the notification list) and acts through the page's functions
+    (`quickResolve`, `openWish`, `setJoined`, `revealCode`, `sayHello`,
+    `setDrillReminder`, `openRequestForm`, `markAllRead`…). Anything that
+    changes data calls `sync()`, and the app re-renders its `data-live`
+    regions. Copy for screens comes from the page's own headings.
+  - No new requests on phones: no New request, and no Duplicate (it makes
+    one). `openRequestForm()` refuses to open without an item in app mode.
+    Everything else on requests stays.
+  - Screens are `PAGES` entries (root tabs: home, tasks, explore, help,
+    profile; everything else pushes onto the current tab's stack; search and
+    notifications open as full-screen layers). Navigate with `data-go`
+    (`policy/Data Security`, `tasks/approvals/sap`, `ann/3`…) and act with
+    `data-act`. Bloom GPT's actions route to app screens in app mode
+    (`APP_ACTS`).
+  - Bottom bar: exactly Home, Tasks, Explore, Help, Profile. Notifications
+    and search live in the header. No footer on phones.
+  - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
+    at least 44px. Check 320, 375, 390 and 430 wide, in both themes; the
+    desktop ☰ → Mobile app preview shows all four.
