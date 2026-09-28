@@ -11,6 +11,11 @@ same link.
 Offline, open `BlooMultiverse-Interactive.html`. It is one self-contained file;
 only Google Fonts load from the network.
 
+**What you see:** on a desktop or tablet, only the phone app, running inside
+an iPhone in the middle of the window. On a phone, the same app full screen.
+The full desktop page is kept for development: add `#desktop` to the address
+(for example `BlooMultiverse-Interactive.html#desktop`).
+
 ## Structure
 
 ```
@@ -20,14 +25,17 @@ src/index.html                    markup, with @include markers
 src/styles.css                    tokens, light/dark, chapters, motion, responsive
 src/mobile.css                    the phone app: shell, sheets, screens
 src/media.css                     every embedded image, declared once
+src/mockup.js                     the iPhone mockup that wider screens get
 src/app.js                        behaviour (vanilla JS)
 src/mobile.js                     the phone app (shares app.js's scope)
 src/assets/                       images extracted from the original
 reference/                        the original prototype (Direction A)
 ```
 
-index.html wraps `app.js` and `mobile.js` in one function, so the phone
-app reads the same data and calls the same functions as the page.
+index.html wraps `mockup.js`, `app.js` and `mobile.js` in one function, so
+the phone app reads the same data and calls the same functions as the page.
+On wider screens it stops after `mockup.js`: the page's own scripts never
+start behind the phone.
 
 Edit anything in `src/`, then run `python3 build.py`. It writes the offline
 file and `hosted/BlooMultiverse.html`, the version that gets published to the
@@ -138,8 +146,19 @@ both themes.
 Under 768px wide (and on phones held sideways) the page gives way to an
 app built from the same design system: the same tokens, fonts, radii,
 glass, cards, chips, tabs, buttons, avatars, images and motion, recomposed
-for one hand. On a desktop, ☰ → **Mobile app** opens it in a phone-sized
-frame (four screen sizes, from 320px to 430px).
+for one hand.
+
+**Wider screens show only the app, inside an iPhone.** The page, as it
+first arrived, loads into a 393-point-wide frame, where it opens as the app.
+`mockup.js` draws the device around it: a titanium band and bezel, the
+Dynamic Island, the side buttons, a status bar that keeps real time, and
+the home indicator. The status bar turns white over photos, and the home
+indicator turns white over dark surfaces. The phone scales to the window.
+In short windows it first gets shorter, down to 720 points, so the text
+stays readable. The backdrop follows the app's theme and accent. Rails,
+carousels and the joiner portrait can be dragged with a mouse, and
+scrollbars stay hidden, as on a phone. On the `#desktop` page,
+☰ → **Mobile app** opens the same iPhone over the page.
 
 - **Header:** the logo, then Search, Notifications and your photo. It
   frosts once content slides under it. Pushed pages swap it for Back and

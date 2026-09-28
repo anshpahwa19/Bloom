@@ -4,15 +4,10 @@
    section-aware floating navigation, search, drawers, carousels,
    filters and the scroll choreography — one requestAnimationFrame
    loop reading cached geometry, writing only transforms & opacity.
-   index.html wraps this file and mobile.js (the phone app) in one
-   scope, so the phone app reads the same data and functions.
+   index.html wraps mockup.js, this file and mobile.js (the phone app)
+   in one scope, so the phone app reads the same data and functions.
+   APP_QUERY, DESKTOP, MOCKUP and PRISTINE come from mockup.js.
    ================================================================== */
-  // Phones get the app (mobile.js) instead of this page. Keep in step with
-  // the query in index.html's head script, which sets the class before paint.
-  const APP_QUERY = "(max-width: 767px), (pointer: coarse) and (max-height: 520px)";
-  // A clean copy of the page, taken before anything below changes it: the
-  // desktop "Mobile app" preview loads it into a phone-sized frame.
-  const PRISTINE = matchMedia(APP_QUERY).matches ? "" : document.documentElement.outerHTML;
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const root = document.documentElement;

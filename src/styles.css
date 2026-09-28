@@ -127,6 +127,7 @@
   --r-2xl: clamp(28px, 3.4vw, 48px);     /* full-width chapter panels */
   --r-icon: 30%;                         /* app and icon tiles, at any size */
   --r-pill: 999px;                       /* buttons, chips, tags, tabs, bars */
+  --r-device: 55px;                      /* the iPhone mockup's screen (the frame adds its bezel) */
 
   /* Motion */
   --ease-out: cubic-bezier(.2, .8, .2, 1);
@@ -141,6 +142,7 @@
   --maxw: 1360px;
   --nav-h: 64px;
   --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
   --nav-top: calc(14px + var(--safe-top));
   --rail-pad: max(var(--gutter), calc((100% - var(--maxw)) / 2));
 }
@@ -1098,7 +1100,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .gpt__sub { margin: 22px auto 0; max-width: 46ch; font-size: clamp(1rem, .95rem + .4vw, 1.25rem); font-size: round(clamp(1rem, .95rem + .4vw, 1.25rem), 2px); color: var(--slate); text-wrap: pretty; }
 
 .gpt__dock { width: min(100%, 860px); margin-top: 40px; }
-.gpt.is-chatting .gpt__dock { position: sticky; bottom: 0; z-index: 2; margin-top: 8px; padding: 14px 0 calc(18px + env(safe-area-inset-bottom, 0px)); background: linear-gradient(transparent, var(--canvas) 38%); }
+.gpt.is-chatting .gpt__dock { position: sticky; bottom: 0; z-index: 2; margin-top: 8px; padding: 14px 0 calc(18px + var(--safe-bottom)); background: linear-gradient(transparent, var(--canvas) 38%); }
 .gpt__composer {
   display: flex; align-items: center; gap: 12px; height: 72px; padding: 0 10px 0 16px; border-radius: var(--r-pill);
   background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2);

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build BlooMultiverse-Interactive.html — one self-contained file.
 
-src/index.html carries three include markers:
-  <!-- @include styles.css -->  <!-- @include media.css -->  <!-- @include app.js -->
+src/index.html carries include markers (<!-- @include styles.css -->, …) for
+the stylesheets and scripts in src/; each is replaced by that file's text.
 media.css references images as {{file.ext}}; each is inlined as a data URI
 exactly once, so the output has no external dependencies besides Google Fonts.
 """

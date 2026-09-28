@@ -407,6 +407,7 @@
     bar.classList.toggle("is-scrolled", pg.scrollTop > 4);
     const t = $(".pg-body h1", pg);
     if (t && !pg._page.def.root) bar.classList.toggle("show-title", t.getBoundingClientRect().bottom < bar.getBoundingClientRect().bottom);
+    tellMockup(false);
   }
   function updateAppRail(r) {
     const foot = r.nextElementSibling?.classList.contains("m-rail-foot") ? r.nextElementSibling : null;
@@ -1303,15 +1304,19 @@
     const fig = $('[data-swipe="joiner"]', el);
     if (!fig) return;
     let s = null;
-    fig.addEventListener("touchstart", (e) => { s = [e.touches[0].clientX, e.touches[0].clientY]; }, { passive: true });
-    fig.addEventListener("touchend", (e) => {
+    const from = (x, y) => { s = [x, y]; };
+    const to = (x, y) => {
       if (!s) return;
-      const t = e.changedTouches[0];
-      const dx = t.clientX - s[0];
-      const dy = t.clientY - s[1];
+      const dx = x - s[0];
+      const dy = y - s[1];
       s = null;
       if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.5) stepJoiner(dx < 0 ? 1 : -1);
-    });
+    };
+    fig.addEventListener("touchstart", (e) => from(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+    fig.addEventListener("touchend", (e) => to(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
+    // a mouse swipes too (the app in the iPhone mockup)
+    fig.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") from(e.clientX, e.clientY); });
+    fig.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") to(e.clientX, e.clientY); });
   }
 
   /* POLICIES -------------------------------------------------------- */
@@ -1977,95 +1982,138 @@
   addEventListener("online", () => { if (!offlineEl.hidden) { showOffline(false); if (A.on) toast("Back online", "i-check"); } });
 
   /* ---------------------------------------------------------------
-     Desktop: preview the phone app in a phone-sized frame. The frame
-     loads the page as it first arrived (PRISTINE), so it opens as the
-     app with its own state.
+     Mouse: rails move under a drag, as they would under a finger
+     (the app in the iPhone mockup, or in a narrow desktop window)
      --------------------------------------------------------------- */
-  const DEVICES = [["320x568", "Small"], ["375x667", "iPhone SE"], ["390x844", "iPhone 15"], ["430x932", "Pro Max"]];
-  let preview = null;
-  function openPreview(trigger) {
-    if (preview || !PRISTINE) return;
-    closeNav(false);
-    const el = document.createElement("div");
-    el.className = "app-preview";
-    el.setAttribute("role", "dialog");
-    el.setAttribute("aria-modal", "true");
-    el.setAttribute("aria-label", "Mobile app preview");
-    el.innerHTML = `<div class="app-preview__bar">
-        <p class="app-preview__title"><span class="orb orb--xs" aria-hidden="true"></span>BlooMultiverse mobile<span class="mo__new">Preview</span></p>
-        <div class="chips chips--sm" role="group" aria-label="Screen size">${DEVICES.map(([v, l], i) => `<button class="chip${i === 2 ? " is-selected" : ""}" type="button" aria-pressed="${i === 2}" data-size="${v}">${l} <small>${v.replace("x", " × ")}</small></button>`).join("")}</div>
-        <button class="icon-btn icon-btn--bordered" type="button" data-preview-close aria-label="Close preview">${icon("i-x")}</button>
-      </div>
-      <div class="app-preview__stage"><div class="app-preview__device"><p class="app-preview__loading" aria-hidden="true"><span class="orb"></span>Opening the app…</p><iframe name="bloom-app-preview" title="BlooMultiverse mobile app"></iframe></div></div>
-      <p class="app-preview__note" role="status">This is how BlooMultiverse opens on a phone. Swipe, tap and try it: what you change here stays in the preview.</p>`;
-    body.append(el);
-    body.style.overflow = "hidden";
-    const frame = $("iframe", el);
-    // the page as it arrived, without scripts that aren't ours
-    const doc = new DOMParser().parseFromString(PRISTINE, "text/html");
-    $$("script:not([data-bloom])", doc).forEach((s) => s.remove());
-    frame.srcdoc = `<!doctype html>${doc.documentElement.outerHTML}`;
-    const size = (v) => {
-      const [w, hgt] = v.split("x").map(Number);
-      const dev = $(".app-preview__device", el);
-      dev.style.width = `${w}px`;
-      dev.style.height = `${hgt}px`;
-      const room = $(".app-preview__stage", el).clientHeight - 16;
-      dev.style.setProperty("--scale", Math.min(1, room / (hgt + 16)).toFixed(3));
-      $$("[data-size]", el).forEach((b) => { const on = b.dataset.size === v; b.classList.toggle("is-selected", on); b.setAttribute("aria-pressed", String(on)); });
+  (() => {
+    let d = null;
+    const railOf = (el) => {
+      for (; el && el !== document.body; el = el.parentElement) {
+        if (el.scrollWidth > el.clientWidth + 1 && /auto|scroll/.test(getComputedStyle(el).overflowX)) return el;
+      }
+      return null;
     };
-    size("390x844");
-    el.addEventListener("click", (e) => {
-      const b = e.target.closest("[data-size]");
-      if (b) size(b.dataset.size);
-      if (e.target.closest("[data-preview-close]")) closePreview();
+    const swallow = (e) => { e.preventDefault(); e.stopPropagation(); };
+    document.addEventListener("pointerdown", (e) => {
+      if (!A.on || e.pointerType !== "mouse" || e.button !== 0 || e.target.closest("input, textarea, select, [contenteditable]")) return;
+      const el = railOf(e.target);
+      if (el) d = { el, x0: e.clientX, left: el.scrollLeft, moved: false, x: e.clientX, t: e.timeStamp, v: 0 };
     });
-    const onResize = () => size($("[data-size].is-selected", el).dataset.size);
-    addEventListener("resize", onResize);
-    const onKey = (e) => { if (e.key === "Escape") { e.stopImmediatePropagation(); closePreview(); } };
-    document.addEventListener("keydown", onKey, true);
-    // If the frame can't run here, say so instead of showing an empty phone
-    const ready = setTimeout(() => { $(".app-preview__note", el).textContent = "The preview can’t run in this window. Narrow the browser below 768px wide, or open this page on your phone."; }, 6000);
-    const onMsg = (e) => { if (e.data?.bloom === "app-ready") { clearTimeout(ready); el.classList.add("is-ready"); } };
-    addEventListener("message", onMsg);
-    preview = { el, trigger, off: () => { removeEventListener("resize", onResize); document.removeEventListener("keydown", onKey, true); removeEventListener("message", onMsg); clearTimeout(ready); } };
-    requestAnimationFrame(() => el.classList.add("is-open"));
-    setTimeout(() => $("[data-preview-close]", el).focus(), 60);
+    const end = () => {
+      if (!d) return;
+      const { el, moved, v } = d;
+      d = null;
+      if (!moved) return;
+      root.classList.remove("is-grabbing");
+      // the click that ends a drag isn't a tap
+      addEventListener("click", swallow, true);
+      setTimeout(() => removeEventListener("click", swallow, true), 0);
+      el.style.scrollSnapType = "";
+      el.style.scrollBehavior = "";
+      // carry on a little, then settle on a card
+      el.scrollTo({ left: el.scrollLeft - v * 140, behavior: smooth() });
+    };
+    addEventListener("pointermove", (e) => {
+      if (!d) return;
+      if (!(e.buttons & 1)) { end(); return; }
+      const dx = e.clientX - d.x0;
+      if (!d.moved) {
+        if (Math.abs(dx) < 6) return;
+        d.moved = true;
+        d.el.style.scrollSnapType = "none";
+        d.el.style.scrollBehavior = "auto";
+        root.classList.add("is-grabbing");
+        getSelection()?.removeAllRanges();
+      }
+      d.v = (e.clientX - d.x) / Math.max(1, e.timeStamp - d.t);
+      d.x = e.clientX;
+      d.t = e.timeStamp;
+      d.el.scrollLeft = d.left - dx;
+    });
+    addEventListener("pointerup", end);
+    addEventListener("pointercancel", end);
+    // links and pictures in the app don't get picked up and dragged away
+    document.addEventListener("dragstart", (e) => { if (A.on && e.target.closest?.("#app")) e.preventDefault(); });
+  })();
+
+  /* ---------------------------------------------------------------
+     In the iPhone mockup: tell the device around the app which theme
+     the app is in, and when the status bar sits on a photo
+     --------------------------------------------------------------- */
+  let toldMockup = "";
+  function tellMockup(ready) {
+    if (window.name !== MOCKUP || !A.on) return;
+    const pg = gpt.open || A.modal ? null : topPage();
+    const over = pg && $(".pg-bar--over", pg);
+    // what the home indicator sits on: a dark surface (dark theme, or a deep-navy card) wants a light one
+    const under = document.elementsFromPoint(innerWidth / 2, innerHeight - 8).find((n) => !appNav.contains(n));
+    const msg = {
+      bloom: "chrome",
+      theme: root.getAttribute("data-theme"),
+      palette: root.getAttribute("data-palette") || "",
+      tone: over && !over.classList.contains("is-scrolled") ? "light" : "",
+      bottom: under && /dark/.test(getComputedStyle(under).colorScheme) ? "light" : ""
+    };
+    const said = JSON.stringify(msg);
+    try {
+      if (ready) parent.postMessage({ bloom: "app-ready" }, "*");
+      if (ready || said !== toldMockup) parent.postMessage(msg, "*");
+      toldMockup = said;
+    } catch { /* not framed */ }
   }
-  function closePreview() {
-    if (!preview) return;
-    const { el, trigger, off } = preview;
-    preview = null;
-    off();
-    el.classList.remove("is-open");
-    setTimeout(() => el.remove(), reduceMotion ? 0 : 320);
-    body.style.overflow = "";
-    // pick up a theme or accent chosen inside the preview
-    const t = store.get(THEME_KEY);
-    if (t && t !== root.getAttribute("data-theme")) applyTheme(t);
-    const p = store.get(PALETTE_KEY);
-    if (p) applyPalette(p);
-    trigger?.focus?.({ preventScroll: true });
+  if (window.name === MOCKUP) {
+    let queued = false;
+    new MutationObserver(() => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; tellMockup(false); });
+    }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-theme", "data-palette"] });
   }
-  document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-preview]"); if (b) openPreview(b); });
+
+  /* ---------------------------------------------------------------
+     Desktop page (#desktop): ☰ → Mobile app opens the iPhone mockup
+     over the page; the app inside keeps its own state
+     --------------------------------------------------------------- */
+  let mockup = null;
+  function openMockup(trigger) {
+    if (mockup) return;
+    closeNav(false);
+    mockup = mountMockup({
+      overlay: true,
+      onTheme: (theme, palette) => { applyTheme(theme === "dark" ? "dark" : "light"); applyPalette(palette === "crimson" ? "crimson" : "azure"); },
+      onClose: () => {
+        mockup = null;
+        body.style.overflow = "";
+        setFlagCursor(store.get(FC_KEY) !== "off");
+        // the ☰ item closed with its menu, so focus goes back to ☰
+        (trigger && !trigger.closest(".mo") ? trigger : menuBtn).focus({ preventScroll: true });
+      }
+    });
+    if (!mockup) return;
+    body.style.overflow = "hidden";
+    setFlagCursor(false);
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-mockup]"); if (b) openMockup(b); });
 
   /* ---------------------------------------------------------------
      Mode — the app on phones, the page everywhere else
      --------------------------------------------------------------- */
   function setAppMode() {
-    const on = appMQ.matches;
+    // Only the desktop page (#desktop) gives way to the page on wider screens;
+    // anywhere else the app, once open, stays the app
+    const on = appMQ.matches || !DESKTOP;
     if (on === A.on && root.classList.contains("is-app") === on) return;
     A.on = on;
     root.classList.toggle("is-app", on);
     if (on) {
       closeNav(false); closeMenus(); closeSearch(); closeDrawer(); closeInbox(); hideTip();
-      if (preview) closePreview();
+      mockup?.close();
       ensureRoot(A.tab);
       TABS.forEach((t) => { const s = stackOf(t); s.classList.toggle("is-active", t === A.tab); s.inert = t !== A.tab; });
       syncBadges();
       requestAnimationFrame(() => { syncNav(); $$(".pg", appEl).forEach(updateBar); });
       if (!navigator.onLine) showOffline(true);
-      if (window.name === "bloom-app-preview") { try { parent.postMessage({ bloom: "app-ready" }, "*"); } catch { /* not framed */ } }
+      tellMockup(true);
     } else {
       closeModal(false);
       closeSheet(false);

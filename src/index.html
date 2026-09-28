@@ -9,8 +9,12 @@
   <script data-bloom>
     (function () {
       var root = document.documentElement, saved = null, palette = null;
-      // Phones get the app instead of the page (keep in step with APP_QUERY in app.js)
+      // Phones get the app; wider screens get it inside an iPhone, unless #desktop
+      // asks for the full page (keep in step with APP_QUERY in mockup.js)
       if (matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 520px)").matches) root.classList.add("is-app");
+      else if (location.hash !== "#desktop") root.classList.add("is-mockup");
+      // the copy running inside that iPhone
+      if (window.name === "bloom-mockup") root.classList.add("in-mockup");
       try { saved = localStorage.getItem("bloo-theme"); palette = localStorage.getItem("bloo-x-palette"); } catch (e) {}
       // an in-page choice wins, then a theme the host page stamped, then the OS setting
       var theme = saved || root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
@@ -113,6 +117,35 @@
       <symbol id="s-apple" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09Zm3.378-3.066c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701Z"/></symbol>
     </defs>
   </svg>
+
+  <!-- ============================================================
+       IPHONE MOCKUP — wider screens see the phone app in an iPhone
+       (the is-mockup class); mockup.js loads the app into its screen.
+       On the desktop page (#desktop) it opens from ☰ → Mobile app.
+       ============================================================ -->
+  <div class="mk" id="mockup">
+    <h1 class="sr-only">BlooMultiverse mobile app</h1>
+    <button class="icon-btn icon-btn--bordered mk__close" type="button" data-mk-close aria-label="Close the mobile app"><svg class="ico"><use href="#i-x"/></svg></button>
+    <div class="mk__device">
+      <span class="mk__key mk__key--action" aria-hidden="true"></span>
+      <span class="mk__key mk__key--up" aria-hidden="true"></span>
+      <span class="mk__key mk__key--down" aria-hidden="true"></span>
+      <span class="mk__key mk__key--side" aria-hidden="true"></span>
+      <div class="mk__screen">
+        <p class="mk__loading" role="status"><span class="orb" aria-hidden="true"></span><span class="mk__note">Opening the app…</span></p>
+        <div class="mk__status" aria-hidden="true">
+          <span class="mk__time">9:41</span>
+          <span class="mk__sys">
+            <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg viewBox="0 0 16 12" width="16" height="12"><path d="M.22 3.82a11 11 0 0 1 15.56 0l-1.7 1.7a8.6 8.6 0 0 0-12.16 0Z"/><path d="M3.12 6.72a6.9 6.9 0 0 1 9.76 0l-1.7 1.7a4.5 4.5 0 0 0-6.36 0Z"/><path d="M6.02 9.62a2.8 2.8 0 0 1 3.96 0L8 11.6Z"/></svg>
+            <svg viewBox="0 0 28 13" width="27" height="13"><rect x=".5" y=".5" width="23" height="12" rx="3.8" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="2" y="2" width="16" height="9" rx="2.4"/><path d="M25 4.4v4.2a2.1 2.1 0 0 0 0-4.2Z" fill-opacity=".45"/></svg>
+          </span>
+        </div>
+        <span class="mk__island" aria-hidden="true"></span>
+        <span class="mk__home" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
 
   <a class="skip-link" href="#main">Skip to content</a>
 
@@ -248,7 +281,7 @@
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
           <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
           <li><button class="mo__util" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
-          <li><button class="mo__util" type="button" data-open-preview><svg class="ico"><use href="#i-phone"/></svg>Mobile app<span class="mo__new">Preview</span></button></li>
+          <li><button class="mo__util" type="button" data-open-mockup><svg class="ico"><use href="#i-phone"/></svg>Mobile app<span class="mo__new">Preview</span></button></li>
         </ul>
 
         <p class="mo__label">Appearance</p>
@@ -1194,6 +1227,9 @@
   <script data-bloom>
   (() => {
     "use strict";
+<!-- @include mockup.js -->
+    // Wider screens see only the phone app, in the iPhone: the page's own scripts stay off
+    if (document.documentElement.classList.contains("is-mockup")) { mountMockup(); return; }
 <!-- @include app.js -->
 <!-- @include mobile.js -->
   })();

@@ -76,14 +76,29 @@
   - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
     `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
     halos; `--accent-glow` is kept faint for ambient light inside panels.
+- What people see: only the phone app. Wider screens get it inside an
+  iPhone mockup (`is-mockup`, `src/mockup.js`, section 5 of mobile.css).
+  Phones get it full screen (`is-app`). The full desktop page is kept for
+  development at `#desktop`, and every rule below still holds for it.
+  - The mockup loads the page as it first arrived (`PRISTINE`) into an
+    iframe named `bloom-mockup`, and the copy inside runs with `in-mockup`
+    (safe areas 54/34px, no scrollbars). The parent never runs app.js:
+    index.html returns right after `mountMockup()`. The app tells the device
+    its theme and tones through `tellMockup()` (`{bloom: "chrome"}`) and
+    `{bloom: "app-ready"}`. Keep the device's parts (`#mockup` in index.html)
+    decorative and `pointer-events: none` over the screen.
+  - The screen radius is the `--r-device` token; the frame adds its band
+    and bezel on top of it (concentric). Safe areas go through `--safe-top`
+    and `--safe-bottom`, never `env()` directly, so the mockup can set them.
 - The phone app (`src/mobile.js`, `src/mobile.css`) replaces the page under
-  768px and on phones held sideways (`APP_QUERY` in app.js, repeated in the
-  head script, sets `is-app` on `<html>`). It is the same product, not a
+  768px and on phones held sideways (`APP_QUERY` in mockup.js, repeated in
+  the head script, sets `is-app` on `<html>`). Once open it stays the app
+  at any width, except on the `#desktop` page. It is the same product, not a
   redesign: reuse the page's tokens and components, and add a mobile variant
   of a component only where the desktop one can't work on a phone.
-  - index.html wraps app.js and mobile.js in one function, so they share
-    scope. Watch for name clashes: a function declared in both files
-    silently replaces the page's one.
+  - index.html wraps mockup.js, app.js and mobile.js in one function, so
+    they share scope. Watch for name clashes: a function declared in two
+    files silently replaces the other one.
   - One source of truth: the app reads the page's data (task rows, `ib`,
     `people`, `slides`, policy cards, partners, sports, `perks`, the FAQ,
     the notification list) and acts through the page's functions
@@ -103,5 +118,7 @@
   - Bottom bar: exactly Home, Tasks, Explore, Help, Profile. Notifications
     and search live in the header. No footer on phones.
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
-    at least 44px. Check 320, 375, 390 and 430 wide, in both themes; the
-    desktop ☰ → Mobile app preview shows all four.
+    at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
+    window or device mode), in both themes, and in the iPhone mockup on a
+    desktop window, where it is driven with a mouse (drag rails; no edge
+    swipe or pull to refresh).
