@@ -9,12 +9,12 @@
   <script data-bloom>
     (function () {
       var root = document.documentElement, saved = null, palette = null;
-      // Phones get the app full screen; wider screens get it at a phone's size (is-framed),
-      // unless #desktop asks for the full page (keep in step with APP_QUERY in frame.js).
-      // #figma is the Figma capture board, laid out at that phone size too.
-      if (location.hash === "#figma") root.classList.add("is-app", "is-framed");
-      else if (matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 520px)").matches) root.classList.add("is-app");
-      else if (location.hash !== "#desktop") root.classList.add("is-app", "is-framed");
+      // Phones get the app; wider screens get it inside an iPhone, unless #desktop
+      // asks for the full page (keep in step with APP_QUERY in mockup.js)
+      if (matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 520px)").matches) root.classList.add("is-app");
+      else if (location.hash !== "#desktop") root.classList.add("is-mockup");
+      // the copy running inside that iPhone
+      if (window.name === "bloom-mockup") root.classList.add("in-mockup");
       try { saved = localStorage.getItem("bloo-theme"); palette = localStorage.getItem("bloo-x-palette"); } catch (e) {}
       // an in-page choice wins, then a theme the host page stamped, then the OS setting
       var theme = saved || root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-  <style data-bloom>
+  <style>
 /* ==================================================================
    BlooMultiverse — Direction B · Interactive Employee Experience
    styles.css
@@ -156,6 +156,7 @@
   --r-2xl: clamp(28px, 3.4vw, 48px);     /* full-width chapter panels */
   --r-icon: 30%;                         /* app and icon tiles, at any size */
   --r-pill: 999px;                       /* buttons, chips, tags, tabs, bars */
+  --r-device: 55px;                      /* the iPhone mockup's screen (the frame adds its bezel) */
 
   /* Motion */
   --ease-out: cubic-bezier(.2, .8, .2, 1);
@@ -2449,7 +2450,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 }
 
   </style>
-  <style data-bloom>
+  <style>
 /* ==================================================================
    BlooMultiverse on phones — mobile.css
    The same design system, recomposed for one hand. Every colour,
@@ -2462,9 +2463,8 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
    3. Building blocks — sections, rails, chips, cards, lists, states
    4. Screens — Home, Tasks, details, Explore, People, Policies,
       Communities, Discounts, Perks, Help, Profile, Notifications, Search
-   5. The phone-sized screen — the app on wider screens
-   6. Figma capture board — every screen at once
-   7. Small phones, reduced motion
+   5. The iPhone mockup — the app on wider screens
+   6. Small phones, reduced motion
    ================================================================== */
 
 /* ------------------------------------------------------------------
@@ -3272,79 +3272,111 @@ button.m-card:active { transform: scale(.985); }
 .m-search__all { width: 100%; margin-top: 14px; }
 
 /* ------------------------------------------------------------------
-   5. THE PHONE-SIZED SCREEN — wider screens get the app at 393 × 852
-   (is-framed, alongside is-app), centred, with nothing drawn around
-   it. #screen is the screen: it holds its fixed layers, and frame.js
-   resolves the media queries and viewport units for its size. Beside
-   it, the Figma capture board (section 6) lays every screen out.
+   5. THE IPHONE MOCKUP — wider screens see the app in an iPhone (the
+   is-mockup class, or ☰ → Mobile app on the #desktop page). The copy
+   running inside it carries in-mockup.
    ------------------------------------------------------------------ */
-.screen { display: contents; }
-.fg-open { display: none; }
-:root.is-framed {
-  --safe-top: 54px;                                  /* room for an iPhone's status bar */
-  --safe-bottom: 34px;                               /* and its home indicator */
-  height: auto; min-height: 100%; overflow: auto; scrollbar-gutter: auto;
-  display: grid; background: var(--canvas-2);
+.mk { display: none; }
+:root.is-mockup { height: 100%; overflow: hidden; scrollbar-gutter: auto; }
+.is-mockup body { height: 100%; overflow: hidden; }
+.is-mockup :is(.skip-link, .navbar, .mo, .search, .main, .footer, .tooltip, .inbox, .gpt, .drawer, .toasts, .fc-canvas, .fc-ring) { display: none !important; }
+.is-mockup .mk, .mk.is-overlay {
+  --mk-h: 852px;                                     /* the screen's height, fitted by mockup.js */
+  --mk-s: 1;                                         /* and the phone's scale */
+  --mk-frame: 14px;                                  /* band + bezel, as MK_FRAME in mockup.js */
+  --mk-shadow: var(--sh-2), 0 56px 110px -56px rgba(11, 22, 64, .5);
+  position: fixed; inset: 0; z-index: 500; display: block; overflow: hidden;
+  background: var(--canvas); color: var(--ink); transition: background-color var(--t-slow) var(--ease-out);
 }
-.is-framed body { display: grid; place-items: center; height: auto; overflow: visible; padding: 24px 16px; }
-.is-framed .screen {
-  position: relative; contain: layout paint; display: block;
-  width: 393px; height: 852px;                       /* FRAME in frame.js */
-  overflow: hidden; background: var(--canvas); box-shadow: 0 0 0 1px var(--line), var(--sh-2);
+[data-theme="dark"] .mk { --mk-shadow: var(--sh-2), 0 56px 110px -56px rgba(0, 0, 0, .75); }
+/* the same ambient light as the app's own tabs */
+.mk::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(50% 50% at 80% 10%, color-mix(in srgb, var(--blob-1) 16%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 10% 90%, color-mix(in srgb, var(--blob-3) 12%, transparent), transparent 70%);
 }
-.is-framed .screen, .is-framed .screen * { scrollbar-width: none; }
-.is-framed .screen ::-webkit-scrollbar { display: none; }
-/* The page's dialogs open in the browser's top layer, outside the screen,
-   so they sit over it from where frame.js says it is */
-.is-framed .modal {
-  position: fixed; inset: auto auto var(--fb, 0px) var(--fx, 0px); width: 393px; max-width: none; margin: 0;
-  max-height: calc(852px - var(--safe-top) - 24px);
+.mk.is-overlay {
+  background: color-mix(in srgb, var(--canvas) 90%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  opacity: 0; transition: opacity var(--t-base) var(--ease-out);
 }
-.is-framed .modal[open] { animation-name: m-sheet-rise; }
-.is-framed .fg-open { position: fixed; top: 20px; right: 20px; z-index: 1; display: inline-flex; gap: 8px; }
-.is-grabbing, .is-grabbing * { cursor: grabbing !important; user-select: none !important; }
+.mk.is-overlay.is-open { opacity: 1; }
+.mk__close { position: absolute; top: calc(16px + var(--safe-top)); right: 20px; z-index: 2; }
+.mk:not(.is-overlay) .mk__close { display: none; }
 
-/* ------------------------------------------------------------------
-   6. FIGMA CAPTURE BOARD — every screen at once, as artboards: full
-   length, static and flat, so an HTML capture reads each as one frame
-   with no hidden or stacked layers. Built by openCapture() in mobile.js.
-   ------------------------------------------------------------------ */
-:root.is-capture { display: block; overflow: auto; }
-.is-capture body { display: block; padding: 0; }
-.is-capture *, .is-capture *::before, .is-capture *::after { transition: none !important; }
-/* once stillCapture() has written each entrance's resting state in, nothing moves */
-.is-still *, .is-still *::before, .is-still *::after { animation: none !important; }
-.fg { display: grid; gap: 40px; padding: 48px; }
-.fg__head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
-.fg__title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
-.fg__meta { font-size: .875rem; color: var(--slate); }
-.fg__acts { display: flex; gap: 8px; margin-left: auto; }
-.fg__grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 72px 56px; }
-.fg-art { display: grid; gap: 12px; width: 393px; margin: 0; }
-.fg-art__name { font-size: .875rem; font-weight: 600; color: var(--slate); }
-.fg-screen {
-  position: relative; isolation: isolate; width: 393px; min-height: 852px; overflow: hidden;
-  background: var(--canvas); color: var(--ink); box-shadow: 0 0 0 1px var(--line);
+/* The device: a titanium band, a black bezel, the screen — concentric */
+.mk__device {
+  position: absolute; left: 50%; top: 50%; translate: -50% -50%; scale: var(--mk-s);
+  padding: calc(var(--mk-frame) - 3px); border: 3px solid transparent; border-radius: calc(var(--r-device) + var(--mk-frame));
+  background:
+    linear-gradient(#050506, #050506) padding-box,
+    linear-gradient(150deg, #7A7D83, #34353A 22%, #1B1C1F 48%, #414348 74%, #8C8F95 88%, #2A2B2F) border-box;
+  box-shadow: var(--mk-shadow);
 }
-.fg-screen--fixed { height: 852px; }                /* a sheet over its screen */
-.fg-screen > .pg, .fg-screen > .gpt {
-  position: relative; inset: auto; min-height: 852px; height: auto; overflow: visible;
-  visibility: visible; clip-path: none;
+.mk__key { position: absolute; width: 3px; border-radius: var(--r-pill); background: linear-gradient(90deg, #2C2D31, #7A7D83 60%, #3A3B3F); }
+.mk__key--action { left: -6px; top: 116px; height: 32px; }
+.mk__key--up { left: -6px; top: 174px; height: 62px; }
+.mk__key--down { left: -6px; top: 250px; height: 62px; }
+.mk__key--side { right: -6px; top: 204px; height: 98px; }
+.mk__screen {
+  position: relative; isolation: isolate; width: 393px; height: var(--mk-h); overflow: hidden;
+  border-radius: var(--r-device); background: var(--canvas);
 }
-.fg-screen--fixed > .pg { height: 852px; overflow: hidden; }
-.fg-screen .app-sheet { visibility: visible; }
+.mk__screen iframe {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0;
+  background: var(--canvas); opacity: 0; transition: opacity var(--t-slow) var(--ease-out);
+}
+.mk.is-ready .mk__screen iframe { opacity: 1; }
+.mk__loading {
+  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; padding: 0 48px;
+  text-align: center; color: var(--slate); font-size: .875rem; font-weight: 600;
+}
+.mk__loading .orb { width: 44px; height: 44px; animation: orbPulse .9s ease-in-out infinite alternate; }
+.mk.is-stuck .mk__loading .orb { animation: none; }
+.mk.is-ready .mk__loading { visibility: hidden; transition: visibility 0s var(--t-slow); }
+
+/* iOS around the app: the status bar, the Dynamic Island, the home indicator */
+.mk__status {
+  position: absolute; inset: 0 0 auto; z-index: 2; height: 54px; padding-top: 5px;
+  display: grid; grid-template-columns: minmax(0, 1fr) 126px minmax(0, 1fr); align-items: center; justify-items: center;
+  color: var(--ink); pointer-events: none; transition: color var(--t-base) var(--ease-out);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-ui); font-size: 1rem; font-weight: 600; line-height: 1;
+  letter-spacing: -.01em; font-variant-numeric: tabular-nums;
+}
+.mk__time { grid-column: 1; padding-left: 8px; }
+.mk__sys { grid-column: 3; display: flex; align-items: center; gap: 6px; }
+.mk__sys svg { display: block; fill: currentColor; }
+.mk.is-light .mk__status { color: #fff; }
+.mk__island {
+  position: absolute; top: 11px; left: 50%; z-index: 3; width: 126px; height: 37px; translate: -50% 0;
+  border-radius: var(--r-pill); background: #000; pointer-events: none;
+}
+.mk__island::after {
+  content: ""; position: absolute; top: 50%; right: 24px; width: 12px; height: 12px; translate: 0 -50%;
+  border-radius: var(--r-pill); background: radial-gradient(circle at 35% 35%, #34405E, #0B0F1C 62%);
+}
+.mk__home {
+  position: absolute; bottom: 8px; left: 50%; z-index: 2; width: 134px; height: 5px; translate: -50% 0;
+  border-radius: var(--r-pill); background: var(--ink); pointer-events: none; transition: background-color var(--t-base) var(--ease-out);
+}
+.mk.is-light-bottom .mk__home { background: #fff; }
+
+/* Inside the iPhone: its safe areas, no scrollbars, and a hand for drags */
+:root.in-mockup { --safe-top: 54px; --safe-bottom: 34px; }
+.in-mockup, .in-mockup * { scrollbar-width: none; }
+.in-mockup ::-webkit-scrollbar { display: none; }
+.is-grabbing, .is-grabbing * { cursor: grabbing !important; user-select: none !important; }
 
 /* ------------------------------------------------------------------
    KEYFRAMES
    ------------------------------------------------------------------ */
 @keyframes m-sheet-up { from { transform: translateY(100%); } }
-@keyframes m-sheet-rise { from { opacity: 0; transform: translateY(32px); } }
 @keyframes m-grow { from { transform: scaleX(0); } }
 @keyframes m-drift { to { transform: translateX(-50%); } }
 @keyframes m-marquee { to { transform: translateX(calc(-100% / 3)); } }
 
 /* ------------------------------------------------------------------
-   7. SMALL PHONES, REDUCED MOTION
+   6. SMALL PHONES, REDUCED MOTION
    ------------------------------------------------------------------ */
 /* Tab labels shrink before any tab would leave the bar */
 @media (max-width: 389px) {
@@ -3382,7 +3414,7 @@ button.m-card:active { transform: scale(.985); }
 }
 
   </style>
-  <style data-bloom>
+  <style>
 /* ==================================================================
    Media — every embedded image is declared exactly once, as a class.
    Components read the image through var(--img) (photos) or var(--logo)
@@ -3528,6 +3560,35 @@ button.m-card:active { transform: scale(.985); }
     </defs>
   </svg>
 
+  <!-- ============================================================
+       IPHONE MOCKUP — wider screens see the phone app in an iPhone
+       (the is-mockup class); mockup.js loads the app into its screen.
+       On the desktop page (#desktop) it opens from ☰ → Mobile app.
+       ============================================================ -->
+  <div class="mk" id="mockup">
+    <h1 class="sr-only">BlooMultiverse mobile app</h1>
+    <button class="icon-btn icon-btn--bordered mk__close" type="button" data-mk-close aria-label="Close the mobile app"><svg class="ico"><use href="#i-x"/></svg></button>
+    <div class="mk__device">
+      <span class="mk__key mk__key--action" aria-hidden="true"></span>
+      <span class="mk__key mk__key--up" aria-hidden="true"></span>
+      <span class="mk__key mk__key--down" aria-hidden="true"></span>
+      <span class="mk__key mk__key--side" aria-hidden="true"></span>
+      <div class="mk__screen">
+        <p class="mk__loading" role="status"><span class="orb" aria-hidden="true"></span><span class="mk__note">Opening the app…</span></p>
+        <div class="mk__status" aria-hidden="true">
+          <span class="mk__time">9:41</span>
+          <span class="mk__sys">
+            <svg viewBox="0 0 18 12" width="18" height="12"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+            <svg viewBox="0 0 16 12" width="16" height="12"><path d="M.22 3.82a11 11 0 0 1 15.56 0l-1.7 1.7a8.6 8.6 0 0 0-12.16 0Z"/><path d="M3.12 6.72a6.9 6.9 0 0 1 9.76 0l-1.7 1.7a4.5 4.5 0 0 0-6.36 0Z"/><path d="M6.02 9.62a2.8 2.8 0 0 1 3.96 0L8 11.6Z"/></svg>
+            <svg viewBox="0 0 28 13" width="27" height="13"><rect x=".5" y=".5" width="23" height="12" rx="3.8" fill="none" stroke="currentColor" stroke-opacity=".4"/><rect x="2" y="2" width="16" height="9" rx="2.4"/><path d="M25 4.4v4.2a2.1 2.1 0 0 0 0-4.2Z" fill-opacity=".45"/></svg>
+          </span>
+        </div>
+        <span class="mk__island" aria-hidden="true"></span>
+        <span class="mk__home" aria-hidden="true"></span>
+      </div>
+    </div>
+  </div>
+
   <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ============================================================
@@ -3662,7 +3723,7 @@ button.m-card:active { transform: scale(.985); }
           <li><a class="mo__util" href="#announcements"><svg class="ico"><use href="#i-megaphone"/></svg>Announcements</a></li>
           <li><a class="mo__util" href="#people"><svg class="ico"><use href="#i-users"/></svg>New joiners</a></li>
           <li><button class="mo__util" type="button" aria-disabled="true"><svg class="ico"><use href="#i-help"/></svg>Help &amp; support</button></li>
-          <li><button class="mo__util" type="button" data-open-app><svg class="ico"><use href="#i-phone"/></svg>Mobile app<span class="mo__new">Preview</span></button></li>
+          <li><button class="mo__util" type="button" data-open-mockup><svg class="ico"><use href="#i-phone"/></svg>Mobile app<span class="mo__new">Preview</span></button></li>
         </ul>
 
         <p class="mo__label">Appearance</p>
@@ -4557,9 +4618,6 @@ button.m-card:active { transform: scale(.985); }
        each screen from the page's own data; each tab keeps a stack of
        pages, and sheets rise from the bottom.
        ============================================================ -->
-  <!-- On wider screens #screen is the phone-sized screen (is-framed); elsewhere it
-       doesn't box anything (display: contents) -->
-  <div class="screen" id="screen">
   <div class="app" id="app">
     <div class="app-views" id="app-views" role="main">
       <div class="app-stack is-active" data-stack="home"></div>
@@ -4605,10 +4663,6 @@ button.m-card:active { transform: scale(.985); }
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
-  </div>
-
-  <!-- Beside the phone-sized screen: every screen at once, laid out for Figma's HTML capture -->
-  <button class="btn btn--ghost fg-open" type="button" data-open-capture><svg class="ico ico--sm"><use href="#i-grid"/></svg>Figma capture view</button>
 
   <!-- Flag cursor — the Bloom ribbon flag rides on the pointer (fine pointers only) -->
   <canvas class="fc-canvas" id="flag-cursor" aria-hidden="true"></canvas>
@@ -4618,120 +4672,161 @@ button.m-card:active { transform: scale(.985); }
   (() => {
     "use strict";
   /* ==================================================================
-     BlooMultiverse — frame.js
-     Only the phone app is shown. Phones get it full screen. Wider
-     screens get it at a phone's size — 393 × 852, an iPhone 15's
-     screen — centred on the page, with nothing drawn around it: the
-     page itself is the app, so tools such as Figma's HTML capture read
-     it as it is.
-     To lay out exactly as on that phone, the app is given a phone-sized
-     viewport (the is-framed class): #screen becomes the screen and holds
-     its fixed layers, the stylesheets' media queries and viewport units
-     are resolved for 393 × 852, and matchMedia answers for it too.
-     Beside it, "Figma capture view" (or #figma) lays every screen out at
-     once for Figma's HTML capture (the capture board, in mobile.js).
-     #desktop opens the full desktop page, kept for development.
-     index.html runs this file before app.js and mobile.js.
+     BlooMultiverse — mockup.js
+     Screens wider than a phone see the phone app in an iPhone. The
+     page, as it first arrived, runs in a phone-sized frame (it opens
+     there as the app), and index.html's #mockup draws the device
+     around it: the frame, the Dynamic Island, the status bar and the
+     home indicator. Phones get the app full screen, and #desktop opens
+     the full desktop page, which is kept for development.
+     index.html runs this file first and stops after it in mockup mode,
+     so none of the page's own scripts start behind the phone.
      ================================================================== */
-  // Phones get the app. Keep in step with the query in index.html's head
-  // script, which sets the mode classes before paint.
+  // Phones get the app instead of the page. Keep in step with the query in
+  // index.html's head script, which sets the mode class before paint.
   const APP_QUERY = "(max-width: 767px), (pointer: coarse) and (max-height: 520px)";
   // The full desktop page, kept for development: open the file with #desktop
   const DESKTOP = location.hash === "#desktop";
-  // The phone-sized screen wider screens get, in CSS px (keep in step with section 5 of mobile.css)
-  const FRAME = [393, 852];
-  const FRAMED = document.documentElement.classList.contains("is-framed");
+  // The frame's name tells the copy inside that it runs in the mockup
+  const MOCKUP = "bloom-mockup";
+  // A clean copy of the page, taken before any script changes it: the frame loads it
+  const PRISTINE = matchMedia(APP_QUERY).matches ? "" : document.documentElement.outerHTML;
 
-  /* How the phone-sized screen answers a media query. Size, hover and
-     pointer are the phone's; anything else (theme, reduced motion) is
-     left to the browser. frameMedia returns "all", "not all" or the part
-     still for the browser to decide. */
-  function frameFeature(f) {
-    const m = /^\(\s*(min-|max-)?(width|height|hover|pointer)\s*(?::\s*([^)]+))?\)$/i.exec(f.trim());
-    if (!m) return null;
-    const [, range, name, raw = ""] = m;
-    const v = raw.trim().toLowerCase();
-    if (name === "hover") return v === "none";            // a phone can't hover
-    if (name === "pointer") return !v || v === "coarse";  // and points with a finger
-    const px = parseFloat(v) * (/r?em$/.test(v) ? 16 : 1);
-    const size = FRAME[name.toLowerCase() === "width" ? 0 : 1];
-    return range === "min-" ? size >= px : range === "max-" ? size <= px : size === px;
-  }
-  function frameMedia(text) {
-    const left = [];
-    for (const q of text.split(",")) {
-      let holds = true;
-      const rest = [];
-      for (const f of q.trim().split(/\s+and\s+/i)) {
-        const r = frameFeature(f);
-        if (r === null) rest.push(f.trim());
-        else if (!r) { holds = false; break; }
+  // An iPhone 15's screen in points; the frame adds a band and a bezel
+  const MK_SCREEN = [393, 852];
+  const MK_FRAME = 14;          // band + bezel on each side, as in mobile.css
+  const MK_KEYS = 6;            // the side buttons stand out of the frame
+  const MK_MIN_H = 720;         // short windows get a shorter phone before a smaller one
+  const MK_CLOCK = new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit" });
+
+  /* Load the app into the phone. overlay: over the desktop page (#desktop,
+     ☰ → Mobile app), with a close button. onTheme follows the app's theme
+     and accent; onClose runs after an overlay closes. */
+  function mountMockup({ overlay = false, onTheme = null, onClose = null } = {}) {
+    const de = document.documentElement;
+    const el = document.getElementById("mockup");
+    if (!el || !PRISTINE) return null;
+    if (el._mk) return el._mk;
+    const screen = el.querySelector(".mk__screen");
+    const note = el.querySelector(".mk__note");
+    const clock = el.querySelector(".mk__time");
+    const closeBtn = el.querySelector("[data-mk-close]");
+    el.classList.remove("is-ready", "is-light", "is-light-bottom", "is-stuck");
+    note.textContent = "Opening the app…";
+
+    // Fit the phone to the window: a shorter phone first, then a smaller one
+    const fit = () => {
+      const w = innerWidth - 32;
+      const h = innerHeight - 48;
+      const fullW = MK_SCREEN[0] + 2 * (MK_FRAME + MK_KEYS);
+      const sW = Math.min(1, w / fullW);
+      let tall = MK_SCREEN[1];
+      let s = Math.min(sW, h / (tall + 2 * MK_FRAME));
+      if (s < 0.9) {
+        tall = Math.round(Math.max(MK_MIN_H, Math.min(MK_SCREEN[1], h / Math.min(sW, 0.9) - 2 * MK_FRAME)));
+        s = Math.min(sW, h / (tall + 2 * MK_FRAME));
       }
-      if (!holds) continue;
-      if (!rest.length) return "all";
-      left.push(rest.join(" and "));
-    }
-    return left.length ? left.join(", ") : "not all";
-  }
+      el.style.setProperty("--mk-h", `${tall}px`);
+      el.style.setProperty("--mk-s", Math.max(0.3, s).toFixed(4));
+    };
+    fit();
+    addEventListener("resize", fit);
 
-  // app.js and mobile.js share this scope, so their matchMedia is this one
-  const nativeMatchMedia = window.matchMedia.bind(window);
-  const matchMedia = !FRAMED ? nativeMatchMedia : (q) => {
-    const t = frameMedia(q);
-    if (t !== "all" && t !== "not all") return nativeMatchMedia(t);
-    return { matches: t === "all", media: q, onchange: null, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {}, dispatchEvent: () => false };
-  };
+    // The status bar keeps time
+    const tick = () => { clock.textContent = MK_CLOCK.formatToParts(new Date()).filter((p) => p.type !== "dayPeriod").map((p) => p.value).join("").trim(); };
+    tick();
+    const clockTimer = setInterval(tick, 15000);
 
-  // Where the screen sits in the window: fixed layers inside it measure from here
-  const screenEl = document.getElementById("screen");
-  const frameOffset = () => (FRAMED ? screenEl.getBoundingClientRect() : { left: 0, top: 0 });
+    // The page as it arrived, without scripts that aren't ours, in the current theme
+    const doc = new DOMParser().parseFromString(PRISTINE, "text/html");
+    doc.querySelectorAll("script:not([data-bloom])").forEach((s) => s.remove());
+    const html = doc.documentElement;
+    html.classList.remove("is-mockup", "js");
+    html.setAttribute("data-theme", de.getAttribute("data-theme") || "light");
+    if (de.hasAttribute("data-palette")) html.setAttribute("data-palette", de.getAttribute("data-palette"));
+    else html.removeAttribute("data-palette");
+    const frame = document.createElement("iframe");
+    frame.name = MOCKUP;
+    frame.title = "BlooMultiverse mobile app";
+    frame.srcdoc = `<!doctype html>${html.outerHTML}`;
+    screen.insertBefore(frame, screen.querySelector(".mk__status"));
 
-  if (FRAMED) {
-    // Bloom GPT is a full-screen layer too, so it lives in the screen
-    screenEl.append(document.getElementById("gpt-page"));
-    // Resolve our stylesheets for the phone-sized screen: media queries become
-    // "all"/"not all" (or what's left for the browser), and vw/vh become px.
-    // url(…) and strings are skipped whole, so data URIs are never touched.
-    const VP = /url\([^)]*\)|"[^"]*"|'[^']*'|(-?(?:\d+\.?\d*|\.\d+))(?:s|d|l)?v(w|h|min|max)\b/g;
-    const toPx = (css) => css.replace(VP, (m, n, u) => (n === undefined ? m : `${+(n * FRAME[u === "w" || u === "min" ? 0 : 1] / 100).toFixed(3)}px`));
-    const resolve = (rules) => {
-      for (const rule of rules) {
-        if (rule instanceof CSSMediaRule) {
-          const t = frameMedia(rule.media.mediaText);
-          if (t !== rule.media.mediaText) rule.media.mediaText = t;
-        }
-        if (rule.style) {
-          const css = rule.style.cssText;
-          const px = toPx(css);
-          if (px !== css) rule.style.cssText = px;
-        }
-        if (rule.cssRules) resolve(rule.cssRules);
+    // The app says when it's up, and which theme and status bar it wants
+    let ready = false;
+    const stuck = setTimeout(() => {
+      if (ready) return;
+      el.classList.add("is-stuck");
+      note.textContent = "The app couldn’t start in this window. Open this page on your phone to use it.";
+    }, 9000);
+    const setTheme = onTheme || ((theme, palette) => {
+      de.setAttribute("data-theme", theme === "dark" ? "dark" : "light");
+      if (palette === "crimson") de.setAttribute("data-palette", "crimson");
+      else de.removeAttribute("data-palette");
+    });
+    const onMsg = (e) => {
+      const d = e.source === frame.contentWindow && e.data;
+      if (!d || typeof d.bloom !== "string") return;
+      if (d.bloom === "app-ready" && !ready) {
+        ready = true;
+        clearTimeout(stuck);
+        el.classList.remove("is-stuck");
+        el.classList.add("is-ready");
+      }
+      if (d.bloom === "chrome") {
+        el.classList.toggle("is-light", d.tone === "light");
+        el.classList.toggle("is-light-bottom", d.bottom === "light");
+        if (d.theme !== de.getAttribute("data-theme") || (d.palette || "") !== (de.getAttribute("data-palette") || "")) setTheme(d.theme, d.palette);
       }
     };
-    for (const sheet of document.styleSheets) {
-      if (sheet.ownerNode?.hasAttribute?.("data-bloom")) resolve(sheet.cssRules);
+    addEventListener("message", onMsg);
+
+    const onKey = (e) => { if (e.key === "Escape") { e.stopImmediatePropagation(); close(); } };
+    const onClick = (e) => { if (e.target.closest("[data-mk-close]")) close(); };
+    if (overlay) {
+      el.classList.add("is-overlay");
+      el.setAttribute("role", "dialog");
+      el.setAttribute("aria-modal", "true");
+      el.setAttribute("aria-label", "BlooMultiverse mobile app");
+      document.addEventListener("keydown", onKey, true);
+      el.addEventListener("click", onClick);
+      requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-open")));
+      setTimeout(() => closeBtn?.focus(), 60);
     }
-    // The page's dialogs open in the browser's top layer, outside the screen:
-    // they place themselves over it from these
-    const place = () => {
-      const r = screenEl.getBoundingClientRect();
-      document.documentElement.style.setProperty("--fx", `${r.left}px`);
-      document.documentElement.style.setProperty("--fb", `${window.innerHeight - r.bottom}px`);
-    };
-    place();
-    addEventListener("resize", place);
-    addEventListener("scroll", place, { passive: true });
+
+    function close() {
+      if (!el._mk) return;
+      el._mk = null;
+      removeEventListener("resize", fit);
+      removeEventListener("message", onMsg);
+      document.removeEventListener("keydown", onKey, true);
+      el.removeEventListener("click", onClick);
+      clearInterval(clockTimer);
+      clearTimeout(stuck);
+      el.classList.remove("is-open");
+      const done = () => {
+        frame.remove();
+        el.classList.remove("is-overlay", "is-ready", "is-light", "is-light-bottom", "is-stuck");
+        ["role", "aria-modal", "aria-label"].forEach((a) => el.removeAttribute(a));
+        onClose?.();
+      };
+      if (overlay && !matchMedia("(prefers-reduced-motion: reduce)").matches) setTimeout(done, 320);
+      else done();
+    }
+    el._mk = { el, frame, close };
+    return el._mk;
   }
 
+    // Wider screens see only the phone app, in the iPhone: the page's own scripts stay off
+    if (document.documentElement.classList.contains("is-mockup")) { mountMockup(); return; }
 /* ==================================================================
    BlooMultiverse — Direction B · app.js
    Vanilla JS for what CSS can't do alone: theme & palette, the
    section-aware floating navigation, search, drawers, carousels,
    filters and the scroll choreography — one requestAnimationFrame
    loop reading cached geometry, writing only transforms & opacity.
-   index.html wraps frame.js, this file and mobile.js (the phone app)
+   index.html wraps mockup.js, this file and mobile.js (the phone app)
    in one scope, so the phone app reads the same data and functions.
-   APP_QUERY, DESKTOP, matchMedia and frameOffset come from frame.js.
+   APP_QUERY, DESKTOP, MOCKUP and PRISTINE come from mockup.js.
    ================================================================== */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -6952,23 +7047,18 @@ button.m-card:active { transform: scale(.985); }
     items.push(`<button type="button" data-gpt-ask="What changed in Data Security?">${icon("i-shield", "ico ico--sm")}Data Security was updated</button>`);
     return `<span class="gpt__noticed-label">${icon("i-sparkle", "ico ico--sm")}Bloom GPT noticed</span>${items.join('<i aria-hidden="true"></i>')}`;
   }
-  // The landing's greeting, date and what Bloom GPT noticed, as of now
-  function fillGptLanding() {
-    const hr = new Date().getHours();
-    $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
-    $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-    $("#gpt-noticed").innerHTML = gptNoticedHTML();
-  }
   function openGpt(trigger, q) {
     if (!gpt.open) {
       gpt.returnFocus = document.activeElement;
       const r = trigger?.getBoundingClientRect?.();
-      const o = frameOffset(); // Bloom GPT is fixed to the phone-sized screen when there is one
-      gptEl.style.setProperty("--ox", r ? `${r.left - o.left + r.width / 2}px` : "50%");
-      gptEl.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
+      gptEl.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+      gptEl.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
       closeNav(false); closeMenus(); closeSearch(); hideTip();
       if (ib.open) closeInbox();
-      fillGptLanding();
+      const hr = new Date().getHours();
+      $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
+      $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+      $("#gpt-noticed").innerHTML = gptNoticedHTML();
       gpt.open = true;
       gptEl.classList.add("is-open");
       gptEl.setAttribute("aria-hidden", "false");
@@ -7819,9 +7909,8 @@ button.m-card:active { transform: scale(.985); }
     PAGES[name].prepare?.(arg);
     const el = makePage(name, arg);
     const r = trigger?.getBoundingClientRect?.();
-    const o = frameOffset();
-    el.style.setProperty("--ox", r ? `${r.left - o.left + r.width / 2}px` : "50%");
-    el.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
+    el.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+    el.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
     appLayer.append(el);
     attached(el);
     A.modal = { name, el, ret: trigger || document.activeElement };
@@ -7949,6 +8038,7 @@ button.m-card:active { transform: scale(.985); }
     bar.classList.toggle("is-scrolled", pg.scrollTop > 4);
     const t = $(".pg-body h1", pg);
     if (t && !pg._page.def.root) bar.classList.toggle("show-title", t.getBoundingClientRect().bottom < bar.getBoundingClientRect().bottom);
+    tellMockup(false);
   }
   function updateAppRail(r) {
     const foot = r.nextElementSibling?.classList.contains("m-rail-foot") ? r.nextElementSibling : null;
@@ -8023,20 +8113,14 @@ button.m-card:active { transform: scale(.985); }
   // The Profile tab wears your photo
   $('[data-app-tab="profile"]', appNav).insertAdjacentHTML("afterbegin", avatarHTML(me, "app-nav__ic app-nav__dp").replace("<span ", '<span aria-hidden="true" '));
   function syncNav(pop = false) {
-    $$(".app-nav__item", appNav).forEach((b) => { if (b.dataset.appTab === A.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-    const cur = placeNavInd(appNav);
-    if (!cur) return;
-    if (pop) motion($(".app-nav__ic", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
-  }
-
-  // The accent pill sits under the current tab
-  function placeNavInd(nav) {
-    const cur = $('.app-nav__item[aria-current="page"]', nav);
-    const ind = $(".app-nav__ind", nav);
-    if (!cur || !cur.offsetWidth) return null;
+    const items = $$(".app-nav__item", appNav);
+    items.forEach((b) => { if (b.dataset.appTab === A.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+    const cur = items.find((b) => b.dataset.appTab === A.tab);
+    const ind = $(".app-nav__ind", appNav);
+    if (!cur || !cur.offsetWidth) return;
     ind.style.width = `${cur.offsetWidth}px`;
     ind.style.transform = `translateX(${cur.offsetLeft}px)`;
-    return cur;
+    if (pop) motion($(".app-nav__ic", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
   }
 
   /* One click handler for the whole app */
@@ -8860,7 +8944,7 @@ button.m-card:active { transform: scale(.985); }
     };
     fig.addEventListener("touchstart", (e) => from(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
     fig.addEventListener("touchend", (e) => to(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
-    // a mouse swipes too (the phone-sized app on a desktop)
+    // a mouse swipes too (the app in the iPhone mockup)
     fig.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") from(e.clientX, e.clientY); });
     fig.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") to(e.clientX, e.clientY); });
   }
@@ -9447,7 +9531,7 @@ button.m-card:active { transform: scale(.985); }
     appViews.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
       const pg = topPage();
-      s = (e.touches.length === 1 && t.clientX - frameOffset().left < 22 && A.stacks[A.tab].length > 1 && !A.modal) ? { x: t.clientX, y: t.clientY, pg, prev: A.stacks[A.tab].at(-2), on: false, dx: 0 } : null;
+      s = (e.touches.length === 1 && t.clientX < 22 && A.stacks[A.tab].length > 1 && !A.modal) ? { x: t.clientX, y: t.clientY, pg, prev: A.stacks[A.tab].at(-2), on: false, dx: 0 } : null;
     }, { passive: true });
     appViews.addEventListener("touchmove", (e) => {
       if (!s) return;
@@ -9530,7 +9614,7 @@ button.m-card:active { transform: scale(.985); }
 
   /* ---------------------------------------------------------------
      Mouse: rails move under a drag, as they would under a finger
-     (the phone-sized app on a desktop, or a narrow desktop window)
+     (the app in the iPhone mockup, or in a narrow desktop window)
      --------------------------------------------------------------- */
   (() => {
     let d = null;
@@ -9584,209 +9668,63 @@ button.m-card:active { transform: scale(.985); }
   })();
 
   /* ---------------------------------------------------------------
-     Figma capture board — every screen at once. An HTML capture reads
-     the page as it is, so here each screen is its own artboard: full
-     length (nothing scrolls inside it), static (no motion) and flat (no
-     hidden, stacked or off-screen layers, icons as plain SVG). Opens
-     from "Figma capture view" beside the phone-sized screen, or #figma.
+     In the iPhone mockup: tell the device around the app which theme
+     the app is in, and when the status bar sits on a photo
      --------------------------------------------------------------- */
-  const CAPTURE = [
-    // name: the artboard's name; tab: the tab lit in its bottom bar (none on full-screen layers)
-    { name: "Home", page: "home", tab: "home" },
-    { name: "Tasks", page: "tasks", tab: "tasks" },
-    { name: "Tasks — My requests", page: "tasks", tab: "tasks", set: () => { A.tk.seg = "mine"; } },
-    { name: "Tasks — Filter and sort", page: "tasks", tab: "tasks", set: () => { A.tk.seg = "approvals"; }, sheet: "Filter and sort" },
-    { name: "Task", page: "task", ctx: "0", tab: "tasks" },
-    { name: "Request", page: "request", ctx: "rq1", tab: "tasks" },
-    { name: "Help", page: "help", tab: "help" },
-    { name: "Bloom GPT", page: "gpt" },
-    { name: "Explore", page: "explore", tab: "explore" },
-    { name: "Policies", page: "policies", tab: "explore" },
-    { name: "Policy", page: "policy", ctx: "Data Security", tab: "explore" },
-    { name: "Communities", page: "communities", tab: "explore" },
-    { name: "Community", page: "community", ctx: "Padel", tab: "explore" },
-    { name: "Discounts", page: "discounts", tab: "explore" },
-    { name: "Discount", page: "discount", ctx: "BLOOM-EDT30", tab: "explore" },
-    { name: "Perks", page: "perks", tab: "explore" },
-    { name: "Perk", page: "perk", ctx: "air", tab: "explore" },
-    { name: "People", page: "people", tab: "home" },
-    { name: "Person", page: "person", ctx: "joiner:0", tab: "home" },
-    { name: "Profile", page: "profile", tab: "profile" },
-    { name: "My profile", page: "myprofile", tab: "profile" },
-    { name: "My details", page: "mydetails", tab: "profile" },
-    { name: "My team", page: "myteam", tab: "profile" },
-    { name: "Notification settings", page: "notifyprefs", tab: "profile" },
-    { name: "Notifications", page: "notifications" },
-    { name: "Search", page: "search" },
-    { name: "Search — results", page: "search", set: () => { A.sr = { q: "data", view: "live", group: "all" }; } }
-  ];
-  function captureScreen(c) {
-    const saved = { tk: { ...A.tk }, sr: { ...A.sr } };
-    c.set?.();
-    const box = document.createElement("div");
-    box.className = `fg-screen${c.sheet ? " fg-screen--fixed" : ""}`;
-    if (c.page === "gpt") {
-      fillGptLanding();
-      const g = gptEl.cloneNode(true);
-      g.classList.add("is-open");
-      g.classList.remove("is-chatting");
-      $("#gpt-thread", g)?.replaceChildren();
-      box.append(g);
-    } else {
-      const pg = makePage(c.page, c.ctx || "");
-      if (c.page === "search" && A.sr.q) $("input", pg).setAttribute("value", A.sr.q);
-      box.append(pg);
-    }
-    if (c.tab) {
-      const nav = appNav.cloneNode(true);
-      $$(".app-nav__item", nav).forEach((b) => { if (b.dataset.appTab === c.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-      box.append(nav);
-    }
-    if (c.sheet) {
-      const sh = sheetEl.cloneNode(true);
-      sh.className = "app-sheet is-open";
-      $(".app-sheet__title", sh).textContent = c.sheet;
-      $(".app-sheet__body", sh).innerHTML = tkFilterHTML();
-      box.append(sh);
-    }
-    Object.assign(A.tk, saved.tk);
-    A.sr = saved.sr;
-    return box;
+  let toldMockup = "";
+  function tellMockup(ready) {
+    if (window.name !== MOCKUP || !A.on) return;
+    const pg = gpt.open || A.modal ? null : topPage();
+    const over = pg && $(".pg-bar--over", pg);
+    // what the home indicator sits on: a dark surface (dark theme, or a deep-navy card) wants a light one
+    const under = document.elementsFromPoint(innerWidth / 2, innerHeight - 8).find((n) => !appNav.contains(n));
+    const msg = {
+      bloom: "chrome",
+      theme: root.getAttribute("data-theme"),
+      palette: root.getAttribute("data-palette") || "",
+      tone: over && !over.classList.contains("is-scrolled") ? "light" : "",
+      bottom: under && /dark/.test(getComputedStyle(under).colorScheme) ? "light" : ""
+    };
+    const said = JSON.stringify(msg);
+    try {
+      if (ready) parent.postMessage({ bloom: "app-ready" }, "*");
+      if (ready || said !== toldMockup) parent.postMessage(msg, "*");
+      toldMockup = said;
+    } catch { /* not framed */ }
   }
-  // The address remembers the board (#figma), where the host allows it
-  const setAddress = (hash) => { try { history.replaceState(null, "", hash || location.pathname + location.search); } catch { /* the host keeps its address */ } };
-  const fgThemeLabel = () => (root.getAttribute("data-theme") === "dark" ? "Dark" : "Light");
-  function openCapture() {
-    if (!FRAMED || root.classList.contains("is-capture")) return;
-    setAddress("#figma");
-    closeModal(false);
-    closeSheet(false);
-    if (gpt.open) closeGpt();
-    A.loaded = true;
-    A.loading = false;
-    const board = document.createElement("main");
-    board.className = "fg";
-    board.innerHTML = `<header class="fg__head">
-        <h1 class="fg__title">BlooMultiverse — mobile app</h1>
-        <p class="fg__meta">${CAPTURE.length} screens · 393 × 852 · <span class="js-fg-theme">${fgThemeLabel()}</span> theme</p>
-        <div class="fg__acts"><button class="btn btn--ghost" type="button" data-fg-theme>Switch theme</button><button class="btn btn--ghost" type="button" data-fg-back>Back to the app</button></div>
-      </header>
-      <div class="fg__grid"></div>`;
-    const grid = $(".fg__grid", board);
-    CAPTURE.forEach((c) => {
-      const fig = document.createElement("figure");
-      fig.className = "fg-art";
-      fig.innerHTML = `<figcaption class="fg-art__name">${esc(c.name)}</figcaption>`;
-      fig.append(captureScreen(c));
-      grid.append(fig);
-    });
-    // The board is the page now: the live app stops, and it, the desktop page and their layers go
-    A.on = false;
-    root.classList.add("is-capture");
-    body.prepend(board);
-    [...body.children].forEach((el) => { if (el !== board && !el.matches("svg.sprite")) el.remove(); });
-    // Measure what needs layout (rails, tab pills), then flatten
-    requestAnimationFrame(() => {
-      $$(".fg-screen", board).forEach((scr) => {
-        $$("[data-rail]", scr).forEach(updateAppRail);
-        const pg = $(":scope > .pg", scr);
-        pg?._page?.def.activate?.(pg);
-        const nav = $(":scope > .app-nav", scr);
-        if (nav) placeNavInd(nav);
-      });
-      setTimeout(() => { stillCapture(board); flattenCapture(board); }, 120);
-    });
+  if (window.name === MOCKUP) {
+    let queued = false;
+    new MutationObserver(() => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; tellMockup(false); });
+    }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-theme", "data-palette"] });
   }
-  // Motion comes to rest where it ends, written into each element, then stops:
-  // entrances end shown (they start hidden), loops go back to where they began
-  function stillCapture(board) {
-    document.getAnimations().forEach((a) => {
-      const fx = a.effect;
-      const el = fx?.target;
-      if (!el || !board.contains(el) || fx.getComputedTiming().iterations === Infinity) { a.cancel(); return; }
-      a.finish();
-      if (!fx.pseudoElement) {
-        const cs = getComputedStyle(el);
-        const props = new Set(fx.getKeyframes().flatMap(Object.keys).filter((k) => !["offset", "computedOffset", "easing", "composite"].includes(k)));
-        props.forEach((k) => { const prop = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`); el.style.setProperty(prop, cs.getPropertyValue(prop)); });
-      }
-      a.cancel();
-    });
-    root.classList.add("is-still");
-  }
-  function flattenCapture(board) {
-    // Closed answers aren't on screen, so they aren't layers
-    $$("details:not([open]) > :not(summary)", board).forEach((el) => el.remove());
-    // Nothing hidden or see-through stays behind as a layer; in-flow ones leave their space
-    $$("*", board).forEach((el) => {
-      if (!(el instanceof HTMLElement) || !el.isConnected) return;
-      const cs = getComputedStyle(el);
-      if (cs.display === "none") { el.remove(); return; }
-      if (cs.visibility === "hidden" || cs.opacity === "0") {
-        if (cs.position === "absolute" || cs.position === "fixed") { el.remove(); return; }
-        const gap = document.createElement("span");
-        gap.style.cssText = `display:${cs.display === "inline" ? "inline-block" : cs.display};width:${el.offsetWidth}px;height:${el.offsetHeight}px;flex:none`;
-        el.replaceWith(gap);
-        return;
-      }
-      // Nothing sticks or floats over the artboard, and what scrolls simply clips
-      if (cs.position === "sticky") el.style.position = "relative";
-      if (cs.position === "fixed") el.style.position = "absolute";
-      if (/auto|scroll/.test(cs.overflowX + cs.overflowY)) el.style.overflow = "hidden";
-    });
-    // what emptied out on the way (a wrapper whose only child was hidden) goes too
-    $$("*", board).forEach((el) => { if (el instanceof HTMLElement && el.isConnected && getComputedStyle(el).display === "none") el.remove(); });
-    // Icons: each sprite symbol drawn in place
-    $$("svg use", board).forEach((u) => {
-      const sym = document.getElementById((u.getAttribute("href") || "").slice(1));
-      const svg = u.closest("svg");
-      if (!sym || !svg) { u.remove(); return; }
-      if (!svg.hasAttribute("viewBox")) svg.setAttribute("viewBox", sym.getAttribute("viewBox") || "0 0 24 24");
-      u.replaceWith(...[...sym.childNodes].map((n) => n.cloneNode(true)));
-    });
-    $("svg.sprite")?.remove();
-    // Ids are unique per artboard (gradients keep their references); the rest go
-    $$(".fg-screen", board).forEach((scr, n) => {
-      $$("svg [id]", scr).forEach((d) => {
-        const was = d.id;
-        d.id = `${was}-${n + 1}`;
-        $$("[fill], [stroke]", d.closest("svg")).forEach((x) => ["fill", "stroke"].forEach((a) => { if (x.getAttribute(a) === `url(#${was})`) x.setAttribute(a, `url(#${d.id})`); }));
-      });
-    });
-    $$("[id]", board).forEach((el) => { if (!el.closest("svg")) el.removeAttribute("id"); });
-    bakeCapturePaint(board);
-  }
-  // Each SVG shape carries its colours and stroke as attributes, for importers that don't read CSS
-  function bakeCapturePaint(board) {
-    $$("svg", board).forEach((svg) => {
-      if (!svg.getAttribute("width")) { const r = svg.getBoundingClientRect(); svg.setAttribute("width", Math.round(r.width)); svg.setAttribute("height", Math.round(r.height)); }
-      $$("path, rect, circle, ellipse, line, polyline, polygon", svg).forEach((sh) => {
-        const cs = getComputedStyle(sh);
-        ["fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "fill-opacity", "stroke-opacity"].forEach((a) => sh.setAttribute(a, cs.getPropertyValue(a)));
-      });
-    });
-  }
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-open-capture]")) { openCapture(); return; }
-    if (e.target.closest("[data-fg-back]")) { setAddress(""); location.reload(); return; }
-    if (e.target.closest("[data-fg-theme]")) {
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      applyTheme(next);
-      store.set(THEME_KEY, next);
-      $$(".js-fg-theme").forEach((t) => { t.textContent = fgThemeLabel(); });
-      const board = $(".fg");
-      if (board) bakeCapturePaint(board);
-    }
-  });
 
   /* ---------------------------------------------------------------
-     Desktop page (#desktop): ☰ → Mobile app goes back to the app
+     Desktop page (#desktop): ☰ → Mobile app opens the iPhone mockup
+     over the page; the app inside keeps its own state
      --------------------------------------------------------------- */
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest("[data-open-app]")) return;
-    setAddress("");
-    location.reload();
-  });
+  let mockup = null;
+  function openMockup(trigger) {
+    if (mockup) return;
+    closeNav(false);
+    mockup = mountMockup({
+      overlay: true,
+      onTheme: (theme, palette) => { applyTheme(theme === "dark" ? "dark" : "light"); applyPalette(palette === "crimson" ? "crimson" : "azure"); },
+      onClose: () => {
+        mockup = null;
+        body.style.overflow = "";
+        setFlagCursor(store.get(FC_KEY) !== "off");
+        // the ☰ item closed with its menu, so focus goes back to ☰
+        (trigger && !trigger.closest(".mo") ? trigger : menuBtn).focus({ preventScroll: true });
+      }
+    });
+    if (!mockup) return;
+    body.style.overflow = "hidden";
+    setFlagCursor(false);
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-mockup]"); if (b) openMockup(b); });
 
   /* ---------------------------------------------------------------
      Mode — the app on phones, the page everywhere else
@@ -9800,11 +9738,13 @@ button.m-card:active { transform: scale(.985); }
     root.classList.toggle("is-app", on);
     if (on) {
       closeNav(false); closeMenus(); closeSearch(); closeDrawer(); closeInbox(); hideTip();
+      mockup?.close();
       ensureRoot(A.tab);
       TABS.forEach((t) => { const s = stackOf(t); s.classList.toggle("is-active", t === A.tab); s.inert = t !== A.tab; });
       syncBadges();
       requestAnimationFrame(() => { syncNav(); $$(".pg", appEl).forEach(updateBar); });
       if (!navigator.onLine) showOffline(true);
+      tellMockup(true);
     } else {
       closeModal(false);
       closeSheet(false);
@@ -9815,11 +9755,6 @@ button.m-card:active { transform: scale(.985); }
     setFlagCursor(store.get(FC_KEY) !== "off");
   }
   appMQ.addEventListener("change", setAppMode);
-  // #figma opens the board once the page has loaded and settled (fonts in, so rails measure right)
-  if (location.hash === "#figma") {
-    const loaded = document.readyState === "complete" ? Promise.resolve() : new Promise((r) => addEventListener("load", r, { once: true }));
-    loaded.then(() => new Promise((r) => { const t = setInterval(() => { if (root.classList.contains("is-loaded")) { clearInterval(t); r(); } }, 50); })).then(openCapture);
-  }
   addEventListener("resize", () => { if (A.on) syncNav(); });
   setAppMode();
 

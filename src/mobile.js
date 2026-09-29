@@ -277,9 +277,8 @@
     PAGES[name].prepare?.(arg);
     const el = makePage(name, arg);
     const r = trigger?.getBoundingClientRect?.();
-    const o = frameOffset();
-    el.style.setProperty("--ox", r ? `${r.left - o.left + r.width / 2}px` : "50%");
-    el.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
+    el.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+    el.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
     appLayer.append(el);
     attached(el);
     A.modal = { name, el, ret: trigger || document.activeElement };
@@ -407,6 +406,7 @@
     bar.classList.toggle("is-scrolled", pg.scrollTop > 4);
     const t = $(".pg-body h1", pg);
     if (t && !pg._page.def.root) bar.classList.toggle("show-title", t.getBoundingClientRect().bottom < bar.getBoundingClientRect().bottom);
+    tellMockup(false);
   }
   function updateAppRail(r) {
     const foot = r.nextElementSibling?.classList.contains("m-rail-foot") ? r.nextElementSibling : null;
@@ -481,20 +481,14 @@
   // The Profile tab wears your photo
   $('[data-app-tab="profile"]', appNav).insertAdjacentHTML("afterbegin", avatarHTML(me, "app-nav__ic app-nav__dp").replace("<span ", '<span aria-hidden="true" '));
   function syncNav(pop = false) {
-    $$(".app-nav__item", appNav).forEach((b) => { if (b.dataset.appTab === A.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-    const cur = placeNavInd(appNav);
-    if (!cur) return;
-    if (pop) motion($(".app-nav__ic", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
-  }
-
-  // The accent pill sits under the current tab
-  function placeNavInd(nav) {
-    const cur = $('.app-nav__item[aria-current="page"]', nav);
-    const ind = $(".app-nav__ind", nav);
-    if (!cur || !cur.offsetWidth) return null;
+    const items = $$(".app-nav__item", appNav);
+    items.forEach((b) => { if (b.dataset.appTab === A.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+    const cur = items.find((b) => b.dataset.appTab === A.tab);
+    const ind = $(".app-nav__ind", appNav);
+    if (!cur || !cur.offsetWidth) return;
     ind.style.width = `${cur.offsetWidth}px`;
     ind.style.transform = `translateX(${cur.offsetLeft}px)`;
-    return cur;
+    if (pop) motion($(".app-nav__ic", cur), [{ transform: "scale(.7) translateY(3px)" }, { transform: "none" }], { duration: 560, easing: "cubic-bezier(.34,1.56,.64,1)" });
   }
 
   /* One click handler for the whole app */
@@ -1318,7 +1312,7 @@
     };
     fig.addEventListener("touchstart", (e) => from(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
     fig.addEventListener("touchend", (e) => to(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
-    // a mouse swipes too (the phone-sized app on a desktop)
+    // a mouse swipes too (the app in the iPhone mockup)
     fig.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") from(e.clientX, e.clientY); });
     fig.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") to(e.clientX, e.clientY); });
   }
@@ -1905,7 +1899,7 @@
     appViews.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
       const pg = topPage();
-      s = (e.touches.length === 1 && t.clientX - frameOffset().left < 22 && A.stacks[A.tab].length > 1 && !A.modal) ? { x: t.clientX, y: t.clientY, pg, prev: A.stacks[A.tab].at(-2), on: false, dx: 0 } : null;
+      s = (e.touches.length === 1 && t.clientX < 22 && A.stacks[A.tab].length > 1 && !A.modal) ? { x: t.clientX, y: t.clientY, pg, prev: A.stacks[A.tab].at(-2), on: false, dx: 0 } : null;
     }, { passive: true });
     appViews.addEventListener("touchmove", (e) => {
       if (!s) return;
@@ -1988,7 +1982,7 @@
 
   /* ---------------------------------------------------------------
      Mouse: rails move under a drag, as they would under a finger
-     (the phone-sized app on a desktop, or a narrow desktop window)
+     (the app in the iPhone mockup, or in a narrow desktop window)
      --------------------------------------------------------------- */
   (() => {
     let d = null;
@@ -2042,209 +2036,63 @@
   })();
 
   /* ---------------------------------------------------------------
-     Figma capture board — every screen at once. An HTML capture reads
-     the page as it is, so here each screen is its own artboard: full
-     length (nothing scrolls inside it), static (no motion) and flat (no
-     hidden, stacked or off-screen layers, icons as plain SVG). Opens
-     from "Figma capture view" beside the phone-sized screen, or #figma.
+     In the iPhone mockup: tell the device around the app which theme
+     the app is in, and when the status bar sits on a photo
      --------------------------------------------------------------- */
-  const CAPTURE = [
-    // name: the artboard's name; tab: the tab lit in its bottom bar (none on full-screen layers)
-    { name: "Home", page: "home", tab: "home" },
-    { name: "Tasks", page: "tasks", tab: "tasks" },
-    { name: "Tasks — My requests", page: "tasks", tab: "tasks", set: () => { A.tk.seg = "mine"; } },
-    { name: "Tasks — Filter and sort", page: "tasks", tab: "tasks", set: () => { A.tk.seg = "approvals"; }, sheet: "Filter and sort" },
-    { name: "Task", page: "task", ctx: "0", tab: "tasks" },
-    { name: "Request", page: "request", ctx: "rq1", tab: "tasks" },
-    { name: "Help", page: "help", tab: "help" },
-    { name: "Bloom GPT", page: "gpt" },
-    { name: "Explore", page: "explore", tab: "explore" },
-    { name: "Policies", page: "policies", tab: "explore" },
-    { name: "Policy", page: "policy", ctx: "Data Security", tab: "explore" },
-    { name: "Communities", page: "communities", tab: "explore" },
-    { name: "Community", page: "community", ctx: "Padel", tab: "explore" },
-    { name: "Discounts", page: "discounts", tab: "explore" },
-    { name: "Discount", page: "discount", ctx: "BLOOM-EDT30", tab: "explore" },
-    { name: "Perks", page: "perks", tab: "explore" },
-    { name: "Perk", page: "perk", ctx: "air", tab: "explore" },
-    { name: "People", page: "people", tab: "home" },
-    { name: "Person", page: "person", ctx: "joiner:0", tab: "home" },
-    { name: "Profile", page: "profile", tab: "profile" },
-    { name: "My profile", page: "myprofile", tab: "profile" },
-    { name: "My details", page: "mydetails", tab: "profile" },
-    { name: "My team", page: "myteam", tab: "profile" },
-    { name: "Notification settings", page: "notifyprefs", tab: "profile" },
-    { name: "Notifications", page: "notifications" },
-    { name: "Search", page: "search" },
-    { name: "Search — results", page: "search", set: () => { A.sr = { q: "data", view: "live", group: "all" }; } }
-  ];
-  function captureScreen(c) {
-    const saved = { tk: { ...A.tk }, sr: { ...A.sr } };
-    c.set?.();
-    const box = document.createElement("div");
-    box.className = `fg-screen${c.sheet ? " fg-screen--fixed" : ""}`;
-    if (c.page === "gpt") {
-      fillGptLanding();
-      const g = gptEl.cloneNode(true);
-      g.classList.add("is-open");
-      g.classList.remove("is-chatting");
-      $("#gpt-thread", g)?.replaceChildren();
-      box.append(g);
-    } else {
-      const pg = makePage(c.page, c.ctx || "");
-      if (c.page === "search" && A.sr.q) $("input", pg).setAttribute("value", A.sr.q);
-      box.append(pg);
-    }
-    if (c.tab) {
-      const nav = appNav.cloneNode(true);
-      $$(".app-nav__item", nav).forEach((b) => { if (b.dataset.appTab === c.tab) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
-      box.append(nav);
-    }
-    if (c.sheet) {
-      const sh = sheetEl.cloneNode(true);
-      sh.className = "app-sheet is-open";
-      $(".app-sheet__title", sh).textContent = c.sheet;
-      $(".app-sheet__body", sh).innerHTML = tkFilterHTML();
-      box.append(sh);
-    }
-    Object.assign(A.tk, saved.tk);
-    A.sr = saved.sr;
-    return box;
+  let toldMockup = "";
+  function tellMockup(ready) {
+    if (window.name !== MOCKUP || !A.on) return;
+    const pg = gpt.open || A.modal ? null : topPage();
+    const over = pg && $(".pg-bar--over", pg);
+    // what the home indicator sits on: a dark surface (dark theme, or a deep-navy card) wants a light one
+    const under = document.elementsFromPoint(innerWidth / 2, innerHeight - 8).find((n) => !appNav.contains(n));
+    const msg = {
+      bloom: "chrome",
+      theme: root.getAttribute("data-theme"),
+      palette: root.getAttribute("data-palette") || "",
+      tone: over && !over.classList.contains("is-scrolled") ? "light" : "",
+      bottom: under && /dark/.test(getComputedStyle(under).colorScheme) ? "light" : ""
+    };
+    const said = JSON.stringify(msg);
+    try {
+      if (ready) parent.postMessage({ bloom: "app-ready" }, "*");
+      if (ready || said !== toldMockup) parent.postMessage(msg, "*");
+      toldMockup = said;
+    } catch { /* not framed */ }
   }
-  // The address remembers the board (#figma), where the host allows it
-  const setAddress = (hash) => { try { history.replaceState(null, "", hash || location.pathname + location.search); } catch { /* the host keeps its address */ } };
-  const fgThemeLabel = () => (root.getAttribute("data-theme") === "dark" ? "Dark" : "Light");
-  function openCapture() {
-    if (!FRAMED || root.classList.contains("is-capture")) return;
-    setAddress("#figma");
-    closeModal(false);
-    closeSheet(false);
-    if (gpt.open) closeGpt();
-    A.loaded = true;
-    A.loading = false;
-    const board = document.createElement("main");
-    board.className = "fg";
-    board.innerHTML = `<header class="fg__head">
-        <h1 class="fg__title">BlooMultiverse — mobile app</h1>
-        <p class="fg__meta">${CAPTURE.length} screens · 393 × 852 · <span class="js-fg-theme">${fgThemeLabel()}</span> theme</p>
-        <div class="fg__acts"><button class="btn btn--ghost" type="button" data-fg-theme>Switch theme</button><button class="btn btn--ghost" type="button" data-fg-back>Back to the app</button></div>
-      </header>
-      <div class="fg__grid"></div>`;
-    const grid = $(".fg__grid", board);
-    CAPTURE.forEach((c) => {
-      const fig = document.createElement("figure");
-      fig.className = "fg-art";
-      fig.innerHTML = `<figcaption class="fg-art__name">${esc(c.name)}</figcaption>`;
-      fig.append(captureScreen(c));
-      grid.append(fig);
-    });
-    // The board is the page now: the live app stops, and it, the desktop page and their layers go
-    A.on = false;
-    root.classList.add("is-capture");
-    body.prepend(board);
-    [...body.children].forEach((el) => { if (el !== board && !el.matches("svg.sprite")) el.remove(); });
-    // Measure what needs layout (rails, tab pills), then flatten
-    requestAnimationFrame(() => {
-      $$(".fg-screen", board).forEach((scr) => {
-        $$("[data-rail]", scr).forEach(updateAppRail);
-        const pg = $(":scope > .pg", scr);
-        pg?._page?.def.activate?.(pg);
-        const nav = $(":scope > .app-nav", scr);
-        if (nav) placeNavInd(nav);
-      });
-      setTimeout(() => { stillCapture(board); flattenCapture(board); }, 120);
-    });
+  if (window.name === MOCKUP) {
+    let queued = false;
+    new MutationObserver(() => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; tellMockup(false); });
+    }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-theme", "data-palette"] });
   }
-  // Motion comes to rest where it ends, written into each element, then stops:
-  // entrances end shown (they start hidden), loops go back to where they began
-  function stillCapture(board) {
-    document.getAnimations().forEach((a) => {
-      const fx = a.effect;
-      const el = fx?.target;
-      if (!el || !board.contains(el) || fx.getComputedTiming().iterations === Infinity) { a.cancel(); return; }
-      a.finish();
-      if (!fx.pseudoElement) {
-        const cs = getComputedStyle(el);
-        const props = new Set(fx.getKeyframes().flatMap(Object.keys).filter((k) => !["offset", "computedOffset", "easing", "composite"].includes(k)));
-        props.forEach((k) => { const prop = k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`); el.style.setProperty(prop, cs.getPropertyValue(prop)); });
-      }
-      a.cancel();
-    });
-    root.classList.add("is-still");
-  }
-  function flattenCapture(board) {
-    // Closed answers aren't on screen, so they aren't layers
-    $$("details:not([open]) > :not(summary)", board).forEach((el) => el.remove());
-    // Nothing hidden or see-through stays behind as a layer; in-flow ones leave their space
-    $$("*", board).forEach((el) => {
-      if (!(el instanceof HTMLElement) || !el.isConnected) return;
-      const cs = getComputedStyle(el);
-      if (cs.display === "none") { el.remove(); return; }
-      if (cs.visibility === "hidden" || cs.opacity === "0") {
-        if (cs.position === "absolute" || cs.position === "fixed") { el.remove(); return; }
-        const gap = document.createElement("span");
-        gap.style.cssText = `display:${cs.display === "inline" ? "inline-block" : cs.display};width:${el.offsetWidth}px;height:${el.offsetHeight}px;flex:none`;
-        el.replaceWith(gap);
-        return;
-      }
-      // Nothing sticks or floats over the artboard, and what scrolls simply clips
-      if (cs.position === "sticky") el.style.position = "relative";
-      if (cs.position === "fixed") el.style.position = "absolute";
-      if (/auto|scroll/.test(cs.overflowX + cs.overflowY)) el.style.overflow = "hidden";
-    });
-    // what emptied out on the way (a wrapper whose only child was hidden) goes too
-    $$("*", board).forEach((el) => { if (el instanceof HTMLElement && el.isConnected && getComputedStyle(el).display === "none") el.remove(); });
-    // Icons: each sprite symbol drawn in place
-    $$("svg use", board).forEach((u) => {
-      const sym = document.getElementById((u.getAttribute("href") || "").slice(1));
-      const svg = u.closest("svg");
-      if (!sym || !svg) { u.remove(); return; }
-      if (!svg.hasAttribute("viewBox")) svg.setAttribute("viewBox", sym.getAttribute("viewBox") || "0 0 24 24");
-      u.replaceWith(...[...sym.childNodes].map((n) => n.cloneNode(true)));
-    });
-    $("svg.sprite")?.remove();
-    // Ids are unique per artboard (gradients keep their references); the rest go
-    $$(".fg-screen", board).forEach((scr, n) => {
-      $$("svg [id]", scr).forEach((d) => {
-        const was = d.id;
-        d.id = `${was}-${n + 1}`;
-        $$("[fill], [stroke]", d.closest("svg")).forEach((x) => ["fill", "stroke"].forEach((a) => { if (x.getAttribute(a) === `url(#${was})`) x.setAttribute(a, `url(#${d.id})`); }));
-      });
-    });
-    $$("[id]", board).forEach((el) => { if (!el.closest("svg")) el.removeAttribute("id"); });
-    bakeCapturePaint(board);
-  }
-  // Each SVG shape carries its colours and stroke as attributes, for importers that don't read CSS
-  function bakeCapturePaint(board) {
-    $$("svg", board).forEach((svg) => {
-      if (!svg.getAttribute("width")) { const r = svg.getBoundingClientRect(); svg.setAttribute("width", Math.round(r.width)); svg.setAttribute("height", Math.round(r.height)); }
-      $$("path, rect, circle, ellipse, line, polyline, polygon", svg).forEach((sh) => {
-        const cs = getComputedStyle(sh);
-        ["fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "fill-opacity", "stroke-opacity"].forEach((a) => sh.setAttribute(a, cs.getPropertyValue(a)));
-      });
-    });
-  }
-  document.addEventListener("click", (e) => {
-    if (e.target.closest("[data-open-capture]")) { openCapture(); return; }
-    if (e.target.closest("[data-fg-back]")) { setAddress(""); location.reload(); return; }
-    if (e.target.closest("[data-fg-theme]")) {
-      const next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      applyTheme(next);
-      store.set(THEME_KEY, next);
-      $$(".js-fg-theme").forEach((t) => { t.textContent = fgThemeLabel(); });
-      const board = $(".fg");
-      if (board) bakeCapturePaint(board);
-    }
-  });
 
   /* ---------------------------------------------------------------
-     Desktop page (#desktop): ☰ → Mobile app goes back to the app
+     Desktop page (#desktop): ☰ → Mobile app opens the iPhone mockup
+     over the page; the app inside keeps its own state
      --------------------------------------------------------------- */
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest("[data-open-app]")) return;
-    setAddress("");
-    location.reload();
-  });
+  let mockup = null;
+  function openMockup(trigger) {
+    if (mockup) return;
+    closeNav(false);
+    mockup = mountMockup({
+      overlay: true,
+      onTheme: (theme, palette) => { applyTheme(theme === "dark" ? "dark" : "light"); applyPalette(palette === "crimson" ? "crimson" : "azure"); },
+      onClose: () => {
+        mockup = null;
+        body.style.overflow = "";
+        setFlagCursor(store.get(FC_KEY) !== "off");
+        // the ☰ item closed with its menu, so focus goes back to ☰
+        (trigger && !trigger.closest(".mo") ? trigger : menuBtn).focus({ preventScroll: true });
+      }
+    });
+    if (!mockup) return;
+    body.style.overflow = "hidden";
+    setFlagCursor(false);
+  }
+  document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-mockup]"); if (b) openMockup(b); });
 
   /* ---------------------------------------------------------------
      Mode — the app on phones, the page everywhere else
@@ -2258,11 +2106,13 @@
     root.classList.toggle("is-app", on);
     if (on) {
       closeNav(false); closeMenus(); closeSearch(); closeDrawer(); closeInbox(); hideTip();
+      mockup?.close();
       ensureRoot(A.tab);
       TABS.forEach((t) => { const s = stackOf(t); s.classList.toggle("is-active", t === A.tab); s.inert = t !== A.tab; });
       syncBadges();
       requestAnimationFrame(() => { syncNav(); $$(".pg", appEl).forEach(updateBar); });
       if (!navigator.onLine) showOffline(true);
+      tellMockup(true);
     } else {
       closeModal(false);
       closeSheet(false);
@@ -2273,10 +2123,5 @@
     setFlagCursor(store.get(FC_KEY) !== "off");
   }
   appMQ.addEventListener("change", setAppMode);
-  // #figma opens the board once the page has loaded and settled (fonts in, so rails measure right)
-  if (location.hash === "#figma") {
-    const loaded = document.readyState === "complete" ? Promise.resolve() : new Promise((r) => addEventListener("load", r, { once: true }));
-    loaded.then(() => new Promise((r) => { const t = setInterval(() => { if (root.classList.contains("is-loaded")) { clearInterval(t); r(); } }, 50); })).then(openCapture);
-  }
   addEventListener("resize", () => { if (A.on) syncNav(); });
   setAppMode();

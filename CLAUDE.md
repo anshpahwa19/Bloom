@@ -76,42 +76,27 @@
   - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
     `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
     halos; `--accent-glow` is kept faint for ambient light inside panels.
-- What people see: only the phone app. Phones get it full screen (`is-app`).
-  Wider screens get it at a phone's size, 393 × 852 (an iPhone 15's screen),
-  centred with nothing drawn around it (`is-app is-framed`, `src/frame.js`,
-  section 5 of mobile.css). No iframe and no device art: the page itself is
-  the app, so Figma's HTML capture can read it. The full desktop page is
-  kept for development at `#desktop`, and every rule below still holds for it.
-  - In frame mode `#screen` is the screen: it contains the app's fixed layers
-    (the app, toasts, and Bloom GPT, which frame.js moves in). frame.js resolves our stylesheets
-    (`<style data-bloom>`) for 393 × 852 at load: media queries become
-    "all"/"not all" (hover and pointer answer as a phone: none, coarse), and
-    vw/vh become px. It also shadows `matchMedia` for app.js and mobile.js.
-    So write the app's CSS as for a phone, and never measure the window
-    (`innerWidth`, `clientX`) where the screen is meant: subtract
-    `frameOffset()`.
-  - The page's `<dialog>`s open in the browser's top layer, outside
-    `#screen`; in frame mode they place themselves over the screen from
-    `--fx`/`--fb`, which frame.js keeps up to date.
-  - Figma capture board ("Figma capture view" beside the screen, or
-    `#figma`; `openCapture()` in mobile.js, section 6 of mobile.css): every
-    screen in `CAPTURE` as its own 393-wide, full-length artboard, then the
-    rest of the page is removed. It is flattened for HTML capture:
-    entrances are written in at rest and motion stops (`stillCapture`), and
-    nothing is left hidden, see-through, sticky, fixed or scrolling
-    (`flattenCapture`). Sprite icons are drawn in place with their paint as
-    attributes, and ids are unique. Add a new screen to `CAPTURE`; after any
-    change, audit the board (no overlaps, hidden nodes, `<use>` or spills).
-  - The screen keeps an iPhone's safe areas (54px top, 34px bottom) as empty
-    space, so an iOS status bar can be laid over it in Figma. Safe areas go
-    through `--safe-top` and `--safe-bottom`, never `env()` directly.
+- What people see: only the phone app. Wider screens get it inside an
+  iPhone mockup (`is-mockup`, `src/mockup.js`, section 5 of mobile.css).
+  Phones get it full screen (`is-app`). The full desktop page is kept for
+  development at `#desktop`, and every rule below still holds for it.
+  - The mockup loads the page as it first arrived (`PRISTINE`) into an
+    iframe named `bloom-mockup`, and the copy inside runs with `in-mockup`
+    (safe areas 54/34px, no scrollbars). The parent never runs app.js:
+    index.html returns right after `mountMockup()`. The app tells the device
+    its theme and tones through `tellMockup()` (`{bloom: "chrome"}`) and
+    `{bloom: "app-ready"}`. Keep the device's parts (`#mockup` in index.html)
+    decorative and `pointer-events: none` over the screen.
+  - The screen radius is the `--r-device` token; the frame adds its band
+    and bezel on top of it (concentric). Safe areas go through `--safe-top`
+    and `--safe-bottom`, never `env()` directly, so the mockup can set them.
 - The phone app (`src/mobile.js`, `src/mobile.css`) replaces the page under
-  768px and on phones held sideways (`APP_QUERY` in frame.js, repeated in
+  768px and on phones held sideways (`APP_QUERY` in mockup.js, repeated in
   the head script, sets `is-app` on `<html>`). Once open it stays the app
   at any width, except on the `#desktop` page. It is the same product, not a
   redesign: reuse the page's tokens and components, and add a mobile variant
   of a component only where the desktop one can't work on a phone.
-  - index.html wraps frame.js, app.js and mobile.js in one function, so
+  - index.html wraps mockup.js, app.js and mobile.js in one function, so
     they share scope. Watch for name clashes: a function declared in two
     files silently replaces the other one.
   - One source of truth: the app reads the page's data (task rows, `ib`,
@@ -140,7 +125,6 @@
     search).
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
-    window or device mode), in both themes, and framed in a desktop window,
-    where it is driven with a mouse (drag rails; no edge
-    swipe or pull to refresh); the framed app should match a 393 × 852
-    phone pixel for pixel.
+    window or device mode), in both themes, and in the iPhone mockup on a
+    desktop window, where it is driven with a mouse (drag rails; no edge
+    swipe or pull to refresh).

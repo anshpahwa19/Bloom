@@ -4,9 +4,9 @@
    section-aware floating navigation, search, drawers, carousels,
    filters and the scroll choreography — one requestAnimationFrame
    loop reading cached geometry, writing only transforms & opacity.
-   index.html wraps frame.js, this file and mobile.js (the phone app)
+   index.html wraps mockup.js, this file and mobile.js (the phone app)
    in one scope, so the phone app reads the same data and functions.
-   APP_QUERY, DESKTOP, matchMedia and frameOffset come from frame.js.
+   APP_QUERY, DESKTOP, MOCKUP and PRISTINE come from mockup.js.
    ================================================================== */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -2227,23 +2227,18 @@
     items.push(`<button type="button" data-gpt-ask="What changed in Data Security?">${icon("i-shield", "ico ico--sm")}Data Security was updated</button>`);
     return `<span class="gpt__noticed-label">${icon("i-sparkle", "ico ico--sm")}Bloom GPT noticed</span>${items.join('<i aria-hidden="true"></i>')}`;
   }
-  // The landing's greeting, date and what Bloom GPT noticed, as of now
-  function fillGptLanding() {
-    const hr = new Date().getHours();
-    $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
-    $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-    $("#gpt-noticed").innerHTML = gptNoticedHTML();
-  }
   function openGpt(trigger, q) {
     if (!gpt.open) {
       gpt.returnFocus = document.activeElement;
       const r = trigger?.getBoundingClientRect?.();
-      const o = frameOffset(); // Bloom GPT is fixed to the phone-sized screen when there is one
-      gptEl.style.setProperty("--ox", r ? `${r.left - o.left + r.width / 2}px` : "50%");
-      gptEl.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
+      gptEl.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
+      gptEl.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
       closeNav(false); closeMenus(); closeSearch(); hideTip();
       if (ib.open) closeInbox();
-      fillGptLanding();
+      const hr = new Date().getHours();
+      $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
+      $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+      $("#gpt-noticed").innerHTML = gptNoticedHTML();
       gpt.open = true;
       gptEl.classList.add("is-open");
       gptEl.setAttribute("aria-hidden", "false");
