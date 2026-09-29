@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>BlooMultiverse Interactive</title>
-  <meta name="description" content="BlooMultiverse — the interactive employee experience where your apps, people and perks come together.">
+  <meta name="description" content="Bloom Multiverse — the interactive employee experience where your apps, people and perks come together.">
   <meta name="theme-color" content="#F6F4EF">
   <script data-bloom>
     (function () {
@@ -2576,7 +2576,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 }
 .app-nav__bar {
   --frost: color-mix(in srgb, var(--surface) 80%, transparent); /* stays legible over dark cards */
-  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(max-content, 1fr)); /* every label whole ("Bloom GPT" is the longest) */
+  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(max-content, 1fr)); /* equal tabs, and every label whole */
   width: min(100%, 480px); height: var(--app-tab); padding: 6px; border-radius: var(--r-pill);
 }
 .app-nav__ind {
@@ -2593,6 +2593,8 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .app-nav__item .ico { width: 22px; height: 22px; }
 .app-nav__ic { align-self: center; }
 .app-nav__item:active { transform: scale(.94); }
+/* the focus ring sits inside the tab's pill, clear of the capsule's edge */
+.app-nav__item:focus-visible { box-shadow: inset 0 0 0 2px var(--accent-fg); }
 .app-nav__item[aria-current="page"] { color: var(--accent-fg); }
 .app-nav__item[aria-current="page"] .ico { stroke-width: 2; }
 /* Home wears the logo's flag, Help the Bloom GPT orb (it turns as on the page's nav),
@@ -3572,7 +3574,7 @@ button.m-card:active { transform: scale(.985); }
        On the desktop page (#desktop) it opens from ☰ → Mobile app.
        ============================================================ -->
   <div class="mk" id="mockup">
-    <h1 class="sr-only">BlooMultiverse mobile app</h1>
+    <h1 class="sr-only">Bloom Multiverse mobile app</h1>
     <button class="icon-btn icon-btn--bordered mk__close" type="button" data-mk-close aria-label="Close the mobile app"><svg class="ico"><use href="#i-x"/></svg></button>
     <div class="mk__device">
       <span class="mk__key mk__key--action" aria-hidden="true"></span>
@@ -3602,7 +3604,7 @@ button.m-card:active { transform: scale(.985); }
        ============================================================ -->
   <header class="navbar" id="navbar">
     <div class="navbar__capsule frost">
-      <a class="brand" href="#top" aria-label="BlooMultiverse home">
+      <a class="brand" href="#top" aria-label="Bloom Multiverse home">
         <span class="brand__word has-logo" aria-hidden="true"></span>
       </a>
 
@@ -3761,7 +3763,7 @@ button.m-card:active { transform: scale(.985); }
        ============================================================ -->
   <div class="search" id="search">
     <div class="search__scrim" aria-hidden="true"></div>
-    <div class="search__box" role="dialog" aria-label="Search BlooMultiverse">
+    <div class="search__box" role="dialog" aria-label="Search Bloom Multiverse">
       <div class="search__field">
         <svg class="ico search__icon"><use href="#i-search"/></svg>
         <input class="search__input" id="search-input" type="search" placeholder="Search people, policies, apps…" autocomplete="off" aria-label="Search" aria-controls="search-results" aria-expanded="false" role="combobox">
@@ -4333,7 +4335,7 @@ button.m-card:active { transform: scale(.985); }
         <header class="faq__head reveal">
           <p class="kicker"><span class="kicker__num">08</span><span class="kicker__line"></span>Support</p>
           <h2 class="display split" id="faq-title">Frequently asked questions</h2>
-          <p class="section-sub">Quick answers about finding your way around BlooMultiverse.</p>
+          <p class="section-sub">Quick answers about finding your way around Bloom Multiverse.</p>
           <div class="tabs faq__tabs" role="tablist" aria-label="Question categories" id="faq-tabs">
             <span class="tabs__indicator" aria-hidden="true"></span>
             <button class="tab is-selected" role="tab" type="button" id="faq-tab-general" aria-selected="true" aria-controls="faq-panel-general" data-tab="general">General <span class="tab__count">4</span></button>
@@ -4345,8 +4347,8 @@ button.m-card:active { transform: scale(.985); }
         <div class="faqs">
           <div class="faqs__panel" role="tabpanel" id="faq-panel-general" aria-labelledby="faq-tab-general">
             <details class="faqs__item">
-              <summary class="faqs__q"><span>What is BlooMultiverse?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
-              <div class="faqs__a"><p>BlooMultiverse is Bloom’s employee portal. Your tasks, apps, policies, announcements and perks are in one place, so you don’t have to switch between systems.</p></div>
+              <summary class="faqs__q"><span>What is Bloom Multiverse?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
+              <div class="faqs__a"><p>Bloom Multiverse is Bloom’s employee portal. Your tasks, apps, policies, announcements and perks are in one place, so you don’t have to switch between systems.</p></div>
             </details>
             <details class="faqs__item">
               <summary class="faqs__q"><span>How do I access my profile?</span><svg class="ico ico--sm faqs__chev" aria-hidden="true"><use href="#i-plus"/></svg></summary>
@@ -4388,7 +4390,7 @@ button.m-card:active { transform: scale(.985); }
 
           <div class="faq__help reveal">
             <span class="faq__help-icon"><svg class="ico"><use href="#i-help"/></svg></span>
-            <p><strong>Still need a hand?</strong>Our support team can help with anything in BlooMultiverse.</p>
+            <p><strong>Still need a hand?</strong>Our support team can help with anything in Bloom Multiverse.</p>
             <button class="btn btn--primary btn--sm" type="button" data-drawer="help">Help &amp; support <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></button>
           </div>
         </div>
@@ -4406,11 +4408,11 @@ button.m-card:active { transform: scale(.985); }
 
       <div class="footer__grid">
         <div class="footer__brand">
-          <span class="brand__word brand__word--footer has-logo" role="img" aria-label="BlooMultiverse"></span>
+          <span class="brand__word brand__word--footer has-logo" role="img" aria-label="Bloom Multiverse"></span>
           <p class="footer__tag">Your apps, people and perks in one workspace.</p>
         </div>
         <div class="footer__apps">
-          <p class="footer__label">Take BlooMultiverse with you</p>
+          <p class="footer__label">Take Bloom Multiverse with you</p>
           <div class="store-row">
             <a class="store" href="#" data-toast="Opening Google Play…"><svg class="ico"><use href="#s-play"/></svg><span><small>Get it on</small>Google Play</span></a>
             <a class="store" href="#" data-toast="Opening the App Store…"><svg class="ico"><use href="#s-apple"/></svg><span><small>Download on the</small>App Store</span></a>
@@ -4436,7 +4438,7 @@ button.m-card:active { transform: scale(.985); }
 
       <div class="footer__bottom">
         <p>© 2026 Bloom. All rights reserved.</p>
-        <p>BlooMultiverse employee experience platform</p>
+        <p>Bloom Multiverse employee experience platform</p>
         <a class="to-top" href="#top">Back to top <svg class="ico ico--sm"><use href="#i-arrow-up"/></svg></a>
       </div>
     </div>
@@ -4636,11 +4638,11 @@ button.m-card:active { transform: scale(.985); }
     <nav class="app-nav" id="app-nav" aria-label="Main">
       <div class="app-nav__bar frost">
         <span class="app-nav__ind" aria-hidden="true"></span>
-        <!-- Home wears the logo's flag (a vector of it, crisp at any size), Bloom GPT (the Help tab) its orb,
+        <!-- Home wears the logo's flag (a vector of it, crisp at any size), GPT (the Help tab, Bloom GPT's) its orb,
              Profile your photo (mobile.js adds it from `me`) -->
         <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="app-nav__ic app-nav__flag" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="nav-flag-red" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#FF8E7A"/><stop offset=".32" stop-color="#E3263B"/><stop offset=".9" stop-color="#A10D24"/></linearGradient><linearGradient id="nav-flag-blue" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#7DD3FF"/><stop offset=".42" stop-color="#2F6BFF"/><stop offset=".95" stop-color="#0B2DBF"/></linearGradient></defs><path fill="url(#nav-flag-red)" d="M0 12Q0 0 12 0Q15 0 17.4 1.8L42 20Q50 26 58 20L82.6 1.8Q85 0 88 0Q100 0 100 12L100 37Q100 41 96.9 38.4L90.1 32.7Q84 27.5 77.6 32.3L58 47Q50 53 42.2 46.7L18.7 27.8Q14 24 8 23.6L4 23.3Q0 23 0 19Z"/><path fill="url(#nav-flag-blue)" d="M0 36.5Q0 33.5 2.4 35.3L42 65Q50 71 58 65L81.6 47.3Q84 45.5 88 45.5Q100 45.5 100 57.5L100 98Q100 100 98.4 98.8L78 83.5Q74 80.5 70 83.6L57.9 92.9Q50 99 42.1 92.8L4.7 63.7Q0 60 0 54Z"/></svg><span class="app-nav__label">Home</span></button>
         <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico app-nav__ic"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__ic app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">Bloom GPT</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__ic app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">GPT</span></button>
         <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico app-nav__ic"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
         <button class="app-nav__item" type="button" data-app-tab="profile"><span class="app-nav__label">Profile</span></button>
       </div>
@@ -4753,7 +4755,7 @@ button.m-card:active { transform: scale(.985); }
     else html.removeAttribute("data-palette");
     const frame = document.createElement("iframe");
     frame.name = MOCKUP;
-    frame.title = "BlooMultiverse mobile app";
+    frame.title = "Bloom Multiverse mobile app";
     frame.srcdoc = `<!doctype html>${html.outerHTML}`;
     screen.insertBefore(frame, screen.querySelector(".mk__status"));
 
@@ -4791,7 +4793,7 @@ button.m-card:active { transform: scale(.985); }
       el.classList.add("is-overlay");
       el.setAttribute("role", "dialog");
       el.setAttribute("aria-modal", "true");
-      el.setAttribute("aria-label", "BlooMultiverse mobile app");
+      el.setAttribute("aria-label", "Bloom Multiverse mobile app");
       document.addEventListener("keydown", onKey, true);
       el.addEventListener("click", onClick);
       requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-open")));
@@ -7779,7 +7781,7 @@ button.m-card:active { transform: scale(.985); }
     if (def.root) {
       const unread = $$("#notif-list .notif.is-unread").length;
       return `<header class="pg-bar pg-bar--brand">
-        <button class="app-brand" type="button" data-act="top" aria-label="BlooMultiverse, back to the top"><span class="brand__word has-logo" aria-hidden="true"></span></button>
+        <button class="app-brand" type="button" data-act="top" aria-label="Bloom Multiverse, back to the top"><span class="brand__word has-logo" aria-hidden="true"></span></button>
         <div class="pg-bar__acts">
           <button class="app-ibtn" type="button" data-go="search" aria-label="Search">${icon("i-search")}</button>
           <button class="app-ibtn js-bell" type="button" data-go="notifications" aria-label="${unread ? `Notifications, ${unread} unread` : "Notifications"}">${icon("i-bell")}<span class="badge-dot js-bell-count${unread ? "" : " is-cleared"}" aria-hidden="true">${unread}</span></button>
@@ -9165,11 +9167,11 @@ button.m-card:active { transform: scale(.985); }
      --------------------------------------------------------------- */
   const HELP_ASKS = ["What needs my attention?", "Show my tasks", "Find a policy", "What’s new?", "Find a colleague", "Show my benefits"];
   PAGES.help = {
-    root: true, title: () => "Help",
+    root: true, title: () => "Bloom GPT",
     render() {
       const c = copyOf("#faq");
       const help = $(".faq__help p");
-      return `${intro({ kick: c.kicker, title: "Help", sub: c.sub })}
+      return `${intro({ kick: c.kicker, title: "Bloom GPT", sub: c.sub })}
         <section class="m-gpt-card" aria-labelledby="m-gpt-title">
           <p class="gpt__kicker">${icon("i-sparkle", "ico ico--sm")}Bloom GPT</p>
           <h2 class="m-gpt-card__title" id="m-gpt-title">${$("#gpt-title").innerHTML.replace(/<i class="gpt__caret"[^>]*><\/i>/, "")}</h2>
@@ -9446,7 +9448,7 @@ button.m-card:active { transform: scale(.985); }
   PAGES.search = {
     modal: true,
     title: () => "Search",
-    bar: () => `<header class="pg-bar pg-bar--search"><label class="m-search__field">${icon("i-search", "ico ico--sm")}<input type="search" data-input="sr" placeholder="Search people, policies, apps…" aria-label="Search BlooMultiverse" autocomplete="off" enterkeyhint="search" aria-controls="m-search-body"></label><button class="m-search__cancel" type="button" data-modal-close>Cancel</button></header>`,
+    bar: () => `<header class="pg-bar pg-bar--search"><label class="m-search__field">${icon("i-search", "ico ico--sm")}<input type="search" data-input="sr" placeholder="Search people, policies, apps…" aria-label="Search Bloom Multiverse" autocomplete="off" enterkeyhint="search" aria-controls="m-search-body"></label><button class="m-search__cancel" type="button" data-modal-close>Cancel</button></header>`,
     prepare() { A.sr = { q: "", view: "live", group: "all" }; },
     render: () => `<div class="m-search__body" id="m-search-body" aria-live="polite">${searchBodyHTML()}</div>`,
     opened(el) { setTimeout(() => $("input", el)?.focus(), reduceMotion ? 0 : 280); }
@@ -9471,7 +9473,7 @@ button.m-card:active { transform: scale(.985); }
       searchList = [];
       return `${rec.length ? `<div class="m-sec__head"><p class="m-label">Recent searches</p><button class="link-btn" type="button" data-act="sr-clear">Clear</button></div>
           <ul class="m-list">${rec.map((r) => `<li class="m-recent"><button class="m-row" type="button" data-act="sr-recent" data-v="${esc(r)}"><span class="m-row__lead">${tile("i-clock")}</span><span class="m-row__txt"><strong>${esc(r)}</strong></span></button><button class="icon-btn m-recent__x" type="button" data-act="sr-forget" data-v="${esc(r)}" aria-label="Remove ${esc(r)} from recent searches">${icon("i-x", "ico ico--sm")}</button></li>`).join("")}</ul>`
-        : emptyHTML({ ic: "i-search", title: "Search BlooMultiverse", text: "People, policies, requests, perks, communities, discounts and help, in one place." })}
+        : emptyHTML({ ic: "i-search", title: "Search Bloom Multiverse", text: "People, policies, requests, perks, communities, discounts and help, in one place." })}
         <p class="m-label">Suggested</p>
         <div class="chips m-chips m-chips--wrap">${sugg.map(([l, g, ic]) => `<button class="chip gpt-chip" type="button" data-go="${esc(g)}">${icon(ic, "ico ico--sm")}${esc(l)}</button>`).join("")}</div>
         <p class="m-label">Jump to an app</p>

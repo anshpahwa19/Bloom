@@ -165,11 +165,11 @@ scrollbars stay hidden, as on a phone. On the `#desktop` page,
 - **Header:** the logo, then Search and Notifications on round surfaces.
   It frosts once content slides under it. Pushed pages swap it for Back
   and their title, centred.
-- **Bottom bar:** Home, Tasks, Bloom GPT, Explore and Profile in a frosted
+- **Bottom bar:** Home, Tasks, GPT, Explore and Profile in a frosted
   capsule above the home indicator, with a sliding accent pill and a
   count on Tasks. Home wears the logo's flag (redrawn as a vector, so it
-  stays sharp), Bloom GPT sits in the middle with its orb and opens Help
-  (Bloom GPT, the FAQ and support), and Profile shows your photo. What
+  stays sharp), GPT sits in the middle with its orb and opens the Bloom GPT
+  screen (Bloom GPT, the FAQ and support), and Profile shows your photo. What
   scrolls under the bar fades into the page, so the bar stands clear. Each tab keeps its own stack of pages and its
   scroll position. Tapping the current tab goes back to its top.
 - **Home:** the greeting with today's moments, a dark "Needs your

@@ -123,7 +123,7 @@
 }
 .app-nav__bar {
   --frost: color-mix(in srgb, var(--surface) 80%, transparent); /* stays legible over dark cards */
-  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(max-content, 1fr)); /* every label whole ("Bloom GPT" is the longest) */
+  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(max-content, 1fr)); /* equal tabs, and every label whole */
   width: min(100%, 480px); height: var(--app-tab); padding: 6px; border-radius: var(--r-pill);
 }
 .app-nav__ind {
@@ -140,6 +140,8 @@
 .app-nav__item .ico { width: 22px; height: 22px; }
 .app-nav__ic { align-self: center; }
 .app-nav__item:active { transform: scale(.94); }
+/* the focus ring sits inside the tab's pill, clear of the capsule's edge */
+.app-nav__item:focus-visible { box-shadow: inset 0 0 0 2px var(--accent-fg); }
 .app-nav__item[aria-current="page"] { color: var(--accent-fg); }
 .app-nav__item[aria-current="page"] .ico { stroke-width: 2; }
 /* Home wears the logo's flag, Help the Bloom GPT orb (it turns as on the page's nav),

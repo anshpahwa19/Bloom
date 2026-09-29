@@ -74,7 +74,7 @@
     else html.removeAttribute("data-palette");
     const frame = document.createElement("iframe");
     frame.name = MOCKUP;
-    frame.title = "BlooMultiverse mobile app";
+    frame.title = "Bloom Multiverse mobile app";
     frame.srcdoc = `<!doctype html>${html.outerHTML}`;
     screen.insertBefore(frame, screen.querySelector(".mk__status"));
 
@@ -112,7 +112,7 @@
       el.classList.add("is-overlay");
       el.setAttribute("role", "dialog");
       el.setAttribute("aria-modal", "true");
-      el.setAttribute("aria-label", "BlooMultiverse mobile app");
+      el.setAttribute("aria-label", "Bloom Multiverse mobile app");
       document.addEventListener("keydown", onKey, true);
       el.addEventListener("click", onClick);
       requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-open")));

@@ -11,6 +11,9 @@
   pass a new icon.
   **Never publish to https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ** — the
   original link now holds the web designs, published from elsewhere.
+- The name is written "Bloom Multiverse" (two words) in everything people
+  read or hear; the wordmark logo and the page title "BlooMultiverse
+  Interactive" are the exceptions.
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:
@@ -118,12 +121,12 @@
     (`policy/Data Security`, `tasks/approvals/sap`, `ann/3`…) and act with
     `data-act`. Bloom GPT's actions route to app screens in app mode
     (`APP_ACTS`).
-  - Bottom bar: exactly Home, Tasks, Bloom GPT, Explore, Profile, in that
-    order. The middle tab is the Help tab (`data-app-tab="help"`), labelled
-    Bloom GPT. Home wears the logo's flag (an inline vector in index.html,
-    in the logo's own red/blue), Bloom GPT the orb, and Profile your photo
-    (added from `me` in mobile.js). Each column is at least as wide as its
-    label, so no label is ever cut. Content that scrolls under the bar fades
+  - Bottom bar: exactly Home, Tasks, GPT, Explore, Profile, in that order.
+    The middle tab is the Help tab (`data-app-tab="help"`): the bar calls it
+    GPT and its screen is titled Bloom GPT. Home wears the logo's flag (an
+    inline vector in index.html, in the logo's own red/blue), GPT the orb,
+    and Profile your photo (added from `me` in mobile.js). Each column is at least as wide as its
+    label, so no label is ever cut; the focus ring sits inside a tab's pill. Content that scrolls under the bar fades
     into the canvas (`.app-nav::before`), so the bar never merges with it;
     the home indicator therefore always sits on the canvas and follows the
     theme. The header holds only

@@ -142,7 +142,7 @@
     if (def.root) {
       const unread = $$("#notif-list .notif.is-unread").length;
       return `<header class="pg-bar pg-bar--brand">
-        <button class="app-brand" type="button" data-act="top" aria-label="BlooMultiverse, back to the top"><span class="brand__word has-logo" aria-hidden="true"></span></button>
+        <button class="app-brand" type="button" data-act="top" aria-label="Bloom Multiverse, back to the top"><span class="brand__word has-logo" aria-hidden="true"></span></button>
         <div class="pg-bar__acts">
           <button class="app-ibtn" type="button" data-go="search" aria-label="Search">${icon("i-search")}</button>
           <button class="app-ibtn js-bell" type="button" data-go="notifications" aria-label="${unread ? `Notifications, ${unread} unread` : "Notifications"}">${icon("i-bell")}<span class="badge-dot js-bell-count${unread ? "" : " is-cleared"}" aria-hidden="true">${unread}</span></button>
@@ -1528,11 +1528,11 @@
      --------------------------------------------------------------- */
   const HELP_ASKS = ["What needs my attention?", "Show my tasks", "Find a policy", "What’s new?", "Find a colleague", "Show my benefits"];
   PAGES.help = {
-    root: true, title: () => "Help",
+    root: true, title: () => "Bloom GPT",
     render() {
       const c = copyOf("#faq");
       const help = $(".faq__help p");
-      return `${intro({ kick: c.kicker, title: "Help", sub: c.sub })}
+      return `${intro({ kick: c.kicker, title: "Bloom GPT", sub: c.sub })}
         <section class="m-gpt-card" aria-labelledby="m-gpt-title">
           <p class="gpt__kicker">${icon("i-sparkle", "ico ico--sm")}Bloom GPT</p>
           <h2 class="m-gpt-card__title" id="m-gpt-title">${$("#gpt-title").innerHTML.replace(/<i class="gpt__caret"[^>]*><\/i>/, "")}</h2>
@@ -1809,7 +1809,7 @@
   PAGES.search = {
     modal: true,
     title: () => "Search",
-    bar: () => `<header class="pg-bar pg-bar--search"><label class="m-search__field">${icon("i-search", "ico ico--sm")}<input type="search" data-input="sr" placeholder="Search people, policies, apps…" aria-label="Search BlooMultiverse" autocomplete="off" enterkeyhint="search" aria-controls="m-search-body"></label><button class="m-search__cancel" type="button" data-modal-close>Cancel</button></header>`,
+    bar: () => `<header class="pg-bar pg-bar--search"><label class="m-search__field">${icon("i-search", "ico ico--sm")}<input type="search" data-input="sr" placeholder="Search people, policies, apps…" aria-label="Search Bloom Multiverse" autocomplete="off" enterkeyhint="search" aria-controls="m-search-body"></label><button class="m-search__cancel" type="button" data-modal-close>Cancel</button></header>`,
     prepare() { A.sr = { q: "", view: "live", group: "all" }; },
     render: () => `<div class="m-search__body" id="m-search-body" aria-live="polite">${searchBodyHTML()}</div>`,
     opened(el) { setTimeout(() => $("input", el)?.focus(), reduceMotion ? 0 : 280); }
@@ -1834,7 +1834,7 @@
       searchList = [];
       return `${rec.length ? `<div class="m-sec__head"><p class="m-label">Recent searches</p><button class="link-btn" type="button" data-act="sr-clear">Clear</button></div>
           <ul class="m-list">${rec.map((r) => `<li class="m-recent"><button class="m-row" type="button" data-act="sr-recent" data-v="${esc(r)}"><span class="m-row__lead">${tile("i-clock")}</span><span class="m-row__txt"><strong>${esc(r)}</strong></span></button><button class="icon-btn m-recent__x" type="button" data-act="sr-forget" data-v="${esc(r)}" aria-label="Remove ${esc(r)} from recent searches">${icon("i-x", "ico ico--sm")}</button></li>`).join("")}</ul>`
-        : emptyHTML({ ic: "i-search", title: "Search BlooMultiverse", text: "People, policies, requests, perks, communities, discounts and help, in one place." })}
+        : emptyHTML({ ic: "i-search", title: "Search Bloom Multiverse", text: "People, policies, requests, perks, communities, discounts and help, in one place." })}
         <p class="m-label">Suggested</p>
         <div class="chips m-chips m-chips--wrap">${sugg.map(([l, g, ic]) => `<button class="chip gpt-chip" type="button" data-go="${esc(g)}">${icon(ic, "ico ico--sm")}${esc(l)}</button>`).join("")}</div>
         <p class="m-label">Jump to an app</p>
