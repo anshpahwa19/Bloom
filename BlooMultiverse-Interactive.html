@@ -2567,12 +2567,13 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   position: absolute; left: 0; right: 0; bottom: var(--app-tab-gap); z-index: 20;
   display: flex; justify-content: center; padding-inline: 10px; pointer-events: none;
 }
-/* What scrolls under the bar fades into the canvas, so the bar never merges
-   with it; the fade starts just above the bar and is solid below it */
+/* What scrolls under the bar softens into the canvas, so the bar stands clear
+   of it; the fade starts just above the bar and never goes solid, so a little
+   of the content still shows through */
 .app-nav::before {
   content: ""; position: absolute; left: 0; right: 0; z-index: -1; pointer-events: none;
-  bottom: calc(-1 * var(--app-tab-gap)); height: calc(var(--app-tab-space) + 16px);
-  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--canvas) 72%, transparent) 22%, color-mix(in srgb, var(--canvas) 94%, transparent) 52%, var(--canvas) 78%);
+  bottom: calc(-1 * var(--app-tab-gap)); height: calc(var(--app-tab-space) + 24px);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--canvas) 34%, transparent) 26%, color-mix(in srgb, var(--canvas) 58%, transparent) 58%, color-mix(in srgb, var(--canvas) 74%, transparent));
 }
 .app-nav__bar {
   --frost: color-mix(in srgb, var(--surface) 80%, transparent); /* stays legible over dark cards */

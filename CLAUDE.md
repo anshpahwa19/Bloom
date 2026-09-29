@@ -126,10 +126,10 @@
     GPT and its screen is titled Bloom GPT. Home wears the logo's flag (an
     inline vector in index.html, in the logo's own red/blue), GPT the orb,
     and Profile your photo (added from `me` in mobile.js). Each column is at least as wide as its
-    label, so no label is ever cut; the focus ring sits inside a tab's pill. Content that scrolls under the bar fades
-    into the canvas (`.app-nav::before`), so the bar never merges with it;
-    the home indicator therefore always sits on the canvas and follows the
-    theme. The header holds only
+    label, so no label is ever cut; the focus ring sits inside a tab's pill. Content that scrolls under the bar softens
+    into the canvas (`.app-nav::before`), so the bar stands clear of it; the
+    fade never goes solid (at most ~75% canvas), so a little of the content
+    still shows through. The home indicator follows the theme. The header holds only
     the logo, Search and Notifications (round surfaces); no avatar, since
     Profile is in the bar. No footer on phones.
   - Explore has no People tile (People stays reachable from Home and
