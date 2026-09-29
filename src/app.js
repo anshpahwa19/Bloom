@@ -2022,7 +2022,7 @@
     tasks: () => ({
       text: `${B(`${totalPending()} actions`)} are waiting on you. Here they are by app:`,
       body: gCard(APP_ORDER.map((a) => gRow({ lead: gMark(a), title: sourceNames[a], meta: `${counts[a]} waiting`, actions: act("Show", "filter", a) }))),
-      actions: act(isApp() ? "Open tasks" : "Open inbox", "inbox", "inbox", "btn--primary"),
+      actions: act("Open inbox", "inbox", "inbox", "btn--primary"),
       follow: ["What needs my attention?", "My drafts"]
     }),
     policy(t) {

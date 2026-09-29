@@ -473,7 +473,7 @@
     const tb = $("#app-task-badge");
     tb.textContent = n;
     tb.hidden = !n;
-    $('[data-app-tab="tasks"]', appNav).setAttribute("aria-label", n ? `Tasks, ${n} waiting` : "Tasks");
+    $('[data-app-tab="tasks"]', appNav).setAttribute("aria-label", n ? `Inbox, ${n} waiting` : "Inbox");
     const unread = $$("#notif-list .notif.is-unread").length;
     $$(".js-bell-count", appEl).forEach((b) => { b.textContent = unread; b.classList.toggle("is-cleared", !unread); });
     $$(".js-bell", appEl).forEach((b) => b.setAttribute("aria-label", unread ? `Notifications, ${unread} unread` : "Notifications"));
@@ -594,7 +594,12 @@
     // profile
     "sign-out": () => confirmSheet({ title: "Sign out?", text: "You’ll need to sign in again to see your tasks, requests and perks.", ok: "Sign out", danger: true, ic: "i-logout", onOk: () => toast("You’ve been signed out of this demo.", "i-logout") }),
     language: () => openSheet({ title: "Language", render: languageHTML }),
-    "set-notify": (k, btn) => { const p = notifyPrefs(); p[k] = !p[k]; store.set(NOTIFY_KEY, JSON.stringify(p)); btn.setAttribute("aria-checked", String(p[k])); toast(p[k] ? `${NOTIFY_LABELS[k][0]} notifications on` : `${NOTIFY_LABELS[k][0]} notifications off`, "i-bell"); },
+    "push-notify": (_, btn) => {
+      const on = !pushOn();
+      store.set(NOTIFY_KEY, JSON.stringify({ push: on }));
+      btn.setAttribute("aria-checked", String(on));
+      toast(on ? "Push notifications on" : "Push notifications off", "i-bell");
+    },
     // notifications
     "notif-all": () => { if ($$("#notif-list .notif.is-unread").length) markAllRead(); else toast("You’re all caught up", "i-check"); },
     "notif-kind": (v) => { A.nf = v; refreshAll(); },
@@ -855,8 +860,8 @@
   const SORTS = { approvals: [["urgent", "Most urgent"], ["az", "A–Z"]], other: [["new", "Newest"], ["old", "Oldest"], ["az", "A–Z"]] };
 
   PAGES.tasks = {
-    root: true, title: () => "Tasks",
-    render: () => `${intro({ kick: "Bloom@Go", title: "Tasks", sub: $(".inbox__sub").textContent })}
+    root: true, title: () => "Inbox",
+    render: () => `${intro({ kick: "Bloom@Go", title: "Inbox", sub: $(".inbox__sub").textContent })}
       <div class="m-sec m-sec--sum" data-live="tkSum">${tkSumHTML()}</div>
       <div class="m-tk-tools">${searchField("tk", "Search tasks and requests", A.tk.q)}<span class="m-tk-filter" data-live="tkFilterBtn">${tkFilterBtnHTML()}</span></div>
       <div class="tabs m-tabs" role="tablist" aria-label="Tasks and requests">${tkTabsHTML()}</div>
@@ -1618,8 +1623,8 @@
      PROFILE — you, your preferences, support and account
      --------------------------------------------------------------- */
   const NOTIFY_KEY = "bloo-x-notify";
-  const NOTIFY_LABELS = { tasks: ["Tasks", "Approvals and tasks from your apps"], requests: ["Requests", "When approvers act on your requests"], announcements: ["Announcements", "Birthdays, drills and holidays"], people: ["People", "New joiners and work anniversaries"], policies: ["Policies", "When a policy you follow changes"] };
-  const notifyPrefs = () => { let p = {}; try { p = JSON.parse(store.get(NOTIFY_KEY) || "{}"); } catch { /* start fresh */ } return Object.fromEntries(Object.keys(NOTIFY_LABELS).map((k) => [k, p[k] !== false])); };
+  const pushOn = () => { try { return JSON.parse(store.get(NOTIFY_KEY) || "{}").push !== false; } catch { return true; } };
+  const pushPrefHTML = () => `<button class="pref pref--push" type="button" role="switch" aria-checked="${pushOn()}" data-act="push-notify"><span class="pref__label">${icon("i-bell")}Push notifications<span class="pref__value" aria-hidden="true"><span class="pref__off">Off</span><span class="pref__on">On</span></span></span><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span></button>`;
   const reports = () => people.filter((p) => p.manager === me.name);
   PAGES.profile = {
     root: true, title: () => "Profile",
@@ -1634,16 +1639,12 @@
           <h1 class="m-me__name" tabindex="-1">${esc(me.name)}</h1>
           <p class="m-me__role">${esc(me.role)} · ${esc(me.team)}</p>
           <p class="m-me__tags"><span class="tag">${icon("i-pin", "ico ico--xs")}${esc(me.location)}</span><span class="tag">${icon("i-calendar", "ico ico--xs")}Since ${esc(me.doj.split(" ").slice(1).join(" "))}</span></p>
-          <div class="m-me__stats" data-live="meStats">${meStatsHTML()}</div>
         </header>
         ${groupBlock("Personal", [
-          rowHTML({ lead: tile("i-user"), title: "My profile", sub: "Role, manager and contact", go: "myprofile" }),
-          rowHTML({ lead: tile("i-briefcase"), title: "My details", sub: "Email, location and joining date", go: "mydetails" }),
-          rowHTML({ lead: tile("i-users"), title: "My team", sub: `${esc(me.team)} · ${plural(reports().length, "direct report", "direct reports")}`, go: "myteam" })
+          rowHTML({ lead: tile("i-user"), title: "My profile", sub: "Details, contact and your team", go: "myprofile" })
         ])}
         ${groupBlock("Preferences", [
-          rowHTML({ lead: tile("i-bell"), title: "Notifications", sub: "Choose what reaches you", go: "notifyprefs" }),
-          `<li class="m-prefs">${themePref}${accentPref}</li>`,
+          `<li class="m-prefs">${pushPrefHTML()}${themePref}${accentPref}</li>`,
           rowHTML({ lead: tile("i-globe"), title: "Language", sub: "English", act: "language" })
         ])}
         ${groupBlock("Support", [
@@ -1651,51 +1652,29 @@
           rowHTML({ lead: tile("i-book"), title: "FAQ", sub: "Quick answers", go: "faq/0" })
         ])}
         ${groupBlock("Account", [rowHTML({ lead: tile("i-logout", "var(--warm)"), title: "Sign out", end: "", act: "sign-out", cls: "m-row--danger" })])}`;
-    },
-    live: { meStats: () => meStatsHTML() }
+    }
   };
   const groupBlock = (label, rows) => `<section class="m-sec m-group-block" aria-label="${label}"><p class="m-label">${label}</p><ul class="m-list">${rows.join("")}</ul></section>`;
-  function meStatsHTML() {
-    const inProg = reqsIn("mine").length;
-    const joined = groupsData().filter((g) => g.joined).length;
-    return [[totalPending(), "waiting on you", "tab/tasks"], [inProg, "in progress", "tasks/pending"], [joined, joined === 1 ? "group joined" : "groups joined", "communities"]]
-      .map(([n, l, g]) => `<button class="m-me__stat" type="button" data-go="${g}"><strong>${n}</strong><span>${l}</span></button>`).join("");
-  }
+  // My profile: who you are, what Bloom has on record, and your team, on one page
   PAGES.myprofile = {
     title: () => "My profile",
-    render: () => `<div class="m-detail"><div class="d-profile"><span class="avatar ${me.img}">${me.initials}</span><h1 class="m-detail__title" tabindex="-1">${esc(me.name)}</h1><p class="meta">${esc(me.role)}, ${esc(me.team)}</p></div>
-      <dl class="d-facts"><div><dt>Reporting manager</dt><dd>${esc(me.manager)}</dd></div><div><dt>Date of joining</dt><dd>${esc(me.doj)}</dd></div><div><dt>Location</dt><dd>${esc(me.location)}</dd></div><div><dt>Email</dt><dd>${esc(me.email)}</dd></div></dl>
-      <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="Opening your full profile…">View full profile</button></div></div>`
-  };
-  PAGES.mydetails = {
-    title: () => "My details",
-    render() {
-      const db = quickLinks().find((x) => x.src === "darwinbox");
-      const how = [...$$("#faq-panel-general .faqs__item")].find((d) => /personal information/i.test(d.textContent));
-      return `<div class="m-detail">${intro({ title: "My details", sub: "What Bloom has on record for you." })}
-        <ul class="m-list">${[["i-mail", "Email", me.email], ["i-pin", "Location", me.location], ["i-calendar", "Date of joining", me.doj], ["i-briefcase", "Role", `${me.role}, ${me.team}`], ["i-user", "Reporting manager", me.manager]]
-          .map(([ic, t, v]) => infoRowHTML({ lead: tile(ic), title: esc(v), sub: t })).join("")}</ul>
-        ${how ? `<p class="d-note">${faqAnswer(how).innerHTML}</p>` : ""}
-        ${db ? `<a class="btn btn--ghost m-detail__cta" href="${esc(db.href)}" target="_blank" rel="noopener"><span class="app-mark app-mark--db" aria-hidden="true"></span>Open Darwinbox${icon("i-external", "ico ico--sm")}</a>` : ""}</div>`;
-    }
-  };
-  PAGES.myteam = {
-    title: () => "My team",
     render() {
       const mine = reports();
-      return `<div class="m-detail">${intro({ kick: me.team, title: "My team", sub: `You report to ${me.manager}. ${mine.length ? `${plural(mine.length, "person reports", "people report")} to you.` : ""}` })}
-        <p class="m-label">Your manager</p>
-        <ul class="m-list">${infoRowHTML({ lead: `<span class="avatar">${initialsOf(me.manager)}</span>`, title: esc(me.manager), sub: "Reporting manager" })}</ul>
-        <p class="m-label">Reporting to you</p>
-        <ul class="m-list">${mine.map((p) => rowHTML({ lead: avatarHTML({ ...p, initials: initialsOf(p.name) }), title: esc(p.name), sub: `${esc(p.role)} · ${esc(p.week)}`, go: `person/joiner:${people.indexOf(p)}` })).join("")}</ul></div>`;
-    }
-  };
-  PAGES.notifyprefs = {
-    title: () => "Notifications",
-    render() {
-      const p = notifyPrefs();
-      return `<div class="m-detail">${intro({ title: "Notifications", sub: "Choose what reaches you. Urgent approvals always show in the bell." })}
-        <div class="m-prefs m-prefs--list">${Object.entries(NOTIFY_LABELS).map(([k, [t, s]]) => `<button class="pref m-pref" type="button" role="switch" aria-checked="${p[k]}" data-act="set-notify" data-v="${k}"><span class="pref__label"><span class="m-pref__txt"><strong>${t}</strong><small>${s}</small></span></span><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span></button>`).join("")}</div></div>`;
+      const db = quickLinks().find((x) => x.src === "darwinbox");
+      const how = [...$$("#faq-panel-general .faqs__item")].find((d) => /personal information/i.test(d.textContent));
+      return `<div class="m-detail">
+        <div class="d-profile"><span class="avatar ${me.img}">${me.initials}</span><h1 class="m-detail__title" tabindex="-1">${esc(me.name)}</h1><p class="meta">${esc(me.role)}, ${esc(me.team)}</p></div>
+        <section class="m-block" aria-label="My details"><p class="m-label">My details</p>
+          <ul class="m-list">${[["i-mail", "Email", me.email], ["i-pin", "Location", me.location], ["i-calendar", "Date of joining", me.doj], ["i-briefcase", "Role", `${me.role}, ${me.team}`]]
+            .map(([ic, t, v]) => infoRowHTML({ lead: tile(ic), title: esc(v), sub: t })).join("")}</ul>
+          ${how ? `<p class="d-note">${faqAnswer(how).innerHTML}</p>` : ""}
+          ${db ? `<a class="btn btn--ghost m-detail__cta" href="${esc(db.href)}" target="_blank" rel="noopener"><span class="app-mark app-mark--db" aria-hidden="true"></span>Open Darwinbox${icon("i-external", "ico ico--sm")}</a>` : ""}
+        </section>
+        <section class="m-block" aria-label="My team"><p class="m-label">My team · ${esc(me.team)}</p>
+          <ul class="m-list">${infoRowHTML({ lead: `<span class="avatar">${initialsOf(me.manager)}</span>`, title: esc(me.manager), sub: "Your reporting manager" })}${mine.map((p) => rowHTML({ lead: avatarHTML({ ...p, initials: initialsOf(p.name) }), title: esc(p.name), sub: `${esc(p.role)} · reports to you`, go: `person/joiner:${people.indexOf(p)}` })).join("")}</ul>
+        </section>
+        <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="Opening your full profile…">View full profile</button></div>
+      </div>`;
     }
   };
   function languageHTML() {

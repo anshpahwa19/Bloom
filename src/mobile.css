@@ -765,14 +765,6 @@ button.m-card:active { transform: scale(.985); }
 .m-me__name { margin-top: 18px; font-size: 1.75rem; font-weight: 700; letter-spacing: -.035em; }
 .m-me__role { margin-top: 4px; font-size: .875rem; color: var(--slate); }
 .m-me__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 12px; }
-.m-me__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; margin-top: 22px; }
-.m-me__stat {
-  display: grid; gap: 2px; padding: 12px 6px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
-  transition: transform var(--t-fast) var(--ease-out);
-}
-.m-me__stat:active { transform: scale(.96); }
-.m-me__stat strong { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; line-height: 1.1; letter-spacing: -.04em; color: var(--accent-fg); font-variant-numeric: tabular-nums; }
-.m-me__stat span { font-size: .75rem; line-height: 1.25; color: var(--slate-2); }
 .m-group-block { margin-top: 28px; }
 .m-group-block .m-label { margin: 0 0 10px 4px; }
 .m-prefs { display: grid; gap: 4px; padding: 4px 0; }
@@ -783,6 +775,10 @@ button.m-card:active { transform: scale(.985); }
 .m-pref__txt strong { font-size: .875rem; font-weight: 600; }
 .m-pref__txt small { font-size: .75rem; font-weight: 400; color: var(--slate-2); }
 .m-detail .d-profile { padding-top: 12px; }
+/* A page's own sections (My profile): label, card, note and action, evenly spaced */
+.m-block { display: grid; gap: 12px; margin-top: 8px; }
+.m-block > .m-label { margin: 0 0 -2px; }
+.m-block > .m-detail__cta { justify-self: start; }
 .m-detail .d-profile .m-detail__title { font-size: 1.75rem; letter-spacing: -.03em; }
 
 /* NOTIFICATIONS --------------------------------------------------- */
@@ -957,8 +953,7 @@ button.m-card:active { transform: scale(.985); }
   .m-face--big { width: 188px; }
   .m-deal { grid-template-columns: 92px minmax(0, 1fr); }
   .m-offer .offer strong, .m-deal .offer strong { font-size: 1.75rem; }
-  .m-me__stat span { font-size: .625rem; }
-  .m-actionbar .carousel-ctrl .icon-btn { width: 44px; height: 44px; }
+    .m-actionbar .carousel-ctrl .icon-btn { width: 44px; height: 44px; }
   /* Mark all read becomes a 44px icon, so the Notifications title keeps the centre */
   .m-markall { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; }
   .m-markall__ic { display: block; width: 22px; height: 22px; }

@@ -121,9 +121,11 @@
     (`policy/Data Security`, `tasks/approvals/sap`, `ann/3`…) and act with
     `data-act`. Bloom GPT's actions route to app screens in app mode
     (`APP_ACTS`).
-  - Bottom bar: exactly Home, Tasks, GPT, Explore, Profile, in that order.
-    The middle tab is the Help tab (`data-app-tab="help"`): the bar calls it
-    GPT and its screen is titled Bloom GPT. Home wears the logo's flag (an
+  - Bottom bar: exactly Home, Inbox, GPT, Explore, Profile, in that order.
+    The second tab is the tasks tab (`data-app-tab="tasks"`), called Inbox in
+    the bar and on its screen. The middle tab is the Help tab
+    (`data-app-tab="help"`): the bar calls it GPT and its screen is titled
+    Bloom GPT. Home wears the logo's flag (an
     inline vector in index.html, in the logo's own red/blue), GPT the orb,
     and Profile your photo (added from `me` in mobile.js). Each column is at least as wide as its
     label, so no label is ever cut; the focus ring sits inside a tab's pill. Content that scrolls under the bar softens
@@ -134,6 +136,11 @@
     Profile is in the bar. No footer on phones.
   - Explore has no People tile (People stays reachable from Home and
     search).
+  - Profile has no stats row. Its one Personal row opens My profile
+    (`PAGES.myprofile`), which holds your details and your team on one page.
+    Notifications are a single Push notifications switch on Profile itself
+    (`pushOn()`, stored under `bloo-x-notify` as `{ push }`), styled as the
+    page's `.pref` switches beside Theme and Accent.
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
     window or device mode), in both themes, and in the iPhone mockup on a

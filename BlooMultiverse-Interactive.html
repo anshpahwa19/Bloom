@@ -3218,14 +3218,6 @@ button.m-card:active { transform: scale(.985); }
 .m-me__name { margin-top: 18px; font-size: 1.75rem; font-weight: 700; letter-spacing: -.035em; }
 .m-me__role { margin-top: 4px; font-size: .875rem; color: var(--slate); }
 .m-me__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 12px; }
-.m-me__stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; margin-top: 22px; }
-.m-me__stat {
-  display: grid; gap: 2px; padding: 12px 6px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
-  transition: transform var(--t-fast) var(--ease-out);
-}
-.m-me__stat:active { transform: scale(.96); }
-.m-me__stat strong { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; line-height: 1.1; letter-spacing: -.04em; color: var(--accent-fg); font-variant-numeric: tabular-nums; }
-.m-me__stat span { font-size: .75rem; line-height: 1.25; color: var(--slate-2); }
 .m-group-block { margin-top: 28px; }
 .m-group-block .m-label { margin: 0 0 10px 4px; }
 .m-prefs { display: grid; gap: 4px; padding: 4px 0; }
@@ -3236,6 +3228,10 @@ button.m-card:active { transform: scale(.985); }
 .m-pref__txt strong { font-size: .875rem; font-weight: 600; }
 .m-pref__txt small { font-size: .75rem; font-weight: 400; color: var(--slate-2); }
 .m-detail .d-profile { padding-top: 12px; }
+/* A page's own sections (My profile): label, card, note and action, evenly spaced */
+.m-block { display: grid; gap: 12px; margin-top: 8px; }
+.m-block > .m-label { margin: 0 0 -2px; }
+.m-block > .m-detail__cta { justify-self: start; }
 .m-detail .d-profile .m-detail__title { font-size: 1.75rem; letter-spacing: -.03em; }
 
 /* NOTIFICATIONS --------------------------------------------------- */
@@ -3410,8 +3406,7 @@ button.m-card:active { transform: scale(.985); }
   .m-face--big { width: 188px; }
   .m-deal { grid-template-columns: 92px minmax(0, 1fr); }
   .m-offer .offer strong, .m-deal .offer strong { font-size: 1.75rem; }
-  .m-me__stat span { font-size: .625rem; }
-  .m-actionbar .carousel-ctrl .icon-btn { width: 44px; height: 44px; }
+    .m-actionbar .carousel-ctrl .icon-btn { width: 44px; height: 44px; }
   /* Mark all read becomes a 44px icon, so the Notifications title keeps the centre */
   .m-markall { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; }
   .m-markall__ic { display: block; width: 22px; height: 22px; }
@@ -4642,7 +4637,7 @@ button.m-card:active { transform: scale(.985); }
         <!-- Home wears the logo's flag (a vector of it, crisp at any size), GPT (the Help tab, Bloom GPT's) its orb,
              Profile your photo (mobile.js adds it from `me`) -->
         <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="app-nav__ic app-nav__flag" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="nav-flag-red" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#FF8E7A"/><stop offset=".32" stop-color="#E3263B"/><stop offset=".9" stop-color="#A10D24"/></linearGradient><linearGradient id="nav-flag-blue" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#7DD3FF"/><stop offset=".42" stop-color="#2F6BFF"/><stop offset=".95" stop-color="#0B2DBF"/></linearGradient></defs><path fill="url(#nav-flag-red)" d="M0 12Q0 0 12 0Q15 0 17.4 1.8L42 20Q50 26 58 20L82.6 1.8Q85 0 88 0Q100 0 100 12L100 37Q100 41 96.9 38.4L90.1 32.7Q84 27.5 77.6 32.3L58 47Q50 53 42.2 46.7L18.7 27.8Q14 24 8 23.6L4 23.3Q0 23 0 19Z"/><path fill="url(#nav-flag-blue)" d="M0 36.5Q0 33.5 2.4 35.3L42 65Q50 71 58 65L81.6 47.3Q84 45.5 88 45.5Q100 45.5 100 57.5L100 98Q100 100 98.4 98.8L78 83.5Q74 80.5 70 83.6L57.9 92.9Q50 99 42.1 92.8L4.7 63.7Q0 60 0 54Z"/></svg><span class="app-nav__label">Home</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico app-nav__ic"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico app-nav__ic"><use href="#i-tasks"/></svg><span class="app-nav__label">Inbox</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
         <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__ic app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">GPT</span></button>
         <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico app-nav__ic"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
         <button class="app-nav__item" type="button" data-app-tab="profile"><span class="app-nav__label">Profile</span></button>
@@ -6850,7 +6845,7 @@ button.m-card:active { transform: scale(.985); }
     tasks: () => ({
       text: `${B(`${totalPending()} actions`)} are waiting on you. Here they are by app:`,
       body: gCard(APP_ORDER.map((a) => gRow({ lead: gMark(a), title: sourceNames[a], meta: `${counts[a]} waiting`, actions: act("Show", "filter", a) }))),
-      actions: act(isApp() ? "Open tasks" : "Open inbox", "inbox", "inbox", "btn--primary"),
+      actions: act("Open inbox", "inbox", "inbox", "btn--primary"),
       follow: ["What needs my attention?", "My drafts"]
     }),
     policy(t) {
@@ -8113,7 +8108,7 @@ button.m-card:active { transform: scale(.985); }
     const tb = $("#app-task-badge");
     tb.textContent = n;
     tb.hidden = !n;
-    $('[data-app-tab="tasks"]', appNav).setAttribute("aria-label", n ? `Tasks, ${n} waiting` : "Tasks");
+    $('[data-app-tab="tasks"]', appNav).setAttribute("aria-label", n ? `Inbox, ${n} waiting` : "Inbox");
     const unread = $$("#notif-list .notif.is-unread").length;
     $$(".js-bell-count", appEl).forEach((b) => { b.textContent = unread; b.classList.toggle("is-cleared", !unread); });
     $$(".js-bell", appEl).forEach((b) => b.setAttribute("aria-label", unread ? `Notifications, ${unread} unread` : "Notifications"));
@@ -8234,7 +8229,12 @@ button.m-card:active { transform: scale(.985); }
     // profile
     "sign-out": () => confirmSheet({ title: "Sign out?", text: "You’ll need to sign in again to see your tasks, requests and perks.", ok: "Sign out", danger: true, ic: "i-logout", onOk: () => toast("You’ve been signed out of this demo.", "i-logout") }),
     language: () => openSheet({ title: "Language", render: languageHTML }),
-    "set-notify": (k, btn) => { const p = notifyPrefs(); p[k] = !p[k]; store.set(NOTIFY_KEY, JSON.stringify(p)); btn.setAttribute("aria-checked", String(p[k])); toast(p[k] ? `${NOTIFY_LABELS[k][0]} notifications on` : `${NOTIFY_LABELS[k][0]} notifications off`, "i-bell"); },
+    "push-notify": (_, btn) => {
+      const on = !pushOn();
+      store.set(NOTIFY_KEY, JSON.stringify({ push: on }));
+      btn.setAttribute("aria-checked", String(on));
+      toast(on ? "Push notifications on" : "Push notifications off", "i-bell");
+    },
     // notifications
     "notif-all": () => { if ($$("#notif-list .notif.is-unread").length) markAllRead(); else toast("You’re all caught up", "i-check"); },
     "notif-kind": (v) => { A.nf = v; refreshAll(); },
@@ -8495,8 +8495,8 @@ button.m-card:active { transform: scale(.985); }
   const SORTS = { approvals: [["urgent", "Most urgent"], ["az", "A–Z"]], other: [["new", "Newest"], ["old", "Oldest"], ["az", "A–Z"]] };
 
   PAGES.tasks = {
-    root: true, title: () => "Tasks",
-    render: () => `${intro({ kick: "Bloom@Go", title: "Tasks", sub: $(".inbox__sub").textContent })}
+    root: true, title: () => "Inbox",
+    render: () => `${intro({ kick: "Bloom@Go", title: "Inbox", sub: $(".inbox__sub").textContent })}
       <div class="m-sec m-sec--sum" data-live="tkSum">${tkSumHTML()}</div>
       <div class="m-tk-tools">${searchField("tk", "Search tasks and requests", A.tk.q)}<span class="m-tk-filter" data-live="tkFilterBtn">${tkFilterBtnHTML()}</span></div>
       <div class="tabs m-tabs" role="tablist" aria-label="Tasks and requests">${tkTabsHTML()}</div>
@@ -9258,8 +9258,8 @@ button.m-card:active { transform: scale(.985); }
      PROFILE — you, your preferences, support and account
      --------------------------------------------------------------- */
   const NOTIFY_KEY = "bloo-x-notify";
-  const NOTIFY_LABELS = { tasks: ["Tasks", "Approvals and tasks from your apps"], requests: ["Requests", "When approvers act on your requests"], announcements: ["Announcements", "Birthdays, drills and holidays"], people: ["People", "New joiners and work anniversaries"], policies: ["Policies", "When a policy you follow changes"] };
-  const notifyPrefs = () => { let p = {}; try { p = JSON.parse(store.get(NOTIFY_KEY) || "{}"); } catch { /* start fresh */ } return Object.fromEntries(Object.keys(NOTIFY_LABELS).map((k) => [k, p[k] !== false])); };
+  const pushOn = () => { try { return JSON.parse(store.get(NOTIFY_KEY) || "{}").push !== false; } catch { return true; } };
+  const pushPrefHTML = () => `<button class="pref pref--push" type="button" role="switch" aria-checked="${pushOn()}" data-act="push-notify"><span class="pref__label">${icon("i-bell")}Push notifications<span class="pref__value" aria-hidden="true"><span class="pref__off">Off</span><span class="pref__on">On</span></span></span><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span></button>`;
   const reports = () => people.filter((p) => p.manager === me.name);
   PAGES.profile = {
     root: true, title: () => "Profile",
@@ -9274,16 +9274,12 @@ button.m-card:active { transform: scale(.985); }
           <h1 class="m-me__name" tabindex="-1">${esc(me.name)}</h1>
           <p class="m-me__role">${esc(me.role)} · ${esc(me.team)}</p>
           <p class="m-me__tags"><span class="tag">${icon("i-pin", "ico ico--xs")}${esc(me.location)}</span><span class="tag">${icon("i-calendar", "ico ico--xs")}Since ${esc(me.doj.split(" ").slice(1).join(" "))}</span></p>
-          <div class="m-me__stats" data-live="meStats">${meStatsHTML()}</div>
         </header>
         ${groupBlock("Personal", [
-          rowHTML({ lead: tile("i-user"), title: "My profile", sub: "Role, manager and contact", go: "myprofile" }),
-          rowHTML({ lead: tile("i-briefcase"), title: "My details", sub: "Email, location and joining date", go: "mydetails" }),
-          rowHTML({ lead: tile("i-users"), title: "My team", sub: `${esc(me.team)} · ${plural(reports().length, "direct report", "direct reports")}`, go: "myteam" })
+          rowHTML({ lead: tile("i-user"), title: "My profile", sub: "Details, contact and your team", go: "myprofile" })
         ])}
         ${groupBlock("Preferences", [
-          rowHTML({ lead: tile("i-bell"), title: "Notifications", sub: "Choose what reaches you", go: "notifyprefs" }),
-          `<li class="m-prefs">${themePref}${accentPref}</li>`,
+          `<li class="m-prefs">${pushPrefHTML()}${themePref}${accentPref}</li>`,
           rowHTML({ lead: tile("i-globe"), title: "Language", sub: "English", act: "language" })
         ])}
         ${groupBlock("Support", [
@@ -9291,51 +9287,29 @@ button.m-card:active { transform: scale(.985); }
           rowHTML({ lead: tile("i-book"), title: "FAQ", sub: "Quick answers", go: "faq/0" })
         ])}
         ${groupBlock("Account", [rowHTML({ lead: tile("i-logout", "var(--warm)"), title: "Sign out", end: "", act: "sign-out", cls: "m-row--danger" })])}`;
-    },
-    live: { meStats: () => meStatsHTML() }
+    }
   };
   const groupBlock = (label, rows) => `<section class="m-sec m-group-block" aria-label="${label}"><p class="m-label">${label}</p><ul class="m-list">${rows.join("")}</ul></section>`;
-  function meStatsHTML() {
-    const inProg = reqsIn("mine").length;
-    const joined = groupsData().filter((g) => g.joined).length;
-    return [[totalPending(), "waiting on you", "tab/tasks"], [inProg, "in progress", "tasks/pending"], [joined, joined === 1 ? "group joined" : "groups joined", "communities"]]
-      .map(([n, l, g]) => `<button class="m-me__stat" type="button" data-go="${g}"><strong>${n}</strong><span>${l}</span></button>`).join("");
-  }
+  // My profile: who you are, what Bloom has on record, and your team, on one page
   PAGES.myprofile = {
     title: () => "My profile",
-    render: () => `<div class="m-detail"><div class="d-profile"><span class="avatar ${me.img}">${me.initials}</span><h1 class="m-detail__title" tabindex="-1">${esc(me.name)}</h1><p class="meta">${esc(me.role)}, ${esc(me.team)}</p></div>
-      <dl class="d-facts"><div><dt>Reporting manager</dt><dd>${esc(me.manager)}</dd></div><div><dt>Date of joining</dt><dd>${esc(me.doj)}</dd></div><div><dt>Location</dt><dd>${esc(me.location)}</dd></div><div><dt>Email</dt><dd>${esc(me.email)}</dd></div></dl>
-      <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="Opening your full profile…">View full profile</button></div></div>`
-  };
-  PAGES.mydetails = {
-    title: () => "My details",
-    render() {
-      const db = quickLinks().find((x) => x.src === "darwinbox");
-      const how = [...$$("#faq-panel-general .faqs__item")].find((d) => /personal information/i.test(d.textContent));
-      return `<div class="m-detail">${intro({ title: "My details", sub: "What Bloom has on record for you." })}
-        <ul class="m-list">${[["i-mail", "Email", me.email], ["i-pin", "Location", me.location], ["i-calendar", "Date of joining", me.doj], ["i-briefcase", "Role", `${me.role}, ${me.team}`], ["i-user", "Reporting manager", me.manager]]
-          .map(([ic, t, v]) => infoRowHTML({ lead: tile(ic), title: esc(v), sub: t })).join("")}</ul>
-        ${how ? `<p class="d-note">${faqAnswer(how).innerHTML}</p>` : ""}
-        ${db ? `<a class="btn btn--ghost m-detail__cta" href="${esc(db.href)}" target="_blank" rel="noopener"><span class="app-mark app-mark--db" aria-hidden="true"></span>Open Darwinbox${icon("i-external", "ico ico--sm")}</a>` : ""}</div>`;
-    }
-  };
-  PAGES.myteam = {
-    title: () => "My team",
     render() {
       const mine = reports();
-      return `<div class="m-detail">${intro({ kick: me.team, title: "My team", sub: `You report to ${me.manager}. ${mine.length ? `${plural(mine.length, "person reports", "people report")} to you.` : ""}` })}
-        <p class="m-label">Your manager</p>
-        <ul class="m-list">${infoRowHTML({ lead: `<span class="avatar">${initialsOf(me.manager)}</span>`, title: esc(me.manager), sub: "Reporting manager" })}</ul>
-        <p class="m-label">Reporting to you</p>
-        <ul class="m-list">${mine.map((p) => rowHTML({ lead: avatarHTML({ ...p, initials: initialsOf(p.name) }), title: esc(p.name), sub: `${esc(p.role)} · ${esc(p.week)}`, go: `person/joiner:${people.indexOf(p)}` })).join("")}</ul></div>`;
-    }
-  };
-  PAGES.notifyprefs = {
-    title: () => "Notifications",
-    render() {
-      const p = notifyPrefs();
-      return `<div class="m-detail">${intro({ title: "Notifications", sub: "Choose what reaches you. Urgent approvals always show in the bell." })}
-        <div class="m-prefs m-prefs--list">${Object.entries(NOTIFY_LABELS).map(([k, [t, s]]) => `<button class="pref m-pref" type="button" role="switch" aria-checked="${p[k]}" data-act="set-notify" data-v="${k}"><span class="pref__label"><span class="m-pref__txt"><strong>${t}</strong><small>${s}</small></span></span><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span></button>`).join("")}</div></div>`;
+      const db = quickLinks().find((x) => x.src === "darwinbox");
+      const how = [...$$("#faq-panel-general .faqs__item")].find((d) => /personal information/i.test(d.textContent));
+      return `<div class="m-detail">
+        <div class="d-profile"><span class="avatar ${me.img}">${me.initials}</span><h1 class="m-detail__title" tabindex="-1">${esc(me.name)}</h1><p class="meta">${esc(me.role)}, ${esc(me.team)}</p></div>
+        <section class="m-block" aria-label="My details"><p class="m-label">My details</p>
+          <ul class="m-list">${[["i-mail", "Email", me.email], ["i-pin", "Location", me.location], ["i-calendar", "Date of joining", me.doj], ["i-briefcase", "Role", `${me.role}, ${me.team}`]]
+            .map(([ic, t, v]) => infoRowHTML({ lead: tile(ic), title: esc(v), sub: t })).join("")}</ul>
+          ${how ? `<p class="d-note">${faqAnswer(how).innerHTML}</p>` : ""}
+          ${db ? `<a class="btn btn--ghost m-detail__cta" href="${esc(db.href)}" target="_blank" rel="noopener"><span class="app-mark app-mark--db" aria-hidden="true"></span>Open Darwinbox${icon("i-external", "ico ico--sm")}</a>` : ""}
+        </section>
+        <section class="m-block" aria-label="My team"><p class="m-label">My team · ${esc(me.team)}</p>
+          <ul class="m-list">${infoRowHTML({ lead: `<span class="avatar">${initialsOf(me.manager)}</span>`, title: esc(me.manager), sub: "Your reporting manager" })}${mine.map((p) => rowHTML({ lead: avatarHTML({ ...p, initials: initialsOf(p.name) }), title: esc(p.name), sub: `${esc(p.role)} · reports to you`, go: `person/joiner:${people.indexOf(p)}` })).join("")}</ul>
+        </section>
+        <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="Opening your full profile…">View full profile</button></div>
+      </div>`;
     }
   };
   function languageHTML() {

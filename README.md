@@ -165,9 +165,9 @@ scrollbars stay hidden, as on a phone. On the `#desktop` page,
 - **Header:** the logo, then Search and Notifications on round surfaces.
   It frosts once content slides under it. Pushed pages swap it for Back
   and their title, centred.
-- **Bottom bar:** Home, Tasks, GPT, Explore and Profile in a frosted
+- **Bottom bar:** Home, Inbox, GPT, Explore and Profile in a frosted
   capsule above the home indicator, with a sliding accent pill and a
-  count on Tasks. Home wears the logo's flag (redrawn as a vector, so it
+  count on Inbox. Home wears the logo's flag (redrawn as a vector, so it
   stays sharp), GPT sits in the middle with its orb and opens the Bloom GPT
   screen (Bloom GPT, the FAQ and support), and Profile shows your photo. What
   scrolls under the bar fades into the page, so the bar stands clear. Each tab keeps its own stack of pages and its
@@ -177,7 +177,7 @@ scrollbars stay hidden, as on a phone. On the `#desktop` page,
   the important action and the pending task), Quick links as a
   launcher, the announcements as swipeable cards, new joiners, the
   updated policy, and a perk and two offers. Pull down to sync.
-- **Tasks:** a summary with the donut (by app, or by request type), search,
+- **Inbox** (the tasks tab): a summary with the donut (by app, or by request type), search,
   a filter-and-sort sheet, and five tabs: All, Approvals, Pending, Drafts
   and My requests. Approve, Reject (with a confirmation), View, Remind,
   Revise, Edit and Delete (with a confirmation). Task and request details
@@ -192,8 +192,9 @@ scrollbars stay hidden, as on a phone. On the `#desktop` page,
   from search.
 - **Help:** Bloom GPT (the page's own assistant, with suggested prompts),
   the FAQ and Help & support. Bloom GPT's actions open app screens.
-- **Profile:** you, My profile, My details, My team, notification
-  settings, theme and accent, language, Help, FAQ and Sign out.
+- **Profile:** you, then My profile (your details and your team on one
+  page), a Push notifications switch beside theme and accent, language,
+  Help, FAQ and Sign out.
 - **Notifications** and **Search** open full-screen from the header.
   Search keeps recent searches, suggests, groups results as you type, has
   a full results view with filters, and offers Bloom GPT when nothing
