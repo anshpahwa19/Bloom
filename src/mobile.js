@@ -123,6 +123,9 @@
   const rowHTML = ({ lead = "", title, sub = "", end = chevron, go, act, v, cls = "", attrs = "" }) =>
     `<li><button class="m-row ${cls}" type="button"${go ? ` data-go="${esc(go)}"` : ""}${act ? ` data-act="${act}" data-v="${esc(String(v ?? ""))}"` : ""}${attrs}>${lead ? `<span class="m-row__lead">${lead}</span>` : ""}<span class="m-row__txt"><strong>${title}</strong>${sub ? `<small>${sub}</small>` : ""}</span>${end}</button></li>`;
   const infoRowHTML = ({ lead = "", title, sub = "" }) => `<li><div class="m-row m-row--static">${lead ? `<span class="m-row__lead">${lead}</span>` : ""}<span class="m-row__txt"><strong>${title}</strong>${sub ? `<small>${sub}</small>` : ""}</span></div></li>`;
+  // A switch in a list is a row like any other: tile, title and its value, then the switch
+  const switchRowHTML = ({ lead, title, off, on, checked, label, attrs = "", sw, cls = "" }) =>
+    `<li><button class="m-row m-row--switch ${cls}" type="button" role="switch" aria-checked="${checked}" aria-label="${label}"${attrs}><span class="m-row__lead">${lead}</span><span class="m-row__txt"><strong>${title}</strong><small><span class="pref__off">${off}</span><span class="pref__on">${on}</span></small></span>${sw}</button></li>`;
   const tile = (ic, hue) => `<span class="gpt-tile"${hue ? ` style="--hue:${hue}"` : ""} aria-hidden="true">${icon(ic)}</span>`;
   const chipHTML = ({ label, on, act, v, count, dot, num, pc, role = "" }) =>
     `<button class="chip${on ? " is-selected" : ""}" type="button"${role ? ` role="${role}" aria-selected="${on}"` : ` aria-pressed="${on}"`} data-act="${act}" data-v="${esc(String(v))}"${pc ? ` data-pc="${pc}"` : ""}>${num ? `<span class="chip__num">${num}</span>` : ""}${dot ? '<span class="chip__dot" aria-hidden="true"></span>' : ""}${esc(label)}${count != null ? `<span class="chip__count">${count}</span>` : ""}</button>`;
@@ -1624,16 +1627,14 @@
      --------------------------------------------------------------- */
   const NOTIFY_KEY = "bloo-x-notify";
   const pushOn = () => { try { return JSON.parse(store.get(NOTIFY_KEY) || "{}").push !== false; } catch { return true; } };
-  const pushPrefHTML = () => `<button class="pref pref--push" type="button" role="switch" aria-checked="${pushOn()}" data-act="push-notify"><span class="pref__label">${icon("i-bell")}Push notifications<span class="pref__value" aria-hidden="true"><span class="pref__off">Off</span><span class="pref__on">On</span></span></span><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span></button>`;
   const reports = () => people.filter((p) => p.manager === me.name);
   PAGES.profile = {
     root: true, title: () => "Profile",
     render() {
       const isDark = root.getAttribute("data-theme") === "dark";
       const crimson = root.getAttribute("data-palette") === "crimson";
-      const prefs = $(".mo__prefs");
-      const themePref = $(".pref--theme", prefs).outerHTML.replace(/aria-checked="(true|false)"/, `aria-checked="${isDark}"`);
-      const accentPref = $(".pref--accent", prefs).outerHTML.replace(/ id="palette-switch"/, "").replace(/aria-checked="(true|false)"/, `aria-checked="${crimson}"`);
+      // the page's own switch graphics (sun and moon, blue and red), in rows like Language's
+      const sw = (sel) => $(`.mo__prefs ${sel} .switch`).outerHTML;
       return `<header class="m-me">
           <span class="avatar m-me__avatar ${me.img}">${me.initials}</span>
           <h1 class="m-me__name" tabindex="-1">${esc(me.name)}</h1>
@@ -1644,7 +1645,9 @@
           rowHTML({ lead: tile("i-user"), title: "My profile", sub: "Details, contact and your team", go: "myprofile" })
         ])}
         ${groupBlock("Preferences", [
-          `<li class="m-prefs">${pushPrefHTML()}${themePref}${accentPref}</li>`,
+          switchRowHTML({ cls: "pref--push", lead: tile("i-bell"), title: "Push notifications", off: "Off", on: "On", checked: pushOn(), label: "Push notifications", attrs: ' data-act="push-notify"', sw: `<span class="switch switch--push" aria-hidden="true"><span class="switch__thumb"></span></span>` }),
+          switchRowHTML({ cls: "pref--theme", lead: `<span class="gpt-tile" aria-hidden="true">${icon("i-sun", "ico pref__sun")}${icon("i-moon", "ico pref__moon")}</span>`, title: "Theme", off: "Light", on: "Dark", checked: isDark, label: "Dark theme", attrs: " data-theme-switch", sw: sw(".pref--theme") }),
+          switchRowHTML({ cls: "pref--accent", lead: `<span class="gpt-tile" aria-hidden="true"><span class="pref__swatches"><i class="sw sw--azure"></i><i class="sw sw--crimson"></i></span></span>`, title: "Accent", off: "Blue", on: "Red", checked: crimson, label: "Red accent", attrs: " data-palette-switch", sw: sw(".pref--accent") }),
           rowHTML({ lead: tile("i-globe"), title: "Language", sub: "English", act: "language" })
         ])}
         ${groupBlock("Support", [

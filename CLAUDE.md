@@ -139,8 +139,10 @@
   - Profile has no stats row. Its one Personal row opens My profile
     (`PAGES.myprofile`), which holds your details and your team on one page.
     Notifications are a single Push notifications switch on Profile itself
-    (`pushOn()`, stored under `bloo-x-notify` as `{ push }`), styled as the
-    page's `.pref` switches beside Theme and Accent.
+    (`pushOn()`, stored under `bloo-x-notify` as `{ push }`). Push, Theme and
+    Accent are list rows like Language (`switchRowHTML`): tile, title and
+    its value, then the switch (the page's own theme and accent switches, all
+    one size). No grey `.pref` boxes or value pills inside lists.
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
     window or device mode), in both themes, and in the iPhone mockup on a
