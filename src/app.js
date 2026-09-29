@@ -2227,6 +2227,13 @@
     items.push(`<button type="button" data-gpt-ask="What changed in Data Security?">${icon("i-shield", "ico ico--sm")}Data Security was updated</button>`);
     return `<span class="gpt__noticed-label">${icon("i-sparkle", "ico ico--sm")}Bloom GPT noticed</span>${items.join('<i aria-hidden="true"></i>')}`;
   }
+  // The landing's greeting, date and what Bloom GPT noticed, as of now
+  function fillGptLanding() {
+    const hr = new Date().getHours();
+    $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
+    $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+    $("#gpt-noticed").innerHTML = gptNoticedHTML();
+  }
   function openGpt(trigger, q) {
     if (!gpt.open) {
       gpt.returnFocus = document.activeElement;
@@ -2236,10 +2243,7 @@
       gptEl.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
       closeNav(false); closeMenus(); closeSearch(); hideTip();
       if (ib.open) closeInbox();
-      const hr = new Date().getHours();
-      $("#gpt-greet").textContent = `${hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening"}, Rashid`;
-      $("#gpt-date").textContent = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
-      $("#gpt-noticed").innerHTML = gptNoticedHTML();
+      fillGptLanding();
       gpt.open = true;
       gptEl.classList.add("is-open");
       gptEl.setAttribute("aria-hidden", "false");

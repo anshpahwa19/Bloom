@@ -11,7 +11,8 @@
    4. Screens — Home, Tasks, details, Explore, People, Policies,
       Communities, Discounts, Perks, Help, Profile, Notifications, Search
    5. The phone-sized screen — the app on wider screens
-   6. Small phones, reduced motion
+   6. Figma capture board — every screen at once
+   7. Small phones, reduced motion
    ================================================================== */
 
 /* ------------------------------------------------------------------
@@ -821,30 +822,65 @@ button.m-card:active { transform: scale(.985); }
 /* ------------------------------------------------------------------
    5. THE PHONE-SIZED SCREEN — wider screens get the app at 393 × 852
    (is-framed, alongside is-app), centred, with nothing drawn around
-   it. <body> is the screen: it holds its fixed layers, and frame.js
-   resolves the media queries and viewport units for its size.
+   it. #screen is the screen: it holds its fixed layers, and frame.js
+   resolves the media queries and viewport units for its size. Beside
+   it, the Figma capture board (section 6) lays every screen out.
    ------------------------------------------------------------------ */
+.screen { display: contents; }
+.fg-open { display: none; }
 :root.is-framed {
   --safe-top: 54px;                                  /* room for an iPhone's status bar */
   --safe-bottom: 34px;                               /* and its home indicator */
   height: auto; min-height: 100%; overflow: auto; scrollbar-gutter: auto;
-  display: grid; place-items: center; padding: 24px 16px; background: var(--canvas-2);
+  display: grid; background: var(--canvas-2);
 }
-.is-framed body {
-  position: relative; contain: layout paint; flex: none;
+.is-framed body { display: grid; place-items: center; height: auto; overflow: visible; padding: 24px 16px; }
+.is-framed .screen {
+  position: relative; contain: layout paint; display: block;
   width: 393px; height: 852px;                       /* FRAME in frame.js */
-  overflow: hidden; box-shadow: 0 0 0 1px var(--line), var(--sh-2);
+  overflow: hidden; background: var(--canvas); box-shadow: 0 0 0 1px var(--line), var(--sh-2);
 }
-.is-framed body, .is-framed body * { scrollbar-width: none; }
-.is-framed body ::-webkit-scrollbar { display: none; }
-/* The page's dialogs open in the browser's top layer, outside <body>, so
-   they sit over the screen from where frame.js says it is */
+.is-framed .screen, .is-framed .screen * { scrollbar-width: none; }
+.is-framed .screen ::-webkit-scrollbar { display: none; }
+/* The page's dialogs open in the browser's top layer, outside the screen,
+   so they sit over it from where frame.js says it is */
 .is-framed .modal {
   position: fixed; inset: auto auto var(--fb, 0px) var(--fx, 0px); width: 393px; max-width: none; margin: 0;
   max-height: calc(852px - var(--safe-top) - 24px);
 }
 .is-framed .modal[open] { animation-name: m-sheet-rise; }
+.is-framed .fg-open { position: fixed; top: 20px; right: 20px; z-index: 1; display: inline-flex; gap: 8px; }
 .is-grabbing, .is-grabbing * { cursor: grabbing !important; user-select: none !important; }
+
+/* ------------------------------------------------------------------
+   6. FIGMA CAPTURE BOARD — every screen at once, as artboards: full
+   length, static and flat, so an HTML capture reads each as one frame
+   with no hidden or stacked layers. Built by openCapture() in mobile.js.
+   ------------------------------------------------------------------ */
+:root.is-capture { display: block; overflow: auto; }
+.is-capture body { display: block; padding: 0; }
+.is-capture *, .is-capture *::before, .is-capture *::after { transition: none !important; }
+/* once stillCapture() has written each entrance's resting state in, nothing moves */
+.is-still *, .is-still *::before, .is-still *::after { animation: none !important; }
+.fg { display: grid; gap: 40px; padding: 48px; }
+.fg__head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.fg__title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+.fg__meta { font-size: .875rem; color: var(--slate); }
+.fg__acts { display: flex; gap: 8px; margin-left: auto; }
+.fg__grid { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 72px 56px; }
+.fg-art { display: grid; gap: 12px; width: 393px; margin: 0; }
+.fg-art__name { font-size: .875rem; font-weight: 600; color: var(--slate); }
+.fg-screen {
+  position: relative; isolation: isolate; width: 393px; min-height: 852px; overflow: hidden;
+  background: var(--canvas); color: var(--ink); box-shadow: 0 0 0 1px var(--line);
+}
+.fg-screen--fixed { height: 852px; }                /* a sheet over its screen */
+.fg-screen > .pg, .fg-screen > .gpt {
+  position: relative; inset: auto; min-height: 852px; height: auto; overflow: visible;
+  visibility: visible; clip-path: none;
+}
+.fg-screen--fixed > .pg { height: 852px; overflow: hidden; }
+.fg-screen .app-sheet { visibility: visible; }
 
 /* ------------------------------------------------------------------
    KEYFRAMES
@@ -856,7 +892,7 @@ button.m-card:active { transform: scale(.985); }
 @keyframes m-marquee { to { transform: translateX(calc(-100% / 3)); } }
 
 /* ------------------------------------------------------------------
-   6. SMALL PHONES, REDUCED MOTION
+   7. SMALL PHONES, REDUCED MOTION
    ------------------------------------------------------------------ */
 /* Tab labels shrink before any tab would leave the bar */
 @media (max-width: 389px) {

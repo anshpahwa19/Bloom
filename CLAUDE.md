@@ -82,8 +82,8 @@
   section 5 of mobile.css). No iframe and no device art: the page itself is
   the app, so Figma's HTML capture can read it. The full desktop page is
   kept for development at `#desktop`, and every rule below still holds for it.
-  - In frame mode `<body>` is the screen: it contains the app's fixed layers
-    (the app, Bloom GPT, toasts). frame.js resolves our stylesheets
+  - In frame mode `#screen` is the screen: it contains the app's fixed layers
+    (the app, toasts, and Bloom GPT, which frame.js moves in). frame.js resolves our stylesheets
     (`<style data-bloom>`) for 393 × 852 at load: media queries become
     "all"/"not all" (hover and pointer answer as a phone: none, coarse), and
     vw/vh become px. It also shadows `matchMedia` for app.js and mobile.js.
@@ -91,8 +91,17 @@
     (`innerWidth`, `clientX`) where the screen is meant: subtract
     `frameOffset()`.
   - The page's `<dialog>`s open in the browser's top layer, outside
-    `<body>`; in frame mode they place themselves over the screen from
+    `#screen`; in frame mode they place themselves over the screen from
     `--fx`/`--fb`, which frame.js keeps up to date.
+  - Figma capture board ("Figma capture view" beside the screen, or
+    `#figma`; `openCapture()` in mobile.js, section 6 of mobile.css): every
+    screen in `CAPTURE` as its own 393-wide, full-length artboard, then the
+    rest of the page is removed. It is flattened for HTML capture:
+    entrances are written in at rest and motion stops (`stillCapture`), and
+    nothing is left hidden, see-through, sticky, fixed or scrolling
+    (`flattenCapture`). Sprite icons are drawn in place with their paint as
+    attributes, and ids are unique. Add a new screen to `CAPTURE`; after any
+    change, audit the board (no overlaps, hidden nodes, `<use>` or spills).
   - The screen keeps an iPhone's safe areas (54px top, 34px bottom) as empty
     space, so an iOS status bar can be laid over it in Figma. Safe areas go
     through `--safe-top` and `--safe-bottom`, never `env()` directly.

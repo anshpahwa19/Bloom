@@ -10,8 +10,10 @@
     (function () {
       var root = document.documentElement, saved = null, palette = null;
       // Phones get the app full screen; wider screens get it at a phone's size (is-framed),
-      // unless #desktop asks for the full page (keep in step with APP_QUERY in frame.js)
-      if (matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 520px)").matches) root.classList.add("is-app");
+      // unless #desktop asks for the full page (keep in step with APP_QUERY in frame.js).
+      // #figma is the Figma capture board, laid out at that phone size too.
+      if (location.hash === "#figma") root.classList.add("is-app", "is-framed");
+      else if (matchMedia("(max-width: 767px), (pointer: coarse) and (max-height: 520px)").matches) root.classList.add("is-app");
       else if (location.hash !== "#desktop") root.classList.add("is-app", "is-framed");
       try { saved = localStorage.getItem("bloo-theme"); palette = localStorage.getItem("bloo-x-palette"); } catch (e) {}
       // an in-page choice wins, then a theme the host page stamped, then the OS setting
@@ -1145,6 +1147,9 @@
        each screen from the page's own data; each tab keeps a stack of
        pages, and sheets rise from the bottom.
        ============================================================ -->
+  <!-- On wider screens #screen is the phone-sized screen (is-framed); elsewhere it
+       doesn't box anything (display: contents) -->
+  <div class="screen" id="screen">
   <div class="app" id="app">
     <div class="app-views" id="app-views" role="main">
       <div class="app-stack is-active" data-stack="home"></div>
@@ -1190,6 +1195,10 @@
   </div>
 
   <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+  </div>
+
+  <!-- Beside the phone-sized screen: every screen at once, laid out for Figma's HTML capture -->
+  <button class="btn btn--ghost fg-open" type="button" data-open-capture><svg class="ico ico--sm"><use href="#i-grid"/></svg>Figma capture view</button>
 
   <!-- Flag cursor — the Bloom ribbon flag rides on the pointer (fine pointers only) -->
   <canvas class="fc-canvas" id="flag-cursor" aria-hidden="true"></canvas>

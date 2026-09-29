@@ -13,10 +13,14 @@ only Google Fonts load from the network.
 
 **What you see:** only the phone app. On a phone, full screen. On a desktop
 or tablet, at a phone's size (393 × 852, an iPhone 15's screen) in the
-middle of the window, with no device drawn around it, so the page can be
-captured as it is (for example with Figma's HTML capture).
-The full desktop page is kept for development: add `#desktop` to the address
-(for example `BlooMultiverse-Interactive.html#desktop`).
+middle of the window, with no device drawn around it.
+
+**Capturing it in Figma:** press **Figma capture view** (top right, beside
+the app), or open the file with `#figma`. The page becomes a board of every
+screen (27 of them) side by side, each a 393-wide artboard at its full
+length, named above it, with nothing hidden, stacked or scrolling inside.
+Capture that page with Figma's HTML capture. **Switch theme** redraws the
+board in the other theme; **Back to the app** returns to it.
 
 ## Structure
 
@@ -157,6 +161,11 @@ screen keeps an iPhone's status-bar and home-indicator space (54px and
 34px). Rails, carousels and the joiner portrait can be dragged with a
 mouse, and scrollbars stay hidden, as on a phone. On the `#desktop` page,
 ☰ → **Mobile app** goes back to the app.
+
+The capture board (`openCapture()` in `mobile.js`) renders each screen with
+the app's own code, then flattens it for capture. Entrances are left at rest
+and nothing moves. Nothing is hidden, see-through, sticky, fixed or
+scrolling. Icons are plain SVG, and the rest of the page is removed.
 
 - **Header:** the logo, then Search and Notifications on round surfaces.
   It frosts once content slides under it. Pushed pages swap it for Back

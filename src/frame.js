@@ -6,9 +6,11 @@
      page itself is the app, so tools such as Figma's HTML capture read
      it as it is.
      To lay out exactly as on that phone, the app is given a phone-sized
-     viewport (the is-framed class): <body> becomes the screen and holds
+     viewport (the is-framed class): #screen becomes the screen and holds
      its fixed layers, the stylesheets' media queries and viewport units
      are resolved for 393 × 852, and matchMedia answers for it too.
+     Beside it, "Figma capture view" (or #figma) lays every screen out at
+     once for Figma's HTML capture (the capture board, in mobile.js).
      #desktop opens the full desktop page, kept for development.
      index.html runs this file before app.js and mobile.js.
      ================================================================== */
@@ -62,9 +64,12 @@
   };
 
   // Where the screen sits in the window: fixed layers inside it measure from here
-  const frameOffset = () => (FRAMED ? document.body.getBoundingClientRect() : { left: 0, top: 0 });
+  const screenEl = document.getElementById("screen");
+  const frameOffset = () => (FRAMED ? screenEl.getBoundingClientRect() : { left: 0, top: 0 });
 
   if (FRAMED) {
+    // Bloom GPT is a full-screen layer too, so it lives in the screen
+    screenEl.append(document.getElementById("gpt-page"));
     // Resolve our stylesheets for the phone-sized screen: media queries become
     // "all"/"not all" (or what's left for the browser), and vw/vh become px.
     // url(…) and strings are skipped whole, so data URIs are never touched.
@@ -87,10 +92,10 @@
     for (const sheet of document.styleSheets) {
       if (sheet.ownerNode?.hasAttribute?.("data-bloom")) resolve(sheet.cssRules);
     }
-    // The page's dialogs open in the browser's top layer, outside <body>: they
-    // place themselves over the screen from these
+    // The page's dialogs open in the browser's top layer, outside the screen:
+    // they place themselves over it from these
     const place = () => {
-      const r = document.body.getBoundingClientRect();
+      const r = screenEl.getBoundingClientRect();
       document.documentElement.style.setProperty("--fx", `${r.left}px`);
       document.documentElement.style.setProperty("--fb", `${window.innerHeight - r.bottom}px`);
     };
