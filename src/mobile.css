@@ -114,9 +114,16 @@
   position: absolute; left: 0; right: 0; bottom: var(--app-tab-gap); z-index: 20;
   display: flex; justify-content: center; padding-inline: 10px; pointer-events: none;
 }
+/* What scrolls under the bar fades into the canvas, so the bar never merges
+   with it; the fade starts just above the bar and is solid below it */
+.app-nav::before {
+  content: ""; position: absolute; left: 0; right: 0; z-index: -1; pointer-events: none;
+  bottom: calc(-1 * var(--app-tab-gap)); height: calc(var(--app-tab-space) + 16px);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--canvas) 72%, transparent) 22%, color-mix(in srgb, var(--canvas) 94%, transparent) 52%, var(--canvas) 78%);
+}
 .app-nav__bar {
   --frost: color-mix(in srgb, var(--surface) 80%, transparent); /* stays legible over dark cards */
-  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(max-content, 1fr)); /* every label whole ("Bloom GPT" is the longest) */
   width: min(100%, 480px); height: var(--app-tab); padding: 6px; border-radius: var(--r-pill);
 }
 .app-nav__ind {
@@ -906,7 +913,6 @@ button.m-card:active { transform: scale(.985); }
   position: absolute; bottom: 8px; left: 50%; z-index: 2; width: 134px; height: 5px; translate: -50% 0;
   border-radius: var(--r-pill); background: var(--ink); pointer-events: none; transition: background-color var(--t-base) var(--ease-out);
 }
-.mk.is-light-bottom .mk__home { background: #fff; }
 
 /* Inside the iPhone: its safe areas, no scrollbars, and a hand for drags */
 :root.in-mockup { --safe-top: 54px; --safe-bottom: 34px; }

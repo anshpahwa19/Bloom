@@ -4,9 +4,11 @@ A second design direction for the BlooMultiverse prototype: a scroll-driven
 digital workplace with a floating, section-aware navigation instead of a
 sidebar dashboard. Same content, features and interactions as the original.
 
-**Live link:** https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ (private;
-share it from the page's Share menu). Every change is republished to this
-same link.
+**Live link (the phone app):** https://claude.ai/artifact/DmEJCNCBoXnuHRGFQkwj7Q
+(private; share it from the page's Share menu). Every change is republished
+to this same link, from `hosted/BlooMultiverse-Mobile.html`. The original
+link, https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ, now holds the web
+designs and is never published to from here.
 
 Offline, open `BlooMultiverse-Interactive.html`. It is one self-contained file;
 only Google Fonts load from the network.
@@ -38,7 +40,7 @@ On wider screens it stops after `mockup.js`: the page's own scripts never
 start behind the phone.
 
 Edit anything in `src/`, then run `python3 build.py`. It writes the offline
-file and `hosted/BlooMultiverse.html`, the version that gets published to the
+file and `hosted/BlooMultiverse-Mobile.html`, the version that gets published to the
 live link. That version has no `<html>/<head>/<body>` wrapper because the host
 adds its own.
 
@@ -163,11 +165,12 @@ scrollbars stay hidden, as on a phone. On the `#desktop` page,
 - **Header:** the logo, then Search and Notifications on round surfaces.
   It frosts once content slides under it. Pushed pages swap it for Back
   and their title, centred.
-- **Bottom bar:** Home, Tasks, Help, Explore and Profile in a frosted
+- **Bottom bar:** Home, Tasks, Bloom GPT, Explore and Profile in a frosted
   capsule above the home indicator, with a sliding accent pill and a
   count on Tasks. Home wears the logo's flag (redrawn as a vector, so it
-  stays sharp), Help sits in the middle with the Bloom GPT orb, and
-  Profile shows your photo. Each tab keeps its own stack of pages and its
+  stays sharp), Bloom GPT sits in the middle with its orb and opens Help
+  (Bloom GPT, the FAQ and support), and Profile shows your photo. What
+  scrolls under the bar fades into the page, so the bar stands clear. Each tab keeps its own stack of pages and its
   scroll position. Tapping the current tab goes back to its top.
 - **Home:** the greeting with today's moments, a dark "Needs your
   attention" card (the pending count, the apps, then the pending approval,

@@ -38,7 +38,7 @@
     const note = el.querySelector(".mk__note");
     const clock = el.querySelector(".mk__time");
     const closeBtn = el.querySelector("[data-mk-close]");
-    el.classList.remove("is-ready", "is-light", "is-light-bottom", "is-stuck");
+    el.classList.remove("is-ready", "is-light", "is-stuck");
     note.textContent = "Opening the app…";
 
     // Fit the phone to the window: a shorter phone first, then a smaller one
@@ -101,7 +101,6 @@
       }
       if (d.bloom === "chrome") {
         el.classList.toggle("is-light", d.tone === "light");
-        el.classList.toggle("is-light-bottom", d.bottom === "light");
         if (d.theme !== de.getAttribute("data-theme") || (d.palette || "") !== (de.getAttribute("data-palette") || "")) setTheme(d.theme, d.palette);
       }
     };
@@ -132,7 +131,7 @@
       el.classList.remove("is-open");
       const done = () => {
         frame.remove();
-        el.classList.remove("is-overlay", "is-ready", "is-light", "is-light-bottom", "is-stuck");
+        el.classList.remove("is-overlay", "is-ready", "is-light", "is-stuck");
         ["role", "aria-modal", "aria-label"].forEach((a) => el.removeAttribute(a));
         onClose?.();
       };

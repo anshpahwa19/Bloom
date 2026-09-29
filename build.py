@@ -14,8 +14,9 @@ ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "src"
 OUT = ROOT / "BlooMultiverse-Interactive.html"
 # The hosted (claude.ai Artifact) copy: the host supplies <!doctype>, <html>,
-# <head>, <body>, charset and viewport, so those wrappers are stripped.
-HOSTED = ROOT / "hosted" / "BlooMultiverse.html"
+# <head>, <body>, charset and viewport, so those wrappers are stripped. The
+# phone app publishes from its own file, to its own link (see CLAUDE.md).
+HOSTED = ROOT / "hosted" / "BlooMultiverse-Mobile.html"
 MIME = {".jpg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml"}
 
 

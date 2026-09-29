@@ -2044,14 +2044,11 @@
     if (window.name !== MOCKUP || !A.on) return;
     const pg = gpt.open || A.modal ? null : topPage();
     const over = pg && $(".pg-bar--over", pg);
-    // what the home indicator sits on: a dark surface (dark theme, or a deep-navy card) wants a light one
-    const under = document.elementsFromPoint(innerWidth / 2, innerHeight - 8).find((n) => !appNav.contains(n));
     const msg = {
       bloom: "chrome",
       theme: root.getAttribute("data-theme"),
       palette: root.getAttribute("data-palette") || "",
-      tone: over && !over.classList.contains("is-scrolled") ? "light" : "",
-      bottom: under && /dark/.test(getComputedStyle(under).colorScheme) ? "light" : ""
+      tone: over && !over.classList.contains("is-scrolled") ? "light" : ""
     };
     const said = JSON.stringify(msg);
     try {

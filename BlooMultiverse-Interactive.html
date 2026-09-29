@@ -2567,9 +2567,16 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   position: absolute; left: 0; right: 0; bottom: var(--app-tab-gap); z-index: 20;
   display: flex; justify-content: center; padding-inline: 10px; pointer-events: none;
 }
+/* What scrolls under the bar fades into the canvas, so the bar never merges
+   with it; the fade starts just above the bar and is solid below it */
+.app-nav::before {
+  content: ""; position: absolute; left: 0; right: 0; z-index: -1; pointer-events: none;
+  bottom: calc(-1 * var(--app-tab-gap)); height: calc(var(--app-tab-space) + 16px);
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--canvas) 72%, transparent) 22%, color-mix(in srgb, var(--canvas) 94%, transparent) 52%, var(--canvas) 78%);
+}
 .app-nav__bar {
   --frost: color-mix(in srgb, var(--surface) 80%, transparent); /* stays legible over dark cards */
-  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+  pointer-events: auto; display: grid; grid-template-columns: repeat(5, minmax(max-content, 1fr)); /* every label whole ("Bloom GPT" is the longest) */
   width: min(100%, 480px); height: var(--app-tab); padding: 6px; border-radius: var(--r-pill);
 }
 .app-nav__ind {
@@ -3359,7 +3366,6 @@ button.m-card:active { transform: scale(.985); }
   position: absolute; bottom: 8px; left: 50%; z-index: 2; width: 134px; height: 5px; translate: -50% 0;
   border-radius: var(--r-pill); background: var(--ink); pointer-events: none; transition: background-color var(--t-base) var(--ease-out);
 }
-.mk.is-light-bottom .mk__home { background: #fff; }
 
 /* Inside the iPhone: its safe areas, no scrollbars, and a hand for drags */
 :root.in-mockup { --safe-top: 54px; --safe-bottom: 34px; }
@@ -4630,11 +4636,11 @@ button.m-card:active { transform: scale(.985); }
     <nav class="app-nav" id="app-nav" aria-label="Main">
       <div class="app-nav__bar frost">
         <span class="app-nav__ind" aria-hidden="true"></span>
-        <!-- Home wears the logo's flag (a vector of it, crisp at any size), Help the Bloom GPT orb,
+        <!-- Home wears the logo's flag (a vector of it, crisp at any size), Bloom GPT (the Help tab) its orb,
              Profile your photo (mobile.js adds it from `me`) -->
         <button class="app-nav__item" type="button" data-app-tab="home" aria-current="page"><svg class="app-nav__ic app-nav__flag" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="nav-flag-red" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#FF8E7A"/><stop offset=".32" stop-color="#E3263B"/><stop offset=".9" stop-color="#A10D24"/></linearGradient><linearGradient id="nav-flag-blue" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#7DD3FF"/><stop offset=".42" stop-color="#2F6BFF"/><stop offset=".95" stop-color="#0B2DBF"/></linearGradient></defs><path fill="url(#nav-flag-red)" d="M0 12Q0 0 12 0Q15 0 17.4 1.8L42 20Q50 26 58 20L82.6 1.8Q85 0 88 0Q100 0 100 12L100 37Q100 41 96.9 38.4L90.1 32.7Q84 27.5 77.6 32.3L58 47Q50 53 42.2 46.7L18.7 27.8Q14 24 8 23.6L4 23.3Q0 23 0 19Z"/><path fill="url(#nav-flag-blue)" d="M0 36.5Q0 33.5 2.4 35.3L42 65Q50 71 58 65L81.6 47.3Q84 45.5 88 45.5Q100 45.5 100 57.5L100 98Q100 100 98.4 98.8L78 83.5Q74 80.5 70 83.6L57.9 92.9Q50 99 42.1 92.8L4.7 63.7Q0 60 0 54Z"/></svg><span class="app-nav__label">Home</span></button>
         <button class="app-nav__item" type="button" data-app-tab="tasks"><svg class="ico app-nav__ic"><use href="#i-tasks"/></svg><span class="app-nav__label">Tasks</span><span class="nav-badge app-nav__badge" id="app-task-badge" aria-hidden="true">32</span></button>
-        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__ic app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">Help</span></button>
+        <button class="app-nav__item" type="button" data-app-tab="help"><span class="orb orb--sm app-nav__ic app-nav__orb" aria-hidden="true"></span><span class="app-nav__label">Bloom GPT</span></button>
         <button class="app-nav__item" type="button" data-app-tab="explore"><svg class="ico app-nav__ic"><use href="#i-compass"/></svg><span class="app-nav__label">Explore</span></button>
         <button class="app-nav__item" type="button" data-app-tab="profile"><span class="app-nav__label">Profile</span></button>
       </div>
@@ -4711,7 +4717,7 @@ button.m-card:active { transform: scale(.985); }
     const note = el.querySelector(".mk__note");
     const clock = el.querySelector(".mk__time");
     const closeBtn = el.querySelector("[data-mk-close]");
-    el.classList.remove("is-ready", "is-light", "is-light-bottom", "is-stuck");
+    el.classList.remove("is-ready", "is-light", "is-stuck");
     note.textContent = "Opening the app…";
 
     // Fit the phone to the window: a shorter phone first, then a smaller one
@@ -4774,7 +4780,6 @@ button.m-card:active { transform: scale(.985); }
       }
       if (d.bloom === "chrome") {
         el.classList.toggle("is-light", d.tone === "light");
-        el.classList.toggle("is-light-bottom", d.bottom === "light");
         if (d.theme !== de.getAttribute("data-theme") || (d.palette || "") !== (de.getAttribute("data-palette") || "")) setTheme(d.theme, d.palette);
       }
     };
@@ -4805,7 +4810,7 @@ button.m-card:active { transform: scale(.985); }
       el.classList.remove("is-open");
       const done = () => {
         frame.remove();
-        el.classList.remove("is-overlay", "is-ready", "is-light", "is-light-bottom", "is-stuck");
+        el.classList.remove("is-overlay", "is-ready", "is-light", "is-stuck");
         ["role", "aria-modal", "aria-label"].forEach((a) => el.removeAttribute(a));
         onClose?.();
       };
@@ -9676,14 +9681,11 @@ button.m-card:active { transform: scale(.985); }
     if (window.name !== MOCKUP || !A.on) return;
     const pg = gpt.open || A.modal ? null : topPage();
     const over = pg && $(".pg-bar--over", pg);
-    // what the home indicator sits on: a dark surface (dark theme, or a deep-navy card) wants a light one
-    const under = document.elementsFromPoint(innerWidth / 2, innerHeight - 8).find((n) => !appNav.contains(n));
     const msg = {
       bloom: "chrome",
       theme: root.getAttribute("data-theme"),
       palette: root.getAttribute("data-palette") || "",
-      tone: over && !over.classList.contains("is-scrolled") ? "light" : "",
-      bottom: under && /dark/.test(getComputedStyle(under).colorScheme) ? "light" : ""
+      tone: over && !over.classList.contains("is-scrolled") ? "light" : ""
     };
     const said = JSON.stringify(msg);
     try {

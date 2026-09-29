@@ -3,11 +3,14 @@
 - The design lives in `src/` (index.html, styles.css, mobile.css, media.css,
   app.js, mobile.js, assets/). Never hand-edit the built files; change `src/`
   and run `python3 build.py`.
-- **Publish every change to the existing live link, never a new one:**
-  https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ
-  Build first, then publish `hosted/BlooMultiverse.html` with the Artifact tool,
-  passing that URL as `url` (read it first when the session has not published it).
-  Keep the page title "BlooMultiverse Interactive" and don't pass a new icon.
+- **Publish every change to the phone app's own link, never a new one:**
+  https://claude.ai/artifact/DmEJCNCBoXnuHRGFQkwj7Q
+  Build first, then publish `hosted/BlooMultiverse-Mobile.html` with the
+  Artifact tool, passing that URL as `url` (read it first when the session has
+  not published it). Keep the page title "BlooMultiverse Interactive" and don't
+  pass a new icon.
+  **Never publish to https://claude.ai/artifact/RPNXEfBFNa8GupVeHBzqgZ** — the
+  original link now holds the web designs, published from elsewhere.
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:
@@ -115,10 +118,15 @@
     (`policy/Data Security`, `tasks/approvals/sap`, `ann/3`…) and act with
     `data-act`. Bloom GPT's actions route to app screens in app mode
     (`APP_ACTS`).
-  - Bottom bar: exactly Home, Tasks, Help, Explore, Profile, in that order
-    (Help in the middle). Home wears the logo's flag (an inline vector in
-    index.html, in the logo's own red/blue), Help the Bloom GPT orb, and
-    Profile your photo (added from `me` in mobile.js). The header holds only
+  - Bottom bar: exactly Home, Tasks, Bloom GPT, Explore, Profile, in that
+    order. The middle tab is the Help tab (`data-app-tab="help"`), labelled
+    Bloom GPT. Home wears the logo's flag (an inline vector in index.html,
+    in the logo's own red/blue), Bloom GPT the orb, and Profile your photo
+    (added from `me` in mobile.js). Each column is at least as wide as its
+    label, so no label is ever cut. Content that scrolls under the bar fades
+    into the canvas (`.app-nav::before`), so the bar never merges with it;
+    the home indicator therefore always sits on the canvas and follows the
+    theme. The header holds only
     the logo, Search and Notifications (round surfaces); no avatar, since
     Profile is in the bar. No footer on phones.
   - Explore has no People tile (People stays reachable from Home and
