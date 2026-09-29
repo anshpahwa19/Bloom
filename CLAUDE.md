@@ -7,6 +7,9 @@
   Build first, then publish `hosted/BlooMultiverse.html` with the Artifact tool,
   passing that URL as `url` (read it first when the session has not published it).
   Keep the page title "BlooMultiverse Interactive" and don't pass a new icon.
+- That link is the **web design only**. The BlooMultiverse mobile app is a
+  separate design with its own link: never publish it here, and never make
+  this page show the app (no phone-app or iPhone-mockup mode on this page).
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:
