@@ -277,8 +277,9 @@
     PAGES[name].prepare?.(arg);
     const el = makePage(name, arg);
     const r = trigger?.getBoundingClientRect?.();
-    el.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
-    el.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
+    const o = frameOffset();
+    el.style.setProperty("--ox", r ? `${r.left - o.left + r.width / 2}px` : "50%");
+    el.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
     appLayer.append(el);
     attached(el);
     A.modal = { name, el, ret: trigger || document.activeElement };
@@ -406,7 +407,6 @@
     bar.classList.toggle("is-scrolled", pg.scrollTop > 4);
     const t = $(".pg-body h1", pg);
     if (t && !pg._page.def.root) bar.classList.toggle("show-title", t.getBoundingClientRect().bottom < bar.getBoundingClientRect().bottom);
-    tellMockup(false);
   }
   function updateAppRail(r) {
     const foot = r.nextElementSibling?.classList.contains("m-rail-foot") ? r.nextElementSibling : null;
@@ -1312,7 +1312,7 @@
     };
     fig.addEventListener("touchstart", (e) => from(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
     fig.addEventListener("touchend", (e) => to(e.changedTouches[0].clientX, e.changedTouches[0].clientY));
-    // a mouse swipes too (the app in the iPhone mockup)
+    // a mouse swipes too (the phone-sized app on a desktop)
     fig.addEventListener("pointerdown", (e) => { if (e.pointerType === "mouse") from(e.clientX, e.clientY); });
     fig.addEventListener("pointerup", (e) => { if (e.pointerType === "mouse") to(e.clientX, e.clientY); });
   }
@@ -1899,7 +1899,7 @@
     appViews.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
       const pg = topPage();
-      s = (e.touches.length === 1 && t.clientX < 22 && A.stacks[A.tab].length > 1 && !A.modal) ? { x: t.clientX, y: t.clientY, pg, prev: A.stacks[A.tab].at(-2), on: false, dx: 0 } : null;
+      s = (e.touches.length === 1 && t.clientX - frameOffset().left < 22 && A.stacks[A.tab].length > 1 && !A.modal) ? { x: t.clientX, y: t.clientY, pg, prev: A.stacks[A.tab].at(-2), on: false, dx: 0 } : null;
     }, { passive: true });
     appViews.addEventListener("touchmove", (e) => {
       if (!s) return;
@@ -1982,7 +1982,7 @@
 
   /* ---------------------------------------------------------------
      Mouse: rails move under a drag, as they would under a finger
-     (the app in the iPhone mockup, or in a narrow desktop window)
+     (the phone-sized app on a desktop, or a narrow desktop window)
      --------------------------------------------------------------- */
   (() => {
     let d = null;
@@ -2036,63 +2036,13 @@
   })();
 
   /* ---------------------------------------------------------------
-     In the iPhone mockup: tell the device around the app which theme
-     the app is in, and when the status bar sits on a photo
+     Desktop page (#desktop): ☰ → Mobile app goes back to the app
      --------------------------------------------------------------- */
-  let toldMockup = "";
-  function tellMockup(ready) {
-    if (window.name !== MOCKUP || !A.on) return;
-    const pg = gpt.open || A.modal ? null : topPage();
-    const over = pg && $(".pg-bar--over", pg);
-    // what the home indicator sits on: a dark surface (dark theme, or a deep-navy card) wants a light one
-    const under = document.elementsFromPoint(innerWidth / 2, innerHeight - 8).find((n) => !appNav.contains(n));
-    const msg = {
-      bloom: "chrome",
-      theme: root.getAttribute("data-theme"),
-      palette: root.getAttribute("data-palette") || "",
-      tone: over && !over.classList.contains("is-scrolled") ? "light" : "",
-      bottom: under && /dark/.test(getComputedStyle(under).colorScheme) ? "light" : ""
-    };
-    const said = JSON.stringify(msg);
-    try {
-      if (ready) parent.postMessage({ bloom: "app-ready" }, "*");
-      if (ready || said !== toldMockup) parent.postMessage(msg, "*");
-      toldMockup = said;
-    } catch { /* not framed */ }
-  }
-  if (window.name === MOCKUP) {
-    let queued = false;
-    new MutationObserver(() => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(() => { queued = false; tellMockup(false); });
-    }).observe(root, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-theme", "data-palette"] });
-  }
-
-  /* ---------------------------------------------------------------
-     Desktop page (#desktop): ☰ → Mobile app opens the iPhone mockup
-     over the page; the app inside keeps its own state
-     --------------------------------------------------------------- */
-  let mockup = null;
-  function openMockup(trigger) {
-    if (mockup) return;
-    closeNav(false);
-    mockup = mountMockup({
-      overlay: true,
-      onTheme: (theme, palette) => { applyTheme(theme === "dark" ? "dark" : "light"); applyPalette(palette === "crimson" ? "crimson" : "azure"); },
-      onClose: () => {
-        mockup = null;
-        body.style.overflow = "";
-        setFlagCursor(store.get(FC_KEY) !== "off");
-        // the ☰ item closed with its menu, so focus goes back to ☰
-        (trigger && !trigger.closest(".mo") ? trigger : menuBtn).focus({ preventScroll: true });
-      }
-    });
-    if (!mockup) return;
-    body.style.overflow = "hidden";
-    setFlagCursor(false);
-  }
-  document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-mockup]"); if (b) openMockup(b); });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("[data-open-app]")) return;
+    history.replaceState(null, "", location.pathname + location.search);
+    location.reload();
+  });
 
   /* ---------------------------------------------------------------
      Mode — the app on phones, the page everywhere else
@@ -2106,13 +2056,11 @@
     root.classList.toggle("is-app", on);
     if (on) {
       closeNav(false); closeMenus(); closeSearch(); closeDrawer(); closeInbox(); hideTip();
-      mockup?.close();
       ensureRoot(A.tab);
       TABS.forEach((t) => { const s = stackOf(t); s.classList.toggle("is-active", t === A.tab); s.inert = t !== A.tab; });
       syncBadges();
       requestAnimationFrame(() => { syncNav(); $$(".pg", appEl).forEach(updateBar); });
       if (!navigator.onLine) showOffline(true);
-      tellMockup(true);
     } else {
       closeModal(false);
       closeSheet(false);

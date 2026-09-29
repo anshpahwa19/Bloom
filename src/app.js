@@ -4,9 +4,9 @@
    section-aware floating navigation, search, drawers, carousels,
    filters and the scroll choreography — one requestAnimationFrame
    loop reading cached geometry, writing only transforms & opacity.
-   index.html wraps mockup.js, this file and mobile.js (the phone app)
+   index.html wraps frame.js, this file and mobile.js (the phone app)
    in one scope, so the phone app reads the same data and functions.
-   APP_QUERY, DESKTOP, MOCKUP and PRISTINE come from mockup.js.
+   APP_QUERY, DESKTOP, matchMedia and frameOffset come from frame.js.
    ================================================================== */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -2231,8 +2231,9 @@
     if (!gpt.open) {
       gpt.returnFocus = document.activeElement;
       const r = trigger?.getBoundingClientRect?.();
-      gptEl.style.setProperty("--ox", r ? `${r.left + r.width / 2}px` : "50%");
-      gptEl.style.setProperty("--oy", r ? `${r.top + r.height / 2}px` : "40px");
+      const o = frameOffset(); // Bloom GPT is fixed to the phone-sized screen when there is one
+      gptEl.style.setProperty("--ox", r ? `${r.left - o.left + r.width / 2}px` : "50%");
+      gptEl.style.setProperty("--oy", r ? `${r.top - o.top + r.height / 2}px` : "40px");
       closeNav(false); closeMenus(); closeSearch(); hideTip();
       if (ib.open) closeInbox();
       const hr = new Date().getHours();

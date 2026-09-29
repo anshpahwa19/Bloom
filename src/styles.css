@@ -127,7 +127,6 @@
   --r-2xl: clamp(28px, 3.4vw, 48px);     /* full-width chapter panels */
   --r-icon: 30%;                         /* app and icon tiles, at any size */
   --r-pill: 999px;                       /* buttons, chips, tags, tabs, bars */
-  --r-device: 55px;                      /* the iPhone mockup's screen (the frame adds its bezel) */
 
   /* Motion */
   --ease-out: cubic-bezier(.2, .8, .2, 1);

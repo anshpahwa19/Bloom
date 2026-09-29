@@ -10,7 +10,7 @@
    3. Building blocks — sections, rails, chips, cards, lists, states
    4. Screens — Home, Tasks, details, Explore, People, Policies,
       Communities, Discounts, Perks, Help, Profile, Notifications, Search
-   5. The iPhone mockup — the app on wider screens
+   5. The phone-sized screen — the app on wider screens
    6. Small phones, reduced motion
    ================================================================== */
 
@@ -819,105 +819,38 @@ button.m-card:active { transform: scale(.985); }
 .m-search__all { width: 100%; margin-top: 14px; }
 
 /* ------------------------------------------------------------------
-   5. THE IPHONE MOCKUP — wider screens see the app in an iPhone (the
-   is-mockup class, or ☰ → Mobile app on the #desktop page). The copy
-   running inside it carries in-mockup.
+   5. THE PHONE-SIZED SCREEN — wider screens get the app at 393 × 852
+   (is-framed, alongside is-app), centred, with nothing drawn around
+   it. <body> is the screen: it holds its fixed layers, and frame.js
+   resolves the media queries and viewport units for its size.
    ------------------------------------------------------------------ */
-.mk { display: none; }
-:root.is-mockup { height: 100%; overflow: hidden; scrollbar-gutter: auto; }
-.is-mockup body { height: 100%; overflow: hidden; }
-.is-mockup :is(.skip-link, .navbar, .mo, .search, .main, .footer, .tooltip, .inbox, .gpt, .drawer, .toasts, .fc-canvas, .fc-ring) { display: none !important; }
-.is-mockup .mk, .mk.is-overlay {
-  --mk-h: 852px;                                     /* the screen's height, fitted by mockup.js */
-  --mk-s: 1;                                         /* and the phone's scale */
-  --mk-frame: 14px;                                  /* band + bezel, as MK_FRAME in mockup.js */
-  --mk-shadow: var(--sh-2), 0 56px 110px -56px rgba(11, 22, 64, .5);
-  position: fixed; inset: 0; z-index: 500; display: block; overflow: hidden;
-  background: var(--canvas); color: var(--ink); transition: background-color var(--t-slow) var(--ease-out);
+:root.is-framed {
+  --safe-top: 54px;                                  /* room for an iPhone's status bar */
+  --safe-bottom: 34px;                               /* and its home indicator */
+  height: auto; min-height: 100%; overflow: auto; scrollbar-gutter: auto;
+  display: grid; place-items: center; padding: 24px 16px; background: var(--canvas-2);
 }
-[data-theme="dark"] .mk { --mk-shadow: var(--sh-2), 0 56px 110px -56px rgba(0, 0, 0, .75); }
-/* the same ambient light as the app's own tabs */
-.mk::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(50% 50% at 80% 10%, color-mix(in srgb, var(--blob-1) 16%, transparent), transparent 70%),
-    radial-gradient(40% 40% at 10% 90%, color-mix(in srgb, var(--blob-3) 12%, transparent), transparent 70%);
+.is-framed body {
+  position: relative; contain: layout paint; flex: none;
+  width: 393px; height: 852px;                       /* FRAME in frame.js */
+  overflow: hidden; box-shadow: 0 0 0 1px var(--line), var(--sh-2);
 }
-.mk.is-overlay {
-  background: color-mix(in srgb, var(--canvas) 90%, transparent); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  opacity: 0; transition: opacity var(--t-base) var(--ease-out);
+.is-framed body, .is-framed body * { scrollbar-width: none; }
+.is-framed body ::-webkit-scrollbar { display: none; }
+/* The page's dialogs open in the browser's top layer, outside <body>, so
+   they sit over the screen from where frame.js says it is */
+.is-framed .modal {
+  position: fixed; inset: auto auto var(--fb, 0px) var(--fx, 0px); width: 393px; max-width: none; margin: 0;
+  max-height: calc(852px - var(--safe-top) - 24px);
 }
-.mk.is-overlay.is-open { opacity: 1; }
-.mk__close { position: absolute; top: calc(16px + var(--safe-top)); right: 20px; z-index: 2; }
-.mk:not(.is-overlay) .mk__close { display: none; }
-
-/* The device: a titanium band, a black bezel, the screen — concentric */
-.mk__device {
-  position: absolute; left: 50%; top: 50%; translate: -50% -50%; scale: var(--mk-s);
-  padding: calc(var(--mk-frame) - 3px); border: 3px solid transparent; border-radius: calc(var(--r-device) + var(--mk-frame));
-  background:
-    linear-gradient(#050506, #050506) padding-box,
-    linear-gradient(150deg, #7A7D83, #34353A 22%, #1B1C1F 48%, #414348 74%, #8C8F95 88%, #2A2B2F) border-box;
-  box-shadow: var(--mk-shadow);
-}
-.mk__key { position: absolute; width: 3px; border-radius: var(--r-pill); background: linear-gradient(90deg, #2C2D31, #7A7D83 60%, #3A3B3F); }
-.mk__key--action { left: -6px; top: 116px; height: 32px; }
-.mk__key--up { left: -6px; top: 174px; height: 62px; }
-.mk__key--down { left: -6px; top: 250px; height: 62px; }
-.mk__key--side { right: -6px; top: 204px; height: 98px; }
-.mk__screen {
-  position: relative; isolation: isolate; width: 393px; height: var(--mk-h); overflow: hidden;
-  border-radius: var(--r-device); background: var(--canvas);
-}
-.mk__screen iframe {
-  position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0;
-  background: var(--canvas); opacity: 0; transition: opacity var(--t-slow) var(--ease-out);
-}
-.mk.is-ready .mk__screen iframe { opacity: 1; }
-.mk__loading {
-  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; padding: 0 48px;
-  text-align: center; color: var(--slate); font-size: .875rem; font-weight: 600;
-}
-.mk__loading .orb { width: 44px; height: 44px; animation: orbPulse .9s ease-in-out infinite alternate; }
-.mk.is-stuck .mk__loading .orb { animation: none; }
-.mk.is-ready .mk__loading { visibility: hidden; transition: visibility 0s var(--t-slow); }
-
-/* iOS around the app: the status bar, the Dynamic Island, the home indicator */
-.mk__status {
-  position: absolute; inset: 0 0 auto; z-index: 2; height: 54px; padding-top: 5px;
-  display: grid; grid-template-columns: minmax(0, 1fr) 126px minmax(0, 1fr); align-items: center; justify-items: center;
-  color: var(--ink); pointer-events: none; transition: color var(--t-base) var(--ease-out);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", var(--font-ui); font-size: 1rem; font-weight: 600; line-height: 1;
-  letter-spacing: -.01em; font-variant-numeric: tabular-nums;
-}
-.mk__time { grid-column: 1; padding-left: 8px; }
-.mk__sys { grid-column: 3; display: flex; align-items: center; gap: 6px; }
-.mk__sys svg { display: block; fill: currentColor; }
-.mk.is-light .mk__status { color: #fff; }
-.mk__island {
-  position: absolute; top: 11px; left: 50%; z-index: 3; width: 126px; height: 37px; translate: -50% 0;
-  border-radius: var(--r-pill); background: #000; pointer-events: none;
-}
-.mk__island::after {
-  content: ""; position: absolute; top: 50%; right: 24px; width: 12px; height: 12px; translate: 0 -50%;
-  border-radius: var(--r-pill); background: radial-gradient(circle at 35% 35%, #34405E, #0B0F1C 62%);
-}
-.mk__home {
-  position: absolute; bottom: 8px; left: 50%; z-index: 2; width: 134px; height: 5px; translate: -50% 0;
-  border-radius: var(--r-pill); background: var(--ink); pointer-events: none; transition: background-color var(--t-base) var(--ease-out);
-}
-.mk.is-light-bottom .mk__home { background: #fff; }
-
-/* Inside the iPhone: its safe areas, no scrollbars, and a hand for drags */
-:root.in-mockup { --safe-top: 54px; --safe-bottom: 34px; }
-.in-mockup, .in-mockup * { scrollbar-width: none; }
-.in-mockup ::-webkit-scrollbar { display: none; }
+.is-framed .modal[open] { animation-name: m-sheet-rise; }
 .is-grabbing, .is-grabbing * { cursor: grabbing !important; user-select: none !important; }
 
 /* ------------------------------------------------------------------
    KEYFRAMES
    ------------------------------------------------------------------ */
 @keyframes m-sheet-up { from { transform: translateY(100%); } }
+@keyframes m-sheet-rise { from { opacity: 0; transform: translateY(32px); } }
 @keyframes m-grow { from { transform: scaleX(0); } }
 @keyframes m-drift { to { transform: translateX(-50%); } }
 @keyframes m-marquee { to { transform: translateX(calc(-100% / 3)); } }
