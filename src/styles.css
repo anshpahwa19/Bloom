@@ -2336,9 +2336,8 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 
   .inbox__top { padding-bottom: 22px; }
   .inbox__tools { width: 100%; }
-  .ib-search { order: -2; flex: 1 1 calc(100% - 64px); width: auto; min-width: 0; }
+  .ib-search { flex: 1 1 100%; width: auto; min-width: 0; }
   .ib-search input { min-width: 0; width: 100%; }
-  .inbox__close { order: -1; }
   .ib-filter, #ib-new { flex: 1 1 0; }
   .ib-filter__btn, #ib-new { width: 100%; }
   .ib-filter .menu__panel { left: 0; right: auto; width: min(300px, calc(100vw - 32px)); transform-origin: top left; }
@@ -2392,8 +2391,6 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
   .nav-btn--search { display: none; }
   .mo__only-narrow { display: list-item; }
   .ib-filter__btn, #ib-new { padding-inline: 12px; gap: 6px; }
-  .gpt__new-label { display: none; }
-  .gpt__new { width: 40px; padding: 0; justify-content: center; }
   /* Past the hero the section name needs the logo's room */
   .nav-compact .navbar .brand, .nav-compact .navbar__sep { display: none; }
   .hero__stats { gap: 6px; }
