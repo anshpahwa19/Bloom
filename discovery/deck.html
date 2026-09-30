@@ -4,25 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bloom Holding Digital Ecosystem</title>
-<meta name="description" content="Phase 1, Ecosystem Foundation: Bloom Holding's businesses and products as one system, in the Multiverse design language.">
+<meta name="description" content="Phase 1, Ecosystem Foundation: every Bloom Holding business and product as one system, in Bloom red and the Bloom Multiverse design language.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap">
 <style>
-/* Layout: seven full-screen chapters, one interaction each. Bloom Holding leads the brand;
-   the Multiverse design language (warm paper, deep navy, electric blue, frosted chrome,
-   "01 / 07" counters) sets the look. */
+/* Layout: eleven full-screen chapters, one interaction each. Bloom red leads the brand
+   (the crimson palette Bloom Multiverse already carries as "the original Bloom accent");
+   the Bloom Multiverse language sets the rest: warm paper, navy ink, frosted chrome,
+   "01 / 11" counters. */
 :root {
   color-scheme: light;
   --canvas: #F6F4EF; --surface: #FFFFFF; --surface-2: #F3F1EB; --line: #E3DFD5; --line-strong: #CEC8BC;
   --ink: #0B1640; --ink-2: #1E2A5A; --slate: #4A5372; --slate-2: #636B8A;
-  --accent: #1F4BFF; --accent-fg: #1B43F0; --accent-soft: #E7ECFF; --on-accent: #FFFFFF;
-  --grad: #164CFF 0%, #0A31D8 40%, #061B88 74%, #03074C 100%;
-  --blob-1: #3D6BFF; --blob-2: #3FD0EE; --blob-3: #A99FF0;
+  --accent: #B6000E; --accent-fg: #B6000E; --accent-soft: #FBE7E8; --on-accent: #FFFFFF;
+  --grad: #FF3C4B 0%, #B00A2E 36%, #6E0020 70%, #3A000D 100%;
+  --blob-1: #FF4D5E; --blob-2: #FFA28F; --blob-3: #B58CF0;
   --ok-fg: #17754A; --ok-soft: #EAF8F0; --ok-line: #B6E5C8;
   --warn-fg: #8F5600; --warn-soft: #FFF3DC; --warn-line: #F0D39C;
   --viz-1: #2F5BFF; --viz-2: #0E9FB5; --viz-3: #D9722A; --viz-4: #9A45C8;
-  --frost: rgba(255, 255, 255, .56); --frost-panel: rgba(255, 255, 255, .92); --frost-line: rgba(11, 22, 64, .08);
+  --frost: rgba(255, 255, 255, .56); --frost-panel: rgba(255, 255, 255, .94); --frost-line: rgba(11, 22, 64, .08);
   --frost-shadow: 0 1px 2px rgba(11, 22, 64, .05), 0 22px 48px -20px rgba(11, 22, 64, .34);
   --sh-1: 0 1px 2px rgba(11, 22, 64, .05), 0 10px 28px -14px rgba(11, 22, 64, .16);
   --sh-2: 0 2px 8px rgba(11, 22, 64, .05), 0 30px 64px -30px rgba(11, 22, 64, .3);
@@ -31,26 +32,26 @@
   --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
   --fs-mega: clamp(2.75rem, 1rem + 5vw, 6.5rem);
-  --fs-title: clamp(2rem, 1.1rem + 2.6vw, 4rem);
+  --fs-title: clamp(2rem, 1.1rem + 2.4vw, 3.75rem);
   --r-sm: 12px; --r-md: 18px; --r-lg: 28px; --r-xl: 36px; --r-icon: 30%; --r-pill: 999px;
   --ease-expo: cubic-bezier(.16, 1, .3, 1); --ease-out: cubic-bezier(.2, .8, .2, 1); --ease-spring: cubic-bezier(.34, 1.56, .64, 1);
   --gutter: clamp(16px, 4vw, 56px); --maxw: 1200px;
 }
 @supports (font-size: round(1px, 2px)) {
-  :root { --fs-mega: round(clamp(2.75rem, 1rem + 5vw, 6.5rem), 2px); --fs-title: round(clamp(2rem, 1.1rem + 2.6vw, 4rem), 2px); }
+  :root { --fs-mega: round(clamp(2.75rem, 1rem + 5vw, 6.5rem), 2px); --fs-title: round(clamp(2rem, 1.1rem + 2.4vw, 3.75rem), 2px); }
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --canvas: #05081A; --surface: #0C1233; --surface-2: #111A42; --line: #1D2654; --line-strong: #2D3973;
-    --ink: #EEF1FF; --ink-2: #CBD3F5; --slate: #A8B1D8; --slate-2: #8690BC;
-    --accent: #3462F2; --accent-fg: #86A6FF; --accent-soft: rgba(52, 98, 242, .2);
-    --grad: #2150F0 0%, #0F2A9C 38%, #081558 72%, #05081A 100%;
-    --blob-1: #2F5BFF; --blob-2: #19B6DA; --blob-3: #7C6FE0;
+    --canvas: #0B0714; --surface: #160F22; --surface-2: #1E1530; --line: #2A2040; --line-strong: #3B2E55;
+    --ink: #F3EEF6; --ink-2: #D9D0E2; --slate: #B3A8C2; --slate-2: #8F84A0;
+    --accent: #D62839; --accent-fg: #FF7A86; --accent-soft: rgba(214, 40, 57, .2);
+    --grad: #E0223A 0%, #8A0A26 38%, #3A0716 72%, #0B0714 100%;
+    --blob-1: #E0223A; --blob-2: #FF7A5C; --blob-3: #8F5BE0;
     --ok-fg: #5FE0A8; --ok-soft: rgba(23, 165, 110, .16); --ok-line: rgba(91, 224, 166, .28);
     --warn-fg: #FFC261; --warn-soft: rgba(232, 148, 12, .16); --warn-line: rgba(255, 194, 97, .3);
     --viz-1: #4470FF; --viz-2: #11A0B3; --viz-3: #CF6B30; --viz-4: #9A45C8;
-    --frost: rgba(14, 22, 62, .56); --frost-panel: rgba(12, 18, 50, .94); --frost-line: rgba(255, 255, 255, .1);
+    --frost: rgba(30, 16, 40, .56); --frost-panel: rgba(24, 14, 34, .95); --frost-line: rgba(255, 255, 255, .1);
     --frost-shadow: 0 16px 36px -20px rgba(0, 0, 0, .5);
     --sh-1: 0 0 0 1px rgba(255, 255, 255, .035), 0 10px 24px -16px rgba(0, 0, 0, .45);
     --sh-2: 0 0 0 1px rgba(255, 255, 255, .04), 0 22px 44px -28px rgba(0, 0, 0, .5);
@@ -58,15 +59,15 @@
 }
 :root[data-theme="dark"], .invert {
   color-scheme: dark;
-  --canvas: #05081A; --surface: #0C1233; --surface-2: #111A42; --line: #1D2654; --line-strong: #2D3973;
-  --ink: #EEF1FF; --ink-2: #CBD3F5; --slate: #A8B1D8; --slate-2: #8690BC;
-  --accent: #3462F2; --accent-fg: #86A6FF; --accent-soft: rgba(52, 98, 242, .2);
-  --grad: #2150F0 0%, #0F2A9C 38%, #081558 72%, #05081A 100%;
-  --blob-1: #2F5BFF; --blob-2: #19B6DA; --blob-3: #7C6FE0;
+  --canvas: #0B0714; --surface: #160F22; --surface-2: #1E1530; --line: #2A2040; --line-strong: #3B2E55;
+  --ink: #F3EEF6; --ink-2: #D9D0E2; --slate: #B3A8C2; --slate-2: #8F84A0;
+  --accent: #D62839; --accent-fg: #FF7A86; --accent-soft: rgba(214, 40, 57, .2);
+  --grad: #E0223A 0%, #8A0A26 38%, #3A0716 72%, #0B0714 100%;
+  --blob-1: #E0223A; --blob-2: #FF7A5C; --blob-3: #8F5BE0;
   --ok-fg: #5FE0A8; --ok-soft: rgba(23, 165, 110, .16); --ok-line: rgba(91, 224, 166, .28);
   --warn-fg: #FFC261; --warn-soft: rgba(232, 148, 12, .16); --warn-line: rgba(255, 194, 97, .3);
   --viz-1: #4470FF; --viz-2: #11A0B3; --viz-3: #CF6B30; --viz-4: #9A45C8;
-  --frost: rgba(14, 22, 62, .56); --frost-panel: rgba(12, 18, 50, .94); --frost-line: rgba(255, 255, 255, .1);
+  --frost: rgba(30, 16, 40, .56); --frost-panel: rgba(24, 14, 34, .95); --frost-line: rgba(255, 255, 255, .1);
   --frost-shadow: 0 16px 36px -20px rgba(0, 0, 0, .5);
   --sh-1: 0 0 0 1px rgba(255, 255, 255, .035), 0 10px 24px -16px rgba(0, 0, 0, .45);
   --sh-2: 0 0 0 1px rgba(255, 255, 255, .04), 0 22px 44px -28px rgba(0, 0, 0, .5);
@@ -79,15 +80,15 @@ body { margin: 0; overflow: hidden; background: var(--canvas); color: var(--ink)
 button { font: inherit; color: inherit; cursor: pointer; }
 a { color: var(--accent-fg); text-underline-offset: 3px; }
 :focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--r-sm); }
-h1, h2, h3, p, ul, ol, figure { margin: 0; }
+h1, h2, h3, h4, p, ul, ol, figure, dl, dd { margin: 0; }
 ul, ol { padding: 0; list-style: none; }
 .ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .ico--fill { fill: currentColor; stroke: none; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .mark { display: inline-block; aspect-ratio: 436 / 395; background: url({{flag-mark.png}}) center / contain no-repeat; }
-.wordmark { display: inline-flex; align-items: baseline; gap: .28em; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); white-space: nowrap; }
-.wordmark b { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: 0; }
+.bloom { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.01em; color: var(--accent-fg); line-height: 1; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--accent)); flex: none; }
+.k { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
 
 /* ---------- deck frame ---------- */
 .deck { position: fixed; inset: 0; }
@@ -97,25 +98,29 @@ ul, ol { padding: 0; list-style: none; }
   transition: opacity .56s var(--ease-expo), transform .56s var(--ease-expo), visibility 0s linear .56s; }
 .slide.is-before { transform: translateX(-48px); }
 .slide.is-current { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; z-index: 1; }
-.slide__in { max-width: var(--maxw); margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 3.4vw, 40px); }
-.head { display: grid; gap: 12px; max-width: 860px; }
+.slide__in { max-width: var(--maxw); margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; justify-content: center; gap: clamp(22px, 3vw, 36px); }
+.head { display: grid; gap: 12px; max-width: 880px; }
 .eyebrow { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate); }
 .eyebrow::before { content: ""; width: 20px; height: 2px; border-radius: var(--r-pill); background: var(--accent); }
 .title { font-family: var(--font-display); font-size: var(--fs-title); font-weight: 600; line-height: 1; letter-spacing: -.04em; text-wrap: balance; }
-.title em, .mega em { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+.title em, .mega em { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent-fg); }
+.stage .title em, .stage .mega em { color: inherit; }
 .hint { display: inline-flex; align-items: center; gap: 8px; font-size: .875rem; color: var(--slate); }
 .hint::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.8s ease-in-out infinite; }
 @keyframes pulse { 50% { transform: scale(1.6); opacity: .4; } }
 .is-current .rv { animation: rise .8s var(--ease-expo) both; animation-delay: calc(var(--d, 0) * 80ms + 80ms); }
 @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+.pop { animation: rise .5s var(--ease-expo) both; }
 
-.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: var(--r-pill); font-weight: 600; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); transition: transform .2s var(--ease-out); }
+.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: var(--r-pill); font-weight: 600; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); transition: transform .2s var(--ease-out); text-decoration: none; }
 .btn:hover { transform: translateY(-2px); }
-.btn--primary { background: var(--accent); color: var(--on-accent); box-shadow: 0 10px 24px -12px var(--accent); }
+.btn--primary { background: #FFFFFF; color: #B6000E; box-shadow: 0 10px 24px -12px rgba(0, 0, 0, .5); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 0; border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); font-size: .875rem; font-weight: 600; white-space: nowrap; box-shadow: inset 0 0 0 1px var(--line-strong); transition: background .2s, color .2s, box-shadow .2s, transform .25s var(--ease-spring); }
 .chip:hover { transform: translateY(-2px); }
-.chip[aria-pressed="true"], .chip[aria-selected="true"] { background: var(--ink); color: var(--canvas); box-shadow: none; }
+.chip[aria-pressed="true"], .chip[aria-selected="true"] { background: var(--accent); color: #FFFFFF; box-shadow: none; }
+.chip small { font-weight: 500; opacity: .65; font-variant-numeric: tabular-nums; }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--r-pill); font-size: .75rem; font-weight: 600; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
 .icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; color: var(--ink); }
 .icon-btn:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
 .icon-btn:disabled { opacity: .3; cursor: default; background: transparent; }
@@ -123,24 +128,28 @@ ul, ol { padding: 0; list-style: none; }
 .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .status--connected { background: var(--ok-soft); color: var(--ok-fg); box-shadow: inset 0 0 0 1px var(--ok-line); }
 .status--separate { background: var(--warn-soft); color: var(--warn-fg); box-shadow: inset 0 0 0 1px var(--warn-line); }
-.status--open { color: var(--accent-fg); box-shadow: inset 0 0 0 1px var(--accent-fg); }
+.status--open { color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line-strong); }
 .status--open::before { background: transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+.card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-1); padding: clamp(20px, 2.4vw, 28px); min-width: 0; }
 
 /* chrome */
 .frost { background: var(--frost); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(22px) saturate(1.8); backdrop-filter: blur(22px) saturate(1.8); }
 .chrome { position: fixed; z-index: 20; top: 0; left: 0; right: 0; padding: calc(14px + env(safe-area-inset-top, 0px)) var(--gutter) 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; pointer-events: none; color: var(--ink); }
 .chrome > * { pointer-events: auto; }
 .brand { justify-self: start; display: inline-flex; align-items: baseline; gap: 10px; text-decoration: none; }
+.brand .bloom { font-size: 2rem; }
+.chrome.invert .brand .bloom { color: #FFFFFF; }
 .brand small { font-size: .75rem; color: var(--slate); }
 .capsule-wrap { position: relative; }
 .capsule { display: inline-flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px 0 8px; border-radius: var(--r-pill); color: var(--ink); max-width: min(60vw, 400px); }
-.capsule__num { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--canvas); font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
+.capsule__num { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #FFFFFF; font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
 .capsule__name { font-weight: 600; font-size: .875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.jump { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: min(320px, calc(100vw - 32px)); padding: 8px; border-radius: var(--r-md); background: var(--frost-panel); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
+.jump { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: min(340px, calc(100vw - 32px)); max-height: 70vh; overflow-y: auto; padding: 8px; border-radius: var(--r-md); background: var(--frost-panel); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(22px); backdrop-filter: blur(22px); }
 .jump button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: 0; background: transparent; border-radius: var(--r-sm); text-align: left; font-size: .875rem; font-weight: 500; color: var(--ink); }
 .jump button span { font-variant-numeric: tabular-nums; color: var(--slate-2); font-size: .75rem; width: 20px; }
 .jump button:hover { background: var(--surface-2); }
-.jump button[aria-current="true"] { background: var(--ink); color: var(--canvas); }
+.jump button[aria-current="true"] { background: var(--accent); color: #FFFFFF; }
+.jump button[aria-current="true"] span { color: inherit; }
 .theme-btn { justify-self: end; width: 48px; height: 48px; }
 .theme-btn .i-sun { display: none; }
 :root[data-theme="dark"] .theme-btn .i-sun { display: block; }
@@ -152,83 +161,90 @@ ul, ol { padding: 0; list-style: none; }
 .progress i { position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent), var(--blob-2)); transform-origin: 0 50%; transform: scaleX(0); transition: transform .56s var(--ease-expo); }
 .counter { font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 64px; text-align: center; }
 
-/* ---------- 01 cover ---------- */
+/* ---------- stage (cover, close) ---------- */
 .stage { background: linear-gradient(155deg, var(--grad)); isolation: isolate; }
 .stage__bg { position: absolute; inset: 0; overflow: hidden; z-index: -1; pointer-events: none; }
 .blob { position: absolute; border-radius: 50%; filter: blur(60px); animation: drift 18s ease-in-out infinite alternate; }
-.blob--1 { width: 44vw; height: 44vw; background: var(--blob-1); top: -12vw; right: -8vw; opacity: .5; }
-.blob--2 { width: 30vw; height: 30vw; background: var(--blob-2); bottom: -12vw; left: 8vw; opacity: .3; animation-duration: 22s; }
+.blob--1 { width: 44vw; height: 44vw; background: var(--blob-1); top: -12vw; right: -8vw; opacity: .45; }
+.blob--2 { width: 30vw; height: 30vw; background: var(--blob-2); bottom: -12vw; left: 8vw; opacity: .25; animation-duration: 22s; }
 @keyframes drift { to { transform: translate(-4vw, 3vw) scale(1.08); } }
 .cover { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: center; gap: clamp(24px, 4vw, 64px); }
 .cover__text { display: grid; gap: 24px; }
+.cover .bloom { font-size: clamp(3.5rem, 2rem + 4vw, 6rem); color: #FFFFFF; }
 .mega { font-family: var(--font-display); font-size: var(--fs-mega); font-weight: 600; line-height: .92; letter-spacing: -.05em; text-wrap: balance; }
 .cover__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
 .orbit { position: relative; width: 100%; max-width: 480px; aspect-ratio: 1; justify-self: center; }
-.orbit__ring { position: absolute; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent); pointer-events: none; }
+.orbit__ring { position: absolute; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .22); pointer-events: none; }
 .orbit__ring--1 { inset: 8%; } .orbit__ring--2 { inset: 22%; border-style: dashed; }
-.orbit__core { position: absolute; inset: 33%; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 4px; padding: 10px; text-align: center; background: color-mix(in srgb, var(--surface) 55%, transparent); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
-.orbit__core .wordmark { font-size: clamp(1.25rem, .8rem + 1.2vw, 2rem); }
-.orbit__core small { font-size: .75rem; color: var(--slate); max-width: 150px; line-height: 1.35; }
+.orbit__core { position: absolute; inset: 33%; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 6px; padding: 10px; text-align: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .22); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.orbit__core .bloom { font-size: clamp(2rem, 1.2rem + 2vw, 3.25rem); color: #FFFFFF; }
+.orbit__core small { font-size: .75rem; color: rgba(255, 255, 255, .8); max-width: 150px; line-height: 1.35; }
 .orbit__spin { position: absolute; inset: 0; animation: spin 48s linear infinite; }
 .orbit:hover .orbit__spin, .orbit:focus-within .orbit__spin, .orbit:hover .planet__up, .orbit:focus-within .planet__up { animation-play-state: paused; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .planet { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: rotate(var(--a)) translate(0, calc(-1 * var(--r, 180px))); }
 .planet__up { position: absolute; left: 0; top: 0; animation: spin 48s linear infinite reverse; }
 .planet button { position: absolute; transform: translate(-50%, -50%) rotate(calc(-1 * var(--a))); display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--r-pill); font-size: .875rem; font-weight: 600; white-space: nowrap; color: var(--ink); transition: background .25s; }
-.planet button[aria-pressed="true"] { background: var(--accent); color: #FFFFFF; }
+.planet button[aria-pressed="true"] { background: #FFFFFF; color: #0B0714; }
 
 /* ---------- 02 household ---------- */
-.hh { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(20px, 3vw, 48px); align-items: center; }
-.hh__ctrl { display: grid; gap: 20px; }
+.two { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(20px, 3vw, 48px); align-items: center; }
+.ctrl { display: grid; gap: 20px; align-content: start; }
 .counter-big { display: flex; align-items: baseline; gap: 14px; }
 .counter-big b { font-family: var(--font-display); font-size: clamp(4.5rem, 3rem + 5vw, 8rem); font-weight: 700; line-height: .85; letter-spacing: -.06em; font-variant-numeric: tabular-nums; color: var(--accent-fg); }
 .counter-big span { font-size: 1.125rem; color: var(--ink-2); max-width: 16ch; line-height: 1.25; }
 .seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: var(--r-pill); background: var(--surface-2); justify-self: start; }
 .seg button { border: 0; background: transparent; min-height: 40px; padding: 0 18px; border-radius: var(--r-pill); font-size: .875rem; font-weight: 600; color: var(--slate); }
 .seg button[aria-selected="true"] { background: var(--ink); color: var(--canvas); }
-.doors { position: relative; height: 420px; border-radius: var(--r-xl); background: var(--surface-2); overflow: hidden; }
+.doors { position: relative; height: 440px; border-radius: var(--r-xl); background: var(--surface-2); overflow: hidden; }
 .door { position: absolute; width: 196px; padding: 16px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--sh-2); display: grid; gap: 4px;
   left: var(--x); top: var(--y); transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
   transition: left .7s var(--ease-expo), top .7s var(--ease-expo), transform .7s var(--ease-spring), opacity .4s; }
 .door[hidden] { display: grid !important; opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot)) scale(.6); pointer-events: none; }
-.door small { font-size: .75rem; color: var(--slate); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.door small { font-size: .75rem; color: var(--accent-fg); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 .door strong { font-size: 1rem; line-height: 1.25; }
 .door em { font-style: normal; font-size: .75rem; color: var(--slate-2); }
 .doors.is-eco .door { left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(0) translateY(calc(var(--k) * 6px)) scale(calc(1 - var(--k) * .03)); }
-.one { position: absolute; left: 50%; top: 50%; width: min(320px, 86%); transform: translate(-50%, -50%) scale(.9); opacity: 0; pointer-events: none; z-index: 2; padding: 22px; border-radius: var(--r-lg); background: var(--ink); color: var(--canvas); box-shadow: var(--sh-2); display: grid; gap: 12px; transition: opacity .4s .25s, transform .6s .25s var(--ease-spring); }
-.one .wordmark { color: var(--canvas); font-size: 1.5rem; }
-.one p { font-size: .875rem; opacity: .8; }
+.one { position: absolute; left: 50%; top: 50%; width: min(320px, 86%); transform: translate(-50%, -50%) scale(.9); opacity: 0; pointer-events: none; z-index: 2; padding: 22px; border-radius: var(--r-lg); background: linear-gradient(155deg, var(--grad)); color: #FFFFFF; box-shadow: var(--sh-2); display: grid; gap: 12px; transition: opacity .4s .25s, transform .6s .25s var(--ease-spring); }
+.one .bloom { color: #FFFFFF; font-size: 2.5rem; }
+.one p { font-size: .875rem; opacity: .85; }
 .one__roles { display: flex; flex-wrap: wrap; gap: 6px; }
-.one__roles span { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--canvas) 16%, transparent); }
+.one__roles span { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .18); }
 .doors.is-eco .one { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-/* ---------- 03 system ---------- */
-.sys { display: grid; gap: 10px; }
-.sys__row { display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 16px; align-items: center; padding: 14px 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); }
-.sys__row--brand { background: var(--ink); color: var(--canvas); }
-.sys__row--brand .wordmark { color: var(--canvas); font-size: clamp(1.5rem, 1rem + 1.4vw, 2.25rem); }
-.sys__row--found { background: var(--accent-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
-.sys__k { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
-.sys__row--brand .sys__k { color: color-mix(in srgb, var(--canvas) 65%, transparent); }
-.sys__items { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
-.biz .dot { background: var(--c); }
-.biz[aria-pressed="true"] { background: var(--c); color: #FFFFFF; }
-.biz[aria-pressed="true"] .dot { background: #FFFFFF; }
-.prod { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border: 0; border-radius: var(--r-sm); background: var(--surface-2); font-size: .875rem; font-weight: 600; color: var(--ink); transition: opacity .3s, transform .3s var(--ease-spring), box-shadow .2s; }
-.prod i { display: flex; gap: 3px; }
-.prod i b { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
-.prod.is-dim { opacity: .25; transform: scale(.96); }
-.prod.is-lit { box-shadow: inset 0 0 0 2px var(--ink); transform: translateY(-2px); }
-.prod[aria-pressed="true"] { background: var(--ink); color: var(--canvas); }
-.prod--ml::after { content: "Multiverse"; font-size: .75rem; padding: 1px 8px; border-radius: var(--r-pill); background: var(--accent); color: #FFFFFF; }
-.found { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .875rem; }
-.found small { font-size: .75rem; color: var(--slate); padding: 2px 8px; border-radius: var(--r-pill); background: var(--surface); }
-.found--ml small { background: var(--accent); color: #FFFFFF; }
-.sys__say { min-height: 3em; font-family: var(--font-display); font-size: clamp(1.125rem, 1rem + .5vw, 1.5rem); letter-spacing: -.02em; color: var(--ink-2); }
-.sys__say.pop { animation: rise .5s var(--ease-expo) both; }
+/* ---------- detail panels (03, 04, 05) ---------- */
+.panel { display: grid; gap: 16px; align-content: start; }
+.panel__head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.panel__head h3 { font-family: var(--font-display); font-size: clamp(1.5rem, 1.1rem + 1vw, 2.25rem); letter-spacing: -.03em; line-height: 1.05; }
+.panel__lead { font-size: 1.125rem; color: var(--ink-2); max-width: 52ch; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.fact { display: grid; gap: 4px; padding: 14px; border-radius: var(--r-md); background: var(--surface-2); align-content: start; }
+.fact p { font-size: .875rem; line-height: 1.4; }
+.big-num { font-family: var(--font-display); font-size: clamp(2.5rem, 1.6rem + 2.4vw, 4rem); font-weight: 700; letter-spacing: -.05em; line-height: .9; color: var(--accent-fg); }
+.tile { display: grid; place-items: center; width: 48px; height: 48px; border-radius: var(--r-icon); background: color-mix(in srgb, var(--c) 16%, var(--surface)); color: var(--c); flex: none; }
+.tile .ico { width: 22px; height: 22px; }
+.feat { display: flex; flex-wrap: wrap; gap: 6px; }
+.feat span { padding: 6px 12px; border-radius: var(--r-pill); background: var(--accent-soft); color: var(--ink); font-size: .875rem; font-weight: 500; }
+.url { font-size: .875rem; font-weight: 600; }
 
-/* ---------- 04 lifetime ---------- */
-.life { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 48px); align-items: center; }
+/* 04 stakeholders */
+.people { display: grid; gap: 14px; }
+.people__tier { display: grid; gap: 8px; }
+.jobs { display: grid; gap: 8px; }
+.jobs li { position: relative; padding: 14px 16px 14px 40px; border-radius: var(--r-md); background: var(--surface-2); font-family: var(--font-display); font-size: 1.125rem; letter-spacing: -.01em; line-height: 1.3; }
+.jobs li::before { content: "\201C"; position: absolute; left: 14px; top: 6px; font-family: var(--font-serif); font-size: 2rem; color: var(--accent-fg); }
+
+/* 05 products */
+.prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.prod { display: grid; gap: 4px; padding: 14px; border: 0; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); text-align: left; transition: transform .25s var(--ease-spring), box-shadow .2s, background .2s; min-width: 0; }
+.prod:hover { transform: translateY(-2px); }
+.prod strong { font-size: .875rem; line-height: 1.25; }
+.prod small { font-size: .75rem; color: var(--slate); }
+.prod[aria-selected="true"] { background: var(--accent); color: #FFFFFF; box-shadow: 0 14px 30px -16px var(--accent); }
+.prod[aria-selected="true"] small { color: rgba(255, 255, 255, .8); }
+.prod--unk { background: transparent; box-shadow: none; outline: 1.5px dashed var(--line-strong); outline-offset: -1.5px; }
+
+/* ---------- 06 lifetime ---------- */
 .life__stage { display: grid; gap: 12px; }
 .life__n { font-size: .875rem; font-weight: 600; color: var(--slate-2); font-variant-numeric: tabular-nums; }
 .life__name { font-family: var(--font-display); font-size: clamp(3rem, 2rem + 4vw, 6rem); font-weight: 700; letter-spacing: -.05em; line-height: .9; }
@@ -236,19 +252,18 @@ ul, ol { padding: 0; list-style: none; }
 .life__flag { min-height: 28px; }
 .lanes { display: grid; gap: 10px; }
 .lane { display: grid; grid-template-columns: 120px minmax(0, 1fr); align-items: center; gap: 12px; font-size: .875rem; font-weight: 600; }
-.lane__bar { height: 44px; border-radius: var(--r-pill); background: var(--surface-2); position: relative; overflow: hidden; }
+.lane__bar { height: 40px; border-radius: var(--r-pill); background: var(--surface-2); position: relative; overflow: hidden; }
 .lane__bar i { position: absolute; inset: 0; border-radius: inherit; background: var(--c); transform: scaleX(0); transform-origin: 0 50%; transition: transform .6s var(--ease-expo); }
 .lane.on .lane__bar i { transform: scaleX(1); }
+.life__prods { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 32px; }
 .scrub { display: grid; gap: 10px; }
 .scrub input { width: 100%; accent-color: var(--accent); height: 28px; }
 .scrub__ticks { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); font-size: .75rem; font-weight: 600; color: var(--slate-2); text-align: center; }
-.scrub__ticks span.on { color: var(--ink); }
+.scrub__ticks span.on { color: var(--accent-fg); }
 .scrub__row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 
-/* ---------- 05 connect ---------- */
-.con { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(20px, 3vw, 48px); align-items: center; }
-.con__side { display: grid; gap: 16px; }
-.board { position: relative; width: 100%; aspect-ratio: 560 / 420; }
+/* ---------- 07 connect ---------- */
+.board { position: relative; width: 100%; aspect-ratio: 560 / 440; }
 .board svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .board line { stroke: var(--accent); stroke-width: 3; stroke-linecap: round; }
 .board line.s-connected { stroke: var(--ok-fg); }
@@ -263,54 +278,64 @@ ul, ol { padding: 0; list-style: none; }
 .reveal { display: grid; gap: 14px; padding: 24px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); min-height: 210px; align-content: start; justify-items: start; }
 .reveal h3 { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: -.03em; line-height: 1.05; }
 .reveal p { font-size: 1.125rem; color: var(--ink-2); }
-.reveal.pop { animation: popin .5s var(--ease-spring); }
+.reveal.popin { animation: popin .5s var(--ease-spring); }
 @keyframes popin { from { transform: scale(.94); opacity: .4; } }
 .score { display: flex; align-items: center; gap: 12px; font-size: .875rem; color: var(--slate); flex-wrap: wrap; }
 .score b { font-family: var(--font-display); font-size: 1.5rem; color: var(--ink); font-variant-numeric: tabular-nums; }
 .pips { display: flex; gap: 4px; }
-.pips i { width: 18px; height: 6px; border-radius: var(--r-pill); background: var(--line-strong); transition: background .3s; }
+.pips i { width: 16px; height: 6px; border-radius: var(--r-pill); background: var(--line-strong); transition: background .3s; }
 .pips i.on { background: var(--accent); }
 
-/* ---------- 06 language ---------- */
-.lang { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(20px, 3vw, 48px); align-items: center; }
-.lang__ctrl { display: grid; gap: 20px; }
+/* ---------- 08 language ---------- */
 .layers { display: grid; gap: 8px; }
-.layers li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font-size: .875rem; color: var(--slate); }
+.layers li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font-size: .875rem; color: var(--slate); }
 .layers b { display: block; font-size: 1rem; color: var(--ink); }
-.layers .mark { width: 24px; }
-.layers .wm { font-family: var(--font-serif); font-style: italic; font-size: 1.5rem; line-height: 1; text-align: center; color: var(--ink); }
-.layers .sw { width: 24px; height: 24px; border-radius: var(--r-icon); background: linear-gradient(135deg, var(--grad)); }
-.lang__demo { display: grid; gap: 8px; }
-.card-demo { position: relative; padding: clamp(22px, 3vw, 36px); border-radius: var(--r-xl); background: #F6F4EF; color: #0B1640; box-shadow: var(--sh-2); overflow: hidden; display: grid; gap: 18px; min-height: 400px; align-content: start; isolation: isolate; }
-.card-demo::before { content: ""; position: absolute; width: 300px; height: 300px; right: -90px; top: -110px; border-radius: 50%; background: #3FD0EE; filter: blur(70px); opacity: .35; z-index: -1; }
+.layers .bloom { font-size: 1.5rem; text-align: center; }
+.layers .mark { width: 26px; }
+.swatches { display: flex; gap: 6px; }
+.swatches i { width: 12px; height: 26px; border-radius: 4px; background: var(--c); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .08); }
+.card-demo { position: relative; padding: clamp(22px, 3vw, 34px); border-radius: var(--r-xl); background: #F6F4EF; color: #0B1640; box-shadow: var(--sh-2); overflow: hidden; display: grid; gap: 16px; min-height: 400px; align-content: start; isolation: isolate; }
+.card-demo::before { content: ""; position: absolute; width: 300px; height: 300px; right: -90px; top: -120px; border-radius: 50%; background: #FFA28F; filter: blur(70px); opacity: .35; z-index: -1; }
 .card-demo__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
-.card-demo .capsule { height: 40px; background: rgba(255, 255, 255, .6); border: 1px solid rgba(11, 22, 64, .08); color: #0B1640; }
-.card-demo .capsule__num { background: #0B1640; color: #FFFFFF; width: 28px; height: 28px; }
+.card-demo__top .bloom { font-size: 1.75rem; color: #B6000E; }
 .card-demo__by { font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #636B8A; }
-.demo-greet { font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif; font-size: clamp(2.25rem, 1.4rem + 2.4vw, 3.75rem); font-weight: 700; letter-spacing: -.05em; line-height: .95; }
-.demo-greet em { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; color: #1B43F0; letter-spacing: 0; }
-.demo-lede { font-size: 1.125rem; color: #1E2A5A; max-width: 36ch; }
+.demo-greet { font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif; font-size: clamp(2.25rem, 1.4rem + 2.2vw, 3.5rem); font-weight: 700; letter-spacing: -.05em; line-height: .95; }
+.demo-greet em { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; color: #B6000E; letter-spacing: 0; }
+.demo-lede { font-size: 1.125rem; color: #1E2A5A; max-width: 38ch; }
 .demo-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .demo-pills span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: var(--r-pill); background: #FFFFFF; font-size: .875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(11, 22, 64, .05), 0 10px 28px -14px rgba(11, 22, 64, .16); }
-.demo-pills span:first-child::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #1F4BFF; }
-.demo-cta { justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border-radius: var(--r-pill); background: #1F4BFF; color: #FFFFFF; font-weight: 600; box-shadow: 0 10px 24px -12px #1F4BFF; }
+.demo-pills span:first-child::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #B6000E; }
+.demo-cta { justify-self: start; display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border-radius: var(--r-pill); background: #B6000E; color: #FFFFFF; font-weight: 600; box-shadow: 0 10px 24px -12px #B6000E; }
 .card-demo.swap > * { animation: rise .55s var(--ease-expo) both; }
 .card-demo.swap > *:nth-child(2) { animation-delay: 60ms; }
 .card-demo.swap > *:nth-child(3) { animation-delay: 120ms; }
 .card-demo.swap > *:nth-child(4) { animation-delay: 180ms; }
 .card-demo.swap > *:nth-child(5) { animation-delay: 240ms; }
 .note { font-size: .75rem; color: var(--slate-2); }
+.demo-real { color: var(--ok-fg); font-weight: 600; }
 
-/* ---------- 07 principles and next ---------- */
-.flips { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
-.flip { perspective: 900px; border: 0; padding: 0; background: none; min-height: 210px; text-align: left; border-radius: var(--r-lg); }
-.flip__in { position: relative; display: block; width: 100%; height: 100%; min-height: 210px; transform-style: preserve-3d; transition: transform .7s var(--ease-spring); }
+/* ---------- 09 principles ---------- */
+.flips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.flip { perspective: 900px; border: 0; padding: 0; background: none; min-height: 190px; text-align: left; border-radius: var(--r-lg); }
+.flip__in { position: relative; display: block; width: 100%; height: 100%; min-height: 190px; transform-style: preserve-3d; transition: transform .7s var(--ease-spring); }
 .flip[aria-pressed="true"] .flip__in { transform: rotateY(180deg); }
-.flip__f, .flip__b { position: absolute; inset: 0; display: grid; align-content: space-between; gap: 12px; padding: 20px; border-radius: var(--r-lg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip__f, .flip__b { position: absolute; inset: 0; display: grid; align-content: space-between; gap: 10px; padding: 20px; border-radius: var(--r-lg); backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .flip__f { background: var(--surface); box-shadow: var(--sh-1); }
-.flip__f span { font-family: var(--font-display); font-size: 2.5rem; font-weight: 700; letter-spacing: -.05em; line-height: 1; color: var(--accent-fg); }
-.flip__f strong { font-family: var(--font-display); font-size: 1.375rem; letter-spacing: -.02em; line-height: 1.1; }
-.flip__b { transform: rotateY(180deg); background: var(--accent); color: #FFFFFF; font-size: 1rem; line-height: 1.4; align-content: center; }
+.flip__f span { font-family: var(--font-display); font-size: 2.25rem; font-weight: 700; letter-spacing: -.05em; line-height: 1; color: var(--accent-fg); }
+.flip__f strong { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -.02em; line-height: 1.15; }
+.flip__b { transform: rotateY(180deg); background: linear-gradient(155deg, var(--grad)); color: #FFFFFF; font-size: .875rem; line-height: 1.45; align-content: center; }
+.flip__b b { display: block; font-size: 1rem; margin-bottom: 6px; }
+
+/* ---------- 10 opportunities ---------- */
+.opps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; }
+.opp { display: grid; gap: 8px; align-content: start; padding: 20px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); animation: rise .5s var(--ease-expo) both; animation-delay: calc(var(--i, 0) * 50ms); }
+.opp h3 { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -.02em; line-height: 1.15; }
+.opp p { font-size: .875rem; color: var(--slate); line-height: 1.45; }
+
+/* ---------- 11 wrap ---------- */
+.wrap-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; }
+.wrap-list li { display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 8px; padding: 14px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--sh-1); font-size: .875rem; line-height: 1.45; animation: rise .45s var(--ease-expo) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.wrap-list li > span { font-size: .75rem; font-weight: 700; color: var(--accent-fg); font-variant-numeric: tabular-nums; padding-top: 2px; }
 .road { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
 .road li { padding: 12px 14px; border-radius: var(--r-md); background: var(--surface-2); display: grid; gap: 2px; }
 .road span { font-size: .75rem; font-weight: 600; color: var(--slate-2); }
@@ -319,30 +344,28 @@ ul, ol { padding: 0; list-style: none; }
 .road li.now span { color: inherit; opacity: .8; }
 .srcs { font-size: .75rem; color: var(--slate); }
 .srcs summary { cursor: pointer; font-weight: 600; }
-.srcs ul { display: grid; gap: 4px; margin-top: 8px; max-width: 90ch; }
+.srcs ul { display: grid; gap: 4px; margin-top: 8px; max-width: 100ch; }
 .srcs a { color: var(--ink-2); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 960px) {
-  .cover, .hh, .life, .con, .lang { grid-template-columns: minmax(0, 1fr); }
+  .cover, .two { grid-template-columns: minmax(0, 1fr); }
   .orbit { max-width: 360px; }
-  .flips, .road { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .road, .flips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 640px) {
   .slide { padding-top: calc(80px + env(safe-area-inset-top, 0px)); }
-  .brand small { display: none; }
-  .chrome .wordmark { font-size: 1rem; }
   .chrome { grid-template-columns: auto minmax(0, 1fr) auto; }
   .capsule-wrap { min-width: 0; justify-self: center; max-width: 100%; }
   .capsule { max-width: 100%; }
-  .doors { height: 460px; }
+  .brand small { display: none; }
+  .brand .bloom { font-size: 1.5rem; }
+  .doors { height: 480px; }
   .door { width: 150px; padding: 12px; }
-  .sys__row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .lane { grid-template-columns: 96px minmax(0, 1fr); }
   .scrub__ticks { font-size: 0; }
   .node { min-height: 40px; padding: 0 12px; font-size: .75rem; }
-  .flips, .road { grid-template-columns: minmax(0, 1fr); }
-  .flip, .flip__in { min-height: 150px; }
+  .road, .flips { grid-template-columns: minmax(0, 1fr); }
   .planet button { padding: 8px 12px; font-size: .75rem; }
   .progress { width: 64px; }
 }
@@ -358,12 +381,17 @@ ul, ol { padding: 0; list-style: none; }
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
   <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6"/></symbol>
+  <symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24"><path d="M3 18h18M5 18a7 7 0 0 1 14 0M12 9V7M10 7h4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
 </svg>
 
 <header class="chrome invert" id="chrome">
-  <a class="brand" href="#s01" data-go="0" aria-label="Bloom Holding, back to the cover"><span class="wordmark">Bloom<b>Holding</b></span><small>Digital Ecosystem · Phase 1</small></a>
+  <a class="brand" href="#s01" data-go="0" aria-label="Bloom Holding, back to the cover"><span class="bloom">Bloom</span><small>Holding · Digital Ecosystem · Phase 1</small></a>
   <div class="capsule-wrap">
-    <button class="capsule frost" id="capsule" type="button" aria-expanded="false" aria-controls="jump" aria-label="Jump to a chapter"><span class="capsule__num" id="cap-num">01</span><span class="capsule__name" id="cap-name">One Bloom Holding</span><svg class="ico"><use href="#i-chev"/></svg></button>
+    <button class="capsule frost" id="capsule" type="button" aria-expanded="false" aria-controls="jump" aria-label="Jump to a chapter"><span class="capsule__num" id="cap-num">01</span><span class="capsule__name" id="cap-name">One Bloom</span><svg class="ico"><use href="#i-chev"/></svg></button>
     <nav class="jump" id="jump" aria-label="Chapters" hidden><ol id="jump-list"></ol></nav>
   </div>
   <button class="icon-btn frost theme-btn" id="theme-btn" type="button" aria-label="Switch between light and dark"><svg class="ico i-moon"><use href="#i-moon"/></svg><svg class="ico i-sun"><use href="#i-sun"/></svg></button>
@@ -371,15 +399,16 @@ ul, ol { padding: 0; list-style: none; }
 
 <main class="deck" id="deck" aria-roledescription="presentation" aria-label="Bloom Holding Digital Ecosystem, Phase 1">
 
-<!-- 01 -->
-<section class="slide invert stage is-current" data-title="One Bloom Holding" aria-roledescription="slide">
+<!-- 01 COVER -->
+<section class="slide invert stage is-current" data-title="One Bloom" aria-roledescription="slide">
   <div class="stage__bg" aria-hidden="true"><i class="blob blob--1"></i><i class="blob blob--2"></i></div>
   <div class="slide__in">
     <div class="cover">
       <div class="cover__text">
-        <p class="eyebrow rv">Bloom Holding · Phase 1 · Ecosystem Foundation</p>
-        <h1 class="mega rv" style="--d:1">One Bloom Holding. <em>Every</em> experience.</h1>
-        <div class="cover__actions rv" style="--d:2">
+        <p class="eyebrow rv">Bloom Holding · Digital Ecosystem · Phase 1</p>
+        <h1 class="mega rv" style="--d:1">One Bloom. <em>Every</em> experience.</h1>
+        <p class="rv" style="--d:2; font-size:1.125rem; max-width:46ch; color:var(--ink-2)">Every Bloom Holding business and product, understood as one system, in Bloom red and the Bloom Multiverse language.</p>
+        <div class="cover__actions rv" style="--d:3">
           <button class="btn btn--primary" type="button" data-go="next">Begin<svg class="ico"><use href="#i-arrow-r"/></svg></button>
           <span class="hint">Tap a business in the orbit</span>
         </div>
@@ -387,19 +416,19 @@ ul, ol { padding: 0; list-style: none; }
       <div class="orbit rv" style="--d:2" id="orbit">
         <i class="orbit__ring orbit__ring--1"></i><i class="orbit__ring orbit__ring--2"></i>
         <div class="orbit__spin" id="orbit-spin"></div>
-        <div class="orbit__core" aria-live="polite"><span class="wordmark">Bloom<b>Holding</b></span><small id="orbit-say">Four businesses, one ecosystem</small></div>
+        <div class="orbit__core" aria-live="polite"><span class="bloom">Bloom</span><small id="orbit-say">Four businesses, one ecosystem</small></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 02 -->
-<section class="slide" data-title="One family, many doors" aria-roledescription="slide">
+<!-- 02 WHY -->
+<section class="slide" data-title="Why an ecosystem" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">The problem</p><h2 class="title rv" style="--d:1">One family. Too many <em>front doors</em>.</h2></header>
-    <div class="hh">
-      <div class="hh__ctrl rv" style="--d:2">
-        <p class="hint">Add the roles one family holds with Bloom Holding</p>
+    <header class="head"><p class="eyebrow rv">01 · Why an ecosystem</p><h2 class="title rv" style="--d:1">One family. Too many <em>front doors</em>.</h2></header>
+    <div class="two">
+      <div class="ctrl rv" style="--d:2">
+        <p class="hint">Add the roles one family holds with Bloom</p>
         <div class="chips" id="roles"></div>
         <div class="counter-big" aria-live="polite"><b id="door-n">3</b><span id="door-say">front doors, each with its own look and login</span></div>
         <div class="seg" role="tablist" aria-label="View" id="door-view">
@@ -408,35 +437,49 @@ ul, ol { padding: 0; list-style: none; }
         </div>
       </div>
       <div class="doors rv" style="--d:3" id="doors">
-        <div class="one" aria-hidden="true"><span class="wordmark">Bloom<b>Holding</b></span><p>One relationship. Every role.</p><div class="one__roles" id="one-roles"></div></div>
+        <div class="one" aria-hidden="true"><span class="bloom">Bloom</span><p>One relationship. Every role.</p><div class="one__roles" id="one-roles"></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 03 -->
-<section class="slide" data-title="The product system" aria-roledescription="slide">
+<!-- 03 BUSINESSES -->
+<section class="slide" data-title="Four businesses" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">The system</p><h2 class="title rv" style="--d:1">Bloom Holding is the ecosystem. Every product sits <em>inside</em> it.</h2></header>
-    <div class="sys rv" style="--d:2">
-      <div class="sys__row sys__row--brand"><span class="sys__k">Brand</span><div class="sys__items"><span class="wordmark">Bloom<b>Holding</b></span></div></div>
-      <div class="sys__row"><span class="sys__k">Businesses</span><div class="sys__items" id="biz"></div></div>
-      <div class="sys__row"><span class="sys__k">Products</span><div class="sys__items" id="prods"></div></div>
-      <div class="sys__row sys__row--found"><span class="sys__k">Shared layer</span><div class="sys__items">
-        <span class="found found--ml"><span class="mark" style="width:22px" aria-hidden="true"></span>Multiverse design language<small>Approved</small></span>
-        <span class="found">One identity<small>Phase 2</small></span>
-        <span class="found">Shared data<small>Phase 2</small></span>
-      </div></div>
-    </div>
-    <p class="sys__say rv" style="--d:3" id="sys-say" aria-live="polite">Tap a business to light up its products.</p>
+    <header class="head"><p class="eyebrow rv">02 · Business ecosystem</p><h2 class="title rv" style="--d:1">Four businesses. They all meet in the <em>community</em>.</h2></header>
+    <div class="chips rv" style="--d:2" role="tablist" aria-label="Businesses" id="biz-tabs"></div>
+    <div class="card panel rv" style="--d:3" id="biz-panel" aria-live="polite"></div>
   </div>
 </section>
 
-<!-- 04 -->
+<!-- 04 PEOPLE -->
+<section class="slide" data-title="People and their jobs" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head"><p class="eyebrow rv">03 + 04 · Stakeholders and jobs</p><h2 class="title rv" style="--d:1">Who Bloom serves, and what they need to <em>get done</em>.</h2></header>
+    <div class="two">
+      <div class="people rv" style="--d:2" id="people" role="tablist" aria-label="Stakeholders"></div>
+      <div class="card panel rv" style="--d:3" id="people-panel" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 PRODUCTS -->
+<section class="slide" data-title="Every Bloom product" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head"><p class="eyebrow rv">07 · Digital touchpoints</p><h2 class="title rv" style="--d:1">Thirteen products. One Bloom <em>system</em>.</h2></header>
+    <div class="chips rv" style="--d:2" role="tablist" aria-label="Filter products" id="prod-filter"></div>
+    <div class="two" style="align-items:start">
+      <div class="prods rv" style="--d:3" id="prods" role="tablist" aria-label="Products"></div>
+      <div class="card panel rv" style="--d:4" id="prod-panel" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 LIFECYCLE -->
 <section class="slide" data-title="A lifetime with Bloom" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">The journey</p><h2 class="title rv" style="--d:1">Most of the relationship happens <em>after</em> arrival.</h2></header>
-    <div class="life rv" style="--d:2">
+    <header class="head"><p class="eyebrow rv">05 · Experience lifecycle</p><h2 class="title rv" style="--d:1">Most of the relationship happens <em>after</em> arrival.</h2></header>
+    <div class="two rv" style="--d:2">
       <div class="life__stage" aria-live="polite">
         <span class="life__n" id="life-n">05 / 08</span>
         <span class="life__name" id="life-name">Arrive</span>
@@ -445,6 +488,7 @@ ul, ol { padding: 0; list-style: none; }
       </div>
       <div class="lanes" id="lanes"></div>
     </div>
+    <div class="life__prods rv" style="--d:3" id="life-prods" aria-live="polite"></div>
     <div class="scrub rv" style="--d:3">
       <label class="vh" for="life-range">Lifecycle stage</label>
       <input type="range" id="life-range" min="0" max="7" step="1" value="4">
@@ -454,36 +498,36 @@ ul, ol { padding: 0; list-style: none; }
   </div>
 </section>
 
-<!-- 05 -->
+<!-- 07 CONNECT -->
 <section class="slide" data-title="Connect the dots" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">The opportunity</p><h2 class="title rv" style="--d:1">The value sits where the businesses <em>meet</em>.</h2></header>
-    <div class="con">
-      <div class="board rv" style="--d:2" id="board"><svg viewBox="0 0 560 420" preserveAspectRatio="none" aria-hidden="true" id="board-svg"></svg></div>
-      <div class="con__side rv" style="--d:3">
+    <header class="head"><p class="eyebrow rv">06 · Cross-domain relationships</p><h2 class="title rv" style="--d:1">The value sits where the businesses <em>meet</em>.</h2></header>
+    <div class="two">
+      <div class="board rv" style="--d:2" id="board"><svg viewBox="0 0 560 440" preserveAspectRatio="none" aria-hidden="true" id="board-svg"></svg></div>
+      <div class="ctrl rv" style="--d:3">
         <p class="hint">Tap two places to connect them</p>
         <div class="reveal" id="reveal" aria-live="polite"></div>
-        <div class="score"><b id="score">1 / 8</b><span>connections found</span><div class="pips" id="pips"></div><button class="icon-btn" type="button" id="con-reset" aria-label="Start again"><svg class="ico"><use href="#i-reset"/></svg></button></div>
+        <div class="score"><b id="score">1 / 9</b><span>connections found</span><div class="pips" id="pips"></div><button class="icon-btn" type="button" id="con-reset" aria-label="Start again"><svg class="ico"><use href="#i-reset"/></svg></button></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- 06 -->
-<section class="slide" data-title="One language" aria-roledescription="slide">
+<!-- 08 LANGUAGE -->
+<section class="slide" data-title="One design language" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">The design language</p><h2 class="title rv" style="--d:1">One Multiverse language. <em>Every</em> Bloom Holding product.</h2></header>
-    <div class="lang">
-      <div class="lang__ctrl rv" style="--d:2">
+    <header class="head"><p class="eyebrow rv">08 · Design language</p><h2 class="title rv" style="--d:1">Bloom red leads. Bloom Multiverse sets the <em>language</em>.</h2></header>
+    <div class="two">
+      <div class="ctrl rv" style="--d:2">
         <p class="hint">Switch who it's for</p>
         <div class="chips" role="tablist" aria-label="Audience" id="aud"></div>
         <ul class="layers">
-          <li><span class="wm" aria-hidden="true">B</span><div><b>Bloom Holding leads the brand</b>Logo, colours, photography, voice</div></li>
-          <li><span class="sw" aria-hidden="true"></span><div><b>Multiverse sets the language</b>Greeting, editing, type, glass, motion</div></li>
-          <li><span class="mark" aria-hidden="true"></span><div><b>Each product keeps its job</b>BlooMultiverse keeps its flag mark and inbox</div></li>
+          <li><span class="bloom" aria-hidden="true">B</span><div><b>Bloom leads the brand</b>Red serif wordmark, Bloom red, photography, voice</div></li>
+          <li><span class="swatches" aria-hidden="true"><i style="--c:#B6000E"></i><i style="--c:#0B1640"></i><i style="--c:#F6F4EF"></i></span><div><b>Bloom Multiverse sets the language</b>Greeting, editing, type, glass, motion, counters</div></li>
+          <li><span class="mark" aria-hidden="true"></span><div><b>Each product keeps its job</b>Bloom Multiverse keeps its flag mark and inbox</div></li>
         </ul>
       </div>
-      <div class="lang__demo rv" style="--d:3">
+      <div class="ctrl rv" style="--d:3; gap:8px">
         <div class="card-demo" id="demo" aria-live="polite"></div>
         <p class="note" id="demo-note"></p>
       </div>
@@ -491,12 +535,30 @@ ul, ol { padding: 0; list-style: none; }
   </div>
 </section>
 
-<!-- 07 -->
-<section class="slide invert stage" data-title="Principles and next" aria-roledescription="slide">
+<!-- 09 PRINCIPLES -->
+<section class="slide" data-title="Experience principles" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head"><p class="eyebrow rv">09 · Experience principles</p><h2 class="title rv" style="--d:1">Seven principles for every Bloom <em>product</em>.</h2><p class="hint rv" style="--d:1">Tap a card to flip it</p></header>
+    <div class="flips rv" style="--d:2" id="flips"></div>
+  </div>
+</section>
+
+<!-- 10 OPPORTUNITIES -->
+<section class="slide" data-title="Opportunities" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head"><p class="eyebrow rv">10 · Opportunity areas</p><h2 class="title rv" style="--d:1">The biggest wins sit in the <em>gaps</em> between products.</h2></header>
+    <div class="chips rv" style="--d:2" role="tablist" aria-label="Opportunity type" id="opp-tabs"></div>
+    <div class="opps" id="opps" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 11 WRAP -->
+<section class="slide invert stage" data-title="What we know and what's next" aria-roledescription="slide">
   <div class="stage__bg" aria-hidden="true"><i class="blob blob--1"></i><i class="blob blob--2"></i></div>
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">What guides us</p><h2 class="title rv" style="--d:1">Five principles. Then we design the <em>system</em>.</h2><p class="hint rv" style="--d:1">Tap a card to flip it</p></header>
-    <div class="flips rv" style="--d:2" id="flips"></div>
+    <header class="head"><p class="eyebrow rv">11 · Summary and Phase 2</p><h2 class="title rv" style="--d:1">Phase 1 sets the foundation. Phase 2 designs the <em>system</em>.</h2></header>
+    <div class="chips rv" style="--d:2" role="tablist" aria-label="Summary" id="wrap-tabs"></div>
+    <ol class="wrap-list" id="wrap-list" aria-live="polite"></ol>
     <ol class="road rv" style="--d:3">
       <li class="now"><span>Phase 1 · Now</span><b>Ecosystem foundation</b></li>
       <li><span>Phase 2</span><b>Ecosystem architecture</b></li>
@@ -507,9 +569,10 @@ ul, ol { padding: 0; list-style: none; }
     <details class="srcs rv" style="--d:4">
       <summary>Sources and notes</summary>
       <ul>
-        <li>Facts from search summaries of <a href="https://bloomholding.com/who-we-are" target="_blank" rel="noopener">Bloom Holding</a>, <a href="https://bloomholding.com/press-releases/bloom-holding-introduces-next-generation-digital-solutions-to-elevate-broker-owner-and-resident-experiences-1" target="_blank" rel="noopener">its digital apps launch</a>, <a href="https://bloomholding.com/bloom-community-app" target="_blank" rel="noopener">the Community App</a>, <a href="https://www.bloomeducation.com/" target="_blank" rel="noopener">Bloom Education</a>, <a href="https://www.bfm.ae/" target="_blank" rel="noopener">bfm</a> and <a href="https://businesstoday.me/real-estate/bloom-holding-alhambra-abu-dhabi/" target="_blank" rel="noopener">the Alhambra launch</a>. bloomholding.com could not be opened from the research environment.</li>
-        <li>The design language comes first-hand from the BlooMultiverse source. The Bloom Holding wordmark is typeset, not the official logo. Audience cards other than Employee are illustrative.</li>
-        <li>Phases 2 to 5 are a proposal. <a href="https://claude.ai/code/artifact/306d5e1a-9709-46b2-800e-475d01f262bd" target="_blank" rel="noopener">The full Phase 1 document</a> holds the detail.</li>
+        <li>Facts from search summaries of <a href="https://bloomholding.com/who-we-are" target="_blank" rel="noopener">Bloom Holding</a>, <a href="https://bloomholding.com/press-releases/bloom-holding-introduces-next-generation-digital-solutions-to-elevate-broker-owner-and-resident-experiences-1" target="_blank" rel="noopener">its digital apps launch</a>, <a href="https://bloomholding.com/bloom-partners-app" target="_blank" rel="noopener">Bloom Partners</a>, <a href="https://bloomholding.com/bloom-community-app" target="_blank" rel="noopener">the Community App</a>, <a href="https://www.iskan.abudhabi/en/Housing-Projects/Projects-Under-construction/Al-Metlaa-Housing-Project" target="_blank" rel="noopener">Al Metlaa (ADHA)</a>, <a href="https://www.bloomeducation.com/" target="_blank" rel="noopener">Bloom Education</a> and <a href="https://www.bfm.ae/" target="_blank" rel="noopener">bfm</a>. The bloomholding.com sites could not be opened from the research environment.</li>
+        <li>Products named by the Bloom team: <a href="https://partners.bloomholding.com/login" target="_blank" rel="noopener">partners.bloomholding.com</a>, <a href="https://almetlaa.bloomholding.com/" target="_blank" rel="noopener">almetlaa.bloomholding.com</a>, the ADHA home-buying platform (design sample) and the Community App chatbot.</li>
+        <li>The Bloom Multiverse language comes first-hand from its source. The Bloom wordmark is typeset in a serif to match the brand, not the official logo file. Audience cards marked illustrative are examples.</li>
+        <li><a href="https://claude.ai/code/artifact/306d5e1a-9709-46b2-800e-475d01f262bd" target="_blank" rel="noopener">The full Phase 1 document</a> holds the long-form detail.</li>
       </ul>
     </details>
   </div>
@@ -520,7 +583,7 @@ ul, ol { padding: 0; list-style: none; }
 <footer class="rail invert" id="rail">
   <div class="rail-foot frost">
     <span class="progress" aria-hidden="true"><i id="rail-fill"></i></span>
-    <span class="counter" id="counter" aria-live="polite">01 / 07</span>
+    <span class="counter" id="counter" aria-live="polite">01 / 11</span>
     <button class="icon-btn" type="button" id="prev" data-go="prev" aria-label="Previous chapter"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
     <button class="icon-btn" type="button" id="next" data-go="next" aria-label="Next chapter"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
   </div>
@@ -535,13 +598,7 @@ ul, ol { padding: 0; list-style: none; }
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const restart = (el, cls) => { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); };
-
-  const BIZ = {
-    re: { n: "Real estate", c: "var(--viz-1)", say: "4,000+ homes at Bloom Living alone, plus Saadiyat and Dubai." },
-    edu: { n: "Education", c: "var(--viz-2)", say: "Brighton College, Bloom World Academy and nurseries: about 20,000 students." },
-    svc: { n: "Services", c: "var(--viz-3)", say: "bfm and Bloom Landscape keep communities, schools and hotels running." },
-    hos: { n: "Hospitality", c: "var(--viz-4)", say: "The Abu Dhabi EDITION, Marriott Downtown and Bloom Arjaan by Rotana." }
-  };
+  const tags = (list) => list.map((t) => `<span class="tag">${esc(t)}</span>`).join("");
 
   // Tabs with click and arrow keys; arrow keys stay inside the list.
   function tablist(list, onPick) {
@@ -551,15 +608,129 @@ ul, ol { padding: 0; list-style: none; }
     list.addEventListener("keydown", (e) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) return;
       e.preventDefault(); e.stopPropagation();
-      const bs = btns(); const i = bs.indexOf(document.activeElement);
+      const bs = btns().filter((b) => !b.hidden); const i = bs.indexOf(document.activeElement);
       const n = (i + (e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : -1) + bs.length) % bs.length;
       bs[n].focus(); pick(bs[n]);
     });
+    return pick;
   }
+  const tabBtn = (cls, i, sel, attrs, inner) => `<button class="${cls}" type="button" role="tab" aria-selected="${sel}" tabindex="${sel ? 0 : -1}" ${attrs}>${inner}</button>`;
 
-  /* 01 orbit */
+  /* ================= DATA ================= */
+  const BIZ = {
+    re: { n: "Real estate", c: "var(--viz-1)", icon: "i-home", ent: "Bloom Properties", num: "4,000+", numL: "homes at Bloom Living alone",
+      what: "Master developer of premium, mostly gated communities in Abu Dhabi, Al Ain and Dubai.",
+      offers: ["Bloom Living, Zayed City", "Al Metlaa, Al Ain, with ADHA: 2,243 homes for Emirati families", "Soho Square, Bloom Gardens, Bloom Marina, Bloom Central", "Bloom Towers and Bloom Heights, Dubai"],
+      who: "Buyers, Emirati families with ADHA loans, investors, brokers, owners", exp: "A high-stakes purchase, then years of instalments and construction before handover.", conn: "Everything: it creates the place the other businesses operate in." },
+    edu: { n: "Education", c: "var(--viz-2)", icon: "i-cap", ent: "Bloom Education, since 2011", num: "~20,000", numL: "students across 15 to 20 schools",
+      what: "Operator of premium and partner-brand schools and nurseries, plus ADEK Charter Schools.",
+      offers: ["Brighton College: Abu Dhabi, Al Ain, Dubai", "Bloom World Academy (IB), Dubai", "Nurseries, including one at Bloom Gardens"],
+      who: "Parents, students, teachers", exp: "A relationship with a family that can last from age 3 to 18.", conn: "Schools sit inside Bloom communities." },
+    svc: { n: "Services", c: "var(--viz-3)", icon: "i-tools", ent: "bfm · Bloom Landscape", num: "2008", numL: "bfm, an accredited energy services company",
+      what: "Integrated facilities management and landscaping, for Bloom and third parties across the UAE.",
+      offers: ["Maintenance, cleaning, security, fit-out", "Move-in and move-out services", "Parks, streets and resorts designed and kept"],
+      who: "Residents and owners, schools, hotels, business clients", exp: "Invisible when it works; felt sharply when it doesn't.", conn: "Keeps communities, schools and hotels running." },
+    hos: { n: "Hospitality", c: "var(--viz-4)", icon: "i-cloche", ent: "Bloom Hospitality", num: "3", numL: "five-star hotels and hotel apartments",
+      what: "Owner of hotels and hotel apartments run by international operators.",
+      offers: ["The Abu Dhabi EDITION, with 57 serviced residences", "Marriott Hotel Downtown Abu Dhabi", "Bloom Arjaan by Rotana, Saadiyat, opened 2026"],
+      who: "Guests, serviced-apartment residents, visitors", exp: "Episodic and lifestyle-led. Guests see the operator's brand, not Bloom's.", conn: "Serviced living next to Bloom homes; staff discounts for employees." },
+    com: { n: "The community", c: "var(--accent)", icon: "i-pin", ent: "Where the four meet", num: "1", numL: "gate: homes, schools, a town centre and services together",
+      what: "Once people move in, Bloom runs the community day to day. It is the longest relationship Bloom has.",
+      offers: ["Amenities, access cards, move-ins, renewals", "Service requests and service charges", "Events, announcements and a chatbot in the Community App", "Souk Alhambra, planned as Bloom Living's social heart"],
+      who: "Residents, tenants, owners, visitors", exp: "Continuous and everyday.", conn: "Every business shows up here." }
+  };
+
+  const PEOPLE = [
+    { t: "Primary", n: "Home buyers", w: "Local and international buyers, first-time to premium.", j: ["Find a home and community that fit my family and budget.", "See what life there will be like before it exists.", "Trust that Bloom will deliver what it promised."], p: ["bloomholding.com", "Master Plan", "Bloom Partners (via a broker)"] },
+    { t: "Primary", n: "Emirati families with ADHA", w: "Eligible UAE nationals buying with an ADHA housing loan.", j: ["Know which homes my loan covers.", "See my future home and community, even in VR.", "Book a visit and complete the purchase without paperwork loops."], p: ["ADHA home-buying platform", "Master Plan", "Super App"] },
+    { t: "Primary", n: "Owners", w: "Owner-occupiers and investors paying instalments and service charges.", j: ["Know what I owe, when, and that it landed.", "Watch my home being built.", "Protect and grow what I own."], p: ["Super App", "Community App"] },
+    { t: "Primary", n: "Residents", w: "Owners and tenants living in a Bloom community.", j: ["Settle in without chasing paperwork.", "Get an issue fixed, and know when.", "Book the amenities I pay for.", "Know what's happening and who my neighbours are."], p: ["Community App + chatbot", "bfm services"] },
+    { t: "Primary", n: "School families", w: "Parents and students, from nursery to age 18.", j: ["Choose the right school with confidence.", "Get my child enrolled and settled.", "Know how my child is doing."], p: ["School sites", "Bloom Education"] },
+    { t: "Secondary", n: "Guests and visitors", w: "Hotel guests, serviced-apartment residents, town-centre visitors.", j: ["Have an effortless, special stay.", "Find a reason to come back to the community."], p: ["Hotel channels", "bloomholding.com"] },
+    { t: "Business", n: "Agencies and brokers", w: "Agencies register; admins and agents sign in with their own roles.", j: ["See every listed property right now.", "Manage leads and close without back-and-forth.", "Track the commission my team has earned."], p: ["Bloom Partners"] },
+    { t: "Business", n: "ADHA", w: "Abu Dhabi Housing Authority: the loan provider and project partner.", j: ["Get Emirati families into homes efficiently.", "See eligibility, allocation and progress clearly."], p: ["ADHA home-buying platform"] },
+    { t: "Business", n: "Bloom employees", w: "Staff across the group, from HQ to schools and bfm.", j: ["See what needs me today and act on it.", "Find any policy, person or answer.", "Feel part of Bloom."], p: ["Bloom Multiverse web", "Bloom Multiverse mobile", "Bloom GPT"] },
+    { t: "Business", n: "Service teams and partners", w: "bfm crews, hotel operators, school brand partners, business clients.", j: ["Know the problem before arriving.", "Deliver our standard inside a Bloom place."], p: ["bfm.ae", "Community App (requests)"] }
+  ];
+
+  const GROUPS = { buy: "Discover and buy", own: "Own and live", partners: "Partners", learn: "Learn and stay", people: "Bloom people", unk: "To confirm" };
+  const PRODUCTS = [
+    { g: "buy", n: "bloomholding.com", k: "Corporate website", url: "bloomholding.com", aud: "Buyers, investors, media, partners", p: "The parent brand's front door: communities, homes for sale, news, and links to every business.", f: ["Communities", "Properties", "Enquiries", "Press"], r: "The only place all four businesses appear together." },
+    { g: "buy", n: "ADHA home-buying platform", k: "Platform with ADHA", aud: "Emirati families with ADHA housing loans", p: "Buy a Bloom home financed by an ADHA loan: browse units that fit your eligibility and book a visit.", f: ["Loan-eligibility price range", "Available units", "Construction progress", "VR tour", "Amenities", "Brochure", "Master plan", "Book an appointment"], r: "Joins government financing and Bloom sales in one journey. Already uses the Bloom red brand." },
+    { g: "buy", n: "Al Metlaa Master Plan", k: "Interactive master plan", url: "almetlaa.bloomholding.com", aud: "Buyers, Emirati families, brokers", p: "Explore Al Metlaa, Al Ain: the plan of homes, plots and amenities across the community.", f: ["Community layout", "Plots and villas", "Amenities"], r: "Lets people see the place before it exists. A pattern every community could use." },
+    { g: "own", n: "Bloom Holding Super App", k: "Owner app", aud: "Property owners", p: "Pay instalments, maintenance and service charges, with receipts and real-time construction progress.", f: ["Payments", "Receipts", "Construction progress", "Reminders"], r: "The owner's companion from purchase to handover. Its link to the ADHA platform is to confirm." },
+    { g: "own", n: "Bloom Community App", k: "Resident app with chatbot", aud: "Residents, tenants, owners", p: "Run daily life in a Bloom community, with a chatbot to answer questions.", f: ["Chatbot", "Service charges", "Amenity booking", "Digital access card", "Move in and out", "Tenancy renewal", "Service requests", "Community updates", "Vacation mode"], r: "The operating system of the Live stage." },
+    { g: "partners", n: "Bloom Partners", k: "Broker platform, web and app", url: "partners.bloomholding.com", aud: "Agencies, agency admins, agents", p: "Agencies register with Bloom, see every listed property, manage leads and track the commission their team earns.", f: ["Agency registration", "Role-based login", "All listings", "Leads", "Commission dashboard", "Team performance", "Marketing materials", "Service requests"], r: "The sales engine behind real estate." },
+    { g: "partners", n: "bfm.ae", k: "Services website", url: "bfm.ae", aud: "Business and institutional clients", p: "Bloom Facilities Management's offer: maintenance, cleaning, security, energy services.", f: ["Service lines", "Enquiries"], r: "Sells services beyond Bloom. Residents meet bfm through the Community App." },
+    { g: "learn", n: "School sites", k: "A website per school", aud: "Parents, students, teachers", p: "Brighton College, Bloom World Academy and nurseries, each with its own site and brand.", f: ["Admissions", "School news", "Careers"], r: "Education's front door. Not linked to the home community." },
+    { g: "learn", n: "Hotel channels", k: "Operator-owned", aud: "Guests", p: "Booking and loyalty at the EDITION, Marriott Downtown and Bloom Arjaan, run by Marriott and Rotana.", f: ["Booking", "Loyalty"], r: "Bloom is invisible here, by design of the operating model." },
+    { g: "people", n: "Bloom Multiverse web", k: "Employee platform · approved", aud: "Employees", p: "Tasks and approvals from Salesforce, Darwinbox, UiPath and SAP; people, policies, communities, perks; a requests inbox.", f: ["Approvals", "Requests inbox", "People", "Policies", "Communities", "Perks", "Search"], r: "The approved reference for Bloom's design language." },
+    { g: "people", n: "Bloom Multiverse mobile", k: "Employee app · approved", aud: "Employees", p: "The Bloom Multiverse experience on the phone.", f: ["Mobile companion"], r: "The approved reference for Bloom's mobile language." },
+    { g: "people", n: "Bloom GPT", k: "Assistant prototype", aud: "Employees", p: "Answers from Bloom Multiverse's own data and acts on it: approve, open a policy, copy a code.", f: ["Answers", "Actions", "Search"], r: "The first Bloom assistant. With the Community App chatbot, the seed of shared intelligence." },
+    { g: "unk", n: "Bloom Universal", k: "To confirm", aud: "Unknown", p: "Named in the original brief. We found no public trace of it.", f: ["To confirm with the Bloom team"], r: "Placed in the system once we know what it is.", unk: 1 }
+  ];
+
+  const STAGES = [
+    { n: "Discover", l: "Find a home, a school or a stay.", on: ["re", "edu", "hos"], p: ["bloomholding.com", "Master Plan", "School sites", "Hotel channels"] },
+    { n: "Decide", l: "Visit, compare, and check what the loan covers.", on: ["re", "edu"], p: ["ADHA platform", "Master Plan", "Bloom Partners"] },
+    { n: "Commit", l: "Buy, rent, enrol or book.", on: ["re", "edu"], p: ["ADHA platform", "Bloom Partners", "Super App"] },
+    { n: "Wait", l: "Construction and instalments, often for years.", on: ["re"], p: ["Super App", "ADHA platform"], flag: ["separate", "Quiet: payments and construction progress only"] },
+    { n: "Arrive", l: "Handover, move-in, access cards, the first school day.", on: ["re", "svc", "edu"], p: ["Super App", "Community App", "School sites"], flag: ["open", "The busiest moment: most businesses at once"] },
+    { n: "Live", l: "Services, payments, amenities, school days.", on: ["re", "svc", "edu"], p: ["Community App + chatbot", "Super App", "bfm"] },
+    { n: "Belong", l: "Events, clubs, neighbours, the school community.", on: ["re", "edu", "hos"], p: ["Community App", "School sites"] },
+    { n: "Evolve", l: "Renew, upgrade, reinvest, refer. Then it loops again.", on: ["re", "edu", "svc", "hos"], p: ["Community App", "Super App", "bloomholding.com", "Bloom Partners"] }
+  ];
+
+  const NODES = { homes: [120, 60, "Homes"], schools: [440, 60, "Schools"], adha: [280, 200, "ADHA"], services: [56, 230, "Services"], hotels: [504, 230, "Hotels"], town: [150, 390, "Town centre"], people: [410, 390, "Bloom people"] };
+  const RAW = [
+    ["adha", "homes", "connected", "Government loans meet Bloom homes.", "Emirati families buy Al Metlaa homes with an ADHA loan, on one platform."],
+    ["homes", "schools", "separate", "Schools sit inside Bloom communities.", "On the ground they are neighbours. Digitally, they have never met."],
+    ["homes", "services", "connected", "Your home, looked after.", "Service requests and charges already live in the Community and Super apps."],
+    ["homes", "hotels", "open", "Try Bloom living before you buy.", "A stay or a serviced residence as the first step to a home."],
+    ["hotels", "people", "connected", "Staff enjoy Bloom's own hotels.", "30% off at the EDITION and Marriott Downtown, inside Bloom Multiverse."],
+    ["homes", "town", "open", "The community's living room.", "Souk Alhambra is planned as the social heart of Bloom Living."],
+    ["people", "schools", "open", "Employees are parents too.", "Staff whose children study at Bloom schools meet two separate Blooms."],
+    ["homes", "people", "open", "Employees are residents too.", "Bloom's own people could be its first connected households."],
+    ["schools", "services", "open", "Services that keep schools running.", "bfm serves schools across the UAE. How far it reaches Bloom's own is to confirm."]
+  ];
+
+  const AUD = [
+    { n: "Employee", p: "Bloom Multiverse", c: "Home", g: "Good morning, <em>Rashid.</em>", l: "32 things are waiting across four of your apps. Salesforce needs you most today.", pills: ["2 overdue", "Ahmed's birthday", "Policy updated"], cta: "Review 32 actions", real: "Real copy from Bloom Multiverse." },
+    { n: "ADHA buyer", p: "ADHA platform", c: "Al Metlaa", g: "Good morning, <em>Javed!</em>", l: "Construction is 45% complete. Your selection is above your loan eligibility, so here are 20 available units.", pills: ["Construction 45%", "20 available units", "Explore in VR"], cta: "Book appointment", real: "Real copy from the ADHA platform design." },
+    { n: "Broker", p: "Bloom Partners", c: "Dashboard", g: "New inventory is <em>live.</em>", l: "Your agency has three leads to follow up and this month's commission is ready to review.", pills: ["3 leads", "Commission ready", "New listings"], cta: "Open my pipeline", note: "Illustrative." },
+    { n: "Owner", p: "Super App", c: "Your home", g: "Your keys are <em>close.</em>", l: "Handover has started in your phase, and your latest instalment is paid.", pills: ["Handover open", "Receipt ready", "Progress update"], cta: "Book your handover", note: "Illustrative." },
+    { n: "Resident", p: "Community App", c: "Today", g: "Good evening, <em>neighbour.</em>", l: "Your AC repair is booked for tomorrow at 10:00. Ask the assistant anything about the community.", pills: ["Repair booked", "Pool free", "Ask the chatbot"], cta: "See today in Bloom Living", note: "Illustrative." },
+    { n: "Parent", p: "School", c: "Term", g: "Term starts in <em>12 days.</em>", l: "Uniform fitting is open and the bus route near your home is confirmed.", pills: ["Fitting open", "Bus confirmed", "Meet the teacher"], cta: "Get ready for day one", note: "Illustrative." }
+  ];
+
+  const PRINCIPLES = [
+    ["The household, not the business unit", "Design for the person across every role they hold with Bloom.", "One family meets up to eight Bloom front doors today."],
+    ["The place is the front door", "Start from the community, campus or hotel. That is where the businesses already meet.", "Bloom Living and Al Metlaa put homes, schools and services in one place."],
+    ["Curate, don't catalogue", "Show what matters now, and to me, first. Editing is the premium.", "“Curated Community Living”; Bloom Multiverse's “needs you most today”."],
+    ["Every wait is attended", "Construction, handover, a loan, a repair: always show progress and who is on it.", "Construction progress in the Super App and ADHA platform."],
+    ["Act where you are", "Pay, book, request or approve the moment you see it. No detours.", "Approvals in Bloom Multiverse; Book appointment on the ADHA platform."],
+    ["Warm by default, premium in the craft", "Greet people by name. Let type, motion and material carry the premium.", "“Good morning, Javed!” “Good morning, Rashid.”"],
+    ["Continuity for a lifetime", "Remember context from stage to stage and business to business, with consent.", "Relationships from nursery to handover to the next home."]
+  ];
+
+  const OPPS = {
+    Experience: [["One Bloom relationship across roles", "Buyer, owner, resident and parent are often one household."], ["The wait between purchase and handover", "Years with payments and progress, and little else."], ["Arrival as one moment", "Handover, move-in, access cards and school start land together."], ["Belonging beyond transactions", "Events and the chatbot exist; the town centre and schools can do more."]],
+    Product: [["One buyer journey", "bloomholding.com, Master Plan, ADHA platform and Partners each hold a piece of buying."], ["Owner and resident apps that overlap", "Super App and Community App both take payments."], ["Broker to buyer to owner, without a restart", "Partners, ADHA platform and Super App hand over by hand."], ["A master plan for every community", "Al Metlaa's plan is a pattern Bloom Living and others could reuse."]],
+    Design: [["One Bloom language across every product", "Bloom red plus Bloom Multiverse, applied to all 13."], ["Brand architecture for endorsed brands", "Schools and hotels lead with their own brands."], ["Proven patterns ready to reuse", "Greeting, capsule nav, step progress, the requests inbox."]],
+    "Technology and AI": [["One identity across products", "Each product registers people separately today (to confirm)."], ["One Bloom assistant", "Bloom GPT and the Community App chatbot are two separate starts."], ["Shared data with partners", "ADHA, hotel operators and schools hold their own systems."], ["Connected service data", "bfm energy and service data could reach residents."]]
+  };
+
+  const WRAP = {
+    "Open questions": ["Is the ecosystem for customers, employees, or both, and in what order?", "Who owns each relationship: Bloom, ADHA, or the hotel and school operators?", "How do the Super App and the ADHA platform relate?", "What is Bloom Universal?", "Do the products share identity, data or a backend?", "What may be shared between businesses, with what consent?", "Which community pilots a connected experience?", "What are the Arabic, right-to-left and accessibility needs?", "How will success be measured?"],
+    "What we know": ["Bloom Holding is the brand; Bloom red leads, Bloom Multiverse sets the design language.", "Four businesses meet in each community: Bloom Living and Al Metlaa are the clearest cases.", "Thirteen products, split by audience and business unit.", "Buyers, owners, residents and parents are often one household.", "Arrive is the busiest moment; Wait is the quietest."],
+    "To validate": ["Bloom's official logo, red values and brand guidelines.", "Features inside Bloom Partners, the ADHA platform and the Master Plan, first-hand.", "The Community App chatbot: what it answers and who runs it.", "Portfolio figures that sources disagree on.", "How many households hold several Bloom roles."],
+    "Phase 2 investigates": ["The product map: which products merge, connect or stay apart.", "One Bloom identity and shared data foundations.", "Service blueprints for Arrive and Wait.", "Research with real households in one community.", "A first-hand audit of all 13 products against the principles."]
+  };
+
+  /* ================= 01 ORBIT ================= */
   const orbit = $("#orbit"), spin = $("#orbit-spin"), orbitSay = $("#orbit-say");
-  Object.entries(BIZ).forEach(([k, b], i) => {
+  ["re", "edu", "svc", "hos"].forEach((k, i) => {
+    const b = BIZ[k];
     const p = document.createElement("div");
     p.className = "planet"; p.style.setProperty("--a", `${i * 90 - 45}deg`);
     p.innerHTML = `<div class="planet__up"><button class="frost" type="button" aria-pressed="false" data-k="${k}"><i class="dot" style="--c:${b.c}"></i>${b.n}</button></div>`;
@@ -571,29 +742,30 @@ ul, ol { padding: 0; list-style: none; }
     const b = e.target.closest("button"); if (!b) return;
     const on = b.getAttribute("aria-pressed") !== "true";
     $$("button", spin).forEach((x) => x.setAttribute("aria-pressed", String(x === b && on)));
-    orbitSay.textContent = on ? BIZ[b.dataset.k].say : "Four businesses, one ecosystem";
+    orbitSay.textContent = on ? `${BIZ[b.dataset.k].num} ${BIZ[b.dataset.k].numL}` : "Four businesses, one ecosystem";
   });
 
-  /* 02 household */
+  /* ================= 02 DOORS ================= */
   const ROLES = [
-    { n: "Buyer", d: "bloomholding.com", s: "Plus a broker, in Bloom Partners", x: 26, y: 20, r: -6 },
-    { n: "Owner", d: "Bloom Holding Super App", s: "Instalments, construction updates", x: 72, y: 18, r: 5 },
-    { n: "Resident", d: "Bloom Community App", s: "Requests, access, amenities", x: 46, y: 50, r: -2 },
-    { n: "Parent", d: "A school's own website", s: "Brighton College, Bloom World Academy", x: 26, y: 80, r: 4 },
-    { n: "Guest", d: "Marriott or Rotana app", s: "Bloom Holding is not visible", x: 72, y: 82, r: -5 },
-    { n: "Employee", d: "BlooMultiverse", s: "The only one in the Multiverse language", x: 76, y: 50, r: 7 }
+    { n: "Buyer", d: "bloomholding.com + Master Plan", s: "Or a broker, in Bloom Partners", x: 26, y: 18, r: -6 },
+    { n: "ADHA buyer", d: "ADHA home-buying platform", s: "Loan eligibility, units, VR tour", x: 72, y: 16, r: 5 },
+    { n: "Owner", d: "Bloom Holding Super App", s: "Instalments, construction progress", x: 46, y: 42, r: -2 },
+    { n: "Resident", d: "Bloom Community App", s: "Requests, access, chatbot", x: 76, y: 50, r: 6 },
+    { n: "Parent", d: "A school's own website", s: "Brighton College, Bloom World Academy", x: 26, y: 70, r: 4 },
+    { n: "Guest", d: "Marriott or Rotana app", s: "Bloom is not visible", x: 70, y: 84, r: -5 },
+    { n: "Employee", d: "Bloom Multiverse", s: "The only one in the Bloom Multiverse language", x: 36, y: 88, r: 3 }
   ];
-  const on = new Set([0, 1, 2]);
+  const on = new Set([0, 2, 3]);
   const doors = $("#doors"), rolesEl = $("#roles");
   rolesEl.innerHTML = ROLES.map((r, i) => `<button class="chip" type="button" aria-pressed="${on.has(i)}" data-i="${i}">${r.n}</button>`).join("");
-  doors.insertAdjacentHTML("afterbegin", ROLES.map((r, i) => `<div class="door" data-i="${i}" style="--x:${r.x}%;--y:${r.y}%;--rot:${r.r}deg"${on.has(i) ? "" : " hidden"}><small>${r.n}</small><strong>${esc(r.d)}</strong><em>${esc(r.s)}</em></div>`).join(""));
+  doors.insertAdjacentHTML("afterbegin", ROLES.map((r, i) => `<div class="door" data-i="${i}" style="--x:${r.x}%;--y:${r.y}%;--rot:${r.r}deg"${on.has(i) ? "" : " hidden"}><small>${esc(r.n)}</small><strong>${esc(r.d)}</strong><em>${esc(r.s)}</em></div>`).join(""));
   let eco = false;
   function renderDoors() {
     const list = [...on].sort((a, b) => a - b);
     $$(".door", doors).forEach((d) => { const i = Number(d.dataset.i); d.hidden = !on.has(i); d.style.setProperty("--k", String(Math.max(0, list.indexOf(i)))); });
     $("#door-n").textContent = eco ? (list.length ? "1" : "0") : String(list.length);
-    $("#door-say").textContent = eco ? "Bloom Holding relationship, whatever roles the family holds" : `front door${list.length === 1 ? "" : "s"}, each with its own look and login`;
-    $("#one-roles").innerHTML = list.map((i) => `<span>${ROLES[i].n}</span>`).join("");
+    $("#door-say").textContent = eco ? "Bloom relationship, whatever roles the family holds" : `front door${list.length === 1 ? "" : "s"}, each with its own look and login`;
+    $("#one-roles").innerHTML = list.map((i) => `<span>${esc(ROLES[i].n)}</span>`).join("");
     doors.classList.toggle("is-eco", eco);
   }
   rolesEl.addEventListener("click", (e) => {
@@ -606,50 +778,67 @@ ul, ol { padding: 0; list-style: none; }
   tablist($("#door-view"), (b) => { eco = b.dataset.v === "eco"; renderDoors(); });
   renderDoors();
 
-  /* 03 system */
-  const PRODUCTS = [
-    { n: "bloomholding.com", b: ["re", "edu", "svc", "hos"], say: "The parent front door: the only place all four businesses appear together." },
-    { n: "Community App", b: ["re", "svc"], say: "Residents: service charges, amenity booking, digital access cards, move-ins, events." },
-    { n: "Super App", b: ["re", "svc"], say: "Owners: instalments, receipts and real-time construction progress." },
-    { n: "Bloom Partners", b: ["re"], say: "Brokers: live inventory, commissions and team performance." },
-    { n: "School sites", b: ["edu"], say: "Families: one site per school, not linked to the home community." },
-    { n: "bfm.ae", b: ["svc"], say: "Business clients of Bloom Facilities Management." },
-    { n: "Hotel channels", b: ["hos"], say: "Guests: run by Marriott and Rotana. Bloom Holding is not visible." },
-    { n: "BlooMultiverse", b: ["re", "edu", "svc", "hos"], ml: 1, say: "Employees across every business, on web and mobile. Already built in the Multiverse language." },
-    { n: "Bloom GPT", b: ["re", "edu", "svc", "hos"], say: "The assistant prototype inside BlooMultiverse: the seed of shared intelligence." }
-  ];
-  const bizEl = $("#biz"), prodEl = $("#prods"), sysSay = $("#sys-say");
-  bizEl.innerHTML = Object.entries(BIZ).map(([k, b]) => `<button class="chip biz" type="button" aria-pressed="false" data-k="${k}" style="--c:${b.c}"><i class="dot"></i>${b.n}</button>`).join("");
-  prodEl.innerHTML = PRODUCTS.map((p, i) => `<button class="prod${p.ml ? " prod--ml" : ""}" type="button" aria-pressed="false" data-i="${i}"><i aria-hidden="true">${p.b.map((k) => `<b style="--c:${BIZ[k].c}"></b>`).join("")}</i>${esc(p.n)}</button>`).join("");
-  let bizPick = null;
-  bizEl.addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b) return;
-    bizPick = bizPick === b.dataset.k ? null : b.dataset.k;
-    $$("button", bizEl).forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.k === bizPick)));
-    $$(".prod", prodEl).forEach((x) => { const hit = !!bizPick && PRODUCTS[x.dataset.i].b.includes(bizPick); x.classList.toggle("is-dim", !!bizPick && !hit); x.classList.toggle("is-lit", hit); x.setAttribute("aria-pressed", "false"); });
-    const n = bizPick ? PRODUCTS.filter((p) => p.b.includes(bizPick)).length : 0;
-    sysSay.textContent = bizPick ? `${BIZ[bizPick].n} reaches people through ${n} products. Tap one.` : "Tap a business to light up its products.";
-    restart(sysSay, "pop");
-  });
-  prodEl.addEventListener("click", (e) => {
-    const b = e.target.closest("button"); if (!b) return;
-    $$(".prod", prodEl).forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-    sysSay.textContent = PRODUCTS[b.dataset.i].say;
-    restart(sysSay, "pop");
-  });
+  /* ================= 03 BUSINESSES ================= */
+  const bizPanel = $("#biz-panel");
+  $("#biz-tabs").innerHTML = Object.entries(BIZ).map(([k, b], i) => tabBtn("chip", i, i === 0, `data-k="${k}"`, `<i class="dot" style="--c:${b.c}"></i>${b.n}`)).join("");
+  function renderBiz(k) {
+    const b = BIZ[k];
+    bizPanel.innerHTML = `
+      <div class="panel__head"><span class="tile" style="--c:${b.c}"><svg class="ico"><use href="#${b.icon}"/></svg></span><div><h3>${esc(b.n)}</h3><span class="k">${esc(b.ent)}</span></div></div>
+      <div class="two" style="gap:20px; align-items:start">
+        <div class="panel"><span class="big-num">${esc(b.num)}</span><span class="small" style="color:var(--slate)">${esc(b.numL)}</span><p class="panel__lead">${esc(b.what)}</p></div>
+        <div class="facts">
+          <div class="fact"><span class="k">What Bloom offers</span>${b.offers.map((o) => `<p>${esc(o)}</p>`).join("")}</div>
+          <div class="fact"><span class="k">Who interacts</span><p>${esc(b.who)}</p><span class="k" style="margin-top:8px">Experience</span><p>${esc(b.exp)}</p><span class="k" style="margin-top:8px">Connects to</span><p>${esc(b.conn)}</p></div>
+        </div>
+      </div>`;
+    restart(bizPanel, "pop");
+  }
+  tablist($("#biz-tabs"), (b) => renderBiz(b.dataset.k));
+  renderBiz("re");
 
-  /* 04 lifetime */
-  const STAGES = [
-    { n: "Discover", l: "Find a home, a school or a stay.", on: ["re", "edu", "hos"] },
-    { n: "Decide", l: "Visit, compare, and learn to trust Bloom.", on: ["re", "edu"] },
-    { n: "Commit", l: "Buy, rent, enrol or book.", on: ["re", "edu"] },
-    { n: "Wait", l: "Construction and instalments, often for years.", on: ["re"], flag: ["separate", "Quiet: payments and construction updates only"] },
-    { n: "Arrive", l: "Handover, move-in, access cards, the first school day.", on: ["re", "svc", "edu"], flag: ["open", "The busiest moment: most businesses at once"] },
-    { n: "Live", l: "Services, payments, amenities, school days.", on: ["re", "svc", "edu"] },
-    { n: "Belong", l: "Events, clubs, neighbours, the school community.", on: ["re", "edu", "hos"] },
-    { n: "Evolve", l: "Renew, upgrade, reinvest, refer. Then it loops again.", on: ["re", "edu", "svc", "hos"] }
-  ];
-  $("#lanes").innerHTML = Object.entries(BIZ).map(([k, b]) => `<div class="lane" data-k="${k}"><span>${b.n}</span><span class="lane__bar"><i style="--c:${b.c}"></i></span></div>`).join("");
+  /* ================= 04 PEOPLE ================= */
+  const peopleEl = $("#people"), peoplePanel = $("#people-panel");
+  peopleEl.innerHTML = ["Primary", "Secondary", "Business"].map((t) => `<div class="people__tier" role="presentation"><span class="k">${t === "Business" ? "Business and operational" : t}</span><div class="chips">${PEOPLE.map((p, i) => p.t === t ? tabBtn("chip", i, i === 1, `data-i="${i}"`, esc(p.n)) : "").join("")}</div></div>`).join("");
+  function renderPerson(i) {
+    const p = PEOPLE[i];
+    peoplePanel.innerHTML = `
+      <div class="panel__head"><h3>${esc(p.n)}</h3><span class="tag">${p.t}</span></div>
+      <p class="panel__lead">${esc(p.w)}</p>
+      <span class="k">Jobs to be done</span><ul class="jobs">${p.j.map((j) => `<li>${esc(j)}</li>`).join("")}</ul>
+      <span class="k">Products they use</span><div class="feat">${p.p.map((x) => `<span>${esc(x)}</span>`).join("")}</div>`;
+    restart(peoplePanel, "pop");
+  }
+  tablist(peopleEl, (b) => renderPerson(Number(b.dataset.i)));
+  renderPerson(1);
+
+  /* ================= 05 PRODUCTS ================= */
+  const prodsEl = $("#prods"), prodPanel = $("#prod-panel");
+  prodsEl.innerHTML = PRODUCTS.map((p, i) => tabBtn(`prod${p.unk ? " prod--unk" : ""}`, i, i === 1, `data-i="${i}" data-g="${p.g}"`, `<small>${esc(GROUPS[p.g])}</small><strong>${esc(p.n)}</strong>`)).join("");
+  const count = (g) => g === "all" ? PRODUCTS.length : PRODUCTS.filter((p) => p.g === g).length;
+  $("#prod-filter").innerHTML = [["all", "All"], ...Object.entries(GROUPS)].map(([g, l], i) => tabBtn("chip", i, i === 0, `data-g="${g}"`, `${esc(l)} <small>${count(g)}</small>`)).join("");
+  function renderProd(i) {
+    const p = PRODUCTS[i];
+    prodPanel.innerHTML = `
+      <div class="panel__head"><h3>${esc(p.n)}</h3><span class="tag">${esc(p.k)}</span></div>
+      ${p.url ? `<a class="url" href="https://${p.url}" target="_blank" rel="noopener">${esc(p.url)}</a>` : ""}
+      <p class="panel__lead">${esc(p.p)}</p>
+      <div class="facts"><div class="fact"><span class="k">Audience</span><p>${esc(p.aud)}</p></div><div class="fact"><span class="k">Role in the ecosystem</span><p>${esc(p.r)}</p></div></div>
+      <span class="k">What it does</span><div class="feat">${p.f.map((x) => `<span>${esc(x)}</span>`).join("")}</div>`;
+    restart(prodPanel, "pop");
+  }
+  const pickProd = tablist(prodsEl, (b) => renderProd(Number(b.dataset.i)));
+  tablist($("#prod-filter"), (b) => {
+    const g = b.dataset.g;
+    const btns = $$(".prod", prodsEl);
+    btns.forEach((x) => { x.hidden = g !== "all" && x.dataset.g !== g; });
+    const firstVisible = btns.find((x) => !x.hidden);
+    if (firstVisible) pickProd(firstVisible);
+  });
+  renderProd(1);
+
+  /* ================= 06 LIFECYCLE ================= */
+  $("#lanes").innerHTML = ["re", "edu", "svc", "hos"].map((k) => `<div class="lane" data-k="${k}"><span>${BIZ[k].n}</span><span class="lane__bar"><i style="--c:${BIZ[k].c}"></i></span></div>`).join("");
   $("#life-ticks").innerHTML = STAGES.map((s) => `<span>${s.n}</span>`).join("");
   const range = $("#life-range"), lifeLabel = $("#life-play span");
   let lifeT = null;
@@ -659,6 +848,7 @@ ul, ol { padding: 0; list-style: none; }
     $("#life-name").textContent = s.n;
     $("#life-line").textContent = s.l;
     $("#life-flag").innerHTML = s.flag ? `<span class="status status--${s.flag[0]}">${esc(s.flag[1])}</span>` : "";
+    $("#life-prods").innerHTML = `<span class="k">Products here</span>${s.p.map((x) => `<span class="tag">${esc(x)}</span>`).join("")}`;
     $$(".lane").forEach((l) => l.classList.toggle("on", s.on.includes(l.dataset.k)));
     $$("#life-ticks span").forEach((t, k) => t.classList.toggle("on", k === i));
     range.setAttribute("aria-valuetext", s.n);
@@ -673,26 +863,15 @@ ul, ol { padding: 0; list-style: none; }
   });
   renderLife(4);
 
-  /* 05 connect the dots */
-  const NODES = { homes: [120, 70, "Homes"], schools: [440, 70, "Schools"], services: [60, 230, "Services"], hotels: [500, 230, "Hotels"], town: [160, 370, "Town centre"], people: [400, 370, "Bloom people"] };
+  /* ================= 07 CONNECT ================= */
   const keyOf = (a, b) => [a, b].sort().join("|");
-  const RAW = [
-    ["homes", "schools", "separate", "Schools sit inside Bloom communities.", "On the ground they are neighbours. Digitally, they have never met."],
-    ["homes", "services", "connected", "Your home, looked after.", "Service requests and service charges already live in the Community and Super apps."],
-    ["homes", "hotels", "open", "Try Bloom living before you buy.", "A stay or a serviced residence as the first step to a home. Nothing links them yet."],
-    ["hotels", "people", "connected", "Staff enjoy Bloom's own hotels.", "30% off at the EDITION and Marriott Downtown, right inside BlooMultiverse."],
-    ["homes", "town", "open", "The community's living room.", "Souk Alhambra is planned as the social heart of Bloom Living."],
-    ["people", "schools", "open", "Employees are parents too.", "Staff whose children study at Bloom schools meet two separate Blooms."],
-    ["homes", "people", "open", "Employees are residents too.", "Bloom's own people could be its first connected households."],
-    ["schools", "services", "open", "Services that keep schools running.", "bfm serves schools across the UAE. How far it reaches Bloom's own schools is to confirm."]
-  ];
   const LINK = Object.fromEntries(RAW.map(([a, b, ...v]) => [keyOf(a, b), v]));
   const LKEYS = Object.keys(LINK);
   const board = $("#board"), bsvg = $("#board-svg"), reveal = $("#reveal");
   Object.entries(NODES).forEach(([k, [x, y, l]]) => {
     const b = document.createElement("button");
     b.className = "node"; b.type = "button"; b.dataset.k = k; b.setAttribute("aria-pressed", "false");
-    b.style.left = `${x / 5.6}%`; b.style.top = `${y / 4.2}%`; b.textContent = l;
+    b.style.left = `${x / 5.6}%`; b.style.top = `${y / 4.4}%`; b.textContent = l;
     board.append(b);
   });
   const found = new Set();
@@ -719,7 +898,7 @@ ul, ol { padding: 0; list-style: none; }
       const l = line(a, b, "try"); setTimeout(() => l.remove(), 900);
       reveal.innerHTML = `<h3>No strong link here yet.</h3><p>Try another pair. ${LKEYS.length - found.size} still hidden.</p>`;
     }
-    restart(reveal, "pop");
+    restart(reveal, "popin");
     score();
   }
   board.addEventListener("click", (e) => {
@@ -730,45 +909,45 @@ ul, ol { padding: 0; list-style: none; }
     if (first !== k) connect(first, k);
     first = null;
   });
-  $("#con-reset").addEventListener("click", () => { found.clear(); bsvg.innerHTML = ""; first = null; $$(".node", board).forEach((n) => n.setAttribute("aria-pressed", "false")); connect("homes", "schools"); });
-  connect("homes", "schools");
+  $("#con-reset").addEventListener("click", () => { found.clear(); bsvg.innerHTML = ""; first = null; $$(".node", board).forEach((n) => n.setAttribute("aria-pressed", "false")); connect("adha", "homes"); });
+  connect("adha", "homes");
 
-  /* 06 one language */
-  const AUD = [
-    { n: "Employee", p: "BlooMultiverse", c: "Home", g: "Good morning, <em>Rashid.</em>", l: "32 things are waiting across four of your apps. Salesforce needs you most today.", pills: ["2 overdue", "Ahmed's birthday", "Policy updated"], cta: "Review 32 actions", note: "Real copy from BlooMultiverse, the approved employee product." },
-    { n: "Owner", p: "Super App", c: "Your home", g: "Your keys are <em>close.</em>", l: "Handover at Toledo has started, and your latest instalment is paid.", pills: ["Handover open", "Construction complete", "Receipt ready"], cta: "Book your handover", note: "Illustrative. The same language applied to owners." },
-    { n: "Resident", p: "Community App", c: "Today", g: "Good evening, <em>neighbour.</em>", l: "Your AC repair is booked for tomorrow at 10:00. The pool is quiet tonight.", pills: ["Repair booked", "Pool free", "Iftar on Thursday"], cta: "See today in Bloom Living", note: "Illustrative. The same language applied to daily community life." },
-    { n: "Parent", p: "School", c: "Term", g: "Term starts in <em>12 days.</em>", l: "Uniform fitting is open and the bus route near your home is confirmed.", pills: ["Fitting open", "Bus confirmed", "Meet the teacher"], cta: "Get ready for day one", note: "Illustrative. The same language applied to school families." },
-    { n: "Guest", p: "Hospitality", c: "Your stay", g: "Welcome <em>back.</em>", l: "Your suite at the EDITION is ready from 15:00, with the marina on your doorstep.", pills: ["Suite ready", "Spa at 18:00", "Late checkout"], cta: "Plan your evening", note: "Illustrative. Hotels are operator-run, so this needs the operators on board." }
-  ];
+  /* ================= 08 LANGUAGE ================= */
   const demo = $("#demo");
-  $("#aud").innerHTML = AUD.map((a, i) => `<button class="chip" type="button" role="tab" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">${a.n}</button>`).join("");
+  $("#aud").innerHTML = AUD.map((a, i) => tabBtn("chip", i, i === 1, `data-i="${i}"`, esc(a.n))).join("");
   function renderDemo(i) {
     const a = AUD[i];
     demo.innerHTML = `
-      <div class="card-demo__top"><span class="capsule"><span class="capsule__num">01</span><span class="capsule__name">${esc(a.c)}</span></span><span class="card-demo__by">Bloom Holding · ${esc(a.p)}</span></div>
+      <div class="card-demo__top"><span class="bloom">Bloom</span><span class="card-demo__by">${esc(a.p)} · ${esc(a.c)}</span></div>
       <p class="demo-greet">${a.g}</p>
       <p class="demo-lede">${esc(a.l)}</p>
       <div class="demo-pills">${a.pills.map((p) => `<span>${esc(p)}</span>`).join("")}</div>
       <span class="demo-cta">${esc(a.cta)}<svg class="ico"><use href="#i-arrow-r"/></svg></span>`;
-    $("#demo-note").textContent = a.note;
+    $("#demo-note").innerHTML = a.real ? `<span class="demo-real">${esc(a.real)}</span>` : `${esc(a.note)} The same language applied to ${esc(a.p)}.`;
     if (!reduce) restart(demo, "swap");
   }
   tablist($("#aud"), (b) => renderDemo(Number(b.dataset.i)));
-  renderDemo(0);
+  renderDemo(1);
 
-  /* 07 principles */
-  const PR = [
-    ["The household, not the business unit", "Design for the person across every role they hold with Bloom Holding."],
-    ["The place is the front door", "Start from the community, campus or hotel. That is where the businesses already meet."],
-    ["Curate, don't catalogue", "Show what matters now, and to me, first. Editing is the premium."],
-    ["Every wait is attended", "Construction, handover, admissions, a repair: always show progress and who is on it."],
-    ["Act where you are", "Pay, book, request or approve the moment you see it. No detours."]
-  ];
-  $("#flips").innerHTML = PR.map(([t, b], i) => `<button class="flip" type="button" aria-pressed="false" aria-label="${esc(t)}: ${esc(b)}"><span class="flip__in"><span class="flip__f"><span>${pad(i + 1)}</span><strong>${esc(t)}</strong></span><span class="flip__b">${esc(b)}</span></span></button>`).join("");
+  /* ================= 09 PRINCIPLES ================= */
+  $("#flips").innerHTML = PRINCIPLES.map(([t, m, g], i) => `<button class="flip" type="button" aria-pressed="false" aria-label="${esc(t)}. ${esc(m)}"><span class="flip__in"><span class="flip__f"><span>${pad(i + 1)}</span><strong>${esc(t)}</strong></span><span class="flip__b"><span><b>${esc(m)}</b>${esc(g)}</span></span></span></button>`).join("");
   $("#flips").addEventListener("click", (e) => { const f = e.target.closest(".flip"); if (f) f.setAttribute("aria-pressed", String(f.getAttribute("aria-pressed") !== "true")); });
 
-  /* deck */
+  /* ================= 10 OPPORTUNITIES ================= */
+  const cats = Object.keys(OPPS);
+  $("#opp-tabs").innerHTML = cats.map((c, i) => tabBtn("chip", i, i === 0, `data-c="${esc(c)}"`, `${esc(c)} <small>${OPPS[c].length}</small>`)).join("");
+  const renderOpps = (c) => { $("#opps").innerHTML = OPPS[c].map(([t, s], i) => `<article class="opp" style="--i:${i}"><h3>${esc(t)}</h3><p>${esc(s)}</p></article>`).join(""); };
+  tablist($("#opp-tabs"), (b) => renderOpps(b.dataset.c));
+  renderOpps(cats[0]);
+
+  /* ================= 11 WRAP ================= */
+  const wk = Object.keys(WRAP);
+  $("#wrap-tabs").innerHTML = wk.map((c, i) => tabBtn("chip", i, i === 0, `data-c="${esc(c)}"`, `${esc(c)} <small>${WRAP[c].length}</small>`)).join("");
+  const renderWrap = (c) => { $("#wrap-list").innerHTML = WRAP[c].map((t, i) => `<li style="--i:${i}"><span>${pad(i + 1)}</span>${esc(t)}</li>`).join(""); };
+  tablist($("#wrap-tabs"), (b) => renderWrap(b.dataset.c));
+  renderWrap(wk[0]);
+
+  /* ================= DECK ================= */
   const root = document.documentElement, slides = $$(".slide"), N = slides.length;
   const chrome = $("#chrome"), rail = $("#rail"), capsule = $("#capsule"), jump = $("#jump");
   let cur = -1;
@@ -805,7 +984,7 @@ ul, ol { padding: 0; list-style: none; }
   });
   let tx = 0, ty = 0, skip = false;
   const deck = $("#deck");
-  deck.addEventListener("touchstart", (e) => { const t = e.touches[0]; tx = t.clientX; ty = t.clientY; skip = !!e.target.closest("input, .board, .orbit"); }, { passive: true });
+  deck.addEventListener("touchstart", (e) => { const t = e.touches[0]; tx = t.clientX; ty = t.clientY; skip = !!e.target.closest("input, .board, .orbit, .chips"); }, { passive: true });
   deck.addEventListener("touchend", (e) => { if (skip) return; const t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
   const sysDark = matchMedia("(prefers-color-scheme: dark)");
   try { const t = localStorage.getItem("bloom-eco-theme"); if (t === "light" || t === "dark") root.dataset.theme = t; } catch { /* storage unavailable */ }

@@ -14,8 +14,9 @@
   strategy presentation separate from the web design. Edit `discovery/deck.html`
   and run `python3 discovery/build.py`. Never publish it to the web-design link;
   its own link is https://claude.ai/artifact/84umnawd6wDCzraL9VUBhe. Bloom Holding
-  is the parent brand; Multiverse is the design language and BlooMultiverse one
-  product inside it. Never use the BlooMultiverse flag mark as the Bloom Holding logo.
+  is the parent brand and Bloom red (the crimson palette) leads it; the Bloom
+  Multiverse language sets the rest. In the deck the product is written "Bloom
+  Multiverse". Never use its flag mark as the Bloom logo. Cover every Bloom product.
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:
