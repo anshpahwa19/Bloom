@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bloom Digital Ecosystem</title>
-<meta name="description" content="Phase 1, Ecosystem Foundation: Bloom's businesses, people, journeys and design language, mapped as one system.">
+<title>Bloom Holding Digital Ecosystem</title>
+<meta name="description" content="Phase 1, Ecosystem Foundation: Bloom Holding's businesses, people, journeys and design language, mapped as one system.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap">
@@ -161,7 +161,7 @@ ul, ol { padding: 0; list-style: none; }
 .slide__in { max-width: var(--maxw); margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 3.4vw, 40px); }
 .head { display: grid; gap: 14px; max-width: 900px; }
 .eyebrow { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate); }
-.eyebrow::before { content: ""; width: 20px; height: 10px; border-radius: 2px; background: linear-gradient(var(--flag-red) 0 46%, transparent 46% 58%, var(--accent) 58%); flex: none; }
+.eyebrow::before { content: ""; width: 20px; height: 2px; border-radius: var(--r-pill); background: var(--accent); flex: none; }
 .title { font-family: var(--font-display); font-size: var(--fs-title); font-weight: 600; line-height: 1.02; letter-spacing: -.035em; text-wrap: balance; }
 .title em, .mega em, .serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; }
 .lede { font-size: 1.125rem; line-height: 1.55; color: var(--slate); max-width: 62ch; text-wrap: pretty; }
@@ -198,9 +198,10 @@ ul, ol { padding: 0; list-style: none; }
 .chrome { position: fixed; z-index: 20; top: 0; left: 0; right: 0; padding: calc(14px + env(safe-area-inset-top, 0px)) var(--gutter) 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; pointer-events: none; color: var(--ink); }
 .chrome > * { pointer-events: auto; }
 .brand { justify-self: start; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 600; padding: 6px 14px 6px 8px; border-radius: var(--r-pill); }
-.brand__mark { width: 30px; }
-.brand__word { font-family: var(--font-display); font-size: 1.125rem; letter-spacing: -.02em; }
-.brand__word span { font-family: var(--font-ui); font-size: .75rem; font-weight: 500; color: var(--slate); letter-spacing: .02em; margin-left: 6px; }
+.brand__word { font-size: .75rem; font-weight: 500; color: var(--slate); letter-spacing: .02em; }
+.wordmark { display: inline-flex; align-items: baseline; gap: .28em; font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); white-space: nowrap; }
+.wordmark b { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: 0; }
+.wordmark--lg { font-size: clamp(1.5rem, 1rem + 1.4vw, 2.5rem); }
 .capsule-wrap { position: relative; }
 .capsule { display: inline-flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px 0 8px; border-radius: var(--r-pill); color: var(--ink); max-width: min(60vw, 420px); }
 .capsule__num { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--canvas); font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
@@ -248,7 +249,14 @@ ul, ol { padding: 0; list-style: none; }
 .cover__meta dt { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
 .cover__meta dd { font-weight: 600; font-size: .875rem; }
 .cover__art { position: relative; aspect-ratio: 1; max-width: 460px; width: 100%; justify-self: center; display: grid; place-items: center; }
-.cover__mark { width: 58%; filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .35)); animation: bob 7s ease-in-out infinite alternate; }
+.orbit__ring { position: absolute; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); }
+.orbit__ring--1 { inset: 0; }
+.orbit__ring--2 { inset: 13%; }
+.orbit__ring--3 { inset: 26%; border-style: dashed; animation: spin 60s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.orbit__core { position: absolute; inset: 33%; border-radius: 50%; display: grid; place-content: center; justify-items: center; gap: 4px; text-align: center; background: color-mix(in srgb, var(--surface) 55%, transparent); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+.orbit__core small { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate); }
+.frag--5 { bottom: -4%; left: 18%; animation-delay: -3s; }
 @keyframes bob { to { transform: translateY(-10px) rotate(-2deg); } }
 .frag { position: absolute; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--r-pill); font-size: .875rem; font-weight: 600; color: var(--ink); animation: bob 6s ease-in-out infinite alternate; }
 .frag--1 { top: 8%; left: 0; }
@@ -535,6 +543,49 @@ ul, ol { padding: 0; list-style: none; }
 .sum__col--next { background: var(--ink); color: var(--canvas); }
 .sum__col--next li { border-left-color: var(--accent); }
 
+/* ---------- system, multiverse, roadmap ---------- */
+.arch { display: grid; gap: 10px; }
+.arch__layer { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 16px; align-items: center; padding: 14px 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); }
+.arch__layer--master { background: var(--ink); color: var(--canvas); }
+.arch__layer--master .wordmark { color: var(--canvas); }
+.arch__layer--master .small, .arch__layer--master .arch__k { color: color-mix(in srgb, var(--canvas) 70%, transparent); }
+.arch__layer--found { background: var(--accent-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
+.arch__k { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
+.arch__row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; min-width: 0; }
+#arch-biz .tag { transition: box-shadow .2s, opacity .2s; }
+#arch-biz.has-pick .tag { opacity: .4; }
+#arch-biz .tag.on { opacity: 1; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.arch__aud { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; min-width: 0; }
+.arch__col { display: grid; gap: 6px; align-content: start; }
+.arch__col h3 { font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); margin-bottom: 2px; }
+.prod { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 40px; padding: 8px 12px; border: 0; border-radius: var(--r-sm); background: var(--surface-2); text-align: left; font-size: .875rem; font-weight: 600; color: var(--ink); transition: background .2s, box-shadow .2s; }
+.prod:hover { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.prod[aria-selected="true"] { background: var(--ink); color: var(--canvas); }
+.prod .tag { font-size: .75rem; padding: 2px 8px; }
+.found { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .875rem; }
+.found small { font-size: .75rem; font-weight: 600; color: var(--slate); padding: 2px 8px; border-radius: var(--r-pill); background: var(--surface); }
+.found--ml small { background: var(--accent); color: var(--on-accent); }
+.found__mark { width: 22px; }
+.arch__det { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; }
+.arch__det h3 { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -.02em; }
+.arch__det p { color: var(--ink-2); }
+.ml { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.ml__col { display: grid; gap: 14px; padding: 24px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); align-content: start; }
+.ml__col h3 { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -.02em; line-height: 1.1; }
+.ml__col--lang { background: linear-gradient(155deg, var(--grad)); color: #EEF1FF; box-shadow: var(--sh-2); }
+.ml__col--lang .bx__k { color: rgba(238, 241, 255, .7); }
+.ml__col--lang .bul li::before { background: #5FE3FF; }
+.ml__mark { width: 56px; }
+.road { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; counter-reset: ph; }
+.road li { position: relative; display: grid; gap: 8px; align-content: start; padding: 22px 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.road li::after { content: ""; position: absolute; top: 34px; right: -10px; width: 10px; height: 2px; background: var(--line-strong); }
+.road li:last-child::after { display: none; }
+.road span { font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--slate-2); }
+.road h3 { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -.02em; line-height: 1.15; }
+.road p { font-size: .875rem; color: var(--slate); line-height: 1.45; }
+.road li.is-now { background: var(--ink); color: var(--canvas); box-shadow: var(--sh-2); }
+.road li.is-now span, .road li.is-now p { color: inherit; opacity: .75; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
   .life { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -543,6 +594,9 @@ ul, ol { padding: 0; list-style: none; }
   .bx--type, .bx--color, .bx--shape, .bx--frost, .bx--motion, .bx--img, .bx--voice { grid-column: span 1; }
   .bx--type, .bx--img { grid-column: 1 / -1; }
   .q-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .road { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .road li::after { display: none; }
+  .ml, .arch__aud { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 900px) {
   .cover__grid, .why, .eco, .tiers, .hh, .rel, .lang, .pr, .close__grid, .sum, .q-top { grid-template-columns: minmax(0, 1fr); }
@@ -557,6 +611,7 @@ ul, ol { padding: 0; list-style: none; }
 @media (max-width: 640px) {
   .slide { padding-top: calc(80px + env(safe-area-inset-top, 0px)); padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   .brand__word, .hint { display: none; }
+  .chrome .wordmark { font-size: 1rem; }
   .brand { padding: 6px; }
   .capsule { max-width: calc(100vw - 150px); }
   .eco__segs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -570,6 +625,9 @@ ul, ol { padding: 0; list-style: none; }
   .hh__line { display: none; }
   .hh__door { margin-left: 16px; }
   .compare li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .arch__layer { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .road { grid-template-columns: minmax(0, 1fr); }
+  .arch__det { grid-template-columns: minmax(0, 1fr); }
   .bento { grid-template-columns: minmax(0, 1fr); }
   .progress { width: 64px; }
   .cover__meta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -597,7 +655,7 @@ ul, ol { padding: 0; list-style: none; }
 </svg>
 
 <header class="chrome invert" id="chrome">
-  <a class="brand" href="#s01" data-go="0" aria-label="Back to the cover"><span class="mark brand__mark" aria-hidden="true"></span><span class="brand__word">Bloom<span>Ecosystem · Phase 1</span></span></a>
+  <a class="brand" href="#s01" data-go="0" aria-label="Bloom Holding, back to the cover"><span class="wordmark">Bloom<b>Holding</b></span><span class="brand__word">Digital Ecosystem · Phase 1</span></a>
   <div class="capsule-wrap">
     <button class="capsule frost" id="capsule" type="button" aria-expanded="false" aria-controls="jump" aria-label="Jump to a slide">
       <span class="capsule__num" id="cap-num">01</span><span class="capsule__name" id="cap-name">Cover</span><svg class="ico ico--sm"><use href="#i-chev"/></svg>
@@ -607,17 +665,17 @@ ul, ol { padding: 0; list-style: none; }
   <button class="icon-btn frost theme-btn" id="theme-btn" type="button" aria-label="Switch between light and dark"><svg class="ico i-moon"><use href="#i-moon"/></svg><svg class="ico i-sun"><use href="#i-sun"/></svg></button>
 </header>
 
-<main class="deck" id="deck" aria-roledescription="presentation" aria-label="Bloom Digital Ecosystem, Phase 1">
+<main class="deck" id="deck" aria-roledescription="presentation" aria-label="Bloom Holding Digital Ecosystem, Phase 1">
 
 <!-- 01 COVER -->
-<section class="slide invert stage is-current" data-title="Bloom Digital Ecosystem" aria-roledescription="slide">
+<section class="slide invert stage is-current" data-title="Bloom Holding Digital Ecosystem" aria-roledescription="slide">
   <div class="stage__bg" aria-hidden="true"><i class="blob blob--1"></i><i class="blob blob--2"></i><i class="blob blob--3"></i></div>
   <div class="slide__in">
     <div class="cover__grid">
       <div class="cover__text">
-        <p class="eyebrow rv">Phase 1 · Ecosystem Foundation</p>
-        <h1 class="mega rv" style="--d:1">Bloom Digital <em>Ecosystem</em></h1>
-        <p class="lede rv" style="--d:2">Bloom's businesses, people, journeys and design language, mapped as one system before any screen, component or AI feature is designed.</p>
+        <p class="eyebrow rv">Bloom Holding · Phase 1 · Ecosystem Foundation</p>
+        <h1 class="mega rv" style="--d:1">One Bloom Holding. <em>Every</em> experience.</h1>
+        <p class="lede rv" style="--d:2">Every Bloom Holding business and product, understood as one system, and designed in the Multiverse language the client has already approved. This is the foundation, before any screen is designed.</p>
         <div class="cover__actions rv" style="--d:3">
           <button class="btn btn--primary" type="button" data-go="next">Start the walkthrough<svg class="ico"><use href="#i-arrow-r"/></svg></button>
           <span class="hint">Use ← → keys, the arrows below, or swipe</span>
@@ -629,8 +687,10 @@ ul, ol { padding: 0; list-style: none; }
           <div><dt>Status</dt><dd>Working draft</dd></div>
         </dl>
       </div>
-      <div class="cover__art" aria-hidden="true">
-        <span class="mark cover__mark"></span>
+      <div class="cover__art orbit" aria-hidden="true">
+        <i class="orbit__ring orbit__ring--1"></i><i class="orbit__ring orbit__ring--2"></i><i class="orbit__ring orbit__ring--3"></i>
+        <span class="orbit__core"><span class="wordmark wordmark--lg">Bloom<b>Holding</b></span><small>the ecosystem</small></span>
+        <span class="frag frag--5 frost"><i class="dot dot--ring"></i>Multiverse design language</span>
         <span class="frag frag--1 frost"><i class="dot" style="--c:var(--viz-1)"></i>Real estate</span>
         <span class="frag frag--2 frost"><i class="dot" style="--c:var(--viz-2)"></i>Education</span>
         <span class="frag frag--3 frost"><i class="dot" style="--c:var(--viz-3)"></i>Services</span>
@@ -676,11 +736,36 @@ ul, ol { padding: 0; list-style: none; }
   </div>
 </section>
 
+<!-- SYSTEM -->
+<section class="slide" data-title="The product system" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">The system · How it fits together</p>
+      <h2 class="title rv" style="--d:1">Bloom Holding is the ecosystem. Every product sits <em>inside</em> it.</h2>
+      <p class="lede rv" style="--d:2">One masterbrand, four businesses, three audiences, and a shared foundation built on the Multiverse design language. Select a product to see where it sits.</p>
+    </header>
+    <div class="arch rv" style="--d:3">
+      <div class="arch__layer arch__layer--master"><span class="arch__k">Masterbrand</span><div class="arch__row"><span class="wordmark wordmark--lg">Bloom<b>Holding</b></span><span class="small">bloomholding.com, the parent front door</span></div></div>
+      <div class="arch__layer"><span class="arch__k">Businesses</span><div class="arch__row" id="arch-biz">
+        <span class="tag" data-b="re"><i class="dot" style="--c:var(--viz-1)"></i>Real estate</span><span class="tag" data-b="edu"><i class="dot" style="--c:var(--viz-2)"></i>Education</span><span class="tag" data-b="svc"><i class="dot" style="--c:var(--viz-3)"></i>Services</span><span class="tag" data-b="hos"><i class="dot" style="--c:var(--viz-4)"></i>Hospitality</span>
+      </div></div>
+      <div class="arch__layer"><span class="arch__k">Products</span><div class="arch__aud" role="tablist" aria-label="Bloom Holding products" id="arch-tabs"></div></div>
+      <div class="arch__layer arch__layer--found"><span class="arch__k">Shared foundation</span><div class="arch__row">
+        <span class="found found--ml"><span class="mark found__mark" aria-hidden="true"></span>Multiverse design language<small>Approved</small></span>
+        <span class="found">One Bloom identity<small>To define</small></span>
+        <span class="found">Shared data and services<small>To define</small></span>
+        <span class="found">Bloom GPT intelligence<small>Later phase</small></span>
+      </div></div>
+    </div>
+    <div class="card arch__det rv" style="--d:4" id="arch-det" aria-live="polite"></div>
+  </div>
+</section>
+
 <!-- 03 BUSINESS ECOSYSTEM -->
 <section class="slide" data-title="Business ecosystem" aria-roledescription="slide">
   <div class="slide__in">
     <header class="head">
-      <p class="eyebrow rv">02 · Bloom business ecosystem</p>
+      <p class="eyebrow rv">02 · Bloom Holding business ecosystem</p>
       <h2 class="title rv" style="--d:1">Four businesses. One place. <em>One</em> workforce.</h2>
       <p class="lede rv" style="--d:2">Bloom Holding reports four segments, but they meet in one community and are run by one workforce. Select any part of the map.</p>
     </header>
@@ -807,24 +892,45 @@ ul, ol { padding: 0; list-style: none; }
 </section>
 
 <!-- 09 TOUCHPOINTS -->
-<section class="slide" data-title="Digital touchpoints" aria-roledescription="slide">
+<section class="slide" data-title="The product family today" aria-roledescription="slide">
   <div class="slide__in">
     <header class="head">
       <p class="eyebrow rv">07 · Current digital touchpoints</p>
-      <h2 class="title rv" style="--d:1">Ten known touchpoints, split by <em>audience</em>.</h2>
-      <p class="lede rv" style="--d:2">Both approved experiences are for employees: the Interactive App appears to be BlooMultiverse, Bloom's employee portal, and the Mobile App its phone companion. Bloom's most expressive design language was made for its own people.</p>
+      <h2 class="title rv" style="--d:1">Bloom Holding's product family today: ten products, split by <em>audience</em>.</h2>
+      <p class="lede rv" style="--d:2">BlooMultiverse, the employee product on web and mobile, is the only one already in the approved Multiverse language. The rest each look their own way.</p>
     </header>
     <div class="chips rv" style="--d:3" role="tablist" aria-label="Filter by audience" id="tp-filter"></div>
     <div class="tps" id="tp-list" aria-live="polite"></div>
   </div>
 </section>
 
-<!-- 10 THE BLOOM LOOK -->
-<section class="slide" data-title="The Bloom look" aria-roledescription="slide">
+<!-- MULTIVERSE INSIDE BLOOM HOLDING -->
+<section class="slide" data-title="Multiverse inside Bloom Holding" aria-roledescription="slide">
   <div class="slide__in">
     <header class="head">
-      <p class="eyebrow rv">08 · Existing Bloom design language</p>
-      <h2 class="title rv" style="--d:1">What already makes it feel like <em>Bloom</em>.</h2>
+      <p class="eyebrow rv">08 · Design language</p>
+      <h2 class="title rv" style="--d:1">Multiverse becomes the language. Bloom Holding stays the <em>brand</em>.</h2>
+      <p class="lede rv" style="--d:2">The client approved the Multiverse design language. It scales to every product in the ecosystem, Bloom Holding's identity leads it, and a few things stay with the employee product.</p>
+    </header>
+    <div class="ml">
+      <div class="ml__col rv" style="--d:3"><span class="bx__k">From Bloom Holding</span><h3>The brand leads</h3>
+        <ul class="bul"><li>The Bloom Holding logo and masterbrand lock-ups</li><li>Brand colours, merged with the Multiverse palette</li><li>Property, community and school photography</li><li>The corporate voice: curated communities, families, generations</li><li>Arabic and English, right to left</li></ul>
+        <p class="small">To collect from Bloom Holding's brand guidelines.</p></div>
+      <div class="ml__col ml__col--lang rv" style="--d:4"><span class="bx__k">From Multiverse</span><h3>The language scales</h3>
+        <ul class="bul"><li>A greeting by name, and what matters today</li><li>Editing: what needs you most comes first</li><li>Warm paper, deep navy, one electric accent</li><li>Bricolage Grotesque, Instrument Sans and Serif</li><li>Chapters, a floating capsule, “01 / 05” counters</li><li>Frosted chrome, soft corners by role, crafted motion</li><li>Acting in place, and answers that act</li></ul></div>
+      <div class="ml__col rv" style="--d:5"><span class="bx__k">Stays in BlooMultiverse</span><h3>The product keeps its own</h3>
+        <span class="mark ml__mark" role="img" aria-label="The BlooMultiverse ribbon-flag mark"></span>
+        <ul class="bul"><li>The red-over-blue ribbon-flag mark and flag cursor</li><li>Task inbox, approvals and work-app tiles</li><li>Employee perks, policies and announcements</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 THE BLOOM LOOK -->
+<section class="slide" data-title="The Multiverse look" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">08 · The Multiverse design language</p>
+      <h2 class="title rv" style="--d:1">What the client already likes in <em>Multiverse</em>.</h2>
     </header>
     <div class="bento">
       <div class="bx bx--type rv" style="--d:2">
@@ -880,8 +986,8 @@ ul, ol { padding: 0; list-style: none; }
 <section class="slide" data-title="Design language" aria-roledescription="slide">
   <div class="slide__in">
     <header class="head">
-      <p class="eyebrow rv">08 · Existing Bloom design language</p>
-      <h2 class="title rv" style="--d:1">Five traits to carry <em>forward</em>.</h2>
+      <p class="eyebrow rv">08 · The Multiverse design language</p>
+      <h2 class="title rv" style="--d:1">Five traits to carry into every Bloom Holding <em>product</em>.</h2>
     </header>
     <div class="lang">
       <ol class="traits rv" style="--d:2">
@@ -943,7 +1049,7 @@ ul, ol { padding: 0; list-style: none; }
     </header>
     <div class="q-top rv" style="--d:2">
       <div class="q-big"><span>Question 01</span><h3>Is the ecosystem for customers, employees, or both, and in what order?</h3><p>The approved language was built for employees; customer products carry different stakes.</p></div>
-      <div class="q-big"><span>Question 02</span><h3>Who owns the relationship in each domain: Bloom or the operator?</h3><p>Marriott, Rotana and Brighton College own their guests' and students' journeys.</p></div>
+      <div class="q-big"><span>Question 02</span><h3>Who owns the relationship in each domain: Bloom Holding or the operator?</h3><p>Marriott, Rotana and Brighton College own their guests' and students' journeys.</p></div>
     </div>
     <ol class="q-list rv" style="--d:3" id="q-list"></ol>
   </div>
@@ -960,18 +1066,18 @@ ul, ol { padding: 0; list-style: none; }
       <div class="sum__col sum__col--know rv" style="--d:2">
         <h3><span class="status status--connected">Known</span>What we now know</h3>
         <ol>
+          <li>Bloom Holding is the parent brand and the ecosystem; Multiverse is the approved design language, and BlooMultiverse one product inside it.</li>
           <li>Four segments (real estate, education, services, hospitality) meet physically in Bloom communities; Bloom Living is the clearest case.</li>
           <li>Buyers, owners, residents and school families overlap heavily; the household is the real unit.</li>
           <li>The lifecycle runs Discover to Evolve. Arrive is the busiest cross-domain moment; Wait is the least supported.</li>
           <li>Customer touchpoints are split by audience and business unit.</li>
-          <li>Both approved experiences are for employees, and hold the strongest expression of digital Bloom.</li>
-        </ol>
+                  </ol>
       </div>
       <div class="sum__col sum__col--check rv" style="--d:3">
         <h3><span class="status status--separate">Check</span>What we still need to validate</h3>
         <ol>
           <li>That the approved apps are BlooMultiverse, and what the Mobile App adds.</li>
-          <li>The corporate site's visual system, and how it relates to the flag mark and BlooMultiverse colours.</li>
+          <li>Bloom Holding's logo, colours and brand guidelines, to merge with the Multiverse palette.</li>
           <li>What Bloom Universal is.</li>
           <li>Portfolio figures that sources disagree on: schools, students, current projects.</li>
           <li>Whether the Community App and Super App share accounts and data.</li>
@@ -993,6 +1099,24 @@ ul, ol { padding: 0; list-style: none; }
   </div>
 </section>
 
+<!-- ROADMAP -->
+<section class="slide" data-title="From Phase 1 to the system" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">Roadmap</p>
+      <h2 class="title rv" style="--d:1">Phase 1 is the foundation for a whole <em>system</em> of products.</h2>
+      <p class="lede rv" style="--d:2">Phases 2 to 5 are a proposal to agree with Bloom Holding, not a commitment.</p>
+    </header>
+    <ol class="road rv" style="--d:3">
+      <li class="is-now"><span>Phase 1 · Now</span><h3>Ecosystem Foundation</h3><p>Businesses, people, journeys, products and design language, understood as one system.</p></li>
+      <li><span>Phase 2 · Proposed</span><h3>Ecosystem architecture</h3><p>The product map, one identity, shared services; which products merge, connect or stay apart.</p></li>
+      <li><span>Phase 3 · Proposed</span><h3>Bloom design system</h3><p>The Multiverse language extended with Bloom Holding's brand: tokens, components, patterns.</p></li>
+      <li><span>Phase 4 · Proposed</span><h3>Product experiences</h3><p>Priority journeys redesigned, starting with one community.</p></li>
+      <li><span>Phase 5 · Proposed</span><h3>Connected intelligence</h3><p>Bloom GPT and shared data across the whole ecosystem.</p></li>
+    </ol>
+  </div>
+</section>
+
 <!-- 16 CLOSE -->
 <section class="slide invert stage" data-title="Sources and next steps" aria-roledescription="slide">
   <div class="stage__bg" aria-hidden="true"><i class="blob blob--1"></i><i class="blob blob--2"></i></div>
@@ -1000,8 +1124,8 @@ ul, ol { padding: 0; list-style: none; }
     <div class="close__grid">
       <div class="cover__text">
         <p class="eyebrow rv">Next</p>
-        <h2 class="mega rv" style="--d:1">Phase 2 starts with <em>scope</em>.</h2>
-        <p class="lede rv" style="--d:2">We are not designing the ecosystem yet. This foundation is what it will be designed from.</p>
+        <h2 class="mega rv" style="--d:1">Phase 2 designs the <em>system</em>.</h2>
+        <p class="lede rv" style="--d:2">One Bloom Holding ecosystem, one Multiverse language, every product inside it. Phase 1 is the foundation it will be designed from.</p>
         <div class="cover__actions rv" style="--d:3">
           <button class="btn" type="button" data-go="0"><svg class="ico"><use href="#i-arrow-l"/></svg>Back to the start</button>
           <a class="btn" href="https://claude.ai/code/artifact/306d5e1a-9709-46b2-800e-475d01f262bd" target="_blank" rel="noopener">Read the full Phase 1 document<svg class="ico"><use href="#i-arrow-r"/></svg></a>
@@ -1225,7 +1349,7 @@ ul, ol { padding: 0; list-style: none; }
     ["How many customers hold more than one Bloom role?", "Sizes the value of a household view."],
     ["Do the Community App, Super App and Bloom Partners share identity, data or a backend?", "Decides what “one Bloom” costs technically."],
     ["What may be shared between businesses, with what consent?", "School, payment and home data carry different sensitivities."],
-    ["Masterbrand or endorsed brands: how visible should Bloom be in each domain?", "Shapes how far the design language reaches."],
+    ["How do Bloom Holding's brand and the Multiverse language combine in each product?", "Decides what the design system inherits from each."],
     ["Which parts of the BlooMultiverse language are Bloom, and which belong to a workplace tool?", "Separates the brand from the product."],
     ["Which community could pilot a connected experience?", "Bloom Living has the most domains in one place."],
     ["What are the Arabic, right-to-left and accessibility requirements?", "Affects type, layout and motion from day one."],
@@ -1265,6 +1389,29 @@ ul, ol { padding: 0; list-style: none; }
       compare.classList.remove("is-swap");
     }, reduce ? 0 : 180);
   });
+
+  /* ---------------- The product system ---------------- */
+  const PRODUCTS = [
+    { a: "Customers", n: "Bloom Community App", b: ["re", "svc"], w: "Residents and tenants: requests, access cards, amenities, renewals, events." },
+    { a: "Customers", n: "Bloom Holding Super App", b: ["re", "svc"], w: "Owners: instalments, maintenance and service-charge payments." },
+    { a: "Customers", n: "Education and school sites", b: ["edu"], w: "Families: choosing a school and admissions, with a separate site per school." },
+    { a: "Customers", n: "Hotel channels", b: ["hos"], w: "Guests: run by Marriott and Rotana. Bloom Holding is not visible to the guest today.", tag: "Operator" },
+    { a: "Partners", n: "Bloom Partners", b: ["re"], w: "Brokers and agencies: live inventory, commissions, team performance." },
+    { a: "Partners", n: "bfm.ae", b: ["svc"], w: "Commercial and institutional clients of Bloom Facilities Management." },
+    { a: "Bloom people", n: "BlooMultiverse web", b: ["re", "edu", "svc", "hos"], w: "Employees across every business. The first product already built in the Multiverse language.", tag: "Multiverse" },
+    { a: "Bloom people", n: "BlooMultiverse mobile", b: ["re", "edu", "svc", "hos"], w: "The employee experience on the phone, in the Multiverse language.", tag: "Multiverse" },
+    { a: "Bloom people", n: "Bloom GPT", b: ["re", "edu", "svc", "hos"], w: "The assistant prototype inside BlooMultiverse; the seed of shared intelligence for the whole ecosystem.", tag: "Prototype" }
+  ];
+  const archTabs = $("#arch-tabs"), archBiz = $("#arch-biz");
+  archTabs.innerHTML = ["Customers", "Partners", "Bloom people"].map((a) => `<div class="arch__col" role="presentation"><h3>${a}</h3>${PRODUCTS.map((p, i) => p.a === a ? `<button class="prod" type="button" role="tab" aria-selected="${i === 6}" tabindex="${i === 6 ? 0 : -1}" data-i="${i}">${esc(p.n)}${p.tag ? `<span class="tag${p.tag === "Multiverse" ? " tag--accent" : ""}">${p.tag}</span>` : ""}</button>` : "").join("")}</div>`).join("");
+  function renderProd(i) {
+    const p = PRODUCTS[i];
+    $("#arch-det").innerHTML = `<div><h3>${esc(p.n)}</h3><p>${esc(p.w)}</p></div><div class="domains">${p.b.map(dtag).join("")}</div>`;
+    archBiz.classList.add("has-pick");
+    $$(".tag", archBiz).forEach((t) => t.classList.toggle("on", p.b.includes(t.dataset.b)));
+  }
+  tablist(archTabs, (b) => renderProd(Number(b.dataset.i)));
+  renderProd(6);
 
   /* ---------------- 03 Business ecosystem ---------------- */
   const ecoDet = $("#eco-detail");
