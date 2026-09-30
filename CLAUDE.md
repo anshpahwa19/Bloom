@@ -10,6 +10,9 @@
 - That link is the **web design only**. The BlooMultiverse mobile app is a
   separate design with its own link: never publish it here, and never make
   this page show the app (no phone-app or iPhone-mockup mode on this page).
+- `discovery/` holds the Phase 1 ecosystem deck (Bloom Digital Ecosystem), a
+  strategy presentation separate from the web design. Edit `discovery/deck.html`
+  and run `python3 discovery/build.py`. Never publish it to the web-design link.
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:

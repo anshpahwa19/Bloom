@@ -1,0 +1,1537 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bloom Digital Ecosystem</title>
+<meta name="description" content="Phase 1, Ecosystem Foundation: Bloom's businesses, people, journeys and design language, mapped as one system.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: a paged deck. Each slide is one chapter on warm paper; the cover and the close are
+   deep-navy chapters. Floating frosted chrome, "01 / 16" counters and the red-over-blue flag
+   mark come from the approved BlooMultiverse design. */
+:root {
+  color-scheme: light;
+  --canvas: #F6F4EF;
+  --canvas-2: #EEEBE3;
+  --surface: #FFFFFF;
+  --surface-2: #F3F1EB;
+  --line: #E3DFD5;
+  --line-strong: #CEC8BC;
+  --ink: #0B1640;
+  --ink-2: #1E2A5A;
+  --slate: #4A5372;
+  --slate-2: #636B8A;
+  --accent: #1F4BFF;
+  --accent-fg: #1B43F0;
+  --accent-soft: #E7ECFF;
+  --on-accent: #FFFFFF;
+  --flag-red: #922A22;
+  --grad: #164CFF 0%, #0A31D8 40%, #061B88 74%, #03074C 100%;
+  --blob-1: #3D6BFF;
+  --blob-2: #3FD0EE;
+  --blob-3: #A99FF0;
+  --ok-fg: #17754A;
+  --ok-soft: #EAF8F0;
+  --ok-line: #B6E5C8;
+  --warn-fg: #8F5600;
+  --warn-soft: #FFF3DC;
+  --warn-line: #F0D39C;
+  --viz-1: #2F5BFF;
+  --viz-2: #0E9FB5;
+  --viz-3: #D9722A;
+  --viz-4: #9A45C8;
+  --tile: #FFFFFF;
+  --frost: rgba(255, 255, 255, .56);
+  --frost-panel: rgba(255, 255, 255, .9);
+  --frost-line: rgba(11, 22, 64, .08);
+  --frost-shadow: 0 1px 2px rgba(11, 22, 64, .05), 0 22px 48px -20px rgba(11, 22, 64, .34);
+  --sh-1: 0 1px 2px rgba(11, 22, 64, .05), 0 10px 28px -14px rgba(11, 22, 64, .16);
+  --sh-2: 0 2px 8px rgba(11, 22, 64, .05), 0 30px 64px -30px rgba(11, 22, 64, .3);
+  --ring: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+
+  --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+  --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --fs-mega: clamp(2.75rem, 1rem + 5.4vw, 7rem);
+  --fs-title: clamp(1.875rem, 1.1rem + 2.3vw, 3.5rem);
+  --fs-lg: clamp(1.25rem, 1.05rem + .7vw, 1.75rem);
+
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 28px;
+  --r-xl: 36px;
+  --r-2xl: clamp(28px, 3.4vw, 48px);
+  --r-icon: 30%;
+  --r-pill: 999px;
+
+  --ease-expo: cubic-bezier(.16, 1, .3, 1);
+  --ease-out: cubic-bezier(.2, .8, .2, 1);
+  --gutter: clamp(16px, 4vw, 56px);
+  --maxw: 1240px;
+}
+@supports (font-size: round(1px, 2px)) {
+  :root {
+    --fs-mega: round(clamp(2.75rem, 1rem + 5.4vw, 7rem), 2px);
+    --fs-title: round(clamp(1.875rem, 1.1rem + 2.3vw, 3.5rem), 2px);
+    --fs-lg: round(clamp(1.25rem, 1.05rem + .7vw, 1.75rem), 2px);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --canvas: #05081A; --canvas-2: #080C25; --surface: #0C1233; --surface-2: #111A42;
+    --line: #1D2654; --line-strong: #2D3973;
+    --ink: #EEF1FF; --ink-2: #CBD3F5; --slate: #A8B1D8; --slate-2: #8690BC;
+    --accent: #3462F2; --accent-fg: #86A6FF; --accent-soft: rgba(52, 98, 242, .2); --on-accent: #FFFFFF;
+    --grad: #2150F0 0%, #0F2A9C 38%, #081558 72%, #05081A 100%;
+    --blob-1: #2F5BFF; --blob-2: #19B6DA; --blob-3: #7C6FE0;
+    --ok-fg: #5FE0A8; --ok-soft: rgba(23, 165, 110, .16); --ok-line: rgba(91, 224, 166, .28);
+    --warn-fg: #FFC261; --warn-soft: rgba(232, 148, 12, .16); --warn-line: rgba(255, 194, 97, .3);
+    --viz-1: #4470FF; --viz-2: #11A0B3; --viz-3: #CF6B30; --viz-4: #9A45C8;
+    --tile: #F4F6FF;
+    --frost: rgba(14, 22, 62, .56); --frost-panel: rgba(12, 18, 50, .94); --frost-line: rgba(255, 255, 255, .1);
+    --frost-shadow: 0 16px 36px -20px rgba(0, 0, 0, .5);
+    --sh-1: 0 0 0 1px rgba(255, 255, 255, .035), 0 10px 24px -16px rgba(0, 0, 0, .45);
+    --sh-2: 0 0 0 1px rgba(255, 255, 255, .04), 0 22px 44px -28px rgba(0, 0, 0, .5);
+  }
+}
+:root[data-theme="dark"],
+.invert {
+  color-scheme: dark;
+  --canvas: #05081A; --canvas-2: #080C25; --surface: #0C1233; --surface-2: #111A42;
+  --line: #1D2654; --line-strong: #2D3973;
+  --ink: #EEF1FF; --ink-2: #CBD3F5; --slate: #A8B1D8; --slate-2: #8690BC;
+  --accent: #3462F2; --accent-fg: #86A6FF; --accent-soft: rgba(52, 98, 242, .2); --on-accent: #FFFFFF;
+  --grad: #2150F0 0%, #0F2A9C 38%, #081558 72%, #05081A 100%;
+  --blob-1: #2F5BFF; --blob-2: #19B6DA; --blob-3: #7C6FE0;
+  --ok-fg: #5FE0A8; --ok-soft: rgba(23, 165, 110, .16); --ok-line: rgba(91, 224, 166, .28);
+  --warn-fg: #FFC261; --warn-soft: rgba(232, 148, 12, .16); --warn-line: rgba(255, 194, 97, .3);
+  --viz-1: #4470FF; --viz-2: #11A0B3; --viz-3: #CF6B30; --viz-4: #9A45C8;
+  --tile: #F4F6FF;
+  --frost: rgba(14, 22, 62, .56); --frost-panel: rgba(12, 18, 50, .94); --frost-line: rgba(255, 255, 255, .1);
+  --frost-shadow: 0 16px 36px -20px rgba(0, 0, 0, .5);
+  --sh-1: 0 0 0 1px rgba(255, 255, 255, .035), 0 10px 24px -16px rgba(0, 0, 0, .45);
+  --sh-2: 0 0 0 1px rgba(255, 255, 255, .04), 0 22px 44px -28px rgba(0, 0, 0, .5);
+}
+
+/* ---------- base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; overflow: hidden;
+  background: var(--canvas); color: var(--ink);
+  font: 400 1rem/1.5 var(--font-ui);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--accent-fg); text-underline-offset: 3px; }
+:focus-visible { outline: none; box-shadow: var(--ring); border-radius: var(--r-sm); }
+img { max-width: 100%; display: block; }
+h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+.ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.ico--sm { width: 16px; height: 16px; }
+.ico--fill { fill: currentColor; stroke: none; }
+.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mark { display: inline-block; aspect-ratio: 436 / 395; background: url({{flag-mark.png}}) center / contain no-repeat; }
+.logo { display: inline-block; background: var(--tile) center / 78% auto no-repeat; border-radius: var(--r-sm); box-shadow: inset 0 0 0 1px var(--line); }
+.logo--edition { background-image: url({{partner-edition.png}}); width: 104px; height: 44px; }
+.logo--marriott { background-image: url({{partner-marriott.png}}); background-size: auto 78%; width: 72px; height: 44px; }
+.app { display: inline-block; width: 40px; height: 40px; border-radius: var(--r-icon); background: var(--tile) center / 70% auto no-repeat; box-shadow: inset 0 0 0 1px var(--line); }
+.app--sf { background-image: url({{app-salesforce.png}}); }
+.app--db { background-image: url({{app-darwinbox.png}}); }
+.app--ui { background-image: url({{app-uipath.png}}); }
+.app--sap { background-image: url({{app-sap.png}}); }
+
+/* ---------- deck frame ---------- */
+.deck { position: fixed; inset: 0; }
+.slide {
+  position: absolute; inset: 0;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  padding: calc(92px + env(safe-area-inset-top, 0px)) var(--gutter) calc(104px + env(safe-area-inset-bottom, 0px));
+  background: var(--canvas); color: var(--ink);
+  visibility: hidden; opacity: 0; transform: translateX(48px);
+  transition: opacity .56s var(--ease-expo), transform .56s var(--ease-expo), visibility 0s linear .56s;
+}
+.slide.is-before { transform: translateX(-48px); }
+.slide.is-current { visibility: visible; opacity: 1; transform: none; transition-delay: 0s; z-index: 1; }
+.slide__in { max-width: var(--maxw); margin: 0 auto; min-height: 100%; display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 3.4vw, 40px); }
+.head { display: grid; gap: 14px; max-width: 900px; }
+.eyebrow { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate); }
+.eyebrow::before { content: ""; width: 20px; height: 10px; border-radius: 2px; background: linear-gradient(var(--flag-red) 0 46%, transparent 46% 58%, var(--accent) 58%); flex: none; }
+.title { font-family: var(--font-display); font-size: var(--fs-title); font-weight: 600; line-height: 1.02; letter-spacing: -.035em; text-wrap: balance; }
+.title em, .mega em, .serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; }
+.lede { font-size: 1.125rem; line-height: 1.55; color: var(--slate); max-width: 62ch; text-wrap: pretty; }
+.small { font-size: .875rem; color: var(--slate); }
+.card { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--sh-1); padding: clamp(20px, 2.4vw, 28px); min-width: 0; }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--accent)); flex: none; }
+.dot--ring { background: transparent; box-shadow: inset 0 0 0 2px var(--ink); }
+.tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--r-pill); font-size: .75rem; font-weight: 600; background: var(--surface-2); color: var(--ink-2); white-space: nowrap; }
+.tag--accent { background: var(--accent-soft); color: var(--accent-fg); }
+.status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: var(--r-pill); font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.status--connected { background: var(--ok-soft); color: var(--ok-fg); box-shadow: inset 0 0 0 1px var(--ok-line); }
+.status--separate { background: var(--warn-soft); color: var(--warn-fg); box-shadow: inset 0 0 0 1px var(--warn-line); }
+.status--open { background: transparent; color: var(--accent-fg); box-shadow: inset 0 0 0 1px var(--accent-fg); }
+.status--open::before { background: transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+
+/* buttons, chips, tabs */
+.btn { display: inline-flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 22px; border: 0; border-radius: var(--r-pill); font-weight: 600; font-size: 1rem; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); transition: transform .2s var(--ease-out), box-shadow .2s; }
+.btn:hover { transform: translateY(-1px); }
+.btn--primary { background: var(--accent); color: var(--on-accent); box-shadow: 0 10px 24px -12px var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips--scroll { flex-wrap: nowrap; overflow-x: auto; padding: 4px; margin: -4px; scrollbar-width: none; }
+.chips--scroll::-webkit-scrollbar { display: none; }
+.chip { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 16px; border: 0; border-radius: var(--r-pill); background: var(--surface); color: var(--ink-2); font-size: .875rem; font-weight: 600; white-space: nowrap; box-shadow: inset 0 0 0 1px var(--line-strong); transition: background .2s, color .2s, box-shadow .2s; }
+.chip:hover { box-shadow: inset 0 0 0 1px var(--ink-2); }
+.chip[aria-selected="true"], .chip[aria-pressed="true"] { background: var(--ink); color: var(--canvas); box-shadow: none; }
+.chip__n { font-variant-numeric: tabular-nums; opacity: .6; font-weight: 500; }
+.icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 50%; background: transparent; color: var(--ink); transition: background .2s; }
+.icon-btn:hover { background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.icon-btn:disabled { opacity: .3; cursor: default; background: transparent; }
+
+/* frosted chrome */
+.frost { background: var(--frost); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(22px) saturate(1.8); backdrop-filter: blur(22px) saturate(1.8); }
+.chrome { position: fixed; z-index: 20; top: 0; left: 0; right: 0; padding: calc(14px + env(safe-area-inset-top, 0px)) var(--gutter) 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; pointer-events: none; color: var(--ink); }
+.chrome > * { pointer-events: auto; }
+.brand { justify-self: start; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 600; padding: 6px 14px 6px 8px; border-radius: var(--r-pill); }
+.brand__mark { width: 30px; }
+.brand__word { font-family: var(--font-display); font-size: 1.125rem; letter-spacing: -.02em; }
+.brand__word span { font-family: var(--font-ui); font-size: .75rem; font-weight: 500; color: var(--slate); letter-spacing: .02em; margin-left: 6px; }
+.capsule-wrap { position: relative; }
+.capsule { display: inline-flex; align-items: center; gap: 12px; height: 48px; padding: 0 16px 0 8px; border-radius: var(--r-pill); color: var(--ink); max-width: min(60vw, 420px); }
+.capsule__num { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--canvas); font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
+.capsule__name { font-weight: 600; font-size: .875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.jump { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: min(360px, calc(100vw - 32px)); max-height: min(70vh, 560px); overflow-y: auto; padding: 8px; border-radius: var(--r-md); background: var(--frost-panel); border: 1px solid var(--frost-line); box-shadow: var(--frost-shadow); -webkit-backdrop-filter: blur(22px) saturate(1.8); backdrop-filter: blur(22px) saturate(1.8); }
+.jump button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: 0; background: transparent; border-radius: var(--r-sm); text-align: left; font-size: .875rem; font-weight: 500; color: var(--ink); }
+.jump button span { font-variant-numeric: tabular-nums; color: var(--slate-2); font-size: .75rem; width: 20px; }
+.jump button:hover { background: var(--surface-2); }
+.jump button[aria-current="true"] { background: var(--ink); color: var(--canvas); }
+.jump button[aria-current="true"] span { color: inherit; opacity: .7; }
+.theme-btn { justify-self: end; width: 48px; height: 48px; }
+.theme-btn .i-sun { display: none; }
+:root[data-theme="dark"] .theme-btn .i-sun { display: block; }
+:root[data-theme="dark"] .theme-btn .i-moon { display: none; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-btn .i-sun { display: block; }
+  :root:not([data-theme="light"]) .theme-btn .i-moon { display: none; }
+}
+.rail { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; padding: 0 var(--gutter) calc(16px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; justify-content: flex-end; gap: 12px; pointer-events: none; color: var(--ink); }
+.rail > * { pointer-events: auto; }
+.rail-foot { display: inline-flex; align-items: center; gap: 12px; padding: 4px 4px 4px 16px; border-radius: var(--r-pill); }
+.progress { position: relative; width: 120px; height: 4px; border-radius: var(--r-pill); background: color-mix(in srgb, var(--ink) 14%, transparent); overflow: hidden; }
+.progress i { position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent), var(--blob-2)); transform-origin: 0 50%; transform: scaleX(0); transition: transform .56s var(--ease-expo); }
+.counter { font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: .02em; min-width: 64px; text-align: center; }
+.hint { font-size: .75rem; color: var(--slate); }
+
+/* entrance: slides animate from a visible resting state */
+.is-current .rv { animation: rise .8s var(--ease-expo) both; animation-delay: calc(var(--d, 0) * 70ms + 80ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+
+/* ---------- 01 cover and close ---------- */
+.stage { background: linear-gradient(155deg, var(--grad)); isolation: isolate; }
+.stage__bg { position: absolute; inset: 0; overflow: hidden; z-index: -1; pointer-events: none; }
+.blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .5; animation: drift 18s ease-in-out infinite alternate; }
+.blob--1 { width: 44vw; height: 44vw; background: var(--blob-1); top: -12vw; right: -8vw; }
+.blob--2 { width: 30vw; height: 30vw; background: var(--blob-2); bottom: -12vw; left: 8vw; opacity: .32; animation-duration: 22s; }
+.blob--3 { width: 26vw; height: 26vw; background: var(--blob-3); top: 30%; left: 44%; opacity: .26; animation-duration: 26s; }
+@keyframes drift { to { transform: translate(-4vw, 3vw) scale(1.08); } }
+.stage .slide__in { color: var(--ink); }
+.cover__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); align-items: center; gap: clamp(24px, 4vw, 64px); }
+.mega { font-family: var(--font-display); font-size: var(--fs-mega); font-weight: 600; line-height: .94; letter-spacing: -.045em; text-wrap: balance; }
+.cover__text { display: grid; gap: 24px; }
+.cover__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.cover__meta { display: grid; grid-template-columns: repeat(4, auto); justify-content: start; gap: 12px 32px; padding-top: 24px; border-top: 1px solid var(--line-strong); }
+.cover__meta dt { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
+.cover__meta dd { font-weight: 600; font-size: .875rem; }
+.cover__art { position: relative; aspect-ratio: 1; max-width: 460px; width: 100%; justify-self: center; display: grid; place-items: center; }
+.cover__mark { width: 58%; filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .35)); animation: bob 7s ease-in-out infinite alternate; }
+@keyframes bob { to { transform: translateY(-10px) rotate(-2deg); } }
+.frag { position: absolute; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: var(--r-pill); font-size: .875rem; font-weight: 600; color: var(--ink); animation: bob 6s ease-in-out infinite alternate; }
+.frag--1 { top: 8%; left: 0; }
+.frag--2 { top: 22%; right: -2%; animation-delay: -2s; }
+.frag--3 { bottom: 20%; left: -4%; animation-delay: -4s; }
+.frag--4 { bottom: 6%; right: 6%; animation-delay: -1s; }
+.close__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 56px); align-items: start; }
+.sources { display: grid; gap: 8px; font-size: .875rem; }
+.sources a { color: var(--ink-2); }
+.close__note { padding: 20px; border-radius: var(--r-md); background: color-mix(in srgb, var(--surface) 70%, transparent); display: grid; gap: 10px; }
+
+/* ---------- 02 why ---------- */
+.why { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
+.why__left { display: grid; gap: 24px; }
+.quote { background: var(--ink); color: var(--canvas); display: grid; gap: 12px; }
+.quote blockquote { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-lg); line-height: 1.25; }
+.quote figcaption { font-size: .875rem; opacity: .75; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.facts li { display: grid; gap: 4px; padding: 16px; border-radius: var(--r-md); background: var(--surface-2); }
+.facts b { font-family: var(--font-display); font-size: 2rem; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.facts span { font-size: .875rem; color: var(--slate); }
+.seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: var(--r-pill); background: var(--surface-2); }
+.seg button { border: 0; background: transparent; min-height: 40px; padding: 0 18px; border-radius: var(--r-pill); font-size: .875rem; font-weight: 600; color: var(--slate); }
+.seg button[aria-selected="true"] { background: var(--ink); color: var(--canvas); }
+.compare { display: grid; margin-top: 20px; }
+.compare li { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); align-items: baseline; }
+.compare__k { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--slate-2); font-weight: 600; }
+.compare__v { font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; letter-spacing: -.02em; line-height: 1.2; transition: opacity .18s, transform .18s; }
+.compare.is-eco .compare__v { color: var(--accent-fg); }
+.compare.is-swap .compare__v { opacity: 0; transform: translateY(6px); }
+
+/* ---------- 03 business ecosystem ---------- */
+.eco { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
+.eco__map { display: grid; gap: 28px; justify-items: center; }
+.eco__holding { position: relative; display: grid; justify-items: center; padding: 12px 24px; border-radius: var(--r-md); box-shadow: inset 0 0 0 1px var(--line-strong); background: var(--surface); }
+.eco__holding strong { font-family: var(--font-display); font-size: 1.125rem; letter-spacing: -.02em; }
+.eco__holding span { font-size: .75rem; color: var(--slate); }
+.eco__holding::after { content: ""; position: absolute; top: 100%; left: 50%; width: 1px; height: 14px; background: var(--line-strong); }
+.eco__segs { position: relative; width: 100%; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.eco__segs::before { content: ""; position: absolute; top: -14px; left: 12.5%; right: 12.5%; height: 14px; border: 1px solid var(--line-strong); border-bottom: 0; border-radius: 8px 8px 0 0; }
+.seg-btn { position: relative; display: grid; justify-items: center; gap: 8px; padding: 18px 10px 16px; border: 0; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); text-align: center; transition: transform .25s var(--ease-out), box-shadow .25s; min-width: 0; }
+.seg-btn::after { content: ""; position: absolute; top: 100%; left: 50%; width: 1px; height: 28px; background: var(--line-strong); }
+.seg-btn:hover { transform: translateY(-3px); }
+.seg-btn[aria-selected="true"] { box-shadow: inset 0 0 0 2px var(--c), var(--sh-2); }
+.seg-btn strong { font-size: 1rem; line-height: 1.2; }
+.seg-btn small { font-size: .75rem; color: var(--slate); line-height: 1.3; }
+.tile { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-icon); background: color-mix(in srgb, var(--c) 16%, var(--surface)); color: var(--c); }
+.tile .ico { width: 22px; height: 22px; }
+.band { width: 100%; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px 12px; min-height: 64px; padding: 12px 20px; border: 0; border-radius: var(--r-lg); text-align: center; font-weight: 600; transition: box-shadow .25s; }
+.band small { font-weight: 500; color: var(--slate); }
+.band--community { background: var(--accent-soft); color: var(--ink); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 50%, transparent); }
+.band--community[aria-selected="true"] { box-shadow: inset 0 0 0 2px var(--accent), var(--sh-2); }
+.band--people { margin-top: -16px; background: var(--surface-2); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.band--people[aria-selected="true"] { box-shadow: inset 0 0 0 2px var(--ink), var(--sh-1); }
+.det { display: grid; gap: 18px; }
+.det.swap { animation: rise .45s var(--ease-expo) both; }
+.det__head { display: flex; align-items: center; gap: 14px; }
+.det__head h3 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; letter-spacing: -.03em; line-height: 1.05; }
+.det__head p { font-size: .875rem; color: var(--slate); }
+.det__what { font-size: 1.125rem; line-height: 1.5; color: var(--ink-2); }
+.figs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.figs div { padding: 12px 14px; border-radius: var(--r-md); background: var(--surface-2); display: grid; gap: 2px; }
+.figs b { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.figs span { font-size: .75rem; color: var(--slate); line-height: 1.3; }
+.det h4 { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); margin-bottom: 6px; }
+.det__cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.det__cols > div { display: grid; gap: 14px; align-content: start; }
+.bul { display: grid; gap: 8px; }
+.bul li { position: relative; padding-left: 18px; font-size: .875rem; line-height: 1.45; }
+.bul li::before { content: ""; position: absolute; left: 2px; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.det p.v { font-size: .875rem; line-height: 1.45; }
+.logos { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* ---------- 04 stakeholders ---------- */
+.tiers { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(20px, 3vw, 48px); align-items: center; }
+.rings { position: relative; width: 100%; max-width: 440px; aspect-ratio: 1; justify-self: center; }
+.ring { position: absolute; border: 0; border-radius: 50%; display: flex; justify-content: center; padding-top: 7%; font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; transition: background .3s, box-shadow .3s, color .3s; }
+.ring--3 { inset: 0; background: var(--surface-2); color: var(--slate); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.ring--2 { inset: 15%; background: var(--surface); color: var(--slate); box-shadow: inset 0 0 0 1px var(--line-strong); }
+.ring--1 { inset: 30%; background: var(--accent-soft); color: var(--ink); align-items: center; padding: 0; text-align: center; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent); }
+.ring[aria-selected="true"] { box-shadow: inset 0 0 0 2px var(--accent), var(--sh-2); color: var(--ink); }
+.ring--1[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+.ring b { display: block; font-family: var(--font-display); font-size: 2.5rem; letter-spacing: -.04em; text-transform: none; line-height: 1; }
+.tier-panel { display: grid; gap: 16px; min-width: 0; }
+.tier-panel__lead { font-size: 1.125rem; color: var(--ink-2); max-width: 56ch; }
+.groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.group { display: grid; gap: 8px; padding: 18px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); align-content: start; }
+.group h3 { font-size: 1.125rem; font-weight: 600; letter-spacing: -.01em; }
+.group p { font-size: .875rem; color: var(--slate); line-height: 1.45; }
+.group__meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.group__ev { font-size: .75rem; color: var(--slate-2); }
+
+/* ---------- 05 household ---------- */
+.hh { display: grid; grid-template-columns: minmax(0, .34fr) minmax(0, 1fr); gap: clamp(16px, 2.4vw, 32px); align-items: stretch; }
+.hh__home { display: grid; align-content: center; gap: 14px; padding: 24px; border-radius: var(--r-lg); background: var(--accent-soft); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+.hh__home h3 { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: -.03em; line-height: 1.05; }
+.hh__home p { color: var(--ink-2); font-size: 1rem; }
+.hh__rows { display: grid; gap: 10px; }
+.hh__row { display: grid; grid-template-columns: minmax(0, .8fr) 40px minmax(0, 1.2fr); align-items: center; gap: 8px; }
+.hh__role { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; border: 0; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); text-align: left; transition: box-shadow .25s, background .25s, transform .25s var(--ease-out); }
+.hh__role strong { font-size: 1rem; }
+.hh__role small { font-size: .75rem; color: var(--slate); }
+.hh__line { height: 2px; background: var(--line-strong); position: relative; }
+.hh__line::after { content: ""; position: absolute; right: -1px; top: -4px; border: 5px solid transparent; border-left-color: var(--line-strong); border-right: 0; }
+.hh__door { padding: 12px 18px; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); display: grid; gap: 2px; transition: box-shadow .25s, background .25s; min-width: 0; }
+.hh__door strong { font-size: 1rem; }
+.hh__door small { font-size: .75rem; color: var(--slate); }
+.hh__row.is-on .hh__role { background: var(--ink); color: var(--canvas); box-shadow: none; transform: translateX(4px); }
+.hh__row.is-on .hh__role small { color: inherit; opacity: .7; }
+.hh__row.is-on .hh__line, .hh__row.is-on .hh__line::after { background: var(--accent); border-left-color: var(--accent); }
+.hh__row.is-on .hh__line::after { background: transparent; }
+.hh__row.is-on .hh__door { box-shadow: inset 0 0 0 2px var(--accent), var(--sh-1); }
+
+/* ---------- 06 jobs ---------- */
+.jobs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.job { position: relative; padding: 22px 22px 22px 26px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); font-family: var(--font-display); font-size: 1.25rem; font-weight: 500; letter-spacing: -.02em; line-height: 1.25; }
+.job::before { content: "\201C"; position: absolute; left: 12px; top: 8px; font-family: var(--font-serif); font-size: 2.5rem; line-height: 1; color: var(--accent); opacity: .5; }
+.job-panel { display: grid; gap: 16px; }
+.job-panel__who { font-size: .875rem; color: var(--slate); }
+.shared { display: grid; gap: 12px; padding: 20px; border-radius: var(--r-lg); background: var(--ink); color: var(--canvas); }
+.shared h3 { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+.shared ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.shared li { font-size: 1rem; line-height: 1.35; padding-left: 14px; border-left: 2px solid var(--accent); }
+
+/* ---------- 07 lifecycle ---------- */
+.life-wrap { display: grid; gap: 18px; }
+.life-loop-wrap { position: relative; }
+.life-loop__label { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); padding: 0 10px; background: var(--canvas); font-size: .75rem; font-weight: 600; color: var(--slate); white-space: nowrap; }
+.life-loop { width: 100%; height: 56px; display: block; overflow: visible; }
+.life-loop path { fill: none; stroke: var(--slate-2); stroke-width: 1.5; stroke-dasharray: 5 5; }
+.life { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; counter-reset: st; }
+.stage-btn { position: relative; display: grid; gap: 6px; align-content: start; min-height: 128px; padding: 14px 12px; border: 0; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); text-align: left; transition: transform .25s var(--ease-out), box-shadow .25s, background .25s; min-width: 0; }
+.stage-btn:hover { transform: translateY(-3px); }
+.stage-btn__n { font-size: .75rem; font-weight: 600; color: var(--slate-2); font-variant-numeric: tabular-nums; }
+.stage-btn strong { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: -.02em; }
+.stage-btn small { font-size: .75rem; color: var(--slate); line-height: 1.35; }
+.stage-btn--wait { background: transparent; box-shadow: none; outline: 1.5px dashed var(--line-strong); outline-offset: -1.5px; }
+.stage-btn--arrive { background: var(--accent-soft); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+.stage-btn[aria-selected="true"] { background: var(--ink); color: var(--canvas); box-shadow: var(--sh-2); outline: 0; }
+.stage-btn[aria-selected="true"] small, .stage-btn[aria-selected="true"] .stage-btn__n { color: inherit; opacity: .75; }
+.phases { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.phases span { display: block; padding-top: 10px; border-top: 2px solid var(--line-strong); font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--slate); }
+.phases span:last-child { border-top-color: var(--accent); color: var(--accent-fg); }
+.life-det { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr) minmax(0, .8fr); gap: 20px; align-items: start; }
+.life-det h3 { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: -.03em; line-height: 1.05; margin-bottom: 6px; }
+.life-det p { font-size: 1rem; color: var(--ink-2); }
+.life-det .note { margin-top: 12px; display: inline-flex; gap: 8px; align-items: center; font-size: .875rem; font-weight: 600; color: var(--accent-fg); }
+.domains { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ---------- 08 relationships ---------- */
+.rel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); align-items: start; }
+.rel__map { width: 100%; height: auto; overflow: visible; }
+.rel__map .spoke { stroke: var(--line-strong); stroke-width: 1.5; transition: stroke .3s, stroke-width .3s; }
+.rel__map .spoke.on { stroke: var(--accent); stroke-width: 2.5; }
+.rel__map .link { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 6 6; animation: flow 1.2s linear infinite; }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+.rel__map .node rect { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.2; transition: fill .3s, stroke .3s; }
+.rel__map .node text { fill: var(--ink); font-family: var(--font-ui); font-weight: 600; }
+.rel__map .node.on rect { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.rel__map .hub circle { fill: var(--accent-soft); stroke: color-mix(in srgb, var(--accent) 55%, transparent); stroke-width: 2; transition: stroke .3s, fill .3s; }
+.rel__map .hub.on circle { stroke: var(--accent); fill: color-mix(in srgb, var(--accent) 26%, var(--surface)); }
+.rel__map .hub text { fill: var(--ink); font-family: var(--font-display); font-weight: 600; }
+.rel__side { display: grid; gap: 14px; min-width: 0; }
+.conns { display: grid; gap: 8px; max-height: min(52vh, 480px); overflow-y: auto; padding: 4px; margin: -4px; }
+.conn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; padding: 14px 16px; border: 0; border-radius: var(--r-md); background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); text-align: left; transition: box-shadow .2s, background .2s; }
+.conn strong { font-size: 1rem; }
+.conn small { grid-column: 1 / -1; font-size: .875rem; color: var(--slate); line-height: 1.4; }
+.conn[aria-selected="true"] { box-shadow: inset 0 0 0 2px var(--accent), var(--sh-1); }
+.conn__ev { display: none; grid-column: 1 / -1; font-size: .75rem; color: var(--slate-2); }
+.conn[aria-selected="true"] .conn__ev { display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: .75rem; color: var(--slate); align-items: center; }
+.legend__i { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ---------- 09 touchpoints ---------- */
+.tps { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.tp { display: grid; gap: 10px; align-content: start; padding: 20px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); animation: rise .5s var(--ease-expo) both; animation-delay: calc(var(--i, 0) * 40ms); }
+.tp__top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.tp h3 { font-size: 1.125rem; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; }
+.tp p { font-size: .875rem; color: var(--slate); line-height: 1.45; }
+.tp__role { font-size: .875rem; color: var(--ink-2); padding-top: 10px; border-top: 1px solid var(--line); }
+.tp--approved { box-shadow: inset 0 0 0 2px var(--accent), var(--sh-1); }
+.tp--unknown { background: transparent; box-shadow: none; outline: 1.5px dashed var(--line-strong); outline-offset: -1.5px; }
+
+/* ---------- 10 look ---------- */
+.bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+.bx { border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); padding: 22px; display: grid; gap: 12px; align-content: start; min-width: 0; position: relative; overflow: hidden; }
+.bx__k { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
+.bx--type { grid-column: span 4; }
+.bx--color { grid-column: span 2; }
+.bx--shape, .bx--frost, .bx--motion { grid-column: span 2; }
+.bx--img { grid-column: span 3; }
+.bx--voice { grid-column: span 3; }
+.spec-big { font-family: var(--font-display); font-size: clamp(2.25rem, 1rem + 3.4vw, 4.5rem); font-weight: 600; letter-spacing: -.045em; line-height: .95; }
+.spec-sub { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: -.02em; }
+.spec-sub em { font-family: var(--font-serif); font-style: italic; color: var(--accent-fg); }
+.swatches { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sw { display: grid; gap: 2px; padding: 10px; border-radius: var(--r-md); box-shadow: inset 0 0 0 1px var(--line); font-size: .75rem; }
+.sw i { height: 40px; border-radius: var(--r-sm); background: var(--c); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); margin-bottom: 6px; }
+.sw b { font-size: .75rem; }
+.sw span { color: var(--slate); font-variant-numeric: tabular-nums; }
+.gradbar { height: 14px; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--grad)); }
+.shapes { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.shape-pill { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: var(--r-pill); background: var(--accent); color: var(--on-accent); font-weight: 600; font-size: .875rem; }
+.shape-tile { width: 48px; height: 48px; border-radius: var(--r-icon); background: var(--ink); }
+.shape-card { width: 72px; height: 48px; border-radius: var(--r-md); box-shadow: inset 0 0 0 1.5px var(--line-strong); }
+.frost-demo { position: relative; height: 120px; border-radius: var(--r-md); overflow: hidden; background: linear-gradient(135deg, var(--grad)); display: grid; place-items: center; }
+.frost-demo::before, .frost-demo::after { content: ""; position: absolute; border-radius: 50%; filter: blur(18px); }
+.frost-demo::before { width: 90px; height: 90px; background: var(--blob-2); left: 12%; top: 10%; opacity: .7; }
+.frost-demo::after { width: 80px; height: 80px; background: var(--blob-3); right: 14%; bottom: 0; opacity: .7; }
+.frost-demo .capsule { position: relative; z-index: 1; height: 44px; background: rgba(255, 255, 255, .38); border: 1px solid rgba(255, 255, 255, .6); color: #0B1640; box-shadow: 0 16px 30px -16px rgba(0, 0, 0, .4); -webkit-backdrop-filter: blur(16px) saturate(1.8); backdrop-filter: blur(16px) saturate(1.8); }
+.frost-demo .capsule__num { background: #0B1640; color: #FFFFFF; }
+.photos { display: grid; grid-template-columns: 1.2fr 1fr; gap: 8px; }
+.photos img { width: 100%; height: 180px; object-fit: cover; border-radius: var(--r-md); }
+.reveal { font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; letter-spacing: -.03em; line-height: 1.1; }
+.reveal .w { display: inline-block; overflow-x: visible; overflow-y: clip; vertical-align: bottom; padding-bottom: .1em; }
+.reveal .w > * { display: inline-block; }
+.reveal em { font-family: var(--font-serif); font-weight: 400; color: var(--accent-fg); }
+.reveal.play .w > * { animation: wordUp .9s var(--ease-expo) both; animation-delay: calc(var(--k) * 90ms); }
+@keyframes wordUp { from { transform: translateY(110%); } }
+.voice { display: grid; gap: 10px; }
+.voice li { font-family: var(--font-display); font-size: 1.125rem; letter-spacing: -.01em; line-height: 1.3; padding-left: 14px; border-left: 2px solid var(--accent); }
+
+/* ---------- 11 language ---------- */
+.lang { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(20px, 3vw, 48px); align-items: start; }
+.traits { display: grid; gap: 4px; counter-reset: tr; }
+.traits li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); counter-increment: tr; }
+.traits li::before { content: counter(tr, decimal-leading-zero); font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--accent-fg); letter-spacing: -.02em; }
+.traits b { display: block; font-size: 1.125rem; }
+.traits span { font-size: .875rem; color: var(--slate); }
+.dim { display: grid; gap: 16px; }
+.dim__body { display: grid; gap: 10px; min-height: 150px; }
+.dim__body h3 { font-family: var(--font-display); font-size: 1.75rem; letter-spacing: -.03em; }
+.dim__body p { font-size: 1.125rem; line-height: 1.5; color: var(--ink-2); }
+
+/* ---------- 12 principles ---------- */
+.pr { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(20px, 3vw, 48px); align-items: stretch; }
+.pr__index { display: grid; gap: 4px; align-content: start; }
+.pr__row { display: grid; grid-template-columns: 36px minmax(0, 1fr) 18px; align-items: center; gap: 10px; padding: 12px 14px; border: 0; border-radius: var(--r-sm); background: transparent; text-align: left; font-weight: 600; font-size: 1rem; color: var(--slate); transition: background .2s, color .2s; }
+.pr__row span { font-variant-numeric: tabular-nums; font-size: .75rem; color: var(--slate-2); }
+.pr__row .ico { opacity: 0; transition: opacity .2s, transform .2s; }
+.pr__row:hover { background: var(--surface); color: var(--ink); }
+.pr__row[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: var(--sh-1); }
+.pr__row[aria-selected="true"] .ico { opacity: 1; transform: translateX(2px); }
+.pr__spot { display: grid; grid-template-rows: 1fr auto; gap: 20px; padding: clamp(24px, 3vw, 40px); border-radius: var(--r-xl); background: linear-gradient(155deg, var(--grad)); color: #EEF1FF; min-height: 360px; position: relative; overflow: hidden; }
+.pr__spot::after { content: ""; position: absolute; width: 60%; aspect-ratio: 1; right: -18%; top: -24%; border-radius: 50%; background: var(--blob-2); filter: blur(70px); opacity: .35; pointer-events: none; }
+.pr__body { display: grid; gap: 16px; align-content: start; position: relative; z-index: 1; }
+.pr__num { font-family: var(--font-display); font-size: 4.5rem; font-weight: 600; letter-spacing: -.05em; line-height: .9; opacity: .5; }
+.pr__title { font-family: var(--font-display); font-size: clamp(1.75rem, 1rem + 1.8vw, 2.75rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.02; text-wrap: balance; }
+.pr__means { font-size: 1.125rem; line-height: 1.5; max-width: 52ch; opacity: .92; }
+.pr__ground { font-size: .875rem; opacity: .75; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .2); }
+.pr__body.swap { animation: rise .5s var(--ease-expo) both; }
+.rail-foot--in { position: relative; z-index: 1; justify-self: start; padding: 4px 4px 4px 16px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .12); color: #EEF1FF; }
+.rail-foot--in .progress { background: rgba(255, 255, 255, .2); }
+.rail-foot--in .icon-btn { color: #EEF1FF; }
+.rail-foot--in .icon-btn:hover { background: rgba(255, 255, 255, .12); }
+
+/* ---------- 13 opportunities ---------- */
+.opps { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.opp { display: grid; gap: 10px; align-content: start; padding: 22px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); animation: rise .5s var(--ease-expo) both; animation-delay: calc(var(--i, 0) * 50ms); }
+.opp h3 { font-family: var(--font-display); font-size: 1.375rem; letter-spacing: -.02em; line-height: 1.15; }
+.opp p { font-size: .875rem; color: var(--slate); line-height: 1.45; }
+.opp p b { color: var(--ink-2); font-weight: 600; }
+
+/* ---------- 14 questions ---------- */
+.q-top { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.q-big { display: grid; gap: 10px; padding: 24px; border-radius: var(--r-lg); background: var(--ink); color: var(--canvas); }
+.q-big span { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+.q-big h3 { font-family: var(--font-display); font-size: clamp(1.375rem, 1rem + 1vw, 1.875rem); font-weight: 600; letter-spacing: -.025em; line-height: 1.12; }
+.q-big p { font-size: .875rem; opacity: .8; }
+.q-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 24px; }
+.q-list li { display: grid; grid-template-columns: 32px minmax(0, 1fr); gap: 8px; padding: 14px 0; border-top: 1px solid var(--line); }
+.q-list li > span { font-size: .75rem; font-weight: 600; color: var(--slate-2); font-variant-numeric: tabular-nums; padding-top: 3px; }
+.q-list b { display: block; font-weight: 600; font-size: 1rem; line-height: 1.35; }
+.q-list small { display: block; font-size: .75rem; color: var(--slate); margin-top: 4px; }
+
+/* ---------- 15 summary ---------- */
+.sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.sum__col { display: grid; gap: 14px; align-content: start; padding: 24px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); }
+.sum__col h3 { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-size: 1.375rem; letter-spacing: -.02em; }
+.sum__col ol { display: grid; gap: 10px; }
+.sum__col li { font-size: .875rem; line-height: 1.45; padding-left: 14px; border-left: 2px solid var(--line-strong); }
+.sum__col--know li { border-left-color: var(--ok-fg); }
+.sum__col--check li { border-left-color: var(--warn-fg); }
+.sum__col--next { background: var(--ink); color: var(--canvas); }
+.sum__col--next li { border-left-color: var(--accent); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 1100px) {
+  .life { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .life-loop-wrap, .phases { display: none; }
+  .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bx--type, .bx--color, .bx--shape, .bx--frost, .bx--motion, .bx--img, .bx--voice { grid-column: span 1; }
+  .bx--type, .bx--img { grid-column: 1 / -1; }
+  .q-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .cover__grid, .why, .eco, .tiers, .hh, .rel, .lang, .pr, .close__grid, .sum, .q-top { grid-template-columns: minmax(0, 1fr); }
+  .cover__art { max-width: 320px; order: -1; }
+  .cover__meta { grid-template-columns: repeat(2, auto); }
+  .life-det { grid-template-columns: minmax(0, 1fr); }
+  .shared ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rings { max-width: 320px; }
+  .hh__home { align-content: start; }
+  .conns { max-height: none; }
+}
+@media (max-width: 640px) {
+  .slide { padding-top: calc(80px + env(safe-area-inset-top, 0px)); padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+  .brand__word, .hint { display: none; }
+  .brand { padding: 6px; }
+  .capsule { max-width: calc(100vw - 150px); }
+  .eco__segs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .eco__segs::before, .seg-btn::after, .eco__holding::after { display: none; }
+  .band--people { margin-top: 0; }
+  .figs, .facts { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .det__cols, .groups, .shared ul, .q-list, .swatches { grid-template-columns: minmax(0, 1fr); }
+  .life { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stage-btn { min-height: 0; }
+  .hh__row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .hh__line { display: none; }
+  .hh__door { margin-left: 16px; }
+  .compare li { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .bento { grid-template-columns: minmax(0, 1fr); }
+  .progress { width: 64px; }
+  .cover__meta { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-arrow-r" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-arrow-l" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4h4"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10M10 20v-6h4v6"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5M22 9v6"/></symbol>
+  <symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></symbol>
+  <symbol id="i-cloche" viewBox="0 0 24 24"><path d="M3 18h18M5 18a7 7 0 0 1 14 0M12 9V7M10 7h4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6 6 0 0 1 3.5 6"/></symbol>
+</svg>
+
+<header class="chrome invert" id="chrome">
+  <a class="brand" href="#s01" data-go="0" aria-label="Back to the cover"><span class="mark brand__mark" aria-hidden="true"></span><span class="brand__word">Bloom<span>Ecosystem · Phase 1</span></span></a>
+  <div class="capsule-wrap">
+    <button class="capsule frost" id="capsule" type="button" aria-expanded="false" aria-controls="jump" aria-label="Jump to a slide">
+      <span class="capsule__num" id="cap-num">01</span><span class="capsule__name" id="cap-name">Cover</span><svg class="ico ico--sm"><use href="#i-chev"/></svg>
+    </button>
+    <nav class="jump" id="jump" aria-label="All slides" hidden><ol id="jump-list"></ol></nav>
+  </div>
+  <button class="icon-btn frost theme-btn" id="theme-btn" type="button" aria-label="Switch between light and dark"><svg class="ico i-moon"><use href="#i-moon"/></svg><svg class="ico i-sun"><use href="#i-sun"/></svg></button>
+</header>
+
+<main class="deck" id="deck" aria-roledescription="presentation" aria-label="Bloom Digital Ecosystem, Phase 1">
+
+<!-- 01 COVER -->
+<section class="slide invert stage is-current" data-title="Bloom Digital Ecosystem" aria-roledescription="slide">
+  <div class="stage__bg" aria-hidden="true"><i class="blob blob--1"></i><i class="blob blob--2"></i><i class="blob blob--3"></i></div>
+  <div class="slide__in">
+    <div class="cover__grid">
+      <div class="cover__text">
+        <p class="eyebrow rv">Phase 1 · Ecosystem Foundation</p>
+        <h1 class="mega rv" style="--d:1">Bloom Digital <em>Ecosystem</em></h1>
+        <p class="lede rv" style="--d:2">Bloom's businesses, people, journeys and design language, mapped as one system before any screen, component or AI feature is designed.</p>
+        <div class="cover__actions rv" style="--d:3">
+          <button class="btn btn--primary" type="button" data-go="next">Start the walkthrough<svg class="ico"><use href="#i-arrow-r"/></svg></button>
+          <span class="hint">Use ← → keys, the arrows below, or swipe</span>
+        </div>
+        <dl class="cover__meta rv" style="--d:4">
+          <div><dt>Document</dt><dd>Discovery, Phase 1</dd></div>
+          <div><dt>Date</dt><dd>30 September 2026</dd></div>
+          <div><dt>Prepared for</dt><dd>Bloom Holding</dd></div>
+          <div><dt>Status</dt><dd>Working draft</dd></div>
+        </dl>
+      </div>
+      <div class="cover__art" aria-hidden="true">
+        <span class="mark cover__mark"></span>
+        <span class="frag frag--1 frost"><i class="dot" style="--c:var(--viz-1)"></i>Real estate</span>
+        <span class="frag frag--2 frost"><i class="dot" style="--c:var(--viz-2)"></i>Education</span>
+        <span class="frag frag--3 frost"><i class="dot" style="--c:var(--viz-3)"></i>Services</span>
+        <span class="frag frag--4 frost"><i class="dot" style="--c:var(--viz-4)"></i>Hospitality</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 WHY -->
+<section class="slide" data-title="Why an ecosystem" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">01 · Why we are building an ecosystem</p>
+      <h2 class="title rv" style="--d:1">One ecosystem on the ground. <em>Many</em> products online.</h2>
+    </header>
+    <div class="why">
+      <div class="why__left">
+        <p class="lede rv" style="--d:2">Bloom Living puts homes, two international schools, a town centre and bfm-run services behind one gate. Online, the same family can meet up to eight separate Bloom front doors, each organised around a business unit.</p>
+        <figure class="card quote rv" style="--d:3">
+          <blockquote>“Complete ecosystems where people can live, learn, work, connect, and thrive.”</blockquote>
+          <figcaption>Bloom Holding, describing Curated Community Living</figcaption>
+        </figure>
+        <ul class="facts rv" style="--d:4">
+          <li><b>8</b><span>front doors one family can meet</span></li>
+          <li><b>15 yrs</b><span>of schooling, from age 3 to 18</span></li>
+          <li><b>3</b><span>apps launched together, one per audience</span></li>
+        </ul>
+      </div>
+      <div class="card rv" style="--d:3">
+        <div class="seg" role="tablist" aria-label="Compare today with the ecosystem" id="why-tabs">
+          <button type="button" role="tab" aria-selected="true" data-mode="today">Today</button>
+          <button type="button" role="tab" aria-selected="false" tabindex="-1" data-mode="eco">The ecosystem</button>
+        </div>
+        <ol class="compare" id="compare" aria-live="polite">
+          <li><span class="compare__k">Organised by</span><span class="compare__v" data-today="Business unit" data-eco="The person, and the place they live, learn or stay">Business unit</span></li>
+          <li><span class="compare__k">Look and feel</span><span class="compare__v" data-today="A new login, look and tone per product" data-eco="One recognisable Bloom, many experiences">A new login, look and tone per product</span></li>
+          <li><span class="compare__k">What Bloom knows</span><span class="compare__v" data-today="One role at a time" data-eco="The whole household, with consent">One role at a time</span></li>
+          <li><span class="compare__k">Handovers between businesses</span><span class="compare__v" data-today="The customer's job" data-eco="Handled behind the scenes">The customer's job</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 BUSINESS ECOSYSTEM -->
+<section class="slide" data-title="Business ecosystem" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">02 · Bloom business ecosystem</p>
+      <h2 class="title rv" style="--d:1">Four businesses. One place. <em>One</em> workforce.</h2>
+      <p class="lede rv" style="--d:2">Bloom Holding reports four segments, but they meet in one community and are run by one workforce. Select any part of the map.</p>
+    </header>
+    <div class="eco">
+      <div class="eco__map rv" style="--d:3" role="tablist" aria-label="Parts of the Bloom ecosystem" id="eco-tabs">
+        <div class="eco__holding"><strong>Bloom Holding</strong><span>Founded 2008 · part of National Holding</span></div>
+        <div class="eco__segs">
+          <button class="seg-btn" type="button" role="tab" data-k="re" style="--c:var(--viz-1)" aria-selected="true"><span class="tile"><svg class="ico"><use href="#i-home"/></svg></span><strong>Real estate</strong><small>Bloom Properties</small></button>
+          <button class="seg-btn" type="button" role="tab" data-k="edu" style="--c:var(--viz-2)" aria-selected="false" tabindex="-1"><span class="tile"><svg class="ico"><use href="#i-cap"/></svg></span><strong>Education</strong><small>Bloom Education</small></button>
+          <button class="seg-btn" type="button" role="tab" data-k="svc" style="--c:var(--viz-3)" aria-selected="false" tabindex="-1"><span class="tile"><svg class="ico"><use href="#i-tools"/></svg></span><strong>Services</strong><small>bfm · Bloom Landscape</small></button>
+          <button class="seg-btn" type="button" role="tab" data-k="hos" style="--c:var(--viz-4)" aria-selected="false" tabindex="-1"><span class="tile"><svg class="ico"><use href="#i-cloche"/></svg></span><strong>Hospitality</strong><small>Bloom Hospitality</small></button>
+        </div>
+        <button class="band band--community" type="button" role="tab" data-k="com" aria-selected="false" tabindex="-1"><svg class="ico"><use href="#i-pin"/></svg>The Bloom community <small>where the four meet</small></button>
+        <button class="band band--people" type="button" role="tab" data-k="ppl" aria-selected="false" tabindex="-1"><svg class="ico"><use href="#i-users"/></svg>Bloom people <small>one workforce behind every domain</small></button>
+      </div>
+      <article class="card det rv" style="--d:4" id="eco-detail" aria-live="polite"></article>
+    </div>
+  </div>
+</section>
+
+<!-- 04 STAKEHOLDERS -->
+<section class="slide" data-title="Stakeholders" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">03 · Stakeholder ecosystem</p>
+      <h2 class="title rv" style="--d:1">Four groups carry most of the <em>relationship</em>.</h2>
+    </header>
+    <div class="tiers">
+      <div class="rings rv" style="--d:2" role="tablist" aria-label="Stakeholder tiers" id="tier-tabs">
+        <button class="ring ring--3" type="button" role="tab" data-tier="business" aria-selected="false" tabindex="-1">Business &amp; operational · 5</button>
+        <button class="ring ring--2" type="button" role="tab" data-tier="secondary" aria-selected="false" tabindex="-1">Secondary · 2</button>
+        <button class="ring ring--1" type="button" role="tab" data-tier="primary" aria-selected="true"><span><b>4</b>Primary</span></button>
+      </div>
+      <div class="tier-panel rv" style="--d:3">
+        <p class="tier-panel__lead" id="tier-lead"></p>
+        <ul class="groups" id="tier-list" aria-live="polite"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 HOUSEHOLD -->
+<section class="slide" data-title="One household" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">03 · Stakeholder ecosystem</p>
+      <h2 class="title rv" style="--d:1">One household can meet Bloom through <em>six</em> front doors.</h2>
+    </header>
+    <div class="hh">
+      <div class="hh__home rv" style="--d:2">
+        <h3>One household</h3>
+        <p>The same people, holding six roles over the years. Each extra role adds a new login, look and tone.</p>
+        <button class="btn btn--primary" type="button" id="hh-play"><svg class="ico ico--fill"><use href="#i-play"/></svg>Play the years</button>
+      </div>
+      <ol class="hh__rows rv" style="--d:3" id="hh-rows">
+        <li class="hh__row"><button class="hh__role" type="button" aria-pressed="false"><strong>Buyer</strong><small>Real estate</small></button><span class="hh__line" aria-hidden="true"></span><div class="hh__door"><strong>bloomholding.com and brokers</strong><small>Brokers work in Bloom Partners</small></div></li>
+        <li class="hh__row"><button class="hh__role" type="button" aria-pressed="false"><strong>Owner</strong><small>Real estate, services</small></button><span class="hh__line" aria-hidden="true"></span><div class="hh__door"><strong>Bloom Holding Super App</strong><small>Instalments and service charges</small></div></li>
+        <li class="hh__row"><button class="hh__role" type="button" aria-pressed="false"><strong>Resident</strong><small>Community, services</small></button><span class="hh__line" aria-hidden="true"></span><div class="hh__door"><strong>Bloom Community App</strong><small>Requests, access, amenities, events</small></div></li>
+        <li class="hh__row"><button class="hh__role" type="button" aria-pressed="false"><strong>Parent</strong><small>Education</small></button><span class="hh__line" aria-hidden="true"></span><div class="hh__door"><strong>School sites, Bloom Education</strong><small>A separate brand per school</small></div></li>
+        <li class="hh__row"><button class="hh__role" type="button" aria-pressed="false"><strong>Guest</strong><small>Hospitality</small></button><span class="hh__line" aria-hidden="true"></span><div class="hh__door"><strong>Marriott and Rotana channels</strong><small>Bloom is not visible to the guest</small></div></li>
+        <li class="hh__row"><button class="hh__role" type="button" aria-pressed="false"><strong>Employee</strong><small>Every domain</small></button><span class="hh__line" aria-hidden="true"></span><div class="hh__door"><strong>BlooMultiverse</strong><small>Web and mobile, both approved</small></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- 06 JOBS -->
+<section class="slide" data-title="Jobs to be done" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">04 · User jobs &amp; needs</p>
+      <h2 class="title rv" style="--d:1">Jobs are about confidence and <em>continuity</em>.</h2>
+      <p class="lede rv" style="--d:2">Knowing where things stand, trusting the decision, and never repeating yourself to another part of Bloom. Pick a stakeholder.</p>
+    </header>
+    <div class="job-panel rv" style="--d:3">
+      <div class="chips chips--scroll" role="tablist" aria-label="Stakeholders" id="job-tabs"></div>
+      <p class="job-panel__who" id="job-who"></p>
+      <ul class="jobs" id="job-list" aria-live="polite"></ul>
+    </div>
+    <div class="shared rv" style="--d:4">
+      <h3>Jobs every group shares</h3>
+      <ul>
+        <li>Know what needs my attention, and what's waiting on someone else.</li>
+        <li>Get to a real person quickly when it matters.</li>
+        <li>Do it once: not re-enter who I am for each part of Bloom.</li>
+        <li>Feel that Bloom knows me, without feeling watched.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 07 LIFECYCLE -->
+<section class="slide" data-title="Experience lifecycle" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">05 · Experience lifecycle</p>
+      <h2 class="title rv" style="--d:1">Most of the relationship happens <em>after</em> arrival.</h2>
+    </header>
+    <div class="life-wrap rv" style="--d:2">
+      <div class="life-loop-wrap"><span class="life-loop__label">Evolve loops back to Decide</span><svg class="life-loop" viewBox="0 0 1000 56" preserveAspectRatio="none" aria-hidden="true"><path d="M 937 52 C 937 6, 190 6, 190 50" vector-effect="non-scaling-stroke"/></svg></div>
+      <ol class="life" role="tablist" aria-label="Lifecycle stages" id="life-tabs"></ol>
+      <div class="phases" aria-hidden="true"><span>Before home · one-off, high-stakes decisions</span><span>At home · years, continuous and recurring</span></div>
+    </div>
+    <div class="card life-det rv" style="--d:3" id="life-det" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 08 RELATIONSHIPS -->
+<section class="slide" data-title="Cross-domain relationships" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">06 · Cross-domain relationships</p>
+      <h2 class="title rv" style="--d:1">Almost every connection runs through the <em>community</em>.</h2>
+    </header>
+    <div class="rel">
+      <svg class="rel__map rv" style="--d:2" id="rel-map" viewBox="0 0 560 440" role="img" aria-label="Relationship map: eight domains around the Bloom community"></svg>
+      <div class="rel__side rv" style="--d:3">
+        <div class="chips" role="tablist" aria-label="Filter by status" id="rel-filter"></div>
+        <div class="legend"><span class="legend__i"><span class="status status--connected">Connected</span>people already experience it as one</span><span class="legend__i"><span class="status status--separate">Separate</span>the person bridges the gap</span><span class="legend__i"><span class="status status--open">Open</span>a natural fit, no evidence yet</span></div>
+        <div class="conns" role="tablist" aria-label="Connections" id="rel-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 TOUCHPOINTS -->
+<section class="slide" data-title="Digital touchpoints" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">07 · Current digital touchpoints</p>
+      <h2 class="title rv" style="--d:1">Ten known touchpoints, split by <em>audience</em>.</h2>
+      <p class="lede rv" style="--d:2">Both approved experiences are for employees: the Interactive App appears to be BlooMultiverse, Bloom's employee portal, and the Mobile App its phone companion. Bloom's most expressive design language was made for its own people.</p>
+    </header>
+    <div class="chips rv" style="--d:3" role="tablist" aria-label="Filter by audience" id="tp-filter"></div>
+    <div class="tps" id="tp-list" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 10 THE BLOOM LOOK -->
+<section class="slide" data-title="The Bloom look" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">08 · Existing Bloom design language</p>
+      <h2 class="title rv" style="--d:1">What already makes it feel like <em>Bloom</em>.</h2>
+    </header>
+    <div class="bento">
+      <div class="bx bx--type rv" style="--d:2">
+        <span class="bx__k">Typography</span>
+        <p class="spec-big">Good morning, Rashid.</p>
+        <p class="spec-sub">Your workplace, <em>connected.</em></p>
+        <p class="small">Bricolage Grotesque for display, tight and oversized · Instrument Sans for the interface · Instrument Serif italic for one emphasised word</p>
+      </div>
+      <div class="bx bx--color rv" style="--d:3">
+        <span class="bx__k">Colour</span>
+        <div class="swatches">
+          <div class="sw"><i style="--c:#0B1640"></i><b>Navy ink</b><span>#0B1640</span></div>
+          <div class="sw"><i style="--c:#F6F4EF"></i><b>Warm paper</b><span>#F6F4EF</span></div>
+          <div class="sw"><i style="--c:#1F4BFF"></i><b>Electric blue</b><span>#1F4BFF</span></div>
+          <div class="sw"><i style="--c:#922A22"></i><b>Flag red</b><span>#922A22</span></div>
+        </div>
+        <div class="gradbar" aria-hidden="true"></div>
+      </div>
+      <div class="bx bx--shape rv" style="--d:4">
+        <span class="bx__k">Shape</span>
+        <div class="shapes"><span class="shape-pill">Review 32 actions</span><span class="shape-tile" aria-hidden="true"></span><span class="shape-card" aria-hidden="true"></span></div>
+        <p class="small">Pills for actions, squircle tiles for apps, soft 28px cards, 48px chapter panels. Nested corners stay concentric.</p>
+      </div>
+      <div class="bx bx--frost rv" style="--d:5">
+        <span class="bx__k">Material</span>
+        <div class="frost-demo"><span class="capsule"><span class="capsule__num">03</span><span class="capsule__name">People</span></span></div>
+        <p class="small">Frosted glass for floating chrome; soft navy-tinted shadows, never grey.</p>
+      </div>
+      <div class="bx bx--motion rv" style="--d:6">
+        <span class="bx__k">Motion</span>
+        <p class="reveal play" id="reveal"><span class="w"><span style="--k:0">Welcome</span></span> <span class="w"><span style="--k:1">to</span></span> <span class="w"><span style="--k:2">the</span></span> <span class="w"><span style="--k:3">Bloom</span></span> <span class="w"><em style="--k:4">family</em></span></p>
+        <button class="chip" type="button" id="replay"><svg class="ico ico--sm"><use href="#i-replay"/></svg>Replay the reveal</button>
+      </div>
+      <div class="bx bx--img rv" style="--d:7">
+        <span class="bx__k">Imagery</span>
+        <div class="photos"><img src="{{sport-padel.jpg}}" alt="A padel player on a blue court, mid-game"><img src="{{sport-yoga.jpg}}" alt="A person in a yoga pose on a rock above misty hills"></div>
+        <p class="small">Real people and real communities first. These are the approved prototype's placeholder photos; Bloom's own property photography still needs reviewing.</p>
+      </div>
+      <div class="bx bx--voice rv" style="--d:8">
+        <span class="bx__k">Tone of voice</span>
+        <ul class="voice">
+          <li>“Good morning, Rashid.”</li>
+          <li>“Salesforce needs you most today.”</li>
+          <li>“Five people joined us this month. Say hello and make their first weeks easier.”</li>
+        </ul>
+        <p class="small">Second person, short and warm. The corporate voice speaks of curated communities, families and generations.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 LANGUAGE -->
+<section class="slide" data-title="Design language" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">08 · Existing Bloom design language</p>
+      <h2 class="title rv" style="--d:1">Five traits to carry <em>forward</em>.</h2>
+    </header>
+    <div class="lang">
+      <ol class="traits rv" style="--d:2">
+        <li><div><b>It greets you.</b><span>It opens with a person, by name, and what matters to them today.</span></div></li>
+        <li><div><b>It edits.</b><span>It says what needs you most rather than listing everything.</span></div></li>
+        <li><div><b>Warm on paper, deep in navy.</b><span>Off-white editorial calm; navy for focus, electric blue for action.</span></div></li>
+        <li><div><b>It is crafted.</b><span>Type, motion and material do the premium work. Nothing is loud.</span></div></li>
+        <li><div><b>You act where you are.</b><span>Approve, book, wish, copy: no detours.</span></div></li>
+      </ol>
+      <div class="card dim rv" style="--d:3">
+        <div class="chips" role="tablist" aria-label="Design dimensions" id="dim-tabs"></div>
+        <div class="dim__body" id="dim-body" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 PRINCIPLES -->
+<section class="slide" data-title="Experience principles" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">09 · Initial experience principles</p>
+      <h2 class="title rv" style="--d:1">Seven principles to <em>test</em> in Phase 2.</h2>
+    </header>
+    <div class="pr">
+      <div class="pr__index rv" style="--d:2" role="tablist" aria-label="Principles" id="pr-tabs"></div>
+      <div class="pr__spot rv" style="--d:3">
+        <div class="pr__body" id="pr-body" aria-live="polite"></div>
+        <div class="rail-foot rail-foot--in">
+          <span class="progress" aria-hidden="true"><i id="pr-fill"></i></span>
+          <span class="counter" id="pr-count">01 / 07</span>
+          <button class="icon-btn" type="button" id="pr-prev" aria-label="Previous principle"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
+          <button class="icon-btn" type="button" id="pr-next" aria-label="Next principle"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 OPPORTUNITIES -->
+<section class="slide" data-title="Opportunity areas" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">10 · Ecosystem opportunity areas</p>
+      <h2 class="title rv" style="--d:1">The biggest opportunities sit in the <em>gaps</em> between businesses.</h2>
+      <p class="lede rv" style="--d:2">Problem spaces to explore in Phase 2. Nothing here is a solution yet.</p>
+    </header>
+    <div class="chips rv" style="--d:3" role="tablist" aria-label="Opportunity categories" id="opp-tabs"></div>
+    <div class="opps" id="opp-list" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- 14 QUESTIONS -->
+<section class="slide" data-title="Questions for Phase 2" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">11 · Key questions for Phase 2</p>
+      <h2 class="title rv" style="--d:1">Two questions set the <em>scope</em> of everything after them.</h2>
+    </header>
+    <div class="q-top rv" style="--d:2">
+      <div class="q-big"><span>Question 01</span><h3>Is the ecosystem for customers, employees, or both, and in what order?</h3><p>The approved language was built for employees; customer products carry different stakes.</p></div>
+      <div class="q-big"><span>Question 02</span><h3>Who owns the relationship in each domain: Bloom or the operator?</h3><p>Marriott, Rotana and Brighton College own their guests' and students' journeys.</p></div>
+    </div>
+    <ol class="q-list rv" style="--d:3" id="q-list"></ol>
+  </div>
+</section>
+
+<!-- 15 SUMMARY -->
+<section class="slide" data-title="Summary" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head">
+      <p class="eyebrow rv">Summary</p>
+      <h2 class="title rv" style="--d:1">Decide whose ecosystem it is. Then test the household and the <em>community</em>.</h2>
+    </header>
+    <div class="sum">
+      <div class="sum__col sum__col--know rv" style="--d:2">
+        <h3><span class="status status--connected">Known</span>What we now know</h3>
+        <ol>
+          <li>Four segments (real estate, education, services, hospitality) meet physically in Bloom communities; Bloom Living is the clearest case.</li>
+          <li>Buyers, owners, residents and school families overlap heavily; the household is the real unit.</li>
+          <li>The lifecycle runs Discover to Evolve. Arrive is the busiest cross-domain moment; Wait is the least supported.</li>
+          <li>Customer touchpoints are split by audience and business unit.</li>
+          <li>Both approved experiences are for employees, and hold the strongest expression of digital Bloom.</li>
+        </ol>
+      </div>
+      <div class="sum__col sum__col--check rv" style="--d:3">
+        <h3><span class="status status--separate">Check</span>What we still need to validate</h3>
+        <ol>
+          <li>That the approved apps are BlooMultiverse, and what the Mobile App adds.</li>
+          <li>The corporate site's visual system, and how it relates to the flag mark and BlooMultiverse colours.</li>
+          <li>What Bloom Universal is.</li>
+          <li>Portfolio figures that sources disagree on: schools, students, current projects.</li>
+          <li>Whether the Community App and Super App share accounts and data.</li>
+          <li>How often one household holds several Bloom roles.</li>
+        </ol>
+      </div>
+      <div class="sum__col sum__col--next rv" style="--d:4">
+        <h3><span class="status status--open" style="color:inherit">Next</span>What Phase 2 should investigate</h3>
+        <ol>
+          <li>Scope: customers, employees or both, and the sequence.</li>
+          <li>Research with real households in one community, across the full lifecycle. Bloom Living is the natural candidate.</li>
+          <li>A service blueprint of Arrive and Wait.</li>
+          <li>A brand-architecture decision on how Bloom appears beside operator and school brands.</li>
+          <li>A first-hand audit of every touchpoint against the principles.</li>
+          <li>The data and identity foundations, before any AI features.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 CLOSE -->
+<section class="slide invert stage" data-title="Sources and next steps" aria-roledescription="slide">
+  <div class="stage__bg" aria-hidden="true"><i class="blob blob--1"></i><i class="blob blob--2"></i></div>
+  <div class="slide__in">
+    <div class="close__grid">
+      <div class="cover__text">
+        <p class="eyebrow rv">Next</p>
+        <h2 class="mega rv" style="--d:1">Phase 2 starts with <em>scope</em>.</h2>
+        <p class="lede rv" style="--d:2">We are not designing the ecosystem yet. This foundation is what it will be designed from.</p>
+        <div class="cover__actions rv" style="--d:3">
+          <button class="btn" type="button" data-go="0"><svg class="ico"><use href="#i-arrow-l"/></svg>Back to the start</button>
+          <a class="btn" href="https://claude.ai/code/artifact/306d5e1a-9709-46b2-800e-475d01f262bd" target="_blank" rel="noopener">Read the full Phase 1 document<svg class="ico"><use href="#i-arrow-r"/></svg></a>
+        </div>
+      </div>
+      <div class="close__note rv" style="--d:3">
+        <p class="bx__k">Sources and research note</p>
+        <p class="small">Business facts come from web-search summaries of these pages, which could not be opened from the research environment; check them against the pages themselves. The design analysis comes first-hand from the BlooMultiverse source.</p>
+        <ul class="sources">
+          <li><a href="https://bloomholding.com/who-we-are" target="_blank" rel="noopener">Bloom Holding: Who we are</a></li>
+          <li><a href="https://bloomholding.com/press-releases/bloom-holding-introduces-next-generation-digital-solutions-to-elevate-broker-owner-and-resident-experiences-1" target="_blank" rel="noopener">Bloom Holding: next-generation digital solutions (press release)</a></li>
+          <li><a href="https://bloomholding.com/bloom-community-app" target="_blank" rel="noopener">Bloom Community App</a></li>
+          <li><a href="https://bloomholding.com/what-we-do/properties/bloom-living" target="_blank" rel="noopener">Bloom Living</a> · <a href="https://bloomholding.com/what-we-do/properties/soho-square" target="_blank" rel="noopener">Soho Square</a></li>
+          <li><a href="https://www.bloomeducation.com/" target="_blank" rel="noopener">Bloom Education</a> · <a href="https://www.bloomworldacademy.ae/" target="_blank" rel="noopener">Bloom World Academy</a></li>
+          <li><a href="https://bloomholding.com/what-we-do/hospitality" target="_blank" rel="noopener">Bloom Hospitality</a> · <a href="https://www.bfm.ae/" target="_blank" rel="noopener">bfm</a> · <a href="https://bloomholding.com/what-we-do/bloomscape" target="_blank" rel="noopener">Bloom Landscape</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Bloom_Holding" target="_blank" rel="noopener">Bloom Holding on Wikipedia</a> · <a href="https://www.nh.ae/bloom-holding/" target="_blank" rel="noopener">National Holding</a></li>
+          <li>Approved references: <a href="https://anshpahwa19.github.io/Interactive-app/" target="_blank" rel="noopener">Interactive App</a> · <a href="https://anshpahwa19.github.io/Mobile-App/" target="_blank" rel="noopener">Mobile App</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="rail invert" id="rail">
+  <div class="rail-foot frost">
+    <span class="progress" aria-hidden="true"><i id="rail-fill"></i></span>
+    <span class="counter" id="counter" aria-live="polite">01 / 16</span>
+    <button class="icon-btn" type="button" id="prev" data-go="prev" aria-label="Previous slide"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
+    <button class="icon-btn" type="button" id="next" data-go="next" aria-label="Next slide"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const pad = (n) => String(n).padStart(2, "0");
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* storage unavailable */ } } };
+
+  /* ---------------- Data ---------------- */
+  const DOMAIN = {
+    re: { n: "Real estate", c: 1 }, edu: { n: "Education", c: 2 }, svc: { n: "Services", c: 3 }, hos: { n: "Hospitality", c: 4 },
+    com: { n: "Community", c: 0 }, ppl: { n: "Bloom people", c: 0 }
+  };
+  const dtag = (k) => `<span class="tag"><i class="dot${DOMAIN[k].c ? "" : " dot--ring"}"${DOMAIN[k].c ? ` style="--c:var(--viz-${DOMAIN[k].c})"` : ""}></i>${DOMAIN[k].n}</span>`;
+
+  const ECO = {
+    re: { name: "Real estate", entity: "Bloom Properties", icon: "i-home", c: 1,
+      what: "Master developer of premium, mostly gated communities in Abu Dhabi and Dubai.",
+      figs: [["4,500+", "homes at Bloom Living"], ["AED 9bn", "Bloom Living, the flagship"], ["304", "units at Soho Square"]],
+      offers: ["Bloom Living, Zayed City: villas, townhouses, apartments", "Bloom Gardens, Soho Square (Saadiyat), Bloom Marina, Bloom Central", "Bloom Towers and Bloom Heights, JVC Dubai"],
+      who: "Buyers, investors, brokers, owners", exp: "A high-stakes purchase, then years of instalments and waiting before handover.", conn: "Every other domain: it creates the place they operate in." },
+    edu: { name: "Education", entity: "Bloom Education, since 2011", icon: "i-cap", c: 2,
+      what: "Operator of premium and partner-brand schools and nurseries, plus ADEK Charter Schools.",
+      figs: [["15–20", "schools (sources differ)"], ["~20,000", "students"], ["3–18", "years of age served"]],
+      offers: ["Brighton College: Abu Dhabi, Al Ain, Dubai", "Bloom World Academy (IB), Dubai", "Nurseries, including Bloom Nursery at Bloom Gardens"],
+      who: "Parents, students, teachers", exp: "A 15-year relationship with a family: choosing, enrolling, daily school life.", conn: "Real estate (schools inside communities), family life, services." },
+    svc: { name: "Services", entity: "bfm · Bloom Landscape", icon: "i-tools", c: 3,
+      what: "Integrated facilities management and landscaping, for Bloom and for third parties across the UAE.",
+      figs: [["2008", "bfm established"], ["ESCO", "accredited energy services"], ["~20 yrs", "of Bloom Landscape"]],
+      offers: ["Maintenance, cleaning, security, fit-out", "Move-in and move-out services", "Design, build and upkeep of parks, streets and resorts"],
+      who: "Residents and owners (indirectly), schools, hotels, B2B clients", exp: "Mostly invisible when it works; felt sharply when it doesn't.", conn: "Community living, education and hospitality: it keeps all three running." },
+    hos: { name: "Hospitality", entity: "Bloom Hospitality", icon: "i-cloche", c: 4,
+      what: "Owner of five-star hotels and hotel apartments, run by international operators.",
+      figs: [["3", "hotels"], ["198", "rooms at the EDITION"], ["217", "keys at Bloom Arjaan"]],
+      offers: ["The Abu Dhabi EDITION, with 57 serviced residences", "Marriott Hotel Downtown Abu Dhabi", "Bloom Arjaan by Rotana, Saadiyat, opened 2026"],
+      who: "Guests, serviced-apartment residents, diners, visitors", exp: "Episodic and lifestyle-led. The guest sees the operator's brand, not Bloom's.", conn: "Real estate (serviced living, same districts), employees (staff discounts).",
+      logos: '<span class="logo logo--edition" role="img" aria-label="The Abu Dhabi EDITION"></span><span class="logo logo--marriott" role="img" aria-label="Marriott"></span>' },
+    com: { name: "The Bloom community", entity: "Where the four meet", icon: "i-pin", c: 0,
+      what: "Once people move in, Bloom runs the community day to day. This is the longest-running relationship Bloom has.",
+      figs: [["4,500+", "homes in Bloom Living"], ["2", "international schools planned inside"], ["1", "town centre: retail, clinic, wellness"]],
+      offers: ["Amenities, access cards, move-in and move-out", "Tenancy renewals and service requests", "Events and announcements (the Community App)"],
+      who: "Residents, tenants, owners, visitors", exp: "Continuous and everyday.", conn: "Real estate (who lives here), services (who fixes it), education (the schools inside)." },
+    ppl: { name: "Bloom people", entity: "The enabling layer", icon: "i-users", c: 0,
+      what: "The workforce behind every domain, from HQ to schools and bfm, served by BlooMultiverse.",
+      figs: [["4", "work apps behind one portal"], ["8", "portal chapters, from Home to FAQ"], ["30%", "staff discount at Bloom hotels"]],
+      offers: ["Tasks and approvals from connected work apps", "People, announcements, policies, communities, perks", "Bloom GPT: answers from the portal's data, and acts on it"],
+      who: "Employees across the group", exp: "Daily work, approvals and belonging.", conn: "All domains: employees are also residents, parents and guests.",
+      logos: '<span class="app app--sf" role="img" aria-label="Salesforce"></span><span class="app app--db" role="img" aria-label="Darwinbox"></span><span class="app app--ui" role="img" aria-label="UiPath"></span><span class="app app--sap" role="img" aria-label="SAP"></span>' }
+  };
+
+  const TIERS = {
+    primary: "People Bloom serves directly and repeatedly. They overlap heavily, so the real unit is the household.",
+    secondary: "Episodic or indirect relationships, often through an operator's brand.",
+    business: "People who work in or with Bloom. Several are also Bloom customers in their private lives."
+  };
+  const GROUPS = [
+    { t: "primary", n: "Home buyers", w: "Local and international buyers, from first-time to premium", d: ["re"], e: "Sales pages, broker inventory" },
+    { t: "primary", n: "Property owners", w: "Owner-occupiers and investor-landlords paying instalments and service charges", d: ["re", "svc"], e: "Bloom Holding Super App" },
+    { t: "primary", n: "Residents", w: "Owners and tenants living in a Bloom community", d: ["com", "svc", "edu"], e: "Bloom Community App" },
+    { t: "primary", n: "School families", w: "Parents choosing and paying for school; students from 18 months to 18", d: ["edu"], e: "Bloom Education and school sites" },
+    { t: "secondary", n: "Guests", w: "Hotel guests and serviced-apartment residents", d: ["hos"], e: "EDITION, Marriott, Arjaan (operator-run)" },
+    { t: "secondary", n: "Visitors and neighbours", w: "People who use a town centre, retail or amenities without living there", d: ["re", "com"], e: "Town-centre plazas for residents and visitors" },
+    { t: "business", n: "Brokers and agencies", w: "UAE and international agents selling Bloom inventory", d: ["re"], e: "Bloom Partners, web and mobile" },
+    { t: "business", n: "Bloom employees", w: "Staff across the group, from HQ to schools and bfm", d: ["ppl"], e: "BlooMultiverse" },
+    { t: "business", n: "Service teams", w: "bfm and Landscape field staff who deliver maintenance and upkeep", d: ["svc"], e: "bfm service lines" },
+    { t: "business", n: "Operating partners", w: "Hotel operators (Marriott, Rotana) and school brand partners (Brighton College)", d: ["hos", "edu"], e: "Operator agreements" },
+    { t: "business", n: "Commercial tenants and B2B clients", w: "Retailers in mixed-use projects; third-party bfm and Landscape clients", d: ["re", "svc"], e: "Soho Square retail; bfm client sectors" }
+  ];
+
+  const JOBS = [
+    { n: "Home buyers", w: "Primary · Real estate", j: ["Find a home and a community that fit my family and budget.", "Understand what life there will really be like before it exists.", "Trust that the developer will deliver what was promised."] },
+    { n: "Owners", w: "Primary · Real estate, services", j: ["Know what I owe, when, and that my payments landed.", "See my home's progress between purchase and handover.", "Protect and grow the value of what I own, including renting it out."] },
+    { n: "Residents", w: "Primary · Community, services, education", j: ["Settle in without chasing paperwork.", "Get an issue with my home resolved, and know when it will be.", "Use the amenities I pay for.", "Discover and join what's happening in my community.", "Know my neighbours."] },
+    { n: "School families", w: "Primary · Education", j: ["Choose the right school with confidence.", "Get my child enrolled and settled.", "Know how my child is doing and what's coming up.", "Fit school life around home and work."] },
+    { n: "Guests", w: "Secondary · Hospitality", j: ["Have a stay that feels effortless and special.", "Discover what's worth doing nearby."] },
+    { n: "Visitors", w: "Secondary · Community", j: ["Find a good reason to spend time in the town centre, and know what's on."] },
+    { n: "Brokers", w: "Business · Real estate", j: ["Know what's available right now.", "Close a sale without back-and-forth.", "Get paid what I'm owed, on time."] },
+    { n: "Employees", w: "Business · Every domain", j: ["See what needs me today and act on it quickly.", "Find the policy, person or answer I need.", "Feel part of Bloom and use what I'm entitled to."] },
+    { n: "Service teams", w: "Business · Services", j: ["Know exactly what the problem is and where, before I arrive.", "Close the job and show it's done."] },
+    { n: "Operating partners", w: "Business · Hospitality, education", j: ["Deliver our brand standard inside a Bloom place.", "Share what matters without losing control of our guest or student relationship."] }
+  ];
+
+  const STAGES = [
+    { n: "Discover", s: "Find a home, school or stay", m: "Find Bloom, a community, a school or a stay.", d: ["re", "edu", "hos"], r: "Open-ended" },
+    { n: "Decide", s: "Visit, compare, build trust", m: "Visit, compare and build trust, with brokers and admissions teams.", d: ["re", "edu"], r: "Weeks, high stakes" },
+    { n: "Commit", s: "Buy, rent, enrol or book", m: "Buy, rent, enrol or book; agree a payment plan.", d: ["re", "edu"], r: "One-off" },
+    { n: "Wait", s: "Construction and instalments", m: "Construction, instalments and pre-arrival. Off-plan homes are handed over years after purchase.", d: ["re"], r: "Months to years, mostly silent", note: "The least supported stage today: payments, and little else.", cls: "wait" },
+    { n: "Arrive", s: "Handover, move-in, first day", m: "Handover, move-in, access cards, the first school day, check-in.", d: ["re", "svc", "edu"], r: "Short, intense, many handovers", note: "The most businesses meet here, in the shortest time.", cls: "arrive" },
+    { n: "Live", s: "Services, payments, school", m: "Services, payments, maintenance, amenities and school days.", d: ["com", "svc", "edu"], r: "Continuous" },
+    { n: "Belong", s: "Events, clubs, neighbours", m: "Events, clubs, neighbours and the school community.", d: ["com", "edu"], r: "Recurring" },
+    { n: "Evolve", s: "Renew, upgrade, resell, refer", m: "Renew, upgrade, resell, reinvest, move to the next school stage, refer a friend.", d: ["re", "edu", "svc", "hos"], r: "Periodic decision points that loop back to Decide" }
+  ];
+
+  const NODES = {
+    homes: { x: 280, y: 55, l: "Homes" }, landscape: { x: 421, y: 103, l: "Landscape" }, hospitality: { x: 480, y: 220, l: "Hospitality" },
+    town: { x: 421, y: 337, l: "Town centre" }, people: { x: 280, y: 385, l: "Bloom people" }, brokers: { x: 139, y: 337, l: "Brokers" },
+    schools: { x: 80, y: 220, l: "Schools" }, services: { x: 139, y: 103, l: "Services" }
+  };
+  const HUB = { x: 280, y: 220, r: 70 };
+  const STATUS = { connected: "Connected", separate: "Separate", open: "Open" };
+  const CONNS = [
+    { n: ["homes", "schools"], t: "Property + Education", w: "Schools and nurseries inside the community; the school run is part of daily life.", e: "Bloom Nursery at Bloom Gardens; two international schools planned in Bloom Living.", s: "separate" },
+    { n: ["homes", "services"], t: "Property + Services", w: "Maintenance, move-in and move-out, service charges.", e: "The Community App tracks service requests; the Super App pays maintenance and service charges.", s: "connected" },
+    { n: ["homes", "landscape"], t: "Property + Landscape", w: "Streets, parks and the central park spine are the first thing residents see.", e: "Bloom Landscape designs and maintains Bloom's outdoor spaces.", s: "separate" },
+    { n: ["hub", "hospitality"], t: "Community + Hospitality", w: "Hotels and serviced apartments in the same districts as Bloom homes.", e: "Bloom Arjaan (Saadiyat) near Soho Square; 57 serviced residences at the EDITION.", s: "separate" },
+    { n: ["brokers", "homes"], t: "Brokers + Owners", w: "The buyer a broker brings becomes an owner.", e: "Bloom Partners and the Super App launched together, as separate apps.", s: "separate" },
+    { n: ["people", "hospitality"], t: "Bloom people + Hospitality", w: "Employees enjoy Bloom's own hotels.", e: "30% staff discounts at the EDITION and Marriott Downtown, in BlooMultiverse.", s: "connected" },
+    { n: ["hospitality", "homes"], t: "Hospitality + Real estate", w: "A stay or a serviced apartment as a way to try Bloom living.", e: "No evidence found yet.", s: "open" },
+    { n: ["schools", "hub"], t: "Education + Community", w: "School life and neighbourhood life share the same families and calendar.", e: "Nothing found beyond co-location.", s: "open" },
+    { n: ["people", "schools", "hub"], t: "Bloom people + Community and Education", w: "Employees who are also residents or school parents.", e: "No evidence found yet.", s: "open" },
+    { n: ["town", "hub"], t: "Town centre + Residents and visitors", w: "Retail, F&B, clinic and wellness as the community's shared living room.", e: "Bloom Living town-centre plans.", s: "open" }
+  ];
+
+  const TPS = [
+    { n: "bloomholding.com", k: "Website", a: ["customers", "partners"], p: "Brand, communities and homes for sale, press and articles, with links to every business.", r: "The parent brand's front door, and the only place all domains appear together." },
+    { n: "Bloom Community App", k: "App", a: ["customers"], p: "Move-in and move-out, renewals, access cards, amenity booking, payments, service requests, events.", r: "The operating system of the Live stage." },
+    { n: "Bloom Holding Super App", k: "App", a: ["customers"], p: "Instalments, maintenance and service-charge payments, with real-time visibility.", r: "The owner's ledger from Commit to Live. It overlaps the Community App on payments." },
+    { n: "Bloom Partners", k: "Web and mobile", a: ["partners"], p: "Broker registration, live inventory, commissions and team performance.", r: "The sales engine behind real estate." },
+    { n: "Bloom Education and school sites", k: "Websites", a: ["customers"], p: "Choosing a school, admissions and school news, with a separate site per school.", r: "Education's front door. It is not linked to the home community." },
+    { n: "bfm.ae", k: "Website", a: ["partners"], p: "Facilities-management services for commercial and institutional clients.", r: "Sells services outside Bloom. Residents meet bfm through the Community App." },
+    { n: "Hotel channels", k: "Operator-owned", a: ["customers"], p: "Booking, loyalty and the stay at the EDITION, Marriott Downtown and Bloom Arjaan.", r: "Bloom is invisible here, by design of the operating model.",
+      x: '<div class="logos"><span class="logo logo--edition" role="img" aria-label="The Abu Dhabi EDITION"></span><span class="logo logo--marriott" role="img" aria-label="Marriott"></span></div>' },
+    { n: "BlooMultiverse Interactive", k: "Web portal", a: ["employees"], ok: 1, p: "Tasks and approvals, people, announcements, policies, communities, discounts, perks, and an Inbox requests workspace.", r: "The approved reference for Bloom's digital design language.",
+      x: '<div class="logos"><span class="app app--sf" role="img" aria-label="Salesforce"></span><span class="app app--db" role="img" aria-label="Darwinbox"></span><span class="app app--ui" role="img" aria-label="UiPath"></span><span class="app app--sap" role="img" aria-label="SAP"></span></div>' },
+    { n: "BlooMultiverse Mobile App", k: "App", a: ["employees"], ok: 1, p: "The employee experience on the phone.", r: "The approved reference for Bloom's mobile language. Not yet reviewed first-hand." },
+    { n: "Bloom GPT", k: "Assistant prototype", a: ["employees"], p: "Answers from the portal's own data and acts on it: approve a task, open a policy, copy a code, set a reminder.", r: "Bloom's first expression of AI, in its own voice. Scripted, not a live model." },
+    { n: "Bloom Universal", k: "To confirm", a: [], unk: 1, p: "Named in the brief, but we found no public trace of a product with this name.", r: "It may refer to BlooMultiverse or to an internal product. To confirm in Phase 2." }
+  ];
+  const AUD = { all: "All", customers: "Customers", partners: "Partners", employees: "Employees" };
+
+  const DIMS = [
+    ["Brand personality", "Premium but family-centred; curated rather than exhaustive; confident, modern and people-first. “Developer of choice for curated premium communities.”", "Corporate and BlooMultiverse"],
+    ["Visual personality", "An editorial magazine meets a calm control centre. Warm paper-white pages alternate with deep-navy chapters.", "BlooMultiverse"],
+    ["Typography", "Oversized display type in Bricolage Grotesque with tight tracking; Instrument Sans for interface text; Instrument Serif italic for one emphasised word.", "BlooMultiverse"],
+    ["Colour", "Deep navy ink, warm off-white canvas and an electric-blue accent that fades into navy gradients. The logo's red-over-blue flag is the only strong red. Dark mode is its own navy atmosphere, not an inversion.", "BlooMultiverse"],
+    ["Shape", "Soft and generous: pill buttons, chips and tabs; squircle app tiles; large rounded cards and chapter panels; nested corners kept concentric.", "BlooMultiverse"],
+    ["Layout", "Numbered chapters on a wide, airy grid; editorial spreads; horizontal strips and reels; each chapter ends in one “see all” link.", "BlooMultiverse"],
+    ["Imagery", "Real people first: named new joiners, colleagues, sports communities. Partner logos on white tiles. Architecture-led lifestyle photography on the corporate side.", "BlooMultiverse and corporate"],
+    ["Iconography", "Clean line icons; third-party apps in their own logos on tiles; the logo's ribbon flag reused as a playful cursor.", "BlooMultiverse"],
+    ["UI styling", "Frosted-glass floating chrome, soft navy-tinted shadows, status pills, and counters written “01 / 05”.", "BlooMultiverse"],
+    ["Interaction", "One floating capsule that shows only the current chapter; search as a command palette; hover to spotlight, select to filter; act in place.", "BlooMultiverse"],
+    ["Motion", "Scroll-driven and choreographed: masked word reveals, pinned reels, magnetic buttons, a fluttering flag. Every effect has a reduced-motion fallback.", "BlooMultiverse"],
+    ["Storytelling", "The page is a narrative day: greeting, what needs you, people, policies, life at Bloom, perks, help. Interludes carry rhythm: “Join · Save · Belong”.", "BlooMultiverse"],
+    ["Tone of voice", "Second person, short and warm: “Welcome to the Bloom family.” The corporate voice speaks of curated communities, families and generations.", "Both"]
+  ];
+
+  const PRINCIPLES = [
+    ["The household, not the business unit", "Design for the person across every role they hold with Bloom: owner, resident, parent, guest, employee.", "One family can meet up to eight Bloom front doors today."],
+    ["The place is the front door", "Start from the community, campus or hotel a person belongs to. That is where Bloom's businesses already meet.", "Bloom Living puts homes, schools, a town centre and services in one place."],
+    ["Curate, don't catalogue", "Show what matters now, and to me, then let people go deeper. Editing is the premium.", "“Curated Community Living”, and BlooMultiverse's “Salesforce needs you most today”."],
+    ["Every wait is attended", "Long waits show progress, the next step and who is on it: construction, handover, admissions, a repair. Silence feels like neglect.", "Off-plan handovers years after purchase; step progress on requests in BlooMultiverse."],
+    ["Act where you are", "Pay, book, request, approve or reply from the moment you see it, without switching apps.", "Approvals in place in BlooMultiverse; Bloom GPT answers that act."],
+    ["Warm by default, premium in the craft", "Greet people by name and show real faces. Let type, motion and material carry the premium, never distance or jargon.", "“Good morning, Rashid.” “Welcome to the Bloom family.”"],
+    ["Continuity for a lifetime", "Remember context from stage to stage and business to business, with consent, so no one repeats themselves.", "Relationships from nursery to graduation, and “communities that last for generations”."]
+  ];
+
+  const OPPS = {
+    Experience: [
+      ["One Bloom relationship across roles", "Owners, residents and parents are often one household, served by separate front doors."],
+      ["The wait between purchase and handover", "Months to years with little more than payment reminders."],
+      ["Arrival as one moment", "Handover, bfm move-in, access cards and school start land in the same few weeks."],
+      ["Belonging beyond transactions", "Community events exist in the Community App; town centres, schools and clubs are natural stages for more."]
+    ],
+    Product: [
+      ["Owner and resident apps that overlap", "Both the Super App and the Community App handle payments."],
+      ["From broker to buyer to owner, without a restart", "Bloom Partners and the Super App launched side by side, as separate apps."],
+      ["Schools and communities that know each other", "Schools sit inside Bloom communities with no digital link between them."],
+      ["Employees as customers", "Staff already get discounts at Bloom hotels; many may also be residents or parents."]
+    ],
+    Design: [
+      ["One Bloom language across brand, customer and employee products", "BlooMultiverse is the most mature expression; customer apps and sites each look their own way."],
+      ["A brand architecture for endorsed brands", "Brighton College, EDITION, Marriott and Rotana lead with their own brands; how “by Bloom” appears is undefined."],
+      ["Proven patterns ready to reuse", "Chapters, the capsule nav, the requests workspace and step progress already work for employees."]
+    ],
+    "Technology and AI": [
+      ["A shared identity and household profile", "Each app registers people separately today (to confirm)."],
+      ["Connected service data", "bfm runs IoT-driven energy services; residents do not see that data."],
+      ["An assistant that answers from Bloom's own data", "Bloom GPT proves the pattern for employees; customer data needs the shared foundation first."],
+      ["Partner integrations", "Hotel and school operators hold their own guest and student systems."]
+    ]
+  };
+
+  const QUESTIONS = [
+    ["What is Bloom Universal?", "Named in the brief; no public trace found."],
+    ["How many customers hold more than one Bloom role?", "Sizes the value of a household view."],
+    ["Do the Community App, Super App and Bloom Partners share identity, data or a backend?", "Decides what “one Bloom” costs technically."],
+    ["What may be shared between businesses, with what consent?", "School, payment and home data carry different sensitivities."],
+    ["Masterbrand or endorsed brands: how visible should Bloom be in each domain?", "Shapes how far the design language reaches."],
+    ["Which parts of the BlooMultiverse language are Bloom, and which belong to a workplace tool?", "Separates the brand from the product."],
+    ["Which community could pilot a connected experience?", "Bloom Living has the most domains in one place."],
+    ["What are the Arabic, right-to-left and accessibility requirements?", "Affects type, layout and motion from day one."],
+    ["How will success be measured?", "Needs baselines before anything changes."]
+  ];
+
+  /* ---------------- Helpers ---------------- */
+  // Tabs: click and arrow keys; arrow keys never reach the deck while a tab list has focus.
+  function tablist(list, onPick) {
+    const btns = () => $$('[role="tab"]', list);
+    function pick(b, silent) {
+      btns().forEach((x) => { const on = x === b; x.setAttribute("aria-selected", String(on)); x.tabIndex = on ? 0 : -1; });
+      if (!silent) onPick(b);
+    }
+    list.addEventListener("click", (e) => { const b = e.target.closest('[role="tab"]'); if (b && list.contains(b)) pick(b); });
+    list.addEventListener("keydown", (e) => {
+      const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+      if (!keys.includes(e.key)) return;
+      e.preventDefault(); e.stopPropagation();
+      const bs = btns(); let i = bs.indexOf(document.activeElement);
+      if (i < 0) i = bs.findIndex((b) => b.getAttribute("aria-selected") === "true");
+      const fwd = e.key === "ArrowRight" || e.key === "ArrowDown";
+      const n = e.key === "Home" ? 0 : e.key === "End" ? bs.length - 1 : (i + (fwd ? 1 : -1) + bs.length) % bs.length;
+      bs[n].focus(); pick(bs[n]);
+    });
+    return pick;
+  }
+
+  /* ---------------- 02 Why ---------------- */
+  const compare = $("#compare");
+  tablist($("#why-tabs"), (b) => {
+    const eco = b.dataset.mode === "eco";
+    compare.classList.add("is-swap");
+    setTimeout(() => {
+      $$(".compare__v", compare).forEach((v) => { v.textContent = eco ? v.dataset.eco : v.dataset.today; });
+      compare.classList.toggle("is-eco", eco);
+      compare.classList.remove("is-swap");
+    }, reduce ? 0 : 180);
+  });
+
+  /* ---------------- 03 Business ecosystem ---------------- */
+  const ecoDet = $("#eco-detail");
+  function renderEco(k) {
+    const d = ECO[k];
+    const tileStyle = d.c ? `--c:var(--viz-${d.c})` : "--c:var(--accent)";
+    ecoDet.innerHTML = `
+      <header class="det__head"><span class="tile" style="${tileStyle}"><svg class="ico"><use href="#${d.icon}"/></svg></span><div><h3>${esc(d.name)}</h3><p>${esc(d.entity)}</p></div></header>
+      <p class="det__what">${esc(d.what)}</p>
+      <div class="figs">${d.figs.map(([b, s]) => `<div><b>${esc(b)}</b><span>${esc(s)}</span></div>`).join("")}</div>
+      <div class="det__cols">
+        <div><div><h4>What Bloom offers</h4><ul class="bul">${d.offers.map((o) => `<li>${esc(o)}</li>`).join("")}</ul></div>${d.logos ? `<div class="logos">${d.logos}</div>` : ""}</div>
+        <div><div><h4>Who interacts</h4><p class="v">${esc(d.who)}</p></div><div><h4>Experience it creates</h4><p class="v">${esc(d.exp)}</p></div><div><h4>Connects to</h4><p class="v">${esc(d.conn)}</p></div></div>
+      </div>`;
+  }
+  tablist($("#eco-tabs"), (b) => { renderEco(b.dataset.k); ecoDet.classList.remove("swap"); void ecoDet.offsetWidth; ecoDet.classList.add("swap"); });
+  renderEco("re");
+
+  /* ---------------- 04 Stakeholders ---------------- */
+  function renderTier(t) {
+    $("#tier-lead").textContent = TIERS[t];
+    $("#tier-list").innerHTML = GROUPS.filter((g) => g.t === t).map((g) => `
+      <li class="group"><h3>${esc(g.n)}</h3><p>${esc(g.w)}</p><div class="group__meta">${g.d.map(dtag).join("")}</div><span class="group__ev">Evidence: ${esc(g.e)}</span></li>`).join("");
+  }
+  tablist($("#tier-tabs"), (b) => renderTier(b.dataset.tier));
+  renderTier("primary");
+
+  /* ---------------- 05 Household ---------------- */
+  const hhRows = $$("#hh-rows .hh__row");
+  let hhTimer = null;
+  function hhOn(i) {
+    hhRows.forEach((r, k) => { r.classList.toggle("is-on", k === i); $(".hh__role", r).setAttribute("aria-pressed", String(k === i)); });
+  }
+  function hhStop() { clearInterval(hhTimer); hhTimer = null; $("#hh-play").lastChild.textContent = "Play the years"; }
+  hhRows.forEach((r, i) => $(".hh__role", r).addEventListener("click", () => { hhStop(); hhOn(r.classList.contains("is-on") ? -1 : i); }));
+  $("#hh-play").addEventListener("click", () => {
+    if (hhTimer) { hhStop(); return; }
+    let i = 0; hhOn(0);
+    $("#hh-play").lastChild.textContent = "Pause";
+    hhTimer = setInterval(() => { i += 1; if (i >= hhRows.length) { hhStop(); hhOn(-1); return; } hhOn(i); }, 1300);
+  });
+  hhOn(0);
+
+  /* ---------------- 06 Jobs ---------------- */
+  const jobTabs = $("#job-tabs");
+  jobTabs.innerHTML = JOBS.map((j, i) => `<button class="chip" type="button" role="tab" aria-selected="${i === 2}" tabindex="${i === 2 ? 0 : -1}" data-i="${i}">${esc(j.n)}</button>`).join("");
+  function renderJobs(i) {
+    const j = JOBS[i];
+    $("#job-who").textContent = j.w;
+    $("#job-list").innerHTML = j.j.map((t, k) => `<li class="job" style="animation:rise .5s var(--ease-expo) both;animation-delay:${k * 50}ms">${esc(t)}</li>`).join("");
+  }
+  tablist(jobTabs, (b) => renderJobs(Number(b.dataset.i)));
+  renderJobs(2);
+
+  /* ---------------- 07 Lifecycle ---------------- */
+  const lifeTabs = $("#life-tabs");
+  lifeTabs.innerHTML = STAGES.map((s, i) => `<li role="presentation"><button class="stage-btn${s.cls ? ` stage-btn--${s.cls}` : ""}" type="button" role="tab" aria-selected="${i === 4}" tabindex="${i === 4 ? 0 : -1}" data-i="${i}"><span class="stage-btn__n">${pad(i + 1)}</span><strong>${esc(s.n)}</strong><small>${esc(s.s)}</small></button></li>`).join("");
+  function renderStage(i) {
+    const s = STAGES[i];
+    $("#life-det").innerHTML = `
+      <div><h3>${pad(i + 1)} · ${esc(s.n)}</h3><p>${esc(s.m)}</p>${s.note ? `<p class="note"><i class="dot" style="--c:var(--accent)"></i>${esc(s.note)}</p>` : ""}</div>
+      <div><h4 class="bx__k">Domains that lead</h4><div class="domains" style="margin-top:8px">${s.d.map(dtag).join("")}</div></div>
+      <div><h4 class="bx__k">Rhythm</h4><p style="margin-top:8px">${esc(s.r)}</p></div>`;
+  }
+  tablist(lifeTabs, (b) => renderStage(Number(b.dataset.i)));
+  renderStage(4);
+
+  /* ---------------- 08 Relationships ---------------- */
+  const svgNS = "http://www.w3.org/2000/svg";
+  const map = $("#rel-map");
+  const el = (tag, attrs, parent) => { const n = document.createElementNS(svgNS, tag); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); if (parent) parent.append(n); return n; };
+  const gSpokes = el("g", {}, map), gLink = el("g", {}, map), gNodes = el("g", {}, map);
+  const spokes = {}, nodeEls = {};
+  const small = matchMedia("(max-width: 640px)").matches, fs = small ? 18 : 14, nh = small ? 44 : 40;
+  Object.entries(NODES).forEach(([k, p]) => {
+    spokes[k] = el("line", { class: "spoke", x1: HUB.x, y1: HUB.y, x2: p.x, y2: p.y }, gSpokes);
+    const g = el("g", { class: "node" }, gNodes);
+    const w = p.l.length * fs * .6 + 32;
+    el("rect", { x: p.x - w / 2, y: p.y - nh / 2, width: w, height: nh, rx: nh / 2 }, g);
+    const t = el("text", { x: p.x, y: p.y + fs * .36, "text-anchor": "middle", "font-size": fs }, g); t.textContent = p.l;
+    nodeEls[k] = g;
+  });
+  const hub = el("g", { class: "hub" }, map);
+  el("circle", { cx: HUB.x, cy: HUB.y, r: HUB.r }, hub);
+  const h1 = el("text", { x: HUB.x, y: HUB.y - 4, "text-anchor": "middle", "font-size": fs + 2 }, hub); h1.textContent = "The Bloom";
+  const h2 = el("text", { x: HUB.x, y: HUB.y + 16, "text-anchor": "middle", "font-size": fs + 2 }, hub); h2.textContent = "community";
+
+  function showConn(c) {
+    Object.entries(nodeEls).forEach(([k, g]) => g.classList.toggle("on", c.n.includes(k)));
+    Object.entries(spokes).forEach(([k, s]) => s.classList.toggle("on", c.n.includes(k) && c.n.includes("hub")));
+    hub.classList.toggle("on", c.n.includes("hub"));
+    gLink.innerHTML = "";
+    const outer = c.n.filter((k) => k !== "hub");
+    if (outer.length >= 2) {
+      const a = NODES[outer[0]], b = NODES[outer[1]];
+      const dx = b.x - a.x, dy = b.y - a.y, near = Math.abs((HUB.x - a.x) * dy - (HUB.y - a.y) * dx) / Math.hypot(dx, dy) < HUB.r + 30;
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, k = near ? .5 : .08, cx = mx + (mx - HUB.x) * k, cy = my + (my - HUB.y) * k;
+      el("path", { class: "link", d: `M${a.x} ${a.y} Q${cx} ${cy} ${b.x} ${b.y}` }, gLink);
+    }
+  }
+  let relFilter = "all";
+  const relList = $("#rel-list");
+  function renderConns() {
+    const list = CONNS.map((c, i) => ({ c, i })).filter(({ c }) => relFilter === "all" || c.s === relFilter);
+    relList.innerHTML = list.map(({ c, i }, k) => `<button class="conn" type="button" role="tab" aria-selected="${k === 0}" tabindex="${k === 0 ? 0 : -1}" data-i="${i}"><strong>${esc(c.t)}</strong><span class="status status--${c.s}">${STATUS[c.s]}</span><small>${esc(c.w)}</small><span class="conn__ev">Evidence today: ${esc(c.e)}</span></button>`).join("");
+    if (list.length) showConn(list[0].c);
+  }
+  tablist(relList, (b) => showConn(CONNS[Number(b.dataset.i)]));
+  const relFilterEl = $("#rel-filter");
+  const count = (s) => CONNS.filter((c) => c.s === s).length;
+  relFilterEl.innerHTML = [["all", "All", CONNS.length], ...Object.entries(STATUS).map(([k, v]) => [k, v, count(k)])]
+    .map(([k, v, n], i) => `<button class="chip" type="button" role="tab" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-f="${k}">${v} <span class="chip__n">${n}</span></button>`).join("");
+  tablist(relFilterEl, (b) => { relFilter = b.dataset.f; renderConns(); });
+  renderConns();
+
+  /* ---------------- 09 Touchpoints ---------------- */
+  const tpFilter = $("#tp-filter");
+  const tpCount = (a) => a === "all" ? TPS.length : TPS.filter((t) => t.a.includes(a)).length;
+  tpFilter.innerHTML = Object.entries(AUD).map(([k, v], i) => `<button class="chip" type="button" role="tab" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-a="${k}">${v} <span class="chip__n">${tpCount(k)}</span></button>`).join("");
+  function renderTps(a) {
+    const list = TPS.filter((t) => a === "all" || t.a.includes(a));
+    $("#tp-list").innerHTML = list.map((t, i) => `
+      <article class="tp${t.ok ? " tp--approved" : ""}${t.unk ? " tp--unknown" : ""}" style="--i:${i}">
+        <div class="tp__top"><span class="tag${t.ok ? " tag--accent" : ""}">${esc(t.k)}${t.ok ? " · Approved" : ""}</span>${t.a.length ? `<span class="small">${t.a.map((x) => AUD[x]).join(", ")}</span>` : ""}</div>
+        <h3>${esc(t.n)}</h3><p>${esc(t.p)}</p>${t.x || ""}<p class="tp__role">${esc(t.r)}</p>
+      </article>`).join("");
+  }
+  tablist(tpFilter, (b) => renderTps(b.dataset.a));
+  renderTps("all");
+
+  /* ---------------- 10 Look: motion replay ---------------- */
+  const reveal = $("#reveal");
+  function replay() { reveal.classList.remove("play"); void reveal.offsetWidth; reveal.classList.add("play"); }
+  $("#replay").addEventListener("click", replay);
+
+  /* ---------------- 11 Dimensions ---------------- */
+  const dimTabs = $("#dim-tabs");
+  dimTabs.innerHTML = DIMS.map((d, i) => `<button class="chip" type="button" role="tab" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">${esc(d[0])}</button>`).join("");
+  function renderDim(i) {
+    const [n, t, s] = DIMS[i];
+    $("#dim-body").innerHTML = `<h3>${esc(n)}</h3><p>${esc(t)}</p><span class="tag">Seen in: ${esc(s)}</span>`;
+  }
+  tablist(dimTabs, (b) => renderDim(Number(b.dataset.i)));
+  renderDim(0);
+
+  /* ---------------- 12 Principles ---------------- */
+  const prTabs = $("#pr-tabs");
+  prTabs.innerHTML = PRINCIPLES.map((p, i) => `<button class="pr__row" type="button" role="tab" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}"><span>${pad(i + 1)}</span>${esc(p[0])}<svg class="ico ico--sm"><use href="#i-arrow-r"/></svg></button>`).join("");
+  let prI = 0;
+  function renderPr(i) {
+    prI = i;
+    const [t, m, g] = PRINCIPLES[i];
+    const body = $("#pr-body");
+    body.innerHTML = `<span class="pr__num">${pad(i + 1)}</span><h3 class="pr__title">${esc(t)}</h3><p class="pr__means">${esc(m)}</p><p class="pr__ground">Grounded in: ${esc(g)}</p>`;
+    body.classList.remove("swap"); void body.offsetWidth; body.classList.add("swap");
+    $("#pr-count").textContent = `${pad(i + 1)} / ${pad(PRINCIPLES.length)}`;
+    $("#pr-fill").style.transform = `scaleX(${(i + 1) / PRINCIPLES.length})`;
+    $("#pr-prev").disabled = i === 0; $("#pr-next").disabled = i === PRINCIPLES.length - 1;
+  }
+  const pickPr = tablist(prTabs, (b) => renderPr(Number(b.dataset.i)));
+  const prStep = (d) => { const n = Math.max(0, Math.min(PRINCIPLES.length - 1, prI + d)); pickPr($$('[role="tab"]', prTabs)[n]); };
+  $("#pr-prev").addEventListener("click", () => prStep(-1));
+  $("#pr-next").addEventListener("click", () => prStep(1));
+  renderPr(0);
+
+  /* ---------------- 13 Opportunities ---------------- */
+  const oppTabs = $("#opp-tabs");
+  const cats = Object.keys(OPPS);
+  oppTabs.innerHTML = cats.map((c, i) => `<button class="chip" type="button" role="tab" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-c="${esc(c)}">${esc(c)} <span class="chip__n">${OPPS[c].length}</span></button>`).join("");
+  function renderOpps(c) {
+    $("#opp-list").innerHTML = OPPS[c].map(([t, s], i) => `<article class="opp" style="--i:${i}"><h3>${esc(t)}</h3><p><b>Signal:</b> ${esc(s)}</p></article>`).join("");
+  }
+  tablist(oppTabs, (b) => renderOpps(b.dataset.c));
+  renderOpps(cats[0]);
+
+  /* ---------------- 14 Questions ---------------- */
+  $("#q-list").innerHTML = QUESTIONS.map(([q, w], i) => `<li><span>${pad(i + 3)}</span><div><b>${esc(q)}</b><small>${esc(w)}</small></div></li>`).join("");
+
+  /* ---------------- Deck navigation ---------------- */
+  const root = document.documentElement;
+  const slides = $$(".slide");
+  const N = slides.length;
+  const chrome = $("#chrome"), rail = $("#rail"), capsule = $("#capsule"), jump = $("#jump");
+  let cur = -1;
+  $("#jump-list").innerHTML = slides.map((s, i) => `<li><button type="button" data-go="${i}"><span>${pad(i + 1)}</span>${esc(s.dataset.title)}</button></li>`).join("");
+  slides.forEach((s, i) => { s.id = `s${pad(i + 1)}`; s.setAttribute("aria-label", `${pad(i + 1)} of ${pad(N)}: ${s.dataset.title}`); });
+
+  function go(i) {
+    i = Math.max(0, Math.min(N - 1, i));
+    if (i === cur) return;
+    cur = i;
+    slides.forEach((s, k) => {
+      const on = k === i;
+      s.classList.toggle("is-current", on);
+      s.classList.toggle("is-before", k < i);
+      s.inert = !on;
+      s.setAttribute("aria-hidden", String(!on));
+    });
+    const s = slides[i];
+    s.scrollTop = 0;
+    $("#cap-num").textContent = pad(i + 1);
+    $("#cap-name").textContent = s.dataset.title;
+    $("#counter").textContent = `${pad(i + 1)} / ${pad(N)}`;
+    $("#rail-fill").style.transform = `scaleX(${(i + 1) / N})`;
+    const dark = s.classList.contains("invert");
+    chrome.classList.toggle("invert", dark);
+    rail.classList.toggle("invert", dark);
+    $("#prev").disabled = i === 0;
+    $("#next").disabled = i === N - 1;
+    $$("#jump-list button").forEach((b, k) => b.setAttribute("aria-current", String(k === i)));
+    try { history.replaceState(null, "", `#s${pad(i + 1)}`); } catch { /* sandboxed */ }
+    if (s.contains(reveal)) setTimeout(replay, reduce ? 0 : 300);
+    if (!s.querySelector("#hh-rows")) hhStop();
+  }
+  const next = () => go(cur + 1), prev = () => go(cur - 1);
+
+  function setJump(open) {
+    jump.hidden = !open;
+    capsule.setAttribute("aria-expanded", String(open));
+    if (open) $('#jump-list [aria-current="true"]')?.focus();
+  }
+  capsule.addEventListener("click", () => setJump(jump.hidden));
+  document.addEventListener("click", (e) => {
+    const g = e.target.closest("[data-go]");
+    if (g) {
+      e.preventDefault();
+      const v = g.dataset.go;
+      if (v === "next") next(); else if (v === "prev") prev(); else go(Number(v));
+      setJump(false);
+      return;
+    }
+    if (!jump.hidden && !e.target.closest(".capsule-wrap")) setJump(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (e.key === "Escape" && !jump.hidden) { setJump(false); capsule.focus(); return; }
+    const tag = (e.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); next(); }
+    else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); prev(); }
+    else if (e.key === "Home" && jump.hidden) { e.preventDefault(); go(0); }
+    else if (e.key === "End" && jump.hidden) { e.preventDefault(); go(N - 1); }
+    else if (e.key === " " && (e.target === document.body || e.target.classList.contains("slide"))) { e.preventDefault(); e.shiftKey ? prev() : next(); }
+  });
+  let tx = 0, ty = 0, tIgnore = false;
+  const deck = $("#deck");
+  deck.addEventListener("touchstart", (e) => { const t = e.touches[0]; tx = t.clientX; ty = t.clientY; tIgnore = !!e.target.closest(".chips--scroll, .conns"); }, { passive: true });
+  deck.addEventListener("touchend", (e) => {
+    if (tIgnore) return;
+    const t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) (dx < 0 ? next : prev)();
+  }, { passive: true });
+
+  /* theme */
+  const sysDark = matchMedia("(prefers-color-scheme: dark)");
+  const saved = store.get("bloom-eco-theme");
+  if (saved === "light" || saved === "dark") root.dataset.theme = saved;
+  $("#theme-btn").addEventListener("click", () => {
+    const now = root.dataset.theme || (sysDark.matches ? "dark" : "light");
+    const t = now === "dark" ? "light" : "dark";
+    root.dataset.theme = t;
+    store.set("bloom-eco-theme", t);
+  });
+
+  const m = /^#s(\d{2})$/.exec(location.hash);
+  go(m ? Number(m[1]) - 1 : 0);
+})();
+</script>
+</body>
+</html>
