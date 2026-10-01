@@ -9,10 +9,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap">
 <style>
-/* Layout: eleven full-screen chapters, one interaction each. Bloom red leads the brand
+/* Layout: twelve full-screen chapters, one interaction each. Bloom red leads the brand
    (the crimson palette Bloom Multiverse already carries as "the original Bloom accent");
    the Bloom Multiverse language sets the rest: warm paper, navy ink, frosted chrome,
-   "01 / 11" counters. */
+   "01 / 12" counters. Chapters follow the brief's sections 01 to 11 in order. */
 :root {
   color-scheme: light;
   --canvas: #F6F4EF; --surface: #FFFFFF; --surface-2: #F3F1EB; --line: #E3DFD5; --line-strong: #CEC8BC;
@@ -234,6 +234,16 @@ ul, ol { padding: 0; list-style: none; }
 .jobs { display: grid; gap: 8px; }
 .jobs li { position: relative; padding: 14px 16px 14px 40px; border-radius: var(--r-md); background: var(--surface-2); font-family: var(--font-display); font-size: 1.125rem; letter-spacing: -.005em; line-height: 1.3; }
 .jobs li::before { content: "\201C"; position: absolute; left: 14px; top: 6px; font-family: var(--font-serif); font-size: 2rem; color: var(--accent-fg); }
+
+.jobs--big { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.jobs--big li { min-height: 120px; padding: 44px 22px 22px; border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--sh-1); font-size: 1.375rem; font-weight: 500; animation: rise .5s var(--ease-expo) both; animation-delay: calc(var(--i, 0) * 60ms); }
+.jobs--big li::before { left: 20px; top: 10px; font-size: 3rem; }
+.shared { display: grid; gap: 12px; padding: 20px 22px; border-radius: var(--r-lg); background: linear-gradient(155deg, var(--grad)); color: #FFFFFF; }
+.shared .k { color: rgba(255, 255, 255, .78); }
+.shared ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.shared li { padding-left: 12px; border-left: 2px solid rgba(255, 255, 255, .6); font-size: 1rem; line-height: 1.35; }
+@media (max-width: 960px) { .shared ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .shared ul { grid-template-columns: minmax(0, 1fr); } .jobs--big li { font-size: 1.125rem; min-height: 0; } }
 
 /* 05 products */
 .prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
@@ -457,10 +467,10 @@ ul, ol { padding: 0; list-style: none; }
   </div>
 </section>
 
-<!-- 04 PEOPLE -->
-<section class="slide" data-title="People and their jobs" aria-roledescription="slide">
+<!-- 04 STAKEHOLDERS -->
+<section class="slide" data-title="Stakeholders" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">03 + 04 · Stakeholders and jobs</p><h2 class="title rv" style="--d:1">Who Bloom serves, and what they need to <em>get done</em>.</h2></header>
+    <header class="head"><p class="eyebrow rv">03 · Stakeholder ecosystem</p><h2 class="title rv" style="--d:1">Ten groups in three tiers. The real unit is the <em>household</em>.</h2></header>
     <div class="two">
       <div class="people rv" style="--d:2" id="people" role="tablist" aria-label="Stakeholders"></div>
       <div class="card panel rv" style="--d:3" id="people-panel" aria-live="polite"></div>
@@ -468,15 +478,18 @@ ul, ol { padding: 0; list-style: none; }
   </div>
 </section>
 
-<!-- 05 PRODUCTS -->
-<section class="slide" data-title="Every Bloom product" aria-roledescription="slide">
+<!-- 05 JOBS -->
+<section class="slide" data-title="Jobs to be done" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">07 · Digital touchpoints</p><h2 class="title rv" style="--d:1">Thirteen products. One Bloom <em>system</em>.</h2></header>
-    <div class="chips rv" style="--d:2" role="tablist" aria-label="Filter products" id="prod-filter"></div>
-    <div class="two" style="align-items:start">
-      <div class="prods rv" style="--d:3" id="prods" role="tablist" aria-label="Products"></div>
-      <div class="card panel rv" style="--d:4" id="prod-panel" aria-live="polite"></div>
-    </div>
+    <header class="head"><p class="eyebrow rv">04 · User jobs and needs</p><h2 class="title rv" style="--d:1">Jobs are about confidence and <em>continuity</em>.</h2></header>
+    <div class="chips rv" style="--d:2" role="tablist" aria-label="Whose jobs" id="jobs-tabs"></div>
+    <ul class="jobs jobs--big rv" style="--d:3" id="jobs-list" aria-live="polite"></ul>
+    <div class="shared rv" style="--d:4"><span class="k">Jobs every group shares</span><ul>
+      <li>Know what needs me, and what's waiting on someone else.</li>
+      <li>Reach a real person quickly when it matters.</li>
+      <li>Do it once: never re-enter who I am for each part of Bloom.</li>
+      <li>Feel that Bloom knows me, without feeling watched.</li>
+    </ul></div>
   </div>
 </section>
 
@@ -514,6 +527,18 @@ ul, ol { padding: 0; list-style: none; }
         <div class="reveal" id="reveal" aria-live="polite"></div>
         <div class="score"><b id="score">1 / 9</b><span>connections found</span><div class="pips" id="pips"></div><button class="icon-btn" type="button" id="con-reset" aria-label="Start again"><svg class="ico"><use href="#i-reset"/></svg></button></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 PRODUCTS -->
+<section class="slide" data-title="Every Bloom product" aria-roledescription="slide">
+  <div class="slide__in">
+    <header class="head"><p class="eyebrow rv">07 · Digital touchpoints</p><h2 class="title rv" style="--d:1">Thirteen products. One Bloom <em>system</em>.</h2></header>
+    <div class="chips rv" style="--d:2" role="tablist" aria-label="Filter products" id="prod-filter"></div>
+    <div class="two" style="align-items:start">
+      <div class="prods rv" style="--d:3" id="prods" role="tablist" aria-label="Products"></div>
+      <div class="card panel rv" style="--d:4" id="prod-panel" aria-live="polite"></div>
     </div>
   </div>
 </section>
@@ -588,7 +613,7 @@ ul, ol { padding: 0; list-style: none; }
 <footer class="rail invert" id="rail">
   <div class="rail-foot frost">
     <span class="progress" aria-hidden="true"><i id="rail-fill"></i></span>
-    <span class="counter" id="counter" aria-live="polite">01 / 11</span>
+    <span class="counter" id="counter" aria-live="polite">01 / 12</span>
     <button class="icon-btn" type="button" id="prev" data-go="prev" aria-label="Previous chapter"><svg class="ico"><use href="#i-arrow-l"/></svg></button>
     <button class="icon-btn" type="button" id="next" data-go="next" aria-label="Next chapter"><svg class="ico"><use href="#i-arrow-r"/></svg></button>
   </div>
@@ -802,20 +827,31 @@ ul, ol { padding: 0; list-style: none; }
   tablist($("#biz-tabs"), (b) => renderBiz(b.dataset.k));
   renderBiz("re");
 
-  /* ================= 04 PEOPLE ================= */
+  /* ================= 04 STAKEHOLDERS ================= */
+  const TIER_SAY = { Primary: "Served directly and repeatedly. They overlap: one household can be all of them.", Secondary: "Episodic or indirect, often through an operator's brand.", Business: "Work in or with Bloom. Several are also Bloom customers at home." };
   const peopleEl = $("#people"), peoplePanel = $("#people-panel");
-  peopleEl.innerHTML = ["Primary", "Secondary", "Business"].map((t) => `<div class="people__tier" role="presentation"><span class="k">${t === "Business" ? "Business and operational" : t}</span><div class="chips">${PEOPLE.map((p, i) => p.t === t ? tabBtn("chip", i, i === 1, `data-i="${i}"`, esc(p.n)) : "").join("")}</div></div>`).join("");
+  peopleEl.innerHTML = ["Primary", "Secondary", "Business"].map((t) => `<div class="people__tier" role="presentation"><span class="k">${t === "Business" ? "Business and operational" : t} · ${PEOPLE.filter((p) => p.t === t).length}</span><div class="chips">${PEOPLE.map((p, i) => p.t === t ? tabBtn("chip", i, i === 1, `data-i="${i}"`, esc(p.n)) : "").join("")}</div></div>`).join("");
   function renderPerson(i) {
     const p = PEOPLE[i];
     peoplePanel.innerHTML = `
       <div class="panel__head"><h3>${esc(p.n)}</h3><span class="tag">${p.t}</span></div>
       <p class="panel__lead">${esc(p.w)}</p>
-      <span class="k">Jobs to be done</span><ul class="jobs">${p.j.map((j) => `<li>${esc(j)}</li>`).join("")}</ul>
+      <div class="fact"><span class="k">${p.t} tier</span><p>${esc(TIER_SAY[p.t])}</p></div>
       <span class="k">Products they use</span><div class="feat">${p.p.map((x) => `<span>${esc(x)}</span>`).join("")}</div>`;
     restart(peoplePanel, "pop");
   }
   tablist(peopleEl, (b) => renderPerson(Number(b.dataset.i)));
   renderPerson(1);
+
+  /* ================= 05 JOBS ================= */
+  const jobsList = $("#jobs-list");
+  $("#jobs-tabs").innerHTML = PEOPLE.map((p, i) => tabBtn("chip", i, i === 1, `data-i="${i}"`, esc(p.n))).join("");
+  function renderJobs(i) {
+    jobsList.innerHTML = PEOPLE[i].j.map((j, k) => `<li style="--i:${k}">${esc(j)}</li>`).join("");
+    restart(jobsList, "pop");
+  }
+  tablist($("#jobs-tabs"), (b) => renderJobs(Number(b.dataset.i)));
+  renderJobs(1);
 
   /* ================= 05 PRODUCTS ================= */
   const prodsEl = $("#prods"), prodPanel = $("#prod-panel");
