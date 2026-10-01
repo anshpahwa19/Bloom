@@ -17,6 +17,8 @@
   is the parent brand and Bloom red (the crimson palette) leads it; the Bloom
   Multiverse language sets the rest. In the deck the product is written "Bloom
   Multiverse". Never use its flag mark as the Bloom logo. Cover every Bloom product.
+  The deck uses its own type (Plus Jakarta Sans, Cormorant Garamond), not the
+  Bloom Multiverse fonts.
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:

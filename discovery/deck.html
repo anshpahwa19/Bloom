@@ -7,7 +7,7 @@
 <meta name="description" content="Phase 1, Ecosystem Foundation: every Bloom Holding business and product as one system, in Bloom red and the Bloom Multiverse design language.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap">
 <style>
 /* Layout: twelve full-screen chapters, one interaction each. Bloom red leads the brand
    (the crimson palette Bloom Multiverse already carries as "the original Bloom accent");
@@ -28,9 +28,9 @@
   --sh-1: 0 1px 2px rgba(11, 22, 64, .05), 0 10px 28px -14px rgba(11, 22, 64, .16);
   --sh-2: 0 2px 8px rgba(11, 22, 64, .05), 0 30px 64px -30px rgba(11, 22, 64, .3);
   --ring: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
-  --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
-  --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-ui: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: "Cormorant Garamond", "Iowan Old Style", Georgia, "Times New Roman", serif;
   --fs-mega: clamp(2.75rem, 1rem + 5vw, 6.5rem);
   --fs-title: clamp(2rem, 1.1rem + 2.4vw, 3.75rem);
   --r-sm: 12px; --r-md: 18px; --r-lg: 28px; --r-xl: 36px; --r-icon: 30%; --r-pill: 999px;
@@ -86,7 +86,7 @@ ul, ol { padding: 0; list-style: none; }
 .ico--fill { fill: currentColor; stroke: none; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .mark { display: inline-block; aspect-ratio: 436 / 395; background: url({{flag-mark.png}}) center / contain no-repeat; }
-.bloom { font-family: var(--font-serif); font-weight: 400; letter-spacing: -.005em; color: var(--accent-fg); line-height: 1; }
+.bloom { font-family: var(--font-serif); font-weight: 600; letter-spacing: -.005em; color: var(--accent-fg); line-height: 1; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--accent)); flex: none; }
 .k { font-size: .75rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-2); }
 
@@ -103,7 +103,7 @@ ul, ol { padding: 0; list-style: none; }
 .eyebrow { display: flex; align-items: center; gap: 10px; font-size: .75rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--slate); }
 .eyebrow::before { content: ""; width: 20px; height: 2px; border-radius: var(--r-pill); background: var(--accent); }
 .title { font-family: var(--font-display); font-size: var(--fs-title); font-weight: 600; line-height: 1; letter-spacing: -.02em; text-wrap: balance; }
-.title em, .mega em { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.005em; color: var(--accent-fg); }
+.title em, .mega em { font-family: var(--font-serif); font-style: italic; font-weight: 600; font-size: 1.12em; line-height: .9; letter-spacing: -.005em; color: var(--accent-fg); }
 .stage .title em, .stage .mega em { color: inherit; }
 .hint { display: inline-flex; align-items: center; gap: 8px; font-size: .875rem; color: var(--slate); }
 .hint::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.8s ease-in-out infinite; }
@@ -197,14 +197,15 @@ ul, ol { padding: 0; list-style: none; }
 .seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: var(--r-pill); background: var(--surface-2); justify-self: start; }
 .seg button { border: 0; background: transparent; min-height: 40px; padding: 0 18px; border-radius: var(--r-pill); font-size: .875rem; font-weight: 600; color: var(--slate); }
 .seg button[aria-selected="true"] { background: var(--ink); color: var(--canvas); }
-.doors { position: relative; height: 440px; border-radius: var(--r-xl); background: var(--surface-2); overflow: hidden; }
-.door { position: absolute; width: 196px; padding: 16px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--sh-2); display: grid; gap: 4px;
+.doors { position: relative; height: 480px; border-radius: var(--r-xl); background: var(--surface-2); overflow: hidden; }
+.door { position: absolute; width: min(196px, 30%); padding: 16px; border-radius: var(--r-md); background: var(--surface); box-shadow: var(--sh-2); display: grid; gap: 4px;
   left: var(--x); top: var(--y); transform: translate(-50%, -50%) rotate(var(--rot)) scale(1);
   transition: left .7s var(--ease-expo), top .7s var(--ease-expo), transform .7s var(--ease-spring), opacity .4s; }
 .door[hidden] { display: grid !important; opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot)) scale(.6); pointer-events: none; }
 .door small { font-size: .75rem; color: var(--accent-fg); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
 .door strong { font-size: 1rem; line-height: 1.25; }
-.door em { font-style: normal; font-size: .75rem; color: var(--slate-2); }
+.door em { font-style: normal; font-size: .75rem; line-height: 1.4; color: var(--ink-2); }
+.door em b { display: inline-block; margin-right: 6px; padding: 1px 6px; border-radius: var(--r-pill); background: var(--accent); color: #FFFFFF; font-size: .625rem; letter-spacing: .06em; vertical-align: 1px; }
 .doors.is-eco .door { left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(0) translateY(calc(var(--k) * 6px)) scale(calc(1 - var(--k) * .03)); }
 .one { position: absolute; left: 50%; top: 50%; width: min(320px, 86%); transform: translate(-50%, -50%) scale(.9); opacity: 0; pointer-events: none; z-index: 2; padding: 22px; border-radius: var(--r-lg); background: linear-gradient(155deg, var(--grad)); color: #FFFFFF; box-shadow: var(--sh-2); display: grid; gap: 12px; transition: opacity .4s .25s, transform .6s .25s var(--ease-spring); }
 .one .bloom { color: #FFFFFF; font-size: 2.5rem; }
@@ -254,6 +255,40 @@ ul, ol { padding: 0; list-style: none; }
 .prod[aria-selected="true"] { background: var(--accent); color: #FFFFFF; box-shadow: 0 14px 30px -16px var(--accent); }
 .prod[aria-selected="true"] small { color: rgba(255, 255, 255, .8); }
 .prod--unk { background: transparent; box-shadow: none; outline: 1.5px dashed var(--line-strong); outline-offset: -1.5px; }
+
+/* logos */
+.logos { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.lg { display: inline-flex; align-items: center; justify-content: center; height: 44px; min-width: 44px; padding: 0 14px; border-radius: var(--r-sm); background: #FFFFFF; color: #0B1640; box-shadow: inset 0 0 0 1px rgba(11, 22, 64, .1); font-family: var(--font-serif); font-size: 1.125rem; font-weight: 600; letter-spacing: .005em; white-space: nowrap; }
+.lg--sm { height: 32px; min-width: 32px; padding: 0 10px; font-size: .875rem; }
+.lg--bloom { color: #B6000E; font-size: 1.5rem; }
+.lg--sm.lg--bloom { font-size: 1.125rem; }
+.lg--mark .mark { width: 26px; }
+.lg--sm.lg--mark .mark { width: 20px; }
+.lg--img { padding: 0; background-repeat: no-repeat; background-position: center; background-color: #FFFFFF; }
+.lg--edition { width: 104px; background-image: url({{partner-edition.png}}); background-size: 80% auto; }
+.lg--marriott { width: 76px; background-image: url({{partner-marriott.png}}); background-size: auto 72%; }
+.lg--sf { width: 44px; background-image: url({{app-salesforce.png}}); background-size: 70% auto; }
+.lg--db { width: 44px; background-image: url({{app-darwinbox.png}}); background-size: 70% auto; }
+.lg--ui { width: 44px; background-image: url({{app-uipath.png}}); background-size: 70% auto; }
+.lg--sap { width: 44px; background-image: url({{app-sap.png}}); background-size: 76% auto; }
+.lg--sm.lg--edition { width: 76px; }
+.lg--sm.lg--marriott { width: 56px; }
+.lg--sm.lg--sf, .lg--sm.lg--db, .lg--sm.lg--ui, .lg--sm.lg--sap { width: 32px; }
+.prod__lg { display: flex; margin-bottom: 4px; }
+
+/* 03 businesses: one card opens, the rest stay compact */
+.bizrow { display: flex; gap: 10px; min-height: 420px; }
+.bz { position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 22px 20px; border: 0; border-radius: var(--r-xl); background: var(--surface); box-shadow: var(--sh-1); color: var(--ink); text-align: left; overflow: hidden; transition: flex-grow .7s var(--ease-expo), transform .3s var(--ease-spring); }
+.bz:hover { transform: translateY(-3px); }
+.bz[aria-selected="true"] { flex-grow: 3.4; background: linear-gradient(155deg, var(--grad)); color: #FFFFFF; box-shadow: var(--sh-2); }
+.bz[aria-selected="true"] .tile { background: rgba(255, 255, 255, .18); color: #FFFFFF; }
+.bz__name { font-size: 1.25rem; font-weight: 700; letter-spacing: -.01em; line-height: 1.15; }
+.bz__num { margin-top: auto; font-family: var(--font-display); font-size: clamp(1.75rem, 1rem + 1.4vw, 2.5rem); font-weight: 800; letter-spacing: -.02em; line-height: .9; color: var(--c); }
+.bz[aria-selected="true"] .bz__num { color: #FFFFFF; font-size: clamp(3.5rem, 2rem + 4vw, 6.5rem); }
+.bz__body { display: grid; gap: 14px; max-height: 0; opacity: 0; overflow: hidden; transition: opacity .3s; }
+.bz[aria-selected="true"] .bz__body { max-height: 400px; opacity: 1; transition: opacity .5s .25s; }
+.bz__lbl { font-size: 1rem; font-weight: 600; opacity: .9; }
+.bz__line { font-family: var(--font-serif); font-style: italic; font-weight: 600; font-size: 1.5rem; line-height: 1.2; }
 
 /* ---------- 06 lifetime ---------- */
 .life__stage { display: grid; gap: 12px; }
@@ -310,8 +345,8 @@ ul, ol { padding: 0; list-style: none; }
 .card-demo__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .card-demo__top .bloom { font-size: 1.75rem; color: #B6000E; }
 .card-demo__by { font-size: .75rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #636B8A; }
-.demo-greet { font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif; font-size: clamp(2.25rem, 1.4rem + 2.2vw, 3.5rem); font-weight: 700; letter-spacing: -.025em; line-height: .95; }
-.demo-greet em { font-family: "Instrument Serif", Georgia, serif; font-weight: 400; color: #B6000E; letter-spacing: 0; }
+.demo-greet { font-family: var(--font-display); font-size: clamp(2.25rem, 1.4rem + 2.2vw, 3.5rem); font-weight: 700; letter-spacing: -.025em; line-height: .95; }
+.demo-greet em { font-family: var(--font-serif); font-style: italic; font-weight: 600; font-size: 1.12em; color: #B6000E; letter-spacing: 0; }
 .demo-lede { font-size: 1.125rem; color: #1E2A5A; max-width: 38ch; }
 .demo-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .demo-pills span { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: var(--r-pill); background: #FFFFFF; font-size: .875rem; font-weight: 600; box-shadow: 0 1px 2px rgba(11, 22, 64, .05), 0 10px 28px -14px rgba(11, 22, 64, .16); }
@@ -364,6 +399,9 @@ ul, ol { padding: 0; list-style: none; }
 
 /* ---------- responsive ---------- */
 @media (max-width: 960px) {
+  .bizrow { flex-direction: column; min-height: 0; }
+  .bz { flex: 0 0 auto; }
+  .bz__num { margin-top: 0; }
   .cover, .two { grid-template-columns: minmax(0, 1fr); }
   .orbit { max-width: 360px; }
   .road, .flips { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -440,12 +478,12 @@ ul, ol { padding: 0; list-style: none; }
 <!-- 02 WHY -->
 <section class="slide" data-title="Why an ecosystem" aria-roledescription="slide">
   <div class="slide__in">
-    <header class="head"><p class="eyebrow rv">01 · Why an ecosystem</p><h2 class="title rv" style="--d:1">One family. Too many <em>front doors</em>.</h2></header>
+    <header class="head"><p class="eyebrow rv">01 · Why an ecosystem</p><h2 class="title rv" style="--d:1">One family. Many <em>roles</em>. A different app for each.</h2></header>
     <div class="two">
       <div class="ctrl rv" style="--d:2">
         <p class="hint">Add the roles one family holds with Bloom</p>
         <div class="chips" id="roles"></div>
-        <div class="counter-big" aria-live="polite"><b id="door-n">3</b><span id="door-say">front doors, each with its own look and login</span></div>
+        <div class="counter-big" aria-live="polite"><b id="door-n">3</b><span id="door-say">roles, each with its own app, look and login</span></div>
         <div class="seg" role="tablist" aria-label="View" id="door-view">
           <button type="button" role="tab" aria-selected="true" data-v="today">Today</button>
           <button type="button" role="tab" aria-selected="false" tabindex="-1" data-v="eco">As one ecosystem</button>
@@ -462,8 +500,8 @@ ul, ol { padding: 0; list-style: none; }
 <section class="slide" data-title="Four businesses" aria-roledescription="slide">
   <div class="slide__in">
     <header class="head"><p class="eyebrow rv">02 · Business ecosystem</p><h2 class="title rv" style="--d:1">Four businesses. They all meet in the <em>community</em>.</h2></header>
-    <div class="chips rv" style="--d:2" role="tablist" aria-label="Businesses" id="biz-tabs"></div>
-    <div class="card panel rv" style="--d:3" id="biz-panel" aria-live="polite"></div>
+    <p class="hint rv" style="--d:2">Tap a business to open it</p>
+    <div class="bizrow rv" style="--d:3" role="tablist" aria-label="Businesses" id="biz-row"></div>
   </div>
 </section>
 
@@ -552,8 +590,8 @@ ul, ol { padding: 0; list-style: none; }
         <p class="hint">Switch who it's for</p>
         <div class="chips" role="tablist" aria-label="Audience" id="aud"></div>
         <ul class="layers">
-          <li><span class="bloom" aria-hidden="true">B</span><div><b>Bloom leads the brand</b>Red serif wordmark, Bloom red, photography, voice</div></li>
-          <li><span class="swatches" aria-hidden="true"><i style="--c:#B6000E"></i><i style="--c:#0B1640"></i><i style="--c:#F6F4EF"></i></span><div><b>Bloom Multiverse sets the language</b>Greeting, editing, type, glass, motion, counters</div></li>
+          <li><span class="bloom" aria-hidden="true">B</span><div><b>Bloom leads the brand</b>Red serif wordmark, Bloom red, Bloom type, photography, voice</div></li>
+          <li><span class="swatches" aria-hidden="true"><i style="--c:#B6000E"></i><i style="--c:#0B1640"></i><i style="--c:#F6F4EF"></i></span><div><b>Bloom Multiverse sets the language</b>Greeting, editing, layout, glass, motion, counters</div></li>
           <li><span class="mark" aria-hidden="true"></span><div><b>Each product keeps its job</b>Bloom Multiverse keeps its flag mark and inbox</div></li>
         </ul>
       </div>
@@ -646,28 +684,38 @@ ul, ol { padding: 0; list-style: none; }
   }
   const tabBtn = (cls, i, sel, attrs, inner) => `<button class="${cls}" type="button" role="tab" aria-selected="${sel}" tabindex="${sel ? 0 : -1}" ${attrs}>${inner}</button>`;
 
+  /* Logo tiles: real logo files where the deck has them, the brand's name otherwise. */
+  const LOGO_IMG = { edition: "The Abu Dhabi EDITION", marriott: "Marriott", sf: "Salesforce", db: "Darwinbox", ui: "UiPath", sap: "SAP" };
+  const logo = (x, sm) => {
+    const c = `lg${sm ? " lg--sm" : ""}`;
+    if (x === "bloom") return `<span class="${c} lg--bloom" role="img" aria-label="Bloom">Bloom</span>`;
+    if (x === "mark") return `<span class="${c} lg--mark" role="img" aria-label="Bloom Multiverse"><span class="mark"></span></span>`;
+    if (x.startsWith("img:")) { const k = x.slice(4); return `<span class="${c} lg--img lg--${k}" role="img" aria-label="${LOGO_IMG[k]}"></span>`; }
+    return `<span class="${c}">${esc(x)}</span>`;
+  };
+
   /* ================= DATA ================= */
   const BIZ = {
-    re: { n: "Real estate", c: "var(--viz-1)", icon: "i-home", ent: "Bloom Properties", num: "4,000+", numL: "homes at Bloom Living alone",
+    re: { n: "Real estate", c: "var(--viz-1)", icon: "i-home", ent: "Bloom Properties", num: "4,000+", numL: "homes at Bloom Living",
       what: "Master developer of premium, mostly gated communities in Abu Dhabi, Al Ain and Dubai.",
       offers: ["Bloom Living, Zayed City", "Al Metlaa, Al Ain, with ADHA: 2,243 homes for Emirati families", "Soho Square, Bloom Gardens, Bloom Marina, Bloom Central", "Bloom Towers and Bloom Heights, Dubai"],
-      who: "Buyers, Emirati families with ADHA loans, investors, brokers, owners", exp: "A high-stakes purchase, then years of instalments and construction before handover.", conn: "Everything: it creates the place the other businesses operate in." },
-    edu: { n: "Education", c: "var(--viz-2)", icon: "i-cap", ent: "Bloom Education, since 2011", num: "~20,000", numL: "students across 15 to 20 schools",
+      line: "Creates the place every other business works in.", lg: ["bloom", "Bloom Living", "Al Metlaa", "Soho Square"], who: "Buyers, Emirati families with ADHA loans, investors, brokers, owners", exp: "A high-stakes purchase, then years of instalments and construction before handover.", conn: "Everything: it creates the place the other businesses operate in." },
+    edu: { n: "Education", c: "var(--viz-2)", icon: "i-cap", ent: "Bloom Education, since 2011", num: "18", numL: "schools and 1 nursery, 21,000+ students",
       what: "Operator of premium and partner-brand schools and nurseries, plus ADEK Charter Schools.",
       offers: ["Brighton College: Abu Dhabi, Al Ain, Dubai", "Bloom World Academy (IB), Dubai", "Nurseries, including one at Bloom Gardens"],
-      who: "Parents, students, teachers", exp: "A relationship with a family that can last from age 3 to 18.", conn: "Schools sit inside Bloom communities." },
-    svc: { n: "Services", c: "var(--viz-3)", icon: "i-tools", ent: "bfm · Bloom Landscape", num: "2008", numL: "bfm, an accredited energy services company",
+      line: "Schools sit inside Bloom communities.", lg: ["Brighton College", "Bloom World Academy", "ADEK Charter Schools", "Bloom Nurseries"], who: "Parents, students, teachers", exp: "A relationship with a family that can last from age 3 to 18.", conn: "Schools sit inside Bloom communities." },
+    svc: { n: "Services", c: "var(--viz-3)", icon: "i-tools", ent: "bfm · Bloom Landscape", num: "2", numL: "companies keeping every place running",
       what: "Integrated facilities management and landscaping, for Bloom and third parties across the UAE.",
       offers: ["Maintenance, cleaning, security, fit-out", "Move-in and move-out services", "Parks, streets and resorts designed and kept"],
-      who: "Residents and owners, schools, hotels, business clients", exp: "Invisible when it works; felt sharply when it doesn't.", conn: "Keeps communities, schools and hotels running." },
-    hos: { n: "Hospitality", c: "var(--viz-4)", icon: "i-cloche", ent: "Bloom Hospitality", num: "3", numL: "five-star hotels and hotel apartments",
+      line: "Keeps communities, schools and hotels running.", lg: ["bfm", "Bloom Landscape"], who: "Residents and owners, schools, hotels, business clients", exp: "Invisible when it works; felt sharply when it doesn't.", conn: "Keeps communities, schools and hotels running." },
+    hos: { n: "Hospitality", c: "var(--viz-4)", icon: "i-cloche", ent: "Bloom Hospitality", num: "3", numL: "hotels: the EDITION, Marriott Downtown, Bloom Arjaan",
       what: "Owner of hotels and hotel apartments run by international operators.",
       offers: ["The Abu Dhabi EDITION, with 57 serviced residences", "Marriott Hotel Downtown Abu Dhabi", "Bloom Arjaan by Rotana, Saadiyat, opened 2026"],
-      who: "Guests, serviced-apartment residents, visitors", exp: "Episodic and lifestyle-led. Guests see the operator's brand, not Bloom's.", conn: "Serviced living next to Bloom homes; staff discounts for employees." },
+      line: "Five-star living next door to Bloom homes.", lg: ["img:edition", "img:marriott", "Rotana"], who: "Guests, serviced-apartment residents, visitors", exp: "Episodic and lifestyle-led. Guests see the operator's brand, not Bloom's.", conn: "Serviced living next to Bloom homes; staff discounts for employees." },
     com: { n: "The community", c: "var(--accent)", icon: "i-pin", ent: "Where the four meet", num: "1", numL: "gate: homes, schools, a town centre and services together",
       what: "Once people move in, Bloom runs the community day to day. It is the longest relationship Bloom has.",
       offers: ["Amenities, access cards, move-ins, renewals", "Service requests and service charges", "Events, announcements and a chatbot in the Community App", "Souk Alhambra, planned as Bloom Living's social heart"],
-      who: "Residents, tenants, owners, visitors", exp: "Continuous and everyday.", conn: "Every business shows up here." }
+      line: "Where all four businesses show up every day.", lg: ["bloom", "Souk Alhambra", "Community App"], who: "Residents, tenants, owners, visitors", exp: "Continuous and everyday.", conn: "Every business shows up here." }
   };
 
   const PEOPLE = [
@@ -685,19 +733,19 @@ ul, ol { padding: 0; list-style: none; }
 
   const GROUPS = { buy: "Discover and buy", own: "Own and live", partners: "Partners", learn: "Learn and stay", people: "Bloom people", unk: "To confirm" };
   const PRODUCTS = [
-    { g: "buy", n: "bloomholding.com", k: "Corporate website", url: "bloomholding.com", aud: "Buyers, investors, media, partners", p: "The parent brand's front door: communities, homes for sale, news, and links to every business.", f: ["Communities", "Properties", "Enquiries", "Press"], r: "The only place all four businesses appear together." },
-    { g: "buy", n: "ADHA home-buying platform", k: "Platform with ADHA", aud: "Emirati families with ADHA housing loans", p: "Buy a Bloom home financed by an ADHA loan: browse units that fit your eligibility and book a visit.", f: ["Loan-eligibility price range", "Available units", "Construction progress", "VR tour", "Amenities", "Brochure", "Master plan", "Book an appointment"], r: "Joins government financing and Bloom sales in one journey. Already uses the Bloom red brand." },
-    { g: "buy", n: "Al Metlaa Master Plan", k: "Interactive master plan", url: "almetlaa.bloomholding.com", aud: "Buyers, Emirati families, brokers", p: "Explore Al Metlaa, Al Ain: the plan of homes, plots and amenities across the community.", f: ["Community layout", "Plots and villas", "Amenities"], r: "Lets people see the place before it exists. A pattern every community could use." },
-    { g: "own", n: "Bloom Holding Super App", k: "Owner app", aud: "Property owners", p: "Pay instalments, maintenance and service charges, with receipts and real-time construction progress.", f: ["Payments", "Receipts", "Construction progress", "Reminders"], r: "The owner's companion from purchase to handover. Its link to the ADHA platform is to confirm." },
-    { g: "own", n: "Bloom Community App", k: "Resident app with chatbot", aud: "Residents, tenants, owners", p: "Run daily life in a Bloom community, with a chatbot to answer questions.", f: ["Chatbot", "Service charges", "Amenity booking", "Digital access card", "Move in and out", "Tenancy renewal", "Service requests", "Community updates", "Vacation mode"], r: "The operating system of the Live stage." },
-    { g: "partners", n: "Bloom Partners", k: "Broker platform, web and app", url: "partners.bloomholding.com", aud: "Agencies, agency admins, agents", p: "Agencies register with Bloom, see every listed property, manage leads and track the commission their team earns.", f: ["Agency registration", "Role-based login", "All listings", "Leads", "Commission dashboard", "Team performance", "Marketing materials", "Service requests"], r: "The sales engine behind real estate." },
-    { g: "partners", n: "bfm.ae", k: "Services website", url: "bfm.ae", aud: "Business and institutional clients", p: "Bloom Facilities Management's offer: maintenance, cleaning, security, energy services.", f: ["Service lines", "Enquiries"], r: "Sells services beyond Bloom. Residents meet bfm through the Community App." },
-    { g: "learn", n: "School sites", k: "A website per school", aud: "Parents, students, teachers", p: "Brighton College, Bloom World Academy and nurseries, each with its own site and brand.", f: ["Admissions", "School news", "Careers"], r: "Education's front door. Not linked to the home community." },
-    { g: "learn", n: "Hotel channels", k: "Operator-owned", aud: "Guests", p: "Booking and loyalty at the EDITION, Marriott Downtown and Bloom Arjaan, run by Marriott and Rotana.", f: ["Booking", "Loyalty"], r: "Bloom is invisible here, by design of the operating model." },
-    { g: "people", n: "Bloom Multiverse web", k: "Employee platform · approved", aud: "Employees", p: "Tasks and approvals from Salesforce, Darwinbox, UiPath and SAP; people, policies, communities, perks; a requests inbox.", f: ["Approvals", "Requests inbox", "People", "Policies", "Communities", "Perks", "Search"], r: "The approved reference for Bloom's design language." },
-    { g: "people", n: "Bloom Multiverse mobile", k: "Employee app · approved", aud: "Employees", p: "The Bloom Multiverse experience on the phone.", f: ["Mobile companion"], r: "The approved reference for Bloom's mobile language." },
-    { g: "people", n: "Bloom GPT", k: "Assistant prototype", aud: "Employees", p: "Answers from Bloom Multiverse's own data and acts on it: approve, open a policy, copy a code.", f: ["Answers", "Actions", "Search"], r: "The first Bloom assistant. With the Community App chatbot, the seed of shared intelligence." },
-    { g: "unk", n: "Bloom Universal", k: "To confirm", aud: "Unknown", p: "Named in the original brief. We found no public trace of it.", f: ["To confirm with the Bloom team"], r: "Placed in the system once we know what it is.", unk: 1 }
+    { g: "buy", n: "bloomholding.com", lg: ["bloom"], k: "Corporate website", url: "bloomholding.com", aud: "Buyers, investors, media, partners", p: "The parent brand's front door: communities, homes for sale, news, and links to every business.", f: ["Communities", "Properties", "Enquiries", "Press"], r: "The only place all four businesses appear together." },
+    { g: "buy", n: "ADHA home-buying platform", lg: ["bloom", "ADHA"], k: "Platform with ADHA", aud: "Emirati families with ADHA housing loans", p: "Buy a Bloom home financed by an ADHA loan: browse units that fit your eligibility and book a visit.", f: ["Loan-eligibility price range", "Available units", "Construction progress", "VR tour", "Amenities", "Brochure", "Master plan", "Book an appointment"], r: "Joins government financing and Bloom sales in one journey. Already uses the Bloom red brand." },
+    { g: "buy", n: "Al Metlaa Master Plan", lg: ["bloom", "Al Metlaa"], k: "Interactive master plan", url: "almetlaa.bloomholding.com", aud: "Buyers, Emirati families, brokers", p: "Explore Al Metlaa, Al Ain: the plan of homes, plots and amenities across the community.", f: ["Community layout", "Plots and villas", "Amenities"], r: "Lets people see the place before it exists. A pattern every community could use." },
+    { g: "own", n: "Bloom Holding Super App", lg: ["bloom"], k: "Owner app", aud: "Property owners", p: "Pay instalments, maintenance and service charges, with receipts and real-time construction progress.", f: ["Payments", "Receipts", "Construction progress", "Reminders"], r: "The owner's companion from purchase to handover. Its link to the ADHA platform is to confirm." },
+    { g: "own", n: "Bloom Community App", lg: ["bloom"], k: "Resident app with chatbot", aud: "Residents, tenants, owners", p: "Run daily life in a Bloom community, with a chatbot to answer questions.", f: ["Chatbot", "Service charges", "Amenity booking", "Digital access card", "Move in and out", "Tenancy renewal", "Service requests", "Community updates", "Vacation mode"], r: "The operating system of the Live stage." },
+    { g: "partners", n: "Bloom Partners", lg: ["bloom", "Partners"], k: "Broker platform, web and app", url: "partners.bloomholding.com", aud: "Agencies, agency admins, agents", p: "Agencies register with Bloom, see every listed property, manage leads and track the commission their team earns.", f: ["Agency registration", "Role-based login", "All listings", "Leads", "Commission dashboard", "Team performance", "Marketing materials", "Service requests"], r: "The sales engine behind real estate." },
+    { g: "partners", n: "bfm.ae", lg: ["bfm"], k: "Services website", url: "bfm.ae", aud: "Business and institutional clients", p: "Bloom Facilities Management's offer: maintenance, cleaning, security, energy services.", f: ["Service lines", "Enquiries"], r: "Sells services beyond Bloom. Residents meet bfm through the Community App." },
+    { g: "learn", n: "School sites", lg: ["Brighton College", "Bloom World Academy"], k: "A website per school", aud: "Parents, students, teachers", p: "Brighton College, Bloom World Academy and nurseries, each with its own site and brand.", f: ["Admissions", "School news", "Careers"], r: "Education's front door. Not linked to the home community." },
+    { g: "learn", n: "Hotel channels", lg: ["img:edition", "img:marriott", "Rotana"], k: "Operator-owned", aud: "Guests", p: "Booking and loyalty at the EDITION, Marriott Downtown and Bloom Arjaan, run by Marriott and Rotana.", f: ["Booking", "Loyalty"], r: "Bloom is invisible here, by design of the operating model." },
+    { g: "people", n: "Bloom Multiverse web", lg: ["mark", "img:sf", "img:db", "img:ui", "img:sap"], k: "Employee platform · approved", aud: "Employees", p: "Tasks and approvals from Salesforce, Darwinbox, UiPath and SAP; people, policies, communities, perks; a requests inbox.", f: ["Approvals", "Requests inbox", "People", "Policies", "Communities", "Perks", "Search"], r: "The approved reference for Bloom's design language." },
+    { g: "people", n: "Bloom Multiverse mobile", lg: ["mark"], k: "Employee app · approved", aud: "Employees", p: "The Bloom Multiverse experience on the phone.", f: ["Mobile companion"], r: "The approved reference for Bloom's mobile language." },
+    { g: "people", n: "Bloom GPT", lg: ["mark"], k: "Assistant prototype", aud: "Employees", p: "Answers from Bloom Multiverse's own data and acts on it: approve, open a policy, copy a code.", f: ["Answers", "Actions", "Search"], r: "The first Bloom assistant. With the Community App chatbot, the seed of shared intelligence." },
+    { g: "unk", n: "Bloom Universal", lg: ["?"], k: "To confirm", aud: "Unknown", p: "Named in the original brief. We found no public trace of it.", f: ["To confirm with the Bloom team"], r: "Placed in the system once we know what it is.", unk: 1 }
   ];
 
   const STAGES = [
@@ -777,24 +825,24 @@ ul, ol { padding: 0; list-style: none; }
 
   /* ================= 02 DOORS ================= */
   const ROLES = [
-    { n: "Buyer", d: "bloomholding.com + Master Plan", s: "Or a broker, in Bloom Partners", x: 26, y: 18, r: -6 },
-    { n: "ADHA buyer", d: "ADHA home-buying platform", s: "Loan eligibility, units, VR tour", x: 72, y: 16, r: 5 },
-    { n: "Owner", d: "Bloom Holding Super App", s: "Instalments, construction progress", x: 46, y: 42, r: -2 },
-    { n: "Resident", d: "Bloom Community App", s: "Requests, access, chatbot", x: 76, y: 50, r: 6 },
-    { n: "Parent", d: "A school's own website", s: "Brighton College, Bloom World Academy", x: 26, y: 70, r: 4 },
-    { n: "Guest", d: "Marriott or Rotana app", s: "Bloom is not visible", x: 70, y: 84, r: -5 },
-    { n: "Employee", d: "Bloom Multiverse", s: "The only one in the Bloom Multiverse language", x: 36, y: 88, r: 3 }
+    { n: "Buyer", d: "bloomholding.com + Master Plan", s: "Walk the whole community plan before it's built", x: 18, y: 18, r: -4 },
+    { n: "ADHA buyer", d: "ADHA home-buying platform", s: "Shows only the homes your housing loan covers", x: 50, y: 16, r: 3 },
+    { n: "Owner", d: "Bloom Holding Super App", s: "Watch your home being built, live", x: 82, y: 19, r: -3 },
+    { n: "Resident", d: "Bloom Community App", s: "Digital access card and a chatbot that answers", x: 19, y: 51, r: 3 },
+    { n: "Parent", d: "A school's own website", s: "British and IB schools inside Bloom communities", x: 51, y: 50, r: -2 },
+    { n: "Guest", d: "Marriott or Rotana app", s: "Five-star stays at Bloom's own hotels", x: 82, y: 53, r: 4 },
+    { n: "Employee", d: "Bloom Multiverse", s: "Every work app and approval in one place", x: 50, y: 83, r: -3 }
   ];
   const on = new Set([0, 2, 3]);
   const doors = $("#doors"), rolesEl = $("#roles");
   rolesEl.innerHTML = ROLES.map((r, i) => `<button class="chip" type="button" aria-pressed="${on.has(i)}" data-i="${i}">${r.n}</button>`).join("");
-  doors.insertAdjacentHTML("afterbegin", ROLES.map((r, i) => `<div class="door" data-i="${i}" style="--x:${r.x}%;--y:${r.y}%;--rot:${r.r}deg"${on.has(i) ? "" : " hidden"}><small>${esc(r.n)}</small><strong>${esc(r.d)}</strong><em>${esc(r.s)}</em></div>`).join(""));
+  doors.insertAdjacentHTML("afterbegin", ROLES.map((r, i) => `<div class="door" data-i="${i}" style="--x:${r.x}%;--y:${r.y}%;--rot:${r.r}deg"${on.has(i) ? "" : " hidden"}><small>${esc(r.n)}</small><strong>${esc(r.d)}</strong><em><b>USP</b>${esc(r.s)}</em></div>`).join(""));
   let eco = false;
   function renderDoors() {
     const list = [...on].sort((a, b) => a - b);
     $$(".door", doors).forEach((d) => { const i = Number(d.dataset.i); d.hidden = !on.has(i); d.style.setProperty("--k", String(Math.max(0, list.indexOf(i)))); });
     $("#door-n").textContent = eco ? (list.length ? "1" : "0") : String(list.length);
-    $("#door-say").textContent = eco ? "Bloom relationship, whatever roles the family holds" : `front door${list.length === 1 ? "" : "s"}, each with its own look and login`;
+    $("#door-say").textContent = eco ? "Bloom relationship, whatever roles the family holds" : `role${list.length === 1 ? "" : "s"}, each with its own app, look and login`;
     $("#one-roles").innerHTML = list.map((i) => `<span>${esc(ROLES[i].n)}</span>`).join("");
     doors.classList.toggle("is-eco", eco);
   }
@@ -809,23 +857,11 @@ ul, ol { padding: 0; list-style: none; }
   renderDoors();
 
   /* ================= 03 BUSINESSES ================= */
-  const bizPanel = $("#biz-panel");
-  $("#biz-tabs").innerHTML = Object.entries(BIZ).map(([k, b], i) => tabBtn("chip", i, i === 0, `data-k="${k}"`, `<i class="dot" style="--c:${b.c}"></i>${b.n}`)).join("");
-  function renderBiz(k) {
-    const b = BIZ[k];
-    bizPanel.innerHTML = `
-      <div class="panel__head"><span class="tile" style="--c:${b.c}"><svg class="ico"><use href="#${b.icon}"/></svg></span><div><h3>${esc(b.n)}</h3><span class="k">${esc(b.ent)}</span></div></div>
-      <div class="two" style="gap:20px; align-items:start">
-        <div class="panel"><span class="big-num">${esc(b.num)}</span><span class="small" style="color:var(--slate)">${esc(b.numL)}</span><p class="panel__lead">${esc(b.what)}</p></div>
-        <div class="facts">
-          <div class="fact"><span class="k">What Bloom offers</span>${b.offers.map((o) => `<p>${esc(o)}</p>`).join("")}</div>
-          <div class="fact"><span class="k">Who interacts</span><p>${esc(b.who)}</p><span class="k" style="margin-top:8px">Experience</span><p>${esc(b.exp)}</p><span class="k" style="margin-top:8px">Connects to</span><p>${esc(b.conn)}</p></div>
-        </div>
-      </div>`;
-    restart(bizPanel, "pop");
-  }
-  tablist($("#biz-tabs"), (b) => renderBiz(b.dataset.k));
-  renderBiz("re");
+  const bizRow = $("#biz-row");
+  bizRow.innerHTML = Object.entries(BIZ).map(([k, b], i) => tabBtn("bz", i, i === 0, `data-k="${k}" style="--c:${b.c}"`,
+    `<span class="tile"><svg class="ico"><use href="#${b.icon}"/></svg></span><span class="bz__name">${esc(b.n)}</span><span class="bz__num">${esc(b.num)}</span>
+     <span class="bz__body"><span class="bz__lbl">${esc(b.numL)}</span><span class="logos">${b.lg.map((x) => logo(x)).join("")}</span><span class="bz__line">${esc(b.line)}</span></span>`)).join("");
+  tablist(bizRow, () => {});
 
   /* ================= 04 STAKEHOLDERS ================= */
   const TIER_SAY = { Primary: "Served directly and repeatedly. They overlap: one household can be all of them.", Secondary: "Episodic or indirect, often through an operator's brand.", Business: "Work in or with Bloom. Several are also Bloom customers at home." };
@@ -855,12 +891,13 @@ ul, ol { padding: 0; list-style: none; }
 
   /* ================= 05 PRODUCTS ================= */
   const prodsEl = $("#prods"), prodPanel = $("#prod-panel");
-  prodsEl.innerHTML = PRODUCTS.map((p, i) => tabBtn(`prod${p.unk ? " prod--unk" : ""}`, i, i === 1, `data-i="${i}" data-g="${p.g}"`, `<small>${esc(GROUPS[p.g])}</small><strong>${esc(p.n)}</strong>`)).join("");
+  prodsEl.innerHTML = PRODUCTS.map((p, i) => tabBtn(`prod${p.unk ? " prod--unk" : ""}`, i, i === 1, `data-i="${i}" data-g="${p.g}"`, `<span class="prod__lg">${logo(p.lg[0], true)}</span><small>${esc(GROUPS[p.g])}</small><strong>${esc(p.n)}</strong>`)).join("");
   const count = (g) => g === "all" ? PRODUCTS.length : PRODUCTS.filter((p) => p.g === g).length;
   $("#prod-filter").innerHTML = [["all", "All"], ...Object.entries(GROUPS)].map(([g, l], i) => tabBtn("chip", i, i === 0, `data-g="${g}"`, `${esc(l)} <small>${count(g)}</small>`)).join("");
   function renderProd(i) {
     const p = PRODUCTS[i];
     prodPanel.innerHTML = `
+      <div class="logos">${p.lg.map((x) => logo(x)).join("")}</div>
       <div class="panel__head"><h3>${esc(p.n)}</h3><span class="tag">${esc(p.k)}</span></div>
       ${p.url ? `<a class="url" href="https://${p.url}" target="_blank" rel="noopener">${esc(p.url)}</a>` : ""}
       <p class="panel__lead">${esc(p.p)}</p>
