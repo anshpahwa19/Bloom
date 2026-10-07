@@ -75,6 +75,14 @@
   - Under 600px the Attention task list is a stack of cards (the
     `max-width: 599px` block, scoped to `.task-list`); 600px and up keep
     the list. The Inbox rows share the task buttons, so keep that scope.
+  - The login (`#login`, "Sign in" section of `src/app.js`) is the front
+    door. The head script adds `html.is-locked` unless `bloo-session` is
+    set (localStorage with "Keep me signed in", otherwise sessionStorage);
+    `#login` always opens it. While locked the page behind is `inert` and
+    the hero entrance waits (`playEntrance`). Sign out buttons carry
+    `data-signout`. Its brand-panel glimpse reads the hero (orbit nodes,
+    frags, `data-total`); don't copy that data. Nothing typed may be stored
+    or sent anywhere. Test scripts start signed in by setting the session.
   - Dark-mode shadows stay neutral and soft (the dark `--sh-*`,
     `--frost-shadow` and `--pill-shadow` tokens). Don't add coloured glow
     halos; `--accent-glow` is kept faint for ambient light inside panels.
