@@ -143,6 +143,15 @@
     Accent are list rows like Language (`switchRowHTML`): tile, title and
     its value, then the switch (the page's own theme and accent switches, all
     one size). No grey `.pref` boxes or value pills inside lists.
+  - Sign in ("SIGN IN" in mobile.js, `#app-auth`): Splash, then Login (Log in
+    with Bloom ID, or Use biometrics), the Fingerprint / Face ID prompt as the
+    app's sheet, Scanning, Verified, Signed in, then Home. It shows once a
+    session (`sessionStorage` `bloo-x-signed-in`) and again after Sign out.
+    The steps cross-fade in `#app-auth` (over the tabs, under the sheet); the
+    tabs stay hidden while it shows. Tests skip it by setting that key in an
+    init script. The app icon is the logo's B in white on the logo's reds;
+    everything else is tokens (accent buttons and words, ok green for
+    Verified and Signed in).
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
     window or device mode), in both themes, and in the iPhone mockup on a

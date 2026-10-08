@@ -824,6 +824,116 @@ button.m-card:active { transform: scale(.985); }
 .m-search__count { margin-bottom: 2px; font-size: .875rem; color: var(--slate); }
 .m-search__all { width: 100%; margin-top: 14px; }
 
+/* SIGN IN — splash, login, biometrics, signed in ------------------- */
+.app.is-authing :is(.app-views, .app-nav, .app-layer) { visibility: hidden; }
+.app-auth { position: absolute; inset: 0; z-index: 35; overflow: hidden; background: var(--canvas); }
+.app-auth[hidden] { display: none; }
+.auth-step { position: absolute; inset: 0; }
+.auth {
+  position: relative; isolation: isolate; display: flex; flex-direction: column; height: 100%; overflow: hidden;
+  padding: var(--safe-top) var(--app-pad) calc(var(--safe-bottom) + 18px);
+}
+/* the same ambient light as the app's tabs */
+.auth::before {
+  content: ""; position: absolute; inset: 0 0 auto; z-index: -2; height: 560px; pointer-events: none;
+  background:
+    radial-gradient(70% 60% at 100% 0%, color-mix(in srgb, var(--blob-1) 16%, transparent), transparent 70%),
+    radial-gradient(55% 50% at 0% 30%, color-mix(in srgb, var(--blob-3) 12%, transparent), transparent 70%);
+}
+/* Bloom's B, large and faint behind the words */
+.auth__bg { position: absolute; z-index: -1; top: 25%; right: -12%; width: 76%; height: auto; fill: color-mix(in srgb, #922A22 7%, transparent); pointer-events: none; }
+:root[data-theme="dark"] .auth__bg { fill: color-mix(in srgb, #E3263B 9%, transparent); }
+.auth__bar { display: flex; align-items: center; height: var(--app-bar); flex: none; }
+.auth__bar .brand__word { width: 150px; height: 22px; }
+.auth__title {
+  font-family: var(--font-display); font-weight: 700; line-height: .98; letter-spacing: -.035em; color: var(--ink);
+  font-size: clamp(2.25rem, 1rem + 6vw, 3rem); font-size: round(clamp(2.25rem, 1rem + 6vw, 3rem), 2px);
+}
+.auth__title em { display: block; font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent-fg); font-size: 1.14em; font-size: round(1.14em, 2px); line-height: 1; }
+/* focus lands on each step's heading for screen readers; it isn't a control, so no ring */
+.auth [tabindex="-1"]:focus-visible { box-shadow: none; }
+.auth__sub { margin-top: 16px; max-width: 32ch; font-size: 1rem; line-height: 1.5; color: var(--slate); }
+
+/* Splash: the app's icon, its name, and a line that fills */
+.auth--splash { align-items: center; justify-content: center; text-align: center; }
+.auth__splash { display: grid; justify-items: center; }
+.auth__icon {
+  display: grid; place-items: center; width: 96px; height: 96px; border-radius: var(--r-icon);
+  background: linear-gradient(150deg, #E3263B, #922A22 72%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), var(--sh-float);
+  animation: auth-pop .7s var(--ease-spring) both;
+}
+.auth__icon-mark { width: 46px; height: 47px; fill: #fff; }
+.auth__name { margin-top: 22px; font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); }
+.auth__name span { color: var(--accent-fg); }
+.auth__tagline { margin-top: 8px; font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--slate-2); }
+.auth__load { position: absolute; left: 50%; bottom: calc(var(--safe-bottom) + 44px); width: 96px; height: 4px; translate: -50% 0; overflow: hidden; border-radius: var(--r-pill); background: var(--line); }
+.auth__load i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transform-origin: left center; animation: auth-load 1.5s var(--ease-expo) both; }
+
+/* Login */
+.auth__body { margin-top: 36px; }
+.auth__body .kicker { margin-bottom: 16px; }
+.auth__actions { display: grid; gap: 10px; margin-top: auto; }
+.auth__btn { width: 100%; height: 52px; justify-content: center; gap: 10px; }
+.auth__btn[aria-busy="true"] { pointer-events: none; }
+.auth__spin { width: 18px; height: 18px; border-radius: var(--r-pill); border: 2px solid color-mix(in srgb, currentColor 35%, transparent); border-top-color: currentColor; animation: auth-spin .8s linear infinite; }
+.auth__help { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-size: .875rem; color: var(--slate); }
+.auth__help .link-btn { min-height: 44px; padding: 0 4px; font-weight: 600; color: var(--accent-fg); }
+
+/* Signed in */
+.auth__done { display: grid; justify-items: center; margin: auto 0; padding-bottom: 40px; text-align: center; }
+.auth__ok {
+  display: grid; place-items: center; width: 68px; height: 68px; border-radius: var(--r-pill);
+  background: var(--ok-soft); color: var(--ok-fg); box-shadow: 0 0 0 8px color-mix(in srgb, var(--ok-soft) 55%, transparent);
+  animation: auth-pop .6s var(--ease-spring) both;
+}
+.auth__ok .ico { width: 30px; height: 30px; stroke-width: 2.2; }
+.auth__done .kicker { margin: 24px 0 14px; }
+.auth__title--center { text-align: center; }
+.auth__hi { display: block; }
+
+/* The biometric prompt is the app's sheet, its content centred */
+.app-sheet--bio .app-sheet__head { display: none; }
+.auth-bio { display: grid; justify-items: center; gap: 8px; padding: 16px 4px 2px; text-align: center; }
+.auth-bio__scan {
+  display: grid; place-items: center; width: 88px; height: 88px; margin-bottom: 8px; border-radius: var(--r-icon);
+  background: var(--accent-soft); color: var(--accent-fg);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 0 7px color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.auth-bio__scan:active { transform: scale(.94); }
+.auth-bio__scan .ico { width: 40px; height: 40px; stroke-width: 1.5; }
+.auth-bio__title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; }
+.auth-bio__text { max-width: 30ch; font-size: .875rem; line-height: 1.5; color: var(--slate); }
+.auth-bio__swap { min-height: 44px; margin-top: 4px; font-size: .875rem; font-weight: 600; color: var(--accent-fg); }
+.auth-bio__cancel { width: 100%; height: 50px; }
+
+/* Scanning, then verified: a deep-navy tile over the login, which blurs back */
+.auth-scan {
+  position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: 18px;
+  background: color-mix(in srgb, var(--canvas) 50%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.auth-scan__tile {
+  position: relative; display: grid; place-items: center; width: 112px; height: 112px; overflow: hidden; border-radius: var(--r-icon);
+  background: linear-gradient(160deg, #1E2C6E, #0B1640); color: #EEF1FF; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), var(--sh-float);
+  transition: box-shadow var(--t-base) var(--ease-out);
+}
+.auth-scan__tile > .ico { grid-area: 1 / 1; width: 54px; height: 54px; stroke-width: 1.4; transition: opacity var(--t-base), scale var(--t-slow) var(--ease-spring); }
+.auth-scan__ok { opacity: 0; scale: .5; color: #4ADE9B; stroke-width: 2 !important; }
+.auth-scan__line { position: absolute; left: 14%; right: 14%; top: 18%; height: 2px; border-radius: var(--r-pill); background: #7DA2FF; animation: auth-scan 1.1s ease-in-out infinite alternate; }
+.auth-scan.is-verified .auth-scan__glyph, .auth-scan.is-verified .auth-scan__line { opacity: 0; }
+.auth-scan.is-verified .auth-scan__ok { opacity: 1; scale: 1; }
+.auth-scan.is-verified .auth-scan__tile { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 0 0 6px color-mix(in srgb, var(--ok-soft) 70%, transparent), var(--sh-float); }
+.auth-scan__label { font-size: .875rem; font-weight: 600; color: var(--ink); }
+
+@keyframes auth-load { from { transform: scaleX(0); } }
+@keyframes auth-pop { from { opacity: 0; scale: .7; } }
+@keyframes auth-spin { to { rotate: 1turn; } }
+@keyframes auth-scan { to { top: 80%; } }
+@media (prefers-reduced-motion: reduce) {
+  .auth__icon, .auth__ok, .auth__load i { animation: none; }
+  .auth-scan__line, .auth__spin { animation-duration: 2.4s; }
+}
+
 /* ------------------------------------------------------------------
    5. THE IPHONE MOCKUP — wider screens see the app in an iPhone (the
    is-mockup class, or ☰ → Mobile app on the #desktop page). The copy

@@ -3277,6 +3277,116 @@ button.m-card:active { transform: scale(.985); }
 .m-search__count { margin-bottom: 2px; font-size: .875rem; color: var(--slate); }
 .m-search__all { width: 100%; margin-top: 14px; }
 
+/* SIGN IN — splash, login, biometrics, signed in ------------------- */
+.app.is-authing :is(.app-views, .app-nav, .app-layer) { visibility: hidden; }
+.app-auth { position: absolute; inset: 0; z-index: 35; overflow: hidden; background: var(--canvas); }
+.app-auth[hidden] { display: none; }
+.auth-step { position: absolute; inset: 0; }
+.auth {
+  position: relative; isolation: isolate; display: flex; flex-direction: column; height: 100%; overflow: hidden;
+  padding: var(--safe-top) var(--app-pad) calc(var(--safe-bottom) + 18px);
+}
+/* the same ambient light as the app's tabs */
+.auth::before {
+  content: ""; position: absolute; inset: 0 0 auto; z-index: -2; height: 560px; pointer-events: none;
+  background:
+    radial-gradient(70% 60% at 100% 0%, color-mix(in srgb, var(--blob-1) 16%, transparent), transparent 70%),
+    radial-gradient(55% 50% at 0% 30%, color-mix(in srgb, var(--blob-3) 12%, transparent), transparent 70%);
+}
+/* Bloom's B, large and faint behind the words */
+.auth__bg { position: absolute; z-index: -1; top: 25%; right: -12%; width: 76%; height: auto; fill: color-mix(in srgb, #922A22 7%, transparent); pointer-events: none; }
+:root[data-theme="dark"] .auth__bg { fill: color-mix(in srgb, #E3263B 9%, transparent); }
+.auth__bar { display: flex; align-items: center; height: var(--app-bar); flex: none; }
+.auth__bar .brand__word { width: 150px; height: 22px; }
+.auth__title {
+  font-family: var(--font-display); font-weight: 700; line-height: .98; letter-spacing: -.035em; color: var(--ink);
+  font-size: clamp(2.25rem, 1rem + 6vw, 3rem); font-size: round(clamp(2.25rem, 1rem + 6vw, 3rem), 2px);
+}
+.auth__title em { display: block; font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent-fg); font-size: 1.14em; font-size: round(1.14em, 2px); line-height: 1; }
+/* focus lands on each step's heading for screen readers; it isn't a control, so no ring */
+.auth [tabindex="-1"]:focus-visible { box-shadow: none; }
+.auth__sub { margin-top: 16px; max-width: 32ch; font-size: 1rem; line-height: 1.5; color: var(--slate); }
+
+/* Splash: the app's icon, its name, and a line that fills */
+.auth--splash { align-items: center; justify-content: center; text-align: center; }
+.auth__splash { display: grid; justify-items: center; }
+.auth__icon {
+  display: grid; place-items: center; width: 96px; height: 96px; border-radius: var(--r-icon);
+  background: linear-gradient(150deg, #E3263B, #922A22 72%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), var(--sh-float);
+  animation: auth-pop .7s var(--ease-spring) both;
+}
+.auth__icon-mark { width: 46px; height: 47px; fill: #fff; }
+.auth__name { margin-top: 22px; font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); }
+.auth__name span { color: var(--accent-fg); }
+.auth__tagline { margin-top: 8px; font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--slate-2); }
+.auth__load { position: absolute; left: 50%; bottom: calc(var(--safe-bottom) + 44px); width: 96px; height: 4px; translate: -50% 0; overflow: hidden; border-radius: var(--r-pill); background: var(--line); }
+.auth__load i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transform-origin: left center; animation: auth-load 1.5s var(--ease-expo) both; }
+
+/* Login */
+.auth__body { margin-top: 36px; }
+.auth__body .kicker { margin-bottom: 16px; }
+.auth__actions { display: grid; gap: 10px; margin-top: auto; }
+.auth__btn { width: 100%; height: 52px; justify-content: center; gap: 10px; }
+.auth__btn[aria-busy="true"] { pointer-events: none; }
+.auth__spin { width: 18px; height: 18px; border-radius: var(--r-pill); border: 2px solid color-mix(in srgb, currentColor 35%, transparent); border-top-color: currentColor; animation: auth-spin .8s linear infinite; }
+.auth__help { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-size: .875rem; color: var(--slate); }
+.auth__help .link-btn { min-height: 44px; padding: 0 4px; font-weight: 600; color: var(--accent-fg); }
+
+/* Signed in */
+.auth__done { display: grid; justify-items: center; margin: auto 0; padding-bottom: 40px; text-align: center; }
+.auth__ok {
+  display: grid; place-items: center; width: 68px; height: 68px; border-radius: var(--r-pill);
+  background: var(--ok-soft); color: var(--ok-fg); box-shadow: 0 0 0 8px color-mix(in srgb, var(--ok-soft) 55%, transparent);
+  animation: auth-pop .6s var(--ease-spring) both;
+}
+.auth__ok .ico { width: 30px; height: 30px; stroke-width: 2.2; }
+.auth__done .kicker { margin: 24px 0 14px; }
+.auth__title--center { text-align: center; }
+.auth__hi { display: block; }
+
+/* The biometric prompt is the app's sheet, its content centred */
+.app-sheet--bio .app-sheet__head { display: none; }
+.auth-bio { display: grid; justify-items: center; gap: 8px; padding: 16px 4px 2px; text-align: center; }
+.auth-bio__scan {
+  display: grid; place-items: center; width: 88px; height: 88px; margin-bottom: 8px; border-radius: var(--r-icon);
+  background: var(--accent-soft); color: var(--accent-fg);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 0 7px color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  transition: transform var(--t-fast) var(--ease-out);
+}
+.auth-bio__scan:active { transform: scale(.94); }
+.auth-bio__scan .ico { width: 40px; height: 40px; stroke-width: 1.5; }
+.auth-bio__title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; }
+.auth-bio__text { max-width: 30ch; font-size: .875rem; line-height: 1.5; color: var(--slate); }
+.auth-bio__swap { min-height: 44px; margin-top: 4px; font-size: .875rem; font-weight: 600; color: var(--accent-fg); }
+.auth-bio__cancel { width: 100%; height: 50px; }
+
+/* Scanning, then verified: a deep-navy tile over the login, which blurs back */
+.auth-scan {
+  position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: 18px;
+  background: color-mix(in srgb, var(--canvas) 50%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.auth-scan__tile {
+  position: relative; display: grid; place-items: center; width: 112px; height: 112px; overflow: hidden; border-radius: var(--r-icon);
+  background: linear-gradient(160deg, #1E2C6E, #0B1640); color: #EEF1FF; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), var(--sh-float);
+  transition: box-shadow var(--t-base) var(--ease-out);
+}
+.auth-scan__tile > .ico { grid-area: 1 / 1; width: 54px; height: 54px; stroke-width: 1.4; transition: opacity var(--t-base), scale var(--t-slow) var(--ease-spring); }
+.auth-scan__ok { opacity: 0; scale: .5; color: #4ADE9B; stroke-width: 2 !important; }
+.auth-scan__line { position: absolute; left: 14%; right: 14%; top: 18%; height: 2px; border-radius: var(--r-pill); background: #7DA2FF; animation: auth-scan 1.1s ease-in-out infinite alternate; }
+.auth-scan.is-verified .auth-scan__glyph, .auth-scan.is-verified .auth-scan__line { opacity: 0; }
+.auth-scan.is-verified .auth-scan__ok { opacity: 1; scale: 1; }
+.auth-scan.is-verified .auth-scan__tile { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 0 0 6px color-mix(in srgb, var(--ok-soft) 70%, transparent), var(--sh-float); }
+.auth-scan__label { font-size: .875rem; font-weight: 600; color: var(--ink); }
+
+@keyframes auth-load { from { transform: scaleX(0); } }
+@keyframes auth-pop { from { opacity: 0; scale: .7; } }
+@keyframes auth-spin { to { rotate: 1turn; } }
+@keyframes auth-scan { to { top: 80%; } }
+@media (prefers-reduced-motion: reduce) {
+  .auth__icon, .auth__ok, .auth__load i { animation: none; }
+  .auth-scan__line, .auth__spin { animation-duration: 2.4s; }
+}
+
 /* ------------------------------------------------------------------
    5. THE IPHONE MOCKUP — wider screens see the app in an iPhone (the
    is-mockup class, or ☰ → Mobile app on the #desktop page). The copy
@@ -3513,6 +3623,10 @@ button.m-card:active { transform: scale(.985); }
       <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-fingerprint" viewBox="0 0 24 24"><path d="M3.6 12a8.4 8.4 0 0 1 15.3-4.8"/><path d="M20.4 11.2c.2 1.9.1 3.9-.3 5.8"/><path d="M6.4 18.6c.8-1.9 1.1-3.9 1.1-6.1a4.5 4.5 0 0 1 9 0v1.3"/><path d="M16.3 17.3c-.2 1.1-.5 2.2-.9 3.2"/><path d="M12 12.5v1.4c0 2.8-.6 5.4-1.8 7.6"/><path d="M3.8 16v.01"/></symbol>
+      <symbol id="i-faceid" viewBox="0 0 24 24"><path d="M3.5 8V6.5a3 3 0 0 1 3-3H8M16 3.5h1.5a3 3 0 0 1 3 3V8M20.5 16v1.5a3 3 0 0 1-3 3H16M8 20.5H6.5a3 3 0 0 1-3-3V16"/><path d="M9 9v1.5M15 9v1.5M12.2 9v3.8h-1"/><path d="M9.2 15.6c1.6 1.2 4 1.2 5.6 0"/></symbol>
+      <!-- Bloom's B, from the logo; drawn in currentColor (fill), not stroked -->
+      <symbol id="i-bloom" viewBox="0 0 42 43"><path d="M7.77 0v42.52h3.66V3.78h11.24c8.56.14 7.47 6.41 5.85 9.52h4.26C35.48 4.41 28.7.95 25.09 0H7.77Z"/><path d="M15.16 13.3v21.7h3.61V23.3l6.2 7.1 7.16-9.58c2.32.66 3.8 4.06 4.26 5.68 1.75 8.18-4.51 11.57-7.86 12.24l-13.37.41v3.31h12.3c11.02-1.18 13.23-9.99 12.95-14.25.19-7.14-6.39-10.94-9.7-11.94l-6.33 8.34-9.22-11.3Z"/></symbol>
       <symbol id="i-check-all" viewBox="0 0 24 24"><path d="m2 12.5 4.5 4.5L16 7.5"/><path d="m11.5 16.5.5.5 9.5-9.5"/></symbol>
       <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
       <symbol id="i-wave" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7.5a7 7 0 0 1-7 7h-.5a6 6 0 0 1-4.6-2.2L2.8 15.6a1.6 1.6 0 0 1 2.4-2.1L8 16"/></symbol>
@@ -4646,6 +4760,9 @@ button.m-card:active { transform: scale(.985); }
 
     <!-- full-screen layers over the tabs: search and notifications -->
     <div class="app-layer" id="app-layer"></div>
+
+    <!-- signing in: splash, login, biometrics, then the app (over the tabs, under the sheet) -->
+    <div class="app-auth" id="app-auth" hidden></div>
 
     <div class="app-offline" id="app-offline" role="status" hidden>
       <svg class="ico ico--sm" aria-hidden="true"><use href="#i-cloud-off"/></svg>
@@ -8230,7 +8347,11 @@ button.m-card:active { transform: scale(.985); }
     // help
     "faq-cat": (v) => { A.faq = v; refreshAll(); },
     // profile
-    "sign-out": () => confirmSheet({ title: "Sign out?", text: "You’ll need to sign in again to see your tasks, requests and perks.", ok: "Sign out", danger: true, ic: "i-logout", onOk: () => toast("You’ve been signed out of this demo.", "i-logout") }),
+    "sign-out": () => confirmSheet({ title: "Sign out?", text: "You’ll need to sign in again to see your tasks, requests and perks.", ok: "Sign out", danger: true, ic: "i-logout", onOk: signOut }),
+    "auth-sso": (_, btn) => signInWithId(btn),
+    "auth-bio": (kind) => showBio(kind === "face" ? "face" : "finger"),
+    "auth-scan": (kind) => scanBio(kind === "face" ? "face" : "finger"),
+    "auth-help": () => toast("IT support will be in touch shortly.", "i-help"),
     language: () => openSheet({ title: "Language", render: languageHTML }),
     "push-notify": (_, btn) => {
       const on = !pushOn();
@@ -9709,6 +9830,114 @@ button.m-card:active { transform: scale(.985); }
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-mockup]"); if (b) openMockup(b); });
 
   /* ---------------------------------------------------------------
+     SIGN IN — splash, login (Bloom ID or biometrics), then the app.
+     Once a session, and again after Sign out. The steps cross-fade in
+     #app-auth, over the tabs; the biometric prompts are the app's sheet.
+     --------------------------------------------------------------- */
+  const AUTH_KEY = "bloo-x-signed-in";
+  const authEl = $("#app-auth");
+  const AUTH = { started: false, timers: [] };
+  const authWait = (ms, fn) => AUTH.timers.push(setTimeout(fn, reduceMotion ? Math.min(ms, 400) : ms));
+  const isSignedIn = () => { try { return sessionStorage.getItem(AUTH_KEY) === "1"; } catch { return false; } };
+  const setSignedIn = (on) => { try { if (on) sessionStorage.setItem(AUTH_KEY, "1"); else sessionStorage.removeItem(AUTH_KEY); } catch { /* the session forgets */ } };
+  const bloomMark = (cls) => `<svg class="${cls}" viewBox="0 0 42 43" aria-hidden="true"><use href="#i-bloom"/></svg>`;
+  const authBar = () => `<header class="auth__bar"><span class="brand__word has-logo" role="img" aria-label="Bloom Multiverse"></span></header>`;
+  const AUTH_STEPS = {
+    splash: () => `<section class="auth auth--splash" aria-label="Bloom Multiverse is opening">
+        <div class="auth__splash"><span class="auth__icon">${bloomMark("auth__icon-mark")}</span>
+          <p class="auth__name">Bloom <span>Multiverse</span></p><p class="auth__tagline">Employee workspace</p></div>
+        <span class="auth__load" aria-hidden="true"><i></i></span></section>`,
+    login: () => `<section class="auth auth--login" aria-labelledby="auth-title">${bloomMark("auth__bg")}${authBar()}
+        <div class="auth__body">${kicker("Sign in")}
+          <h1 class="auth__title" id="auth-title" tabindex="-1">Your workplace, <em>connected.</em></h1>
+          <p class="auth__sub">Access company resources, announcements and more in one place.</p></div>
+        <div class="auth__actions">
+          <button class="btn btn--primary auth__btn" type="button" data-act="auth-sso">Log in with Bloom ID</button>
+          <button class="btn btn--ghost auth__btn" type="button" data-act="auth-bio" data-v="finger">${icon("i-fingerprint", "ico ico--sm")}Use biometrics</button>
+          <p class="auth__help">Need help? <button class="link-btn" type="button" data-act="auth-help">Contact IT support</button></p>
+        </div></section>`,
+    done: () => `<section class="auth auth--done" aria-labelledby="auth-done-title">${bloomMark("auth__bg")}${authBar()}
+        <div class="auth__done" role="status"><span class="auth__ok" aria-hidden="true">${icon("i-check")}</span>${kicker("Signed in")}
+          <h1 class="auth__title auth__title--center" id="auth-done-title" tabindex="-1">Welcome back, <span class="auth__hi">${esc(me.first)}<span class="hero__dot">.</span></span></h1>
+          <p class="auth__sub">Getting your workspace ready…</p></div></section>`
+  };
+  function showAuth(step) {
+    AUTH.timers.forEach(clearTimeout);
+    AUTH.timers = [];
+    appEl.classList.add("is-authing");
+    authEl.hidden = false;
+    const next = document.createElement("div");
+    next.className = "auth-step";
+    next.innerHTML = AUTH_STEPS[step]();
+    // what was showing (a step, a scan) fades as the next one comes in
+    [...authEl.children].forEach((el) => motion(el, [{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: "forwards" }).then(() => el.remove()));
+    authEl.append(next);
+    motion(next, [{ opacity: 0 }, { opacity: 1 }], { duration: 420 });
+    setTimeout(() => $("h1", next)?.focus({ preventScroll: true }), 60);
+    if (step === "splash") authWait(1600, () => showAuth("login"));
+    if (step === "done") authWait(1600, finishAuth);
+  }
+  function signInWithId(btn) {
+    if (btn.getAttribute("aria-busy") === "true") return;
+    btn.setAttribute("aria-busy", "true");
+    btn.innerHTML = `<span class="auth__spin" aria-hidden="true"></span>Signing in…`;
+    authWait(1100, () => showAuth("done"));
+  }
+  const bioHTML = (kind) => {
+    const face = kind === "face";
+    return `<div class="auth-bio">
+      <button class="auth-bio__scan" type="button" data-act="auth-scan" data-v="${kind}" aria-label="${face ? "Scan my face" : "Read my fingerprint"}">${icon(face ? "i-faceid" : "i-fingerprint")}</button>
+      <h3 class="auth-bio__title">${face ? "Sign in with Face ID" : "Confirm fingerprint"}</h3>
+      <p class="auth-bio__text">${face ? "Look at your front camera, or tap the icon to scan." : "Tap the icon, then place your finger on the sensor."}</p>
+      <button class="link-btn auth-bio__swap" type="button" data-act="auth-bio" data-v="${face ? "finger" : "face"}">${face ? "Use fingerprint instead" : "Use Face ID instead"}</button>
+      <button class="btn btn--ghost auth-bio__cancel" type="button" data-sheet-close>Cancel</button>
+    </div>`;
+  };
+  function showBio(kind) {
+    const title = kind === "face" ? "Sign in with Face ID" : "Confirm fingerprint";
+    if (A.sheet?.bio) {
+      // switch between fingerprint and Face ID in place
+      A.sheet.bio = kind;
+      A.sheet.render = () => bioHTML(kind);
+      $("#app-sheet-title").textContent = title;
+      sheetBody.innerHTML = bioHTML(kind);
+      $(".auth-bio__scan", sheetBody).focus({ preventScroll: true });
+      return;
+    }
+    openSheet({ title, render: () => bioHTML(kind), cls: "app-sheet--bio" });
+    A.sheet.bio = kind;
+  }
+  function scanBio(kind) {
+    closeSheet(false);
+    const face = kind === "face";
+    const scan = document.createElement("div");
+    scan.className = "auth-scan";
+    scan.setAttribute("role", "status");
+    scan.innerHTML = `<div class="auth-scan__tile">${icon(face ? "i-faceid" : "i-fingerprint", "ico auth-scan__glyph")}${icon("i-check", "ico auth-scan__ok")}<i class="auth-scan__line" aria-hidden="true"></i></div>
+      <p class="auth-scan__label">${face ? "Scanning face…" : "Reading fingerprint…"}</p>`;
+    authEl.append(scan);
+    motion(scan, [{ opacity: 0 }, { opacity: 1 }], { duration: 260 });
+    authWait(1700, () => { scan.classList.add("is-verified"); $(".auth-scan__label", scan).textContent = "Verified"; });
+    authWait(2600, () => showAuth("done"));
+  }
+  function finishAuth() {
+    setSignedIn(true);
+    setTab("home");
+    appEl.classList.remove("is-authing");
+    motion(authEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: "ease-out" }).then(() => {
+      authEl.hidden = true;
+      authEl.replaceChildren();
+      focusPage(topPage());
+    });
+  }
+  function signOut() {
+    setSignedIn(false);
+    closeModal(false);
+    if (gpt.open) closeGpt();
+    showAuth("login");
+  }
+
+  /* ---------------------------------------------------------------
      Mode — the app on phones, the page everywhere else
      --------------------------------------------------------------- */
   function setAppMode() {
@@ -9722,6 +9951,7 @@ button.m-card:active { transform: scale(.985); }
       closeNav(false); closeMenus(); closeSearch(); closeDrawer(); closeInbox(); hideTip();
       mockup?.close();
       ensureRoot(A.tab);
+      if (!AUTH.started) { AUTH.started = true; if (!isSignedIn()) showAuth("splash"); }
       TABS.forEach((t) => { const s = stackOf(t); s.classList.toggle("is-active", t === A.tab); s.inert = t !== A.tab; });
       syncBadges();
       requestAnimationFrame(() => { syncNav(); $$(".pg", appEl).forEach(updateBar); });

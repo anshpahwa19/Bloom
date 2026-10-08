@@ -595,7 +595,11 @@
     // help
     "faq-cat": (v) => { A.faq = v; refreshAll(); },
     // profile
-    "sign-out": () => confirmSheet({ title: "Sign out?", text: "You’ll need to sign in again to see your tasks, requests and perks.", ok: "Sign out", danger: true, ic: "i-logout", onOk: () => toast("You’ve been signed out of this demo.", "i-logout") }),
+    "sign-out": () => confirmSheet({ title: "Sign out?", text: "You’ll need to sign in again to see your tasks, requests and perks.", ok: "Sign out", danger: true, ic: "i-logout", onOk: signOut }),
+    "auth-sso": (_, btn) => signInWithId(btn),
+    "auth-bio": (kind) => showBio(kind === "face" ? "face" : "finger"),
+    "auth-scan": (kind) => scanBio(kind === "face" ? "face" : "finger"),
+    "auth-help": () => toast("IT support will be in touch shortly.", "i-help"),
     language: () => openSheet({ title: "Language", render: languageHTML }),
     "push-notify": (_, btn) => {
       const on = !pushOn();
@@ -2074,6 +2078,114 @@
   document.addEventListener("click", (e) => { const b = e.target.closest("[data-open-mockup]"); if (b) openMockup(b); });
 
   /* ---------------------------------------------------------------
+     SIGN IN — splash, login (Bloom ID or biometrics), then the app.
+     Once a session, and again after Sign out. The steps cross-fade in
+     #app-auth, over the tabs; the biometric prompts are the app's sheet.
+     --------------------------------------------------------------- */
+  const AUTH_KEY = "bloo-x-signed-in";
+  const authEl = $("#app-auth");
+  const AUTH = { started: false, timers: [] };
+  const authWait = (ms, fn) => AUTH.timers.push(setTimeout(fn, reduceMotion ? Math.min(ms, 400) : ms));
+  const isSignedIn = () => { try { return sessionStorage.getItem(AUTH_KEY) === "1"; } catch { return false; } };
+  const setSignedIn = (on) => { try { if (on) sessionStorage.setItem(AUTH_KEY, "1"); else sessionStorage.removeItem(AUTH_KEY); } catch { /* the session forgets */ } };
+  const bloomMark = (cls) => `<svg class="${cls}" viewBox="0 0 42 43" aria-hidden="true"><use href="#i-bloom"/></svg>`;
+  const authBar = () => `<header class="auth__bar"><span class="brand__word has-logo" role="img" aria-label="Bloom Multiverse"></span></header>`;
+  const AUTH_STEPS = {
+    splash: () => `<section class="auth auth--splash" aria-label="Bloom Multiverse is opening">
+        <div class="auth__splash"><span class="auth__icon">${bloomMark("auth__icon-mark")}</span>
+          <p class="auth__name">Bloom <span>Multiverse</span></p><p class="auth__tagline">Employee workspace</p></div>
+        <span class="auth__load" aria-hidden="true"><i></i></span></section>`,
+    login: () => `<section class="auth auth--login" aria-labelledby="auth-title">${bloomMark("auth__bg")}${authBar()}
+        <div class="auth__body">${kicker("Sign in")}
+          <h1 class="auth__title" id="auth-title" tabindex="-1">Your workplace, <em>connected.</em></h1>
+          <p class="auth__sub">Access company resources, announcements and more in one place.</p></div>
+        <div class="auth__actions">
+          <button class="btn btn--primary auth__btn" type="button" data-act="auth-sso">Log in with Bloom ID</button>
+          <button class="btn btn--ghost auth__btn" type="button" data-act="auth-bio" data-v="finger">${icon("i-fingerprint", "ico ico--sm")}Use biometrics</button>
+          <p class="auth__help">Need help? <button class="link-btn" type="button" data-act="auth-help">Contact IT support</button></p>
+        </div></section>`,
+    done: () => `<section class="auth auth--done" aria-labelledby="auth-done-title">${bloomMark("auth__bg")}${authBar()}
+        <div class="auth__done" role="status"><span class="auth__ok" aria-hidden="true">${icon("i-check")}</span>${kicker("Signed in")}
+          <h1 class="auth__title auth__title--center" id="auth-done-title" tabindex="-1">Welcome back, <span class="auth__hi">${esc(me.first)}<span class="hero__dot">.</span></span></h1>
+          <p class="auth__sub">Getting your workspace ready…</p></div></section>`
+  };
+  function showAuth(step) {
+    AUTH.timers.forEach(clearTimeout);
+    AUTH.timers = [];
+    appEl.classList.add("is-authing");
+    authEl.hidden = false;
+    const next = document.createElement("div");
+    next.className = "auth-step";
+    next.innerHTML = AUTH_STEPS[step]();
+    // what was showing (a step, a scan) fades as the next one comes in
+    [...authEl.children].forEach((el) => motion(el, [{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: "forwards" }).then(() => el.remove()));
+    authEl.append(next);
+    motion(next, [{ opacity: 0 }, { opacity: 1 }], { duration: 420 });
+    setTimeout(() => $("h1", next)?.focus({ preventScroll: true }), 60);
+    if (step === "splash") authWait(1600, () => showAuth("login"));
+    if (step === "done") authWait(1600, finishAuth);
+  }
+  function signInWithId(btn) {
+    if (btn.getAttribute("aria-busy") === "true") return;
+    btn.setAttribute("aria-busy", "true");
+    btn.innerHTML = `<span class="auth__spin" aria-hidden="true"></span>Signing in…`;
+    authWait(1100, () => showAuth("done"));
+  }
+  const bioHTML = (kind) => {
+    const face = kind === "face";
+    return `<div class="auth-bio">
+      <button class="auth-bio__scan" type="button" data-act="auth-scan" data-v="${kind}" aria-label="${face ? "Scan my face" : "Read my fingerprint"}">${icon(face ? "i-faceid" : "i-fingerprint")}</button>
+      <h3 class="auth-bio__title">${face ? "Sign in with Face ID" : "Confirm fingerprint"}</h3>
+      <p class="auth-bio__text">${face ? "Look at your front camera, or tap the icon to scan." : "Tap the icon, then place your finger on the sensor."}</p>
+      <button class="link-btn auth-bio__swap" type="button" data-act="auth-bio" data-v="${face ? "finger" : "face"}">${face ? "Use fingerprint instead" : "Use Face ID instead"}</button>
+      <button class="btn btn--ghost auth-bio__cancel" type="button" data-sheet-close>Cancel</button>
+    </div>`;
+  };
+  function showBio(kind) {
+    const title = kind === "face" ? "Sign in with Face ID" : "Confirm fingerprint";
+    if (A.sheet?.bio) {
+      // switch between fingerprint and Face ID in place
+      A.sheet.bio = kind;
+      A.sheet.render = () => bioHTML(kind);
+      $("#app-sheet-title").textContent = title;
+      sheetBody.innerHTML = bioHTML(kind);
+      $(".auth-bio__scan", sheetBody).focus({ preventScroll: true });
+      return;
+    }
+    openSheet({ title, render: () => bioHTML(kind), cls: "app-sheet--bio" });
+    A.sheet.bio = kind;
+  }
+  function scanBio(kind) {
+    closeSheet(false);
+    const face = kind === "face";
+    const scan = document.createElement("div");
+    scan.className = "auth-scan";
+    scan.setAttribute("role", "status");
+    scan.innerHTML = `<div class="auth-scan__tile">${icon(face ? "i-faceid" : "i-fingerprint", "ico auth-scan__glyph")}${icon("i-check", "ico auth-scan__ok")}<i class="auth-scan__line" aria-hidden="true"></i></div>
+      <p class="auth-scan__label">${face ? "Scanning face…" : "Reading fingerprint…"}</p>`;
+    authEl.append(scan);
+    motion(scan, [{ opacity: 0 }, { opacity: 1 }], { duration: 260 });
+    authWait(1700, () => { scan.classList.add("is-verified"); $(".auth-scan__label", scan).textContent = "Verified"; });
+    authWait(2600, () => showAuth("done"));
+  }
+  function finishAuth() {
+    setSignedIn(true);
+    setTab("home");
+    appEl.classList.remove("is-authing");
+    motion(authEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: "ease-out" }).then(() => {
+      authEl.hidden = true;
+      authEl.replaceChildren();
+      focusPage(topPage());
+    });
+  }
+  function signOut() {
+    setSignedIn(false);
+    closeModal(false);
+    if (gpt.open) closeGpt();
+    showAuth("login");
+  }
+
+  /* ---------------------------------------------------------------
      Mode — the app on phones, the page everywhere else
      --------------------------------------------------------------- */
   function setAppMode() {
@@ -2087,6 +2199,7 @@
       closeNav(false); closeMenus(); closeSearch(); closeDrawer(); closeInbox(); hideTip();
       mockup?.close();
       ensureRoot(A.tab);
+      if (!AUTH.started) { AUTH.started = true; if (!isSignedIn()) showAuth("splash"); }
       TABS.forEach((t) => { const s = stackOf(t); s.classList.toggle("is-active", t === A.tab); s.inert = t !== A.tab; });
       syncBadges();
       requestAnimationFrame(() => { syncNav(); $$(".pg", appEl).forEach(updateBar); });

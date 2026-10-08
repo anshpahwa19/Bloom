@@ -162,6 +162,11 @@ carousels and the joiner portrait can be dragged with a mouse, and
 scrollbars stay hidden, as on a phone. On the `#desktop` page,
 ☰ → **Mobile app** opens the same iPhone over the page.
 
+- **Signing in:** the app opens on a splash (the Bloom icon and a loading
+  line), then the login: Log in with Bloom ID, or Use biometrics, which
+  opens a fingerprint prompt that can switch to Face ID. Scanning and
+  Verified play over the blurred login, then "Welcome back, Rashid." and
+  Home. Once a session; Sign out in Profile brings the login back.
 - **Header:** the logo, then Search and Notifications on round surfaces.
   It frosts once content slides under it. Pushed pages swap it for Back
   and their title, centred.
