@@ -1309,11 +1309,11 @@ html.is-locked, .is-locked body { overflow: hidden; }
 .login__card { width: min(100%, 520px); padding: clamp(32px, 3.8vw, 56px); border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2); }
 .login__welcome { font-family: var(--font-display); font-size: 1.5rem; font-weight: 500; letter-spacing: -.02em; color: var(--slate); }
 .login__title {
-  margin-top: 8px; font-family: var(--font-display); font-weight: 700; line-height: 1; letter-spacing: -.045em;
-  font-size: clamp(2.75rem, 1.5rem + 2.2vw, 4rem); font-size: round(clamp(2.75rem, 1.5rem + 2.2vw, 4rem), 2px);
+  width: min(100%, 380px); aspect-ratio: 292 / 43; margin-top: 12px;
+  background: var(--logo-light) left center / contain no-repeat;
 }
+:root[data-theme="dark"] .login__title { background-image: var(--logo-dark); }
 .login__title:focus { box-shadow: none; }
-.login__title em { position: relative; display: inline-block; font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; color: var(--accent-fg); }
 .login__sub { margin-top: 28px; max-width: 40ch; font-size: 1.125rem; line-height: 1.6; color: var(--slate); }
 .login__submit { width: 100%; margin-top: 32px; }
 .login__submit .login__done-ico { display: none; }
@@ -1328,7 +1328,6 @@ html.is-locked, .is-locked body { overflow: hidden; }
 .login__help a:hover { text-decoration-color: currentColor; }
 /* Arriving: the card rises, the squiggle draws, the multiverse pops in */
 .is-locked .login__card { animation: rise .9s var(--ease-expo) .12s both; }
-.is-locked .login__title .squiggle { animation: draw 1.3s var(--ease-out) .7s forwards; }
 .is-locked .login__core { animation: coreIn 1.1s var(--ease-spring) .15s both; }
 .is-locked .login__bob > * { animation: popIn .8s var(--ease-spring) both; animation-delay: calc(.3s + var(--n, 0) * 80ms); }
 .login__node:nth-child(2) { --n: 1; }
@@ -2565,7 +2564,6 @@ html.is-locked, .is-locked body { overflow: hidden; }
   .login__main { padding-block: 0 16px; }
   .login__card { padding: 28px 22px 24px; }
   .login__welcome { font-size: 1.25rem; }
-  .login__title { font-size: 2.5rem; }
   .login__sub { margin-top: 20px; font-size: 1rem; }
   .login__submit { margin-top: 26px; }
 }
@@ -2586,7 +2584,6 @@ html.is-locked, .is-locked body { overflow: hidden; }
   .ql-card__desc { -webkit-line-clamp: 3; }
 }
 @media (max-width: 359px) {
-  .login__title { font-size: 2rem; }
   .login__orbit { width: min(100%, 180px); }
   .login__stage { padding: 26px 36px 8px; }
   .nav-btn--search { display: none; }
