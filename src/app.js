@@ -335,6 +335,28 @@
   });
 
   /* ---------------------------------------------------------------
+     Quick links — the apps Bloom works in. One list feeds the hero
+     dock (the four with a `dock` place) and the "View All" panel.
+     `brand` only tints the panel's cards; it never colours text.
+     --------------------------------------------------------------- */
+  const QUICK_LINKS = [
+    { name: "SAP", mark: "sap", brand: "#0a6ed1", href: "https://www.sap.com", dock: 3, hint: "Procurement", desc: "Create ADCB Batch Approval Process Workflow requests directly from Bloom." },
+    { name: "Salesforce", mark: "sf", brand: "#00a1e0", href: "https://www.salesforce.com", dock: 1, hint: "Sales & CRM", desc: "Create Broker Commission Approval, Resale Approval and other requests." },
+    { name: "Darwinbox", mark: "db", brand: "#1a73e8", href: "https://www.darwinbox.com", dock: 2, hint: "People records", desc: "Create Leave, Out of Duty and other requests directly from Bloom." },
+    { name: "UiPath", mark: "ui", brand: "#fa4616", href: "https://www.uipath.com", dock: 4, hint: "Automations", desc: "Start and track the automations that take on routine work." },
+    { name: "Egnyte", mark: "eg", brand: "#00968f", href: "https://www.egnyte.com", desc: "All company policies are stored in Egnyte, Bloom’s document hub." },
+    { name: "Docusign", mark: "ds", brand: "#4c00ff", href: "https://www.docusign.com", desc: "Sign, send and track the documents that need a signature." },
+    { name: "ServiceDesk", mark: "sd", brand: "#2b7bf3", desc: "Raise an IT ticket and follow it through to a fix." },
+    { name: "Contentful", mark: "cf", brand: "#ef4a52", href: "https://www.contentful.com", desc: "Edit and publish the content on Bloom’s websites." },
+    { name: "Power BI", mark: "pbi", brand: "#f2c811", href: "https://app.powerbi.com", desc: "Reports and dashboards for every team." }
+  ];
+  // ServiceDesk lives on Bloom's network, so the prototype has no address for it
+  const qlLink = (l) => l.href ? `href="${l.href}" target="_blank" rel="noopener"` : `href="#" data-toast="${l.name}"`;
+  const qlMark = (l, cls = "") => `<span class="app-mark app-mark--${l.mark}${cls}" aria-hidden="true">${l.mark === "sap" ? "SAP" : l.name.slice(0, 2)}</span>`;
+  $("#dock-list").innerHTML = QUICK_LINKS.filter((l) => l.dock).sort((a, b) => a.dock - b.dock).map((l) =>
+    `<li><a class="dock__item" ${qlLink(l)}>${qlMark(l, " app-mark--lg")}<span class="dock__label"><span class="dock__name">${l.name}</span><span class="dock__hint">${escapeHtml(l.hint)}</span></span>${icon("i-external", "ico ico--sm dock__ext")}</a></li>`).join("");
+
+  /* ---------------------------------------------------------------
      Search — command palette
      --------------------------------------------------------------- */
   const searchIndex = [
@@ -342,6 +364,7 @@
     { group: "Apps", label: "UiPath", meta: "10 pending", mark: "ui", filter: "uipath" },
     { group: "Apps", label: "Darwinbox", meta: "5 pending", mark: "db", filter: "darwinbox" },
     { group: "Apps", label: "SAP", meta: "2 pending", mark: "sap", filter: "sap" },
+    { group: "Apps", label: "Quick links", meta: `All ${QUICK_LINKS.length} apps`, drawer: "links" },
     { group: "Policies", label: "Data Security", meta: "Security", policy: "Data Security" },
     { group: "Policies", label: "Management Process", meta: "Operations", policy: "Management Process" },
     { group: "Policies", label: "Brand Guidelines", meta: "Brand", policy: "Brand Guidelines" },
@@ -397,7 +420,7 @@
         ? `<span class="app-mark app-mark--gpt"><span class="orb orb--xs"></span></span>`
         : it.mark
         ? `<span class="app-mark app-mark--${it.mark}">${it.mark === "sap" ? "SAP" : it.label.slice(0, 2)}</span>`
-        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Announcements" ? "i-megaphone" : it.group === "Requests" ? "i-doc" : "i-help", "ico ico--sm")}</span>`;
+        : `<span class="app-mark app-mark--policy">${icon(it.group === "People" ? "i-user" : it.group === "Policies" ? "i-book" : it.group === "Communities" ? "i-ball" : it.group === "Perks" ? "i-gift" : it.group === "Announcements" ? "i-megaphone" : it.group === "Requests" ? "i-doc" : it.group === "Apps" ? "i-grid" : "i-help", "ico ico--sm")}</span>`;
       html += `<button type="button" class="search__item${i === 0 ? " is-active" : ""}" role="option" data-i="${i}">${lead}<span>${highlight(it.label, q)}</span><small>${escapeHtml(it.meta)}</small></button>`;
     });
     sPanel.innerHTML = html;
@@ -617,14 +640,23 @@
   }
 
   /* ---------------------------------------------------------------
-     Drawer (task review, request details, profile, help)
+     Drawer (quick links, task review, request details, profile, help)
      --------------------------------------------------------------- */
   const drawer = $("#drawer");
   const drawerTitle = $("#drawer-title");
   const drawerBody = $("#drawer-body");
   let lastFocus = null;
 
+  const drawerBack = $(".drawer__back");
+  const drawerClose = $(".drawer__close");
+
   const drawerViews = {
+    links: () => ({
+      title: "Quick links",
+      back: true,
+      html: `<ul class="ql-list" role="list">${QUICK_LINKS.map((l) =>
+        `<li><a class="ql-card" ${qlLink(l)} style="--brand: ${l.brand}">${qlMark(l)}<span class="ql-card__text"><strong class="ql-card__name">${l.name}</strong><span class="ql-card__desc">${escapeHtml(l.desc)}</span></span>${icon("i-external", "ico ql-card__ext")}</a></li>`).join("")}</ul>`
+    }),
     profile: () => ({
       title: "My profile",
       html: `<div class="d-profile"><span class="avatar img-rashid"></span><h3>Rashid Khan</h3><p class="meta">Sr. Engineer, Digital Platforms</p></div>
@@ -699,6 +731,9 @@
     if (!wasOpen) lastFocus = document.activeElement;
     drawerTitle.textContent = view.title;
     drawerBody.innerHTML = view.html;
+    // A list you step into (Quick links) goes back with a chevron; the rest close with ×
+    drawerBack.hidden = !view.back;
+    drawerClose.hidden = !!view.back;
     drawer.classList.add("is-open");
     drawer.setAttribute("aria-hidden", "false");
     body.style.overflow = "hidden";
@@ -706,7 +741,7 @@
     closeNav(false);
     closeSearch();
     hideTip();
-    setTimeout(() => $(".drawer__head .icon-btn").focus(), 60);
+    setTimeout(() => (view.back ? drawerBack : drawerClose).focus(), 60);
 
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {

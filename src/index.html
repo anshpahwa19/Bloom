@@ -367,13 +367,8 @@
         <!-- QUICK LINKS — application dock -->
         <section class="dock frost" id="quick-links" aria-labelledby="ql-title">
           <h2 class="dock__title" id="ql-title">Quick links</h2>
-          <ul class="dock__list">
-            <li><a class="dock__item" href="https://www.salesforce.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--sf">Sf</span><span class="dock__label"><span class="dock__name">Salesforce</span><span class="dock__hint">Sales &amp; CRM</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
-            <li><a class="dock__item" href="https://www.darwinbox.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--db">Db</span><span class="dock__label"><span class="dock__name">Darwinbox</span><span class="dock__hint">People records</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
-            <li><a class="dock__item" href="https://www.sap.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--sap">SAP</span><span class="dock__label"><span class="dock__name">SAP</span><span class="dock__hint">Procurement</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
-            <li><a class="dock__item" href="https://www.uipath.com" target="_blank" rel="noopener"><span class="app-mark app-mark--lg app-mark--ui">Ui</span><span class="dock__label"><span class="dock__name">UiPath</span><span class="dock__hint">Automations</span></span><svg class="ico ico--sm dock__ext"><use href="#i-external"/></svg></a></li>
-          </ul>
-          <a class="dock__all" href="#quick-links" data-toast="Opening quick links…">View All <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
+          <ul class="dock__list" id="dock-list"></ul>
+          <a class="dock__all" href="#quick-links" data-drawer="links" aria-haspopup="dialog">View All <svg class="ico ico--sm"><use href="#i-arrow"/></svg></a>
         </section>
 
         <p class="hero__chapter" aria-hidden="true"><span>01</span> / 08</p>
@@ -1071,8 +1066,9 @@
     <div class="drawer__scrim" data-close-drawer></div>
     <section class="drawer__panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
       <header class="drawer__head">
+        <button class="icon-btn drawer__back" type="button" data-close-drawer aria-label="Back" hidden><svg class="ico"><use href="#i-chevron-left"/></svg></button>
         <h2 class="h3" id="drawer-title">Drawer</h2>
-        <button class="icon-btn icon-btn--bordered" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
+        <button class="icon-btn icon-btn--bordered drawer__close" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
       </header>
       <div class="drawer__body" id="drawer-body"></div>
     </section>

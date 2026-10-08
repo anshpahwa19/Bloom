@@ -431,10 +431,16 @@ em { font-style: normal; }
   font-family: var(--font-display); font-weight: 700; font-size: .75rem; letter-spacing: -0.01em;
 }
 .app-mark--lg { width: 52px; height: 52px; }
-.app-mark--sf, .app-mark--sap, .app-mark--ui, .app-mark--db { --bg: var(--tile); font-size: 0; color: transparent; box-shadow: inset 0 0 0 1px rgba(11, 22, 64, .07); }
+.app-mark--sf, .app-mark--sap, .app-mark--ui, .app-mark--db,
+.app-mark--eg, .app-mark--ds, .app-mark--sd, .app-mark--cf, .app-mark--pbi { --bg: var(--tile); font-size: 0; color: transparent; box-shadow: inset 0 0 0 1px rgba(11, 22, 64, .07); }
 .app-mark--sap { background-size: 74% auto, auto; }
 .app-mark--ui { background-size: 60% auto, auto; }
 .app-mark--db { background-size: 56% auto, auto; }
+.app-mark--eg { background-size: 80% auto, auto; }
+.app-mark--ds { background-size: 54% auto, auto; }
+.app-mark--sd { background-size: cover, auto; box-shadow: none; } /* its logo is the whole tile */
+.app-mark--cf { background-size: auto 62%, auto; }
+.app-mark--pbi { background-size: auto 58%, auto; }
 .app-mark--policy { --c: var(--ink); --bg: var(--lavender-soft); }
 
 /* Avatars — photo layered over an initials fallback */
@@ -582,9 +588,30 @@ em { font-style: normal; }
   transform: translateX(calc(100% + 24px)); transition: transform var(--t-slow) var(--ease-expo);
 }
 .drawer.is-open .drawer__panel { transform: none; }
-.drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+.drawer__head { display: flex; align-items: center; gap: 8px; padding: 20px 24px; border-bottom: 1px solid var(--line); }
+.drawer__head .h3 { flex: 1; min-width: 0; }
+.drawer__back { margin-left: -10px; }
+.drawer__back:not([hidden]) + .h3 { font-size: 1.5rem; letter-spacing: -0.02em; }
 .drawer__body { flex: 1; overflow: auto; padding: 24px; overscroll-behavior: contain; }
 .drawer__body > * + * { margin-top: 18px; }
+/* Quick links — one card per app, faintly tinted with its brand colour */
+.ql-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.ql-card {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 16px;
+  padding: 16px 16px 16px 14px; border-radius: var(--r-sm);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--brand) 10%, var(--surface)), color-mix(in srgb, var(--brand) 3%, var(--surface)) 75%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 10%, transparent);
+  transition: translate var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+}
+.ql-card .app-mark { width: 48px; height: 48px; }
+.ql-card__text { display: grid; gap: 4px; min-width: 0; }
+.ql-card__name { font-size: var(--fs-body); font-weight: 600; color: var(--ink); line-height: 1.3; }
+.ql-card__desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font-size: var(--fs-support); color: var(--slate); line-height: 1.45; }
+.ql-card__ext { align-self: start; margin-top: 2px; color: var(--accent-fg); transition: translate var(--t-base) var(--ease-out); }
+.ql-card:hover { translate: 0 -2px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand) 22%, transparent), var(--sh-1); }
+.ql-card:hover .ql-card__ext { translate: 2px -2px; }
+.ql-card:active { translate: 0; }
+.ql-card:focus-visible { box-shadow: var(--ring); }
 .d-task__row { display: flex; gap: 14px; align-items: center; }
 .d-task__title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
 .d-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -2571,6 +2598,12 @@ html.is-locked, .is-locked body { overflow: hidden; }
   .navbar__actions { gap: 0; }
   /* Bloom GPT's greeting pill keeps to one line: the date gives way */
   .gpt__pill > i, #gpt-date { display: none; }
+  /* Drawer: the content keeps its width, the frame tightens */
+  .drawer__head { padding: 16px 18px; }
+  .drawer__body { padding: 18px; }
+  .ql-card { gap: 12px; padding: 14px 12px; }
+  .ql-card .app-mark { width: 44px; height: 44px; }
+  .ql-card__desc { -webkit-line-clamp: 3; }
 }
 @media (max-width: 359px) {
   .login__title { font-size: 2rem; }

@@ -52,6 +52,11 @@
 .app-mark--sap { --logo: url("{{app-sap.png}}"); }
 .app-mark--ui { --logo: url("{{app-uipath.png}}"); }
 .app-mark--db { --logo: url("{{app-darwinbox.png}}"); }
+.app-mark--eg { --logo: url("{{app-egnyte.svg}}"); }
+.app-mark--ds { --logo: url("{{app-docusign.svg}}"); }
+.app-mark--sd { --logo: url("{{app-servicedesk.svg}}"); }
+.app-mark--cf { --logo: url("{{app-contentful.svg}}"); }
+.app-mark--pbi { --logo: url("{{app-powerbi.svg}}"); }
 
 /* BlooMultiverse wordmark — light (navy type) and dark (white type) */
 .has-logo {

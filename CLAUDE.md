@@ -55,6 +55,10 @@
     generated art in its category hue (`--pc-*`, decoration only).
   - The logo's flag is red on top, blue below (both logo files; the flag
     cursor and its menu icon follow it). The colours are the logo's own.
+  - Quick links come from the one `QUICK_LINKS` list in `src/app.js`: it
+    renders the hero dock (entries with a `dock` place) and the "View All"
+    drawer (`drawerViews.links`, back chevron instead of ×). Add an app
+    there, never in the markup; `brand` only tints its card.
   - Bloom GPT (`#gpt-page`, "Bloom GPT" section of `src/app.js`) answers
     from the page's data through `GPT_SKILLS`, picked by `GPT_ROUTES` (first
     match wins, order matters), and acts through `GPT_ACTS`. Anything that
