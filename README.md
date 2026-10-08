@@ -35,20 +35,18 @@ images it uses. Those files are never published to the live link.
 
 ## The experience, top to bottom
 
-**Sign in.** The page opens on a login in the same theme. On desktop it is
-split: a gradient brand panel (logo, "Your workplace, *connected.*" and a
-small orbit of what's waiting, read from the hero) beside the sign-in card.
-On tablets and phones the panel becomes a compact header.
-- **Card:** Rashid's remembered account (with "Not you?" for a work email),
-  password with show/hide and a Caps Lock hint, "Keep me signed in", Sign in,
-  and Single sign-on or Passkey. Errors appear under each field.
-- **Forgot password:** enter a work email, then "Check your inbox" with a
-  30-second resend timer.
-- **Signing in** opens the portal out of the button you pressed, and the
-  hero plays its welcome. Sign out (profile menu or ☰ menu) brings the login
-  back. Add `#login` to the address to see it while signed in.
-- A prototype: the demo password is filled in, any password works, and
-  nothing typed is stored or sent.
+**Sign in.** The page opens on a login in the same theme, with the original
+login's content only: "Welcome to Bloom *Multiverse*", one line about the
+portal, **Login using Bloom ID**, and "Need help? Contact IT Support".
+- **Desktop:** a gradient brand panel shows the multiverse: the Bloom mark at
+  the centre, the connected apps and what the portal brings (Updates,
+  Resources, People, Perks) slowly orbiting. Outlined words drift behind the
+  welcome card. Tablets and phones turn the panel into a compact header.
+- **Signing in** shows "Opening Bloom ID…", then opens the portal out of the
+  button, and the hero plays its welcome. The session lasts for the tab;
+  Sign out (profile menu or ☰ menu) brings the login back. Add `#login` to
+  the address to see it while signed in.
+- No personal data shows before sign-in, and nothing is stored or sent.
 
 | # | Chapter | What happens |
 |---|---------|--------------|

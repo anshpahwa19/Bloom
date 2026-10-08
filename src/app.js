@@ -745,7 +745,7 @@
   });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || e.target.closest?.("dialog")) return; // dialogs close themselves
-    if (isLocked()) { loginEscape(); return; } // the login has no way around it, only back to its first step
+    if (isLocked()) return; // the login has no way around it
     if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
     if (menus.some((m) => m.classList.contains("is-open"))) { closeMenus(); return; }
     if (gpt.open) { closeGpt(); return; }
@@ -2715,31 +2715,20 @@
 
   /* ---------------------------------------------------------------
      Sign in — the front door
-     The head script locks the page (html.is-locked) unless this tab,
-     or a session kept with "Keep me signed in", is signed in; #login
-     always opens it. A prototype: nothing typed here is stored or sent.
-     The demo password is filled in, and any password opens the portal.
+     The head script locks the page (html.is-locked) unless this tab is
+     signed in; #login always opens it. One action: Login using Bloom ID.
+     A prototype: nothing is stored or sent, and the brand panel shows no
+     personal data before sign-in.
      --------------------------------------------------------------- */
   const SESSION_KEY = "bloo-session";
-  const ME = { name: "Rashid Khan", first: "Rashid", email: "rashid.khan@bloom.ae" };
-  const DEMO_PASS = "bloom-demo-2026";
-  const WORK_EMAIL = /^[^\s@]+@bloom\.ae$/i;
+  const ME = { name: "Rashid Khan", first: "Rashid" };
   const login = $("#login");
-  const loginForm = $("#login-form");
-  const resetForm = $("#reset-form");
-  const loginViews = $("#login-views");
-  const loginEmail = $("#login-email");
-  const loginPass = $("#login-pass");
-  const loginEye = $("#login-eye");
-  const loginCaps = $("#login-caps");
-  const loginKeep = $("#login-keep");
+  const loginGo = $("#login-go");
   const loginStatus = $("#login-status");
-  const resetEmail = $("#reset-email");
-  const resendBtn = $("#login-resend");
-  const lg = { view: "signin", other: false, busy: false, resendTimer: 0 };
+  const lg = { busy: false };
   function isLocked() { return root.classList.contains("is-locked"); }
   const session = {
-    set(keep) { try { (keep ? localStorage : sessionStorage).setItem(SESSION_KEY, "1"); } catch { /* no storage: signed in until reload */ } },
+    set() { try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* no storage: signed in until reload */ } },
     clear() { try { localStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(SESSION_KEY); } catch { /* nothing kept */ } }
   };
   const wait = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? Math.min(ms, 300) : ms));
@@ -2749,33 +2738,6 @@
     $$("body > *").filter((el) => !el.matches("#login, .toasts, .sprite, script, .fc-canvas, .fc-ring, .confetti")).forEach((el) => { el.inert = on; });
     login.setAttribute("aria-hidden", String(!on));
   }
-
-  $("#login-greet").textContent = `${h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening"}, ${ME.first}`;
-  $("#login-date").textContent = $("#today-date").textContent;
-
-  // The brand panel's glimpse is the hero's constellation and moments, read from the page
-  function renderLoginStage() {
-    const nodes = $$("#orbit .orbit__node");
-    const v = (n, k) => n.style.getPropertyValue(k);
-    const spots = ["left:-4%;top:3%;--r:-3deg;--d:-2s", "right:-6%;top:31%;--r:2.5deg;--d:-4s", "left:0;top:71%;--r:-2deg;--d:-1s"];
-    $("#login-stage").innerHTML = `<div class="login__orbit">
-      <svg class="login__rings" viewBox="0 0 400 400"><circle cx="200" cy="200" r="96"/><circle class="is-dashed" cx="200" cy="200" r="146"/><circle class="is-faint" cx="200" cy="200" r="192"/>${nodes.map((n) => `<line x1="200" y1="200" x2="${parseFloat(v(n, "--x")) * 4}" y2="${parseFloat(v(n, "--y")) * 4}"/>`).join("")}</svg>
-      <div class="login__core"><strong>${$("[data-total]").textContent.trim()}</strong><span>actions<br>waiting</span></div>
-      ${nodes.map((n) => `<span class="login__node" style="--x:${v(n, "--x")};--y:${v(n, "--y")};--s:${v(n, "--s")};--d:${v(n, "--d")}">${$(".orbit__icon", n).outerHTML}</span>`).join("")}
-      ${$$(".frags .frag").map((f, i) => `<div class="login__frag" style="${spots[i] || ""}">${f.innerHTML}</div>`).join("")}
-    </div>`;
-  }
-
-  function fieldError(input, msg) {
-    input.setAttribute("aria-invalid", String(Boolean(msg)));
-    const err = $(`#${input.id}-error`);
-    err.textContent = msg;
-    err.hidden = !msg;
-  }
-  const clearLoginErrors = () => [loginEmail, loginPass, resetEmail].forEach((i) => fieldError(i, ""));
-  const emailProblem = (val) => (!val.trim() ? "Enter your work email." : WORK_EMAIL.test(val.trim()) ? "" : "Use your Bloom work email, like name@bloom.ae.");
-  [loginEmail, loginPass, resetEmail].forEach((i) => i.addEventListener("input", () => { if (i.getAttribute("aria-invalid") === "true") fieldError(i, ""); }));
-
   function setBusy(btn, on) {
     const label = $(".btn__label", btn);
     btn.dataset.idle ??= label.textContent;
@@ -2783,76 +2745,31 @@
     btn.classList.toggle("is-loading", on);
     if (!on) btn.classList.remove("is-done");
   }
-  function setEye(show) {
-    loginPass.type = show ? "text" : "password";
-    loginEye.setAttribute("aria-pressed", String(show));
-    loginEye.setAttribute("aria-label", show ? "Hide password" : "Show password");
-    $("use", loginEye).setAttribute("href", show ? "#i-eye-off" : "#i-eye");
-  }
-
-  // Each step of the card: sign in, reset, link sent. The card eases to the new height.
-  function showLoginView(name, animate = true) {
-    const views = $$(".login__view", loginViews);
-    const to = views.find((el) => el.dataset.view === name);
-    const from = views.find((el) => !el.hidden);
-    if (!to || to === from) return;
-    const h0 = loginViews.offsetHeight;
-    views.forEach((el) => { el.hidden = el !== to; });
-    lg.view = name;
-    if (name !== "sent") clearInterval(lg.resendTimer);
-    if (!animate || reduceMotion || !to.animate) return;
-    const ease = { duration: 420, easing: "cubic-bezier(.16,1,.3,1)" };
-    loginViews.style.overflow = "clip"; // only while the height moves, so focus rings are never cut
-    loginViews.animate([{ height: `${h0}px` }, { height: `${loginViews.offsetHeight}px` }], ease).onfinish = () => { loginViews.style.overflow = ""; };
-    to.animate([{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], ease);
-  }
-  // Keyboards land in the first field; touch screens on the heading, so no keyboard pops up
-  function focusLoginView() {
-    const view = $(`.login__view[data-view="${lg.view}"]`, loginViews);
-    const field = lg.view === "signin" ? (lg.other ? loginEmail : loginPass) : lg.view === "reset" ? resetEmail : null;
-    if (field && canHover) field.focus({ preventScroll: true });
-    else $(".login__title", view)?.focus({ preventScroll: true });
-  }
-  function loginEscape() {
-    if (lg.view === "signin" || lg.busy) return;
-    showLoginView("signin");
-    focusLoginView();
-  }
-
   function resetLogin() {
-    lg.other = false;
     lg.busy = false;
     login.removeAttribute("aria-busy");
-    $("#login-account").hidden = false;
-    $("#login-email-field").hidden = true;
-    loginEmail.value = "";
-    loginPass.value = DEMO_PASS;
-    setEye(false);
-    loginCaps.hidden = true;
-    clearLoginErrors();
-    $$(".login [data-login-busy]").forEach((b) => setBusy(b, false));
-    showLoginView("signin", false);
+    setBusy(loginGo, false);
   }
+  // The dialog's heading takes focus, so nothing is pre-selected and Tab reaches the button next
+  const focusLogin = () => $("#login-title").focus({ preventScroll: true });
 
-  async function signIn(btn) {
+  async function signIn() {
     if (lg.busy) return;
     lg.busy = true;
     login.setAttribute("aria-busy", "true");
-    setBusy(btn, true);
-    loginStatus.textContent = btn.dataset.loginBusy;
-    await wait(btn.dataset.loginAlt === "passkey" ? 1400 : 1000);
-    session.set(loginKeep.getAttribute("aria-checked") === "true");
+    setBusy(loginGo, true);
+    loginStatus.textContent = loginGo.dataset.loginBusy;
+    await wait(1100);
+    session.set();
+    loginGo.classList.remove("is-loading");
+    loginGo.classList.add("is-done");
+    $(".btn__label", loginGo).textContent = `Welcome, ${ME.first}`;
     loginStatus.textContent = `Signed in as ${ME.name}`;
-    if (!btn.dataset.loginAlt) { // the main button says hello before the portal opens
-      btn.classList.remove("is-loading");
-      btn.classList.add("is-done");
-      $(".btn__label", btn).textContent = `Welcome back, ${ME.first}`;
-      await wait(520);
-    }
-    openPortal(btn);
+    await wait(520);
+    openPortal(loginGo);
   }
 
-  // The portal opens out of the button you pressed, and the hero plays its welcome
+  // The portal opens out of the button, and the hero plays its welcome
   function openPortal(from) {
     const r = from.getBoundingClientRect();
     login.style.setProperty("--hx", `${r.left + r.width / 2}px`);
@@ -2888,7 +2805,6 @@
     if (ib.open) closeInbox();
     if (drawer.classList.contains("is-open")) closeDrawer();
     closeNav(false);
-    renderLoginStage();
     resetLogin();
     root.classList.add("is-locked");
     setPageInert(true);
@@ -2896,7 +2812,7 @@
       // back to the top, so signing in again replays the welcome
       root.classList.remove("is-loaded");
       scrollTo({ top: 0, behavior: "instant" });
-      focusLoginView();
+      focusLogin();
     }, reduceMotion ? 0 : 760);
   }
   function signOut(from) {
@@ -2910,75 +2826,11 @@
     const out = e.target.closest("[data-signout]");
     if (out) { e.preventDefault(); signOut(out); }
   });
+  loginGo.addEventListener("click", signIn);
 
-  loginForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (lg.busy) return;
-    const emailMsg = lg.other ? emailProblem(loginEmail.value) : "";
-    const passMsg = loginPass.value ? "" : "Enter your password.";
-    fieldError(loginEmail, emailMsg);
-    fieldError(loginPass, passMsg);
-    if (emailMsg || passMsg) { (emailMsg ? loginEmail : loginPass).focus(); return; }
-    signIn($(".login__submit", loginForm));
-  });
-  $$("[data-login-alt]").forEach((b) => b.addEventListener("click", () => { clearLoginErrors(); signIn(b); }));
-  $("#login-switch").addEventListener("click", () => {
-    lg.other = true;
-    $("#login-account").hidden = true;
-    $("#login-email-field").hidden = false;
-    loginPass.value = "";
-    loginEmail.focus();
-  });
-  loginEye.addEventListener("click", () => setEye(loginPass.type === "password"));
-  const capsCheck = (e) => { if (e.getModifierState) loginCaps.hidden = !e.getModifierState("CapsLock"); };
-  loginPass.addEventListener("keydown", capsCheck);
-  loginPass.addEventListener("keyup", capsCheck);
-  loginPass.addEventListener("blur", () => { loginCaps.hidden = true; });
-  loginKeep.addEventListener("click", () => loginKeep.setAttribute("aria-checked", String(loginKeep.getAttribute("aria-checked") !== "true")));
-  login.addEventListener("click", (e) => {
-    const go = e.target.closest("[data-login-view]");
-    if (!go || lg.busy) return;
-    if (go.dataset.loginView === "reset") resetEmail.value = lg.other && loginEmail.value.trim() ? loginEmail.value.trim() : ME.email;
-    clearLoginErrors();
-    showLoginView(go.dataset.loginView);
-    focusLoginView();
-  });
-
-  function startResend() {
-    clearInterval(lg.resendTimer);
-    let left = 30;
-    const tick = () => {
-      resendBtn.disabled = left > 0;
-      resendBtn.textContent = left > 0 ? `Resend in 0:${pad(left)}` : "Resend link";
-      if (left-- <= 0) clearInterval(lg.resendTimer);
-    };
-    tick();
-    lg.resendTimer = setInterval(tick, 1000);
-  }
-  resetForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (lg.busy) return;
-    const msg = emailProblem(resetEmail.value);
-    fieldError(resetEmail, msg);
-    if (msg) { resetEmail.focus(); return; }
-    const btn = $(".login__submit", resetForm);
-    lg.busy = true;
-    setBusy(btn, true);
-    await wait(900);
-    setBusy(btn, false);
-    lg.busy = false;
-    $("#sent-email").textContent = resetEmail.value.trim();
-    showLoginView("sent");
-    startResend();
-    $("#sent-title").focus({ preventScroll: true });
-  });
-  resendBtn.addEventListener("click", () => { toast("We sent the link again.", "i-mail"); startResend(); });
-
-  resetLogin();
   if (isLocked()) {
-    renderLoginStage();
     setPageInert(true);
-    setTimeout(focusLoginView, 500);
+    setTimeout(focusLogin, 500);
   }
 
   /* ---------------------------------------------------------------
