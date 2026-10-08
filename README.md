@@ -22,12 +22,16 @@ src/media.css                     every embedded image, declared once
 src/app.js                        behaviour (vanilla JS)
 src/assets/                       images extracted from the original
 reference/                        the original prototype (Direction A)
+designs/*.src.html                one-off design files (e.g. the Attention
+                                  empty state), built to designs/*.html
 ```
 
 Edit anything in `src/`, then run `python3 build.py`. It writes the offline
 file and `hosted/BlooMultiverse.html`, the version that gets published to the
 live link. That version has no `<html>/<head>/<body>` wrapper because the host
-adds its own.
+adds its own. It also builds each `designs/*.src.html` into a standalone,
+downloadable `designs/*.html` that reuses `src/styles.css` and inlines only the
+images it uses. Those files are never published to the live link.
 
 ## The experience, top to bottom
 

@@ -42,3 +42,13 @@ hosted = re.sub(
 HOSTED.parent.mkdir(exist_ok=True)
 HOSTED.write_text(hosted.lstrip(), encoding="utf-8")
 print(f"wrote {HOSTED.relative_to(ROOT)} ({HOSTED.stat().st_size / 1024:.0f} KB)")
+
+# One-off design files: designs/<name>.src.html -> designs/<name>.html, built
+# the same way (src/ includes, images inlined), so they share the portal's
+# styles. They are downloads, never published to the live link.
+for page in sorted((ROOT / "designs").glob("*.src.html")):
+    text = re.sub(r"<!-- @include ([\w.-]+) -->", include, page.read_text(encoding="utf-8"))
+    text = re.sub(r"\{\{([\w.-]+)\}\}", lambda m: data_uri(m.group(1)), text)
+    out = page.with_name(page.name.replace(".src.html", ".html"))
+    out.write_text(text, encoding="utf-8")
+    print(f"wrote {out.relative_to(ROOT)} ({out.stat().st_size / 1024:.0f} KB)")

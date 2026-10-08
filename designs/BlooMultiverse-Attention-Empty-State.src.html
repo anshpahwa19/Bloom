@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Attention · Empty state — BlooMultiverse</title>
+  <meta name="description" content="Empty states for the BlooMultiverse Attention section (live control center).">
+  <meta name="theme-color" content="#05081A">
+  <script>
+    (function () {
+      var root = document.documentElement, saved = null;
+      try { saved = localStorage.getItem("bloo-theme"); } catch (e) {}
+      root.setAttribute("data-theme", saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <!-- The portal's own stylesheet, so this matches the live section exactly -->
+  <style>
+<!-- @include styles.css -->
+  </style>
+  <style>
+/* ==================================================================
+   Attention — empty states
+   A · All caught up: nothing is waiting in any app.
+   B · One app clear: the app you filtered to has nothing left.
+   Everything not defined here comes from the portal's styles.css.
+   ================================================================== */
+
+/* The portal's own images, only the ones this page uses */
+.img-rashid { --img: url("{{rashid.jpg}}"); }
+.img-joiner-abdulazeez { --img: url("{{joiner-abdulazeez.jpg}}"); }
+.app-mark--sf { --logo: url("{{app-salesforce.png}}"); }
+.app-mark--sap { --logo: url("{{app-sap.png}}"); }
+.app-mark--ui { --logo: url("{{app-uipath.png}}"); }
+.app-mark--db { --logo: url("{{app-darwinbox.png}}"); }
+.has-logo { --logo-dark: url("{{logo-dark.png}}"); --logo-light: var(--logo-dark); }
+
+body[data-state="clear"] [data-show="app"],
+body[data-state="app"] [data-show="clear"] { display: none !important; }
+.main { padding-block: 10px 96px; }
+
+/* A cleared app wears a small check */
+.es-mark { position: relative; display: inline-grid; grid-row: span 2; }
+.console__apps .tab .es-mark .app-mark { grid-row: auto; }
+.es-tick {
+  position: absolute; right: -6px; top: -6px; z-index: 1; display: grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: #fff;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+.es-tick .ico { width: 12px; height: 12px; stroke-width: 2.6; }
+.tab:not(.is-clear) .es-tick { display: none; }
+.tab.is-clear .es-tick { animation: popIn .5s var(--ease-spring) both; animation-delay: calc(var(--i, 0) * 90ms + 250ms); }
+.console__apps .tab__count.is-zero { color: var(--slate-2); }
+.console__apps .tab.is-selected .tab__count.is-zero { color: var(--ok-fg); }
+
+/* ---- A · All caught up -------------------------------------------- */
+.calm {
+  position: relative; isolation: isolate; overflow: clip;
+  display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 24px;
+  padding: clamp(24px, 4cqi, 44px); text-align: center;
+  border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line);
+}
+.calm::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 24px 24px;
+  -webkit-mask-image: radial-gradient(60% 70% at 24% 50%, #000, transparent); mask-image: radial-gradient(60% 70% at 24% 50%, #000, transparent);
+}
+.calm__art { position: relative; width: min(100%, 300px); aspect-ratio: 1; }
+.calm__rings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.calm__rings circle { fill: none; stroke: color-mix(in srgb, var(--ink) 14%, transparent); stroke-width: 1; }
+.calm__rings .is-dashed { stroke-dasharray: 2 7; animation: spin 90s linear infinite; transform-origin: 160px 160px; }
+.calm__rings .is-faint { stroke: color-mix(in srgb, var(--ink) 7%, transparent); }
+.calm__core {
+  position: absolute; left: 50%; top: 50%; width: 32%; aspect-ratio: 1; translate: -50% -50%;
+  display: grid; place-items: center; border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--accent) 55%, #fff), var(--accent) 58%, color-mix(in srgb, var(--accent) 62%, #000));
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 12%, transparent), 0 0 0 24px color-mix(in srgb, var(--accent) 6%, transparent), inset 0 -6px 14px rgba(0, 0, 0, .25);
+  animation: coreIn 1s var(--ease-spring) .1s both;
+}
+.calm__check { width: 46%; height: 46%; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .7s var(--ease-out) .6s forwards; }
+.calm__app { position: absolute; left: var(--x); top: var(--y); z-index: 1; transform: translate(-50%, -50%); animation: bob 6s ease-in-out infinite; animation-delay: var(--d); }
+.calm__app .app-mark { width: 48px; height: 48px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--surface) 60%, transparent), var(--sh-float); }
+.calm__app .es-tick { animation: popIn .5s var(--ease-spring) both; animation-delay: calc(.9s + var(--n) * 120ms); }
+.calm__spark { position: absolute; left: var(--x); top: var(--y); width: 6px; height: 6px; border-radius: 50%; background: var(--c, var(--cyan)); opacity: 0; animation: twinkle 3.6s ease-in-out infinite; animation-delay: var(--d); }
+@keyframes twinkle { 0%, 100% { opacity: 0; scale: .4; } 50% { opacity: .9; scale: 1; } }
+
+.calm__copy { display: grid; justify-items: center; }
+.calm__badge {
+  display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 10px;
+  border-radius: var(--r-pill); background: var(--ok-soft); color: var(--ok-fg);
+  font-size: var(--fs-meta); font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+}
+.calm__badge .ico { stroke-width: 2.4; }
+.calm__title {
+  margin-top: 18px; font-family: var(--font-display); font-weight: 700; line-height: 1; letter-spacing: -.035em; text-wrap: balance;
+  font-size: clamp(2rem, 1.25rem + 1.6vw, 2.75rem); font-size: round(clamp(2rem, 1.25rem + 1.6vw, 2.75rem), 2px);
+}
+.calm__text { margin-top: 12px; max-width: 46ch; font-size: 1rem; color: var(--slate); }
+.calm__stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 32px; margin: 24px 0 0; }
+.calm__stats div { display: flex; flex-direction: column-reverse; gap: 4px; }
+.calm__stats dt { font-size: var(--fs-meta); color: var(--slate-2); }
+.calm__stats dd { margin: 0; font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; line-height: 1; letter-spacing: -.03em; color: var(--ink); font-variant-numeric: tabular-nums; }
+.calm__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 26px; }
+@container (min-width: 640px) {
+  .calm { grid-template-columns: minmax(220px, .9fr) minmax(0, 1.1fr); align-items: center; gap: 32px; text-align: left; }
+  .calm__copy { justify-items: start; }
+  .calm__stats, .calm__actions { justify-content: flex-start; }
+}
+
+/* While it's quiet — the rest of the portal, one tap away */
+.quiet { margin-top: 28px; }
+.quiet__label { display: flex; align-items: center; gap: 12px; font-size: var(--fs-label); font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--slate-2); }
+.quiet__label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.quiet__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.quiet__card {
+  display: flex; align-items: center; gap: 12px; height: 100%; padding: 12px 14px 12px 12px;
+  border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line);
+  transition: transform var(--t-base) var(--ease-out), border-color var(--t-base), background-color var(--t-base);
+}
+.quiet__card:hover { transform: translateY(-3px); background: var(--surface-2); border-color: color-mix(in srgb, var(--accent-fg) 40%, var(--line)); }
+.quiet__icon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: var(--r-icon); background: var(--lavender-soft); color: var(--ink); }
+.quiet__icon--gift { background: #FFE8A3; color: #6B4A00; }
+.quiet__card .avatar { width: 40px; height: 40px; }
+.quiet__txt { display: grid; min-width: 0; line-height: 1.3; }
+.quiet__txt small { font-size: var(--fs-label); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--slate-2); }
+.quiet__txt strong { font-size: var(--fs-support); font-weight: 600; color: var(--ink); }
+.quiet__go { margin-left: auto; flex: none; color: var(--slate-2); transition: color var(--t-base), transform var(--t-base) var(--ease-out); }
+.quiet__card:hover .quiet__go { color: var(--accent-fg); transform: translate(2px, -2px); }
+@container (max-width: 639px) { .quiet__list { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- B · One app clear -------------------------------------------- */
+.clear {
+  display: grid; justify-items: center; text-align: center;
+  padding: clamp(32px, 6cqi, 64px) 24px;
+  border-radius: var(--r-lg); border: 1.5px dashed var(--line-strong);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+}
+.clear__mark { position: relative; display: inline-grid; animation: coreIn .9s var(--ease-spring) both; }
+.clear__mark .app-mark { width: 64px; height: 64px; box-shadow: 0 0 0 8px color-mix(in srgb, var(--surface) 60%, transparent), var(--sh-float); }
+.clear__mark .es-tick { width: 24px; height: 24px; right: -8px; top: -8px; animation: popIn .5s var(--ease-spring) .5s both; }
+.clear__mark .es-tick .ico { width: 14px; height: 14px; }
+.clear__title { margin-top: 24px; font-family: var(--font-display); font-weight: 700; font-size: 2rem; line-height: 1.05; letter-spacing: -.03em; }
+.clear__text { margin-top: 10px; max-width: 42ch; font-size: 1rem; color: var(--slate); }
+.clear__text strong { font-weight: 600; color: var(--ink); }
+.clear__jump { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 24px; }
+.clear__jump .chip { gap: 8px; padding: 0 14px 0 6px; }
+.clear__jump .app-mark { width: 26px; height: 26px; }
+.clear__jump b { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.clear .btn--primary { margin-top: 24px; }
+.clear__count { display: inline-grid; place-items: center; min-width: 26px; height: 22px; padding: 0 7px; border-radius: var(--r-pill); background: rgba(255, 255, 255, .2); font-size: var(--fs-meta); font-variant-numeric: tabular-nums; }
+
+/* Footer: check again */
+.es-refresh .ico { transition: rotate .8s var(--ease-expo); }
+.es-refresh.is-spinning .ico { rotate: 360deg; }
+
+/* ---- Preview controls (outside the design) ------------------------ */
+.review {
+  position: fixed; z-index: 130; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); translate: -50% 0;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); padding: 6px 6px 6px 18px; border-radius: var(--r-pill);
+}
+.review.tone-invert { background: none; }
+.review.frost::before { background: color-mix(in srgb, var(--canvas) 88%, transparent); }
+.review__label { font-size: var(--fs-meta); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--slate-2); white-space: nowrap; }
+.review .tabs { background: color-mix(in srgb, var(--ink) 8%, transparent); border-color: transparent; }
+.review .tab { height: 36px; }
+.review .theme-toggle { display: inline-grid; color: var(--ink); }
+@media (max-width: 479px) { .review { padding-left: 6px; } .review__label { display: none; } .review .tab { padding: 0 12px; } }
+  </style>
+</head>
+<body class="nav-compact" data-state="clear">
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/></symbol>
+      <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/><path d="M5.6 5.6 3.5 13.5v4a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4l-2.1-7.9a2 2 0 0 0-1.9-1.6H7.5a2 2 0 0 0-1.9 1.6Z"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2h-15Z"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/></symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5"/></symbol>
+      <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></symbol>
+      <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
+      <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4v4.5H15"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- The floating capsule, as it sits over this section (for context) -->
+  <header class="navbar is-on-dark">
+    <div class="navbar__capsule frost" aria-hidden="true">
+      <span class="brand"><span class="brand__word has-logo"></span></span>
+      <span class="navbar__sep"></span>
+      <div class="menu menu--jump">
+        <span class="where">
+          <span class="where__ring"><svg viewBox="0 0 36 36"><circle class="where__track" cx="18" cy="18" r="16"/><circle class="where__fill" cx="18" cy="18" r="16" pathLength="100" stroke-dasharray="100" stroke-dashoffset="74"/></svg><span class="where__num">02</span></span>
+          <span class="where__roll"><span class="where__label">Attention</span></span>
+          <svg class="ico ico--sm where__chev"><use href="#i-chevron-down"/></svg>
+        </span>
+      </div>
+      <span class="navbar__sep navbar__sep--end"></span>
+      <div class="navbar__actions">
+        <span class="nav-gpt"><span class="orb orb--xs"></span><span class="nav-gpt__label">Bloom GPT</span></span>
+        <span class="nav-btn nav-btn--search"><svg class="ico"><use href="#i-search"/></svg><kbd class="nav-kbd">⌘ K</kbd></span>
+        <span class="nav-btn nav-btn--inbox"><svg class="ico"><use href="#i-inbox"/></svg><span class="nav-badge">4</span></span>
+        <span class="nav-btn"><svg class="ico"><use href="#i-bell"/></svg><span class="badge-dot">3</span></span>
+        <span class="nav-btn theme-toggle" data-theme-icon><svg class="ico theme-toggle__sun"><use href="#i-sun"/></svg><svg class="ico theme-toggle__moon"><use href="#i-moon"/></svg></span>
+        <div class="menu menu--profile"><span class="profile-btn"><span class="avatar img-rashid"></span></span></div>
+        <span class="nav-btn burger"><span class="burger__lines"><i></i><i></i></span></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main" id="main">
+    <!-- ==========================================================
+         02 — ATTENTION, empty
+         ========================================================== -->
+    <section class="chapter attention tone-invert" id="attention" aria-labelledby="attention-title">
+      <div class="attention__glow" aria-hidden="true"></div>
+      <div class="container">
+        <header class="chapter-head attention__head">
+          <div>
+            <p class="kicker"><span class="kicker__num">02</span><span class="kicker__line"></span>Live control center</p>
+            <h2 class="display" id="attention-title"><span data-show="clear">You’re all <em>caught up.</em></span><span data-show="app">Your attention required</span></h2>
+          </div>
+          <div class="attention__meta">
+            <p class="section-sub"><span data-show="clear">Nothing is waiting on you in your connected apps.</span><span data-show="app">Tasks from your connected apps, most urgent first.</span></p>
+            <p class="live"><i class="pulse-dot pulse-dot--ok"></i>Live</p>
+          </div>
+        </header>
+
+        <div class="console">
+          <div class="console__side is-visible">
+            <p class="console__total"><strong id="es-total">0</strong><span class="console__total-label"><i class="pulse-dot pulse-dot--ok" id="es-dot"></i>actions<br>pending</span></p>
+
+            <!-- The app list, as in the portal: counts read 00 and each cleared app wears a check -->
+            <div class="tabs console__apps" id="es-apps" aria-label="Pending actions by app">
+              <span class="tabs__indicator" aria-hidden="true"></span>
+              <span class="tab is-selected" data-app="all" style="--i:0"><span class="tab__mark" aria-hidden="true"><svg class="ico ico--sm"><use href="#i-grid"/></svg></span><span class="tab__name">All apps</span> <span class="tab__count">00</span><span class="tab__bar" aria-hidden="true"></span></span>
+              <span class="tab is-clear" data-app="salesforce" style="--i:1"><span class="es-mark"><span class="app-mark app-mark--sf" aria-hidden="true">Sf</span><i class="es-tick" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></i></span><span class="tab__name">Salesforce</span> <span class="tab__count">00</span><span class="tab__bar" aria-hidden="true"></span></span>
+              <span class="tab is-clear" data-app="uipath" style="--i:2"><span class="es-mark"><span class="app-mark app-mark--ui" aria-hidden="true">Ui</span><i class="es-tick" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></i></span><span class="tab__name">UiPath</span> <span class="tab__count">00</span><span class="tab__bar" aria-hidden="true"></span></span>
+              <span class="tab is-clear" data-app="darwinbox" style="--i:3"><span class="es-mark"><span class="app-mark app-mark--db" aria-hidden="true">Db</span><i class="es-tick" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></i></span><span class="tab__name">Darwinbox</span> <span class="tab__count">00</span><span class="tab__bar" aria-hidden="true"></span></span>
+              <span class="tab is-clear" data-app="sap" style="--i:4"><span class="es-mark"><span class="app-mark app-mark--sap" aria-hidden="true">SAP</span><i class="es-tick" aria-hidden="true"><svg class="ico"><use href="#i-check"/></svg></i></span><span class="tab__name">SAP</span> <span class="tab__count">00</span><span class="tab__bar" aria-hidden="true"></span></span>
+            </div>
+            <p class="console__hint"><span data-show="clear">Every app is clear. New tasks land here the moment they arrive.</span><span data-show="app">Hover an app to surface its tasks. Select it to filter.</span></p>
+          </div>
+
+          <div class="console__main">
+            <!-- A · All caught up -->
+            <div class="calm" data-show="clear" role="status">
+              <div class="calm__art" aria-hidden="true">
+                <svg class="calm__rings" viewBox="0 0 320 320"><circle cx="160" cy="160" r="76"/><circle class="is-dashed" cx="160" cy="160" r="112"/><circle class="is-faint" cx="160" cy="160" r="152"/></svg>
+                <span class="calm__core"><svg class="calm__check" viewBox="0 0 24 24"><path pathLength="1" d="m6.5 12.5 3.6 3.6 7.4-8.1"/></svg></span>
+                <span class="calm__app" style="--x:70%;--y:21%;--d:0s;--n:0"><span class="app-mark app-mark--sf">Sf</span><i class="es-tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                <span class="calm__app" style="--x:16%;--y:41%;--d:-1.4s;--n:1"><span class="app-mark app-mark--ui">Ui</span><i class="es-tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                <span class="calm__app" style="--x:35%;--y:82%;--d:-2.6s;--n:2"><span class="app-mark app-mark--db">Db</span><i class="es-tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                <span class="calm__app" style="--x:83%;--y:62%;--d:-3.6s;--n:3"><span class="app-mark app-mark--sap">SAP</span><i class="es-tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                <i class="calm__spark" style="--x:24%;--y:14%;--d:0s"></i>
+                <i class="calm__spark" style="--x:90%;--y:34%;--d:-1.2s;--c:#FFD66B"></i>
+                <i class="calm__spark" style="--x:8%;--y:70%;--d:-2.1s;--c:#8FA8FF"></i>
+                <i class="calm__spark" style="--x:62%;--y:92%;--d:-.6s;--c:#FF8FA0"></i>
+                <i class="calm__spark" style="--x:52%;--y:6%;--d:-2.8s"></i>
+              </div>
+              <div class="calm__copy">
+                <p class="calm__badge"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-check"/></svg>All clear</p>
+                <h3 class="calm__title">Nothing needs you right now.</h3>
+                <p class="calm__text">You cleared all 32 actions across Salesforce, UiPath, Darwinbox and SAP. New tasks land here the moment they arrive.</p>
+                <dl class="calm__stats">
+                  <div><dt>Cleared today</dt><dd>32</dd></div>
+                  <div><dt>Apps all clear</dt><dd>4 / 4</dd></div>
+                  <div><dt>Overdue</dt><dd>0</dd></div>
+                </dl>
+                <div class="calm__actions">
+                  <a class="btn btn--primary" href="#"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-archive"/></svg>View completed</a>
+                  <a class="btn btn--ghost" href="#"><span class="orb orb--xs" aria-hidden="true"></span>Ask Bloom GPT</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiet" data-show="clear">
+              <p class="quiet__label">While it’s quiet</p>
+              <ul class="quiet__list">
+                <li><a class="quiet__card" href="#"><span class="quiet__icon quiet__icon--gift" aria-hidden="true"><svg class="ico ico--sm"><use href="#i-gift"/></svg></span><span class="quiet__txt"><small>Birthday today</small><strong>Wish Ahmed Obaid</strong></span><svg class="ico ico--sm quiet__go" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a></li>
+                <li><a class="quiet__card" href="#"><span class="avatar img-joiner-abdulazeez" aria-hidden="true"></span><span class="quiet__txt"><small>Joined this week</small><strong>Say hello to Abdulazeez</strong></span><svg class="ico ico--sm quiet__go" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a></li>
+                <li><a class="quiet__card" href="#"><span class="quiet__icon" aria-hidden="true"><svg class="ico ico--sm"><use href="#i-shield"/></svg></span><span class="quiet__txt"><small>Policy updated</small><strong>Read Data Security</strong></span><svg class="ico ico--sm quiet__go" aria-hidden="true"><use href="#i-arrow-ne"/></svg></a></li>
+              </ul>
+            </div>
+
+            <!-- B · One app clear (filtered to SAP) -->
+            <div class="clear" data-show="app" role="status">
+              <span class="clear__mark" aria-hidden="true"><span class="app-mark app-mark--sap">SAP</span><i class="es-tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+              <h3 class="clear__title">SAP is all clear.</h3>
+              <p class="clear__text">Nothing is waiting in SAP right now. Your other apps still have <strong>30 open tasks</strong>.</p>
+              <div class="clear__jump">
+                <a class="chip" href="#"><span class="app-mark app-mark--sf" aria-hidden="true">Sf</span>Salesforce <b>15</b></a>
+                <a class="chip" href="#"><span class="app-mark app-mark--ui" aria-hidden="true">Ui</span>UiPath <b>10</b></a>
+                <a class="chip" href="#"><span class="app-mark app-mark--db" aria-hidden="true">Db</span>Darwinbox <b>05</b></a>
+              </div>
+              <a class="btn btn--primary" href="#">Show all apps<span class="clear__count">30</span></a>
+            </div>
+
+            <div class="attention__foot">
+              <button class="btn btn--quiet es-refresh" type="button" id="es-refresh"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-refresh"/></svg>Check again</button>
+              <span class="meta" id="es-synced">Synced 2 minutes ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Preview controls — not part of the design -->
+  <div class="review tone-invert frost" role="group" aria-label="Preview">
+    <span class="review__label">Empty state</span>
+    <div class="tabs" role="tablist" aria-label="Which empty state" id="es-states">
+      <span class="tabs__indicator" aria-hidden="true"></span>
+      <button class="tab is-selected" role="tab" type="button" aria-selected="true" data-state="clear">All caught up</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-state="app" tabindex="-1">One app clear</button>
+    </div>
+    <button class="nav-btn theme-toggle" type="button" data-theme-switch role="switch" aria-checked="false" aria-label="Dark theme"><svg class="ico theme-toggle__sun"><use href="#i-sun"/></svg><svg class="ico theme-toggle__moon"><use href="#i-moon"/></svg></button>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+      const root = document.documentElement;
+      const body = document.body;
+
+      // Theme — the same switch and storage key as the portal
+      const syncTheme = () => {
+        const dark = root.dataset.theme === "dark";
+        $$("[data-theme-switch]").forEach((b) => b.setAttribute("aria-checked", String(dark)));
+        $$("[data-theme-icon]").forEach((b) => b.setAttribute("aria-checked", String(dark)));
+      };
+      $$("[data-theme-switch]").forEach((b) => b.addEventListener("click", () => {
+        root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+        try { localStorage.setItem("bloo-theme", root.dataset.theme); } catch (e) { /* preview only */ }
+        syncTheme();
+      }));
+      syncTheme();
+
+      // Sliding indicators, positioned like the portal's tabs
+      function place(list) {
+        const ind = $(".tabs__indicator", list);
+        const sel = $(".tab.is-selected", list);
+        if (!ind || !sel) return;
+        if (getComputedStyle(list).flexDirection === "column") {
+          ind.style.width = "";
+          ind.style.height = `${sel.offsetHeight}px`;
+          ind.style.transform = `translateY(${sel.offsetTop}px)`;
+        } else {
+          ind.style.height = "";
+          ind.style.width = `${sel.offsetWidth}px`;
+          ind.style.transform = `translateX(${sel.offsetLeft}px)`;
+          // in the phone strip, the selected app scrolls into view
+          if (list.scrollWidth > list.clientWidth) list.scrollTo({ left: Math.max(0, sel.offsetLeft - 8), behavior: "smooth" });
+        }
+      }
+      const placeAll = () => $$(".tabs").forEach(place);
+
+      // The two empty states: counts, shares and the selected app
+      const STATES = {
+        clear: { selected: "all", counts: { all: 0, salesforce: 0, uipath: 0, darwinbox: 0, sap: 0 } },
+        app: { selected: "sap", counts: { all: 30, salesforce: 15, uipath: 10, darwinbox: 5, sap: 0 } }
+      };
+      function setState(name) {
+        const s = STATES[name];
+        body.dataset.state = name;
+        $("#es-total").textContent = s.counts.all;
+        $("#es-dot").className = s.counts.all ? "pulse-dot" : "pulse-dot pulse-dot--ok";
+        $$("#es-apps .tab").forEach((t) => {
+          const n = s.counts[t.dataset.app];
+          const count = $(".tab__count", t);
+          count.textContent = String(n).padStart(2, "0");
+          count.classList.toggle("is-zero", !n);
+          t.style.setProperty("--share", s.counts.all ? n / s.counts.all : 0);
+          t.classList.toggle("is-selected", t.dataset.app === s.selected);
+          if (t.dataset.app !== "all") t.classList.toggle("is-clear", !n);
+        });
+        $$("#es-states .tab").forEach((b) => {
+          const on = b.dataset.state === name;
+          b.classList.toggle("is-selected", on);
+          b.setAttribute("aria-selected", String(on));
+          b.tabIndex = on ? 0 : -1;
+        });
+        requestAnimationFrame(placeAll);
+      }
+      $$("#es-states .tab").forEach((b) => b.addEventListener("click", () => setState(b.dataset.state)));
+      $("#es-states").addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+        const tabs = $$("#es-states .tab");
+        const next = tabs[(tabs.indexOf(document.activeElement) + 1) % tabs.length];
+        next.focus();
+        setState(next.dataset.state);
+      });
+
+      // Check again: a quick sync, still nothing new
+      $("#es-refresh").addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        btn.classList.add("is-spinning");
+        $("#es-synced").textContent = "Checking…";
+        setTimeout(() => { btn.classList.remove("is-spinning"); $("#es-synced").textContent = "Synced just now"; }, 900);
+      });
+
+      $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
+      addEventListener("resize", placeAll);
+      (document.fonts ? document.fonts.ready : Promise.resolve()).then(placeAll);
+      setState(new URLSearchParams(location.search).get("state") === "app" ? "app" : "clear");
+    })();
+  </script>
+</body>
+</html>

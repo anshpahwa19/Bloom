@@ -10,6 +10,9 @@
 - That link is the **web design only**. The BlooMultiverse mobile app is a
   separate design with its own link: never publish it here, and never make
   this page show the app (no phone-app or iPhone-mockup mode on this page).
+- `designs/` holds one-off design files (`*.src.html`, built by `build.py`
+  into standalone `*.html` downloads that include `src/styles.css`). Hand
+  them over as files; never publish them to the live link.
 - `reference/` holds the original prototype (Direction A). Keep every feature
   and content block from it.
 - Design rules to keep consistent:
