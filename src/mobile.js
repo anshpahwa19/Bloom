@@ -315,7 +315,7 @@
     $("#app-sheet-title").textContent = title;
     sheetBody.innerHTML = render();
     sheetEl.setAttribute("aria-hidden", "false");
-    [appViews, appNav, appLayer].forEach((x) => { x.inert = true; });
+    [appViews, appNav, appLayer, $("#app-auth")].forEach((x) => { x.inert = true; });
     const panel = $(".app-sheet__panel", sheetEl);
     panel.style.transform = "";
     motion(panel, [{ transform: "translateY(100%)" }, { transform: "none" }]);
@@ -343,6 +343,7 @@
     appViews.inert = !!A.modal;
     appNav.inert = !!A.modal;
     appLayer.inert = false;
+    $("#app-auth").inert = false;
     if (restore && ret?.isConnected) ret.focus({ preventScroll: true });
     syncBack();
   }
@@ -2079,101 +2080,229 @@
 
   /* ---------------------------------------------------------------
      SIGN IN — splash, login (Bloom ID or biometrics), then the app.
-     Once a session, and again after Sign out. The steps cross-fade in
-     #app-auth, over the tabs; the biometric prompts are the app's sheet.
+     Once a session, and again after Sign out. The steps play in
+     #app-auth, over the tabs, on one sky that keeps drifting; the
+     biometric prompt is the app's sheet. The motion is the page's own:
+     the hero's constellation (Bloom at its core, the four apps around
+     it), its line reveals and swash, tiles that pop, and your photo,
+     which flies into the Profile tab on the way in.
      --------------------------------------------------------------- */
   const AUTH_KEY = "bloo-x-signed-in";
+  const SPRING = "cubic-bezier(.34,1.56,.64,1)";
   const authEl = $("#app-auth");
   const AUTH = { started: false, timers: [] };
   const authWait = (ms, fn) => AUTH.timers.push(setTimeout(fn, reduceMotion ? Math.min(ms, 400) : ms));
   const isSignedIn = () => { try { return sessionStorage.getItem(AUTH_KEY) === "1"; } catch { return false; } };
   const setSignedIn = (on) => { try { if (on) sessionStorage.setItem(AUTH_KEY, "1"); else sessionStorage.removeItem(AUTH_KEY); } catch { /* the session forgets */ } };
-  const bloomMark = (cls) => `<svg class="${cls}" viewBox="0 0 42 43" aria-hidden="true"><use href="#i-bloom"/></svg>`;
+  // A sprite icon drawn inline, so its strokes can draw and its parts move
+  const inlinePaths = (id) => $$(`#${id} path`).map((p, i) => `<path d="${p.getAttribute("d")}" pathLength="1" style="--i:${i}"/>`).join("");
+  // Bloom's icon: the logo's B, white on the logo's red
+  const bloomIcon = () => `<span class="auth-icon"><svg class="auth-icon__b" viewBox="0 0 42 43">${inlinePaths("i-bloom")}</svg><i class="auth-icon__sheen"></i></span>`;
   const authBar = () => `<header class="auth__bar"><span class="brand__word has-logo" role="img" aria-label="Bloom Multiverse"></span></header>`;
+  // Each line rises out of its own mask, as the hero's do
+  const authLine = (html, cls = "") => `<span class="auth-line ${cls}"><span class="auth-line__in">${html}</span></span>`;
+  // The hero's constellation before sign-in: Bloom at the core and, on the login, the four apps (no counts yet)
+  function authOrbitHTML(full) {
+    const lines = $("#orbit .orbit__lines");
+    const pick = (sel) => $$(sel, lines).map((x) => x.outerHTML).join("");
+    const nodes = full ? $$("#orbit .orbit__node").map((n, i) => `<span class="auth-orbit__node" style="--x:${n.style.getPropertyValue("--x")};--y:${n.style.getPropertyValue("--y")};--i:${i}">${markOf(n.dataset.filter)}</span>`).join("") : "";
+    return `<div class="auth-orbit${full ? "" : " auth-orbit--splash"}" aria-hidden="true">
+      <svg class="auth-orbit__lines" viewBox="${lines.getAttribute("viewBox")}"><g class="auth-orbit__rings">${pick(".ring")}</g>${full ? `<g class="auth-orbit__beams">${pick(".beam")}${pick(".ring-dot")}</g>` : ""}</svg>
+      <span class="auth-orbit__core">${bloomIcon()}</span>${nodes}</div>`;
+  }
+  // The login's headline is the hero's tagline, swash and all
+  const taglineLines = () => {
+    const t = $(".hero__tagline");
+    return `${authLine(esc(t.firstChild.textContent.trim()))} ${authLine($("em", t).outerHTML, "auth-line--em")}`;
+  };
   const AUTH_STEPS = {
     splash: () => `<section class="auth auth--splash" aria-label="Bloom Multiverse is opening">
-        <div class="auth__splash"><span class="auth__icon">${bloomMark("auth__icon-mark")}</span>
-          <p class="auth__name">Bloom <span>Multiverse</span></p><p class="auth__tagline">Employee workspace</p></div>
-        <span class="auth__load" aria-hidden="true"><i></i></span></section>`,
-    login: () => `<section class="auth auth--login" aria-labelledby="auth-title">${bloomMark("auth__bg")}${authBar()}
+        <div class="auth-splash">${authOrbitHTML(false)}
+          <p class="auth-splash__name">${authLine("Bloom")} ${authLine("Multiverse", "auth-line--accent")}</p>
+          <p class="auth-splash__tag">Employee workspace</p></div>
+        <span class="auth-load" aria-hidden="true"><i></i></span></section>`,
+    login: () => `<section class="auth auth--login" aria-labelledby="auth-title">${authBar()}
+        <div class="auth-vis">${authOrbitHTML(true)}</div>
         <div class="auth__body">${kicker("Sign in")}
-          <h1 class="auth__title" id="auth-title" tabindex="-1">Your workplace, <em>connected.</em></h1>
+          <h1 class="auth__title" id="auth-title" tabindex="-1">${taglineLines()}</h1>
           <p class="auth__sub">Access company resources, announcements and more in one place.</p></div>
         <div class="auth__actions">
-          <button class="btn btn--primary auth__btn" type="button" data-act="auth-sso">Log in with Bloom ID</button>
+          <button class="btn btn--primary auth__btn auth__btn--id" type="button" data-act="auth-sso"><span class="auth__btn-label">Log in with Bloom ID</span>${icon("i-arrow", "ico ico--sm btn__arrow")}</button>
           <button class="btn btn--ghost auth__btn" type="button" data-act="auth-bio" data-v="finger">${icon("i-fingerprint", "ico ico--sm")}Use biometrics</button>
           <p class="auth__help">Need help? <button class="link-btn" type="button" data-act="auth-help">Contact IT support</button></p>
         </div></section>`,
-    done: () => `<section class="auth auth--done" aria-labelledby="auth-done-title">${bloomMark("auth__bg")}${authBar()}
-        <div class="auth__done" role="status"><span class="auth__ok" aria-hidden="true">${icon("i-check")}</span>${kicker("Signed in")}
-          <h1 class="auth__title auth__title--center" id="auth-done-title" tabindex="-1">Welcome back, <span class="auth__hi">${esc(me.first)}<span class="hero__dot">.</span></span></h1>
-          <p class="auth__sub">Getting your workspace ready…</p></div></section>`
+    done: () => `<section class="auth auth--done" aria-labelledby="auth-done-title">${authBar()}
+        <div class="auth__done" role="status">
+          <span class="auth-me" aria-hidden="true"><svg class="auth-me__ring" viewBox="0 0 124 124"><circle cx="62" cy="62" r="60"/><circle cx="62" cy="62" r="60" pathLength="1"/></svg>${avatarHTML(me, "auth-me__dp")}<span class="auth-me__ok">${icon("i-check")}</span></span>
+          ${kicker("Signed in")}
+          <h1 class="auth__title auth__title--center" id="auth-done-title" tabindex="-1">${authLine("Welcome back,")} ${authLine(`${esc(me.first)}<span class="hero__dot">.</span>`, "auth-line--name")}</h1>
+          <p class="auth__sub">Getting your workspace ready…</p>
+          <ul class="auth-sync" aria-hidden="true">${APP_ORDER.map((a, i) => `<li style="--i:${i}">${markOf(a)}<span class="auth-sync__ok">${icon("i-check")}</span></li>`).join("")}</ul>
+        </div>
+        <span class="auth-load auth-load--done" aria-hidden="true"><i></i></span></section>`
   };
   function showAuth(step) {
     AUTH.timers.forEach(clearTimeout);
     AUTH.timers = [];
     appEl.classList.add("is-authing");
     authEl.hidden = false;
+    if (!$(".auth-sky", authEl)) authEl.innerHTML = `<div class="auth-sky" aria-hidden="true"><i></i><i></i><i></i></div>`;
+    // the splash's constellation rises into the login's: measure it before it goes
+    const splashOrbit = $(".auth-step:not(.is-leaving) .auth-orbit--splash", authEl);
+    const from = splashOrbit?.getBoundingClientRect();
+    const prev = $$(":scope > :not(.auth-sky)", authEl);
     const next = document.createElement("div");
     next.className = "auth-step";
     next.innerHTML = AUTH_STEPS[step]();
-    // what was showing (a step, a scan) fades as the next one comes in
-    [...authEl.children].forEach((el) => motion(el, [{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: "forwards" }).then(() => el.remove()));
     authEl.append(next);
-    motion(next, [{ opacity: 0 }, { opacity: 1 }], { duration: 420 });
+    // what was showing (a step, a scan) fades as the next one comes in
+    prev.forEach((el) => {
+      el.classList.add("is-leaving");
+      el.inert = true;
+      motion(el, [{ opacity: 1 }, { opacity: 0 }], { duration: 380, easing: "ease-out", fill: "forwards" }).then(() => el.remove());
+    });
+    const orbit = $(".auth-orbit", next);
+    const to = orbit?.getBoundingClientRect();
+    if (from && to?.width && !reduceMotion) {
+      next.firstElementChild.classList.add("is-flown");
+      splashOrbit.style.visibility = "hidden";
+      const dx = from.left + from.width / 2 - (to.left + to.width / 2);
+      const dy = from.top + from.height / 2 - (to.top + to.height / 2);
+      motion(orbit, [{ transform: `translate(${dx}px, ${dy}px) scale(${from.width / to.width})` }, { transform: "none" }], { duration: 1000 });
+    }
     setTimeout(() => $("h1", next)?.focus({ preventScroll: true }), 60);
-    if (step === "splash") authWait(1600, () => showAuth("login"));
-    if (step === "done") authWait(1600, finishAuth);
+    if (step === "splash") authWait(2100, () => showAuth("login"));
+    if (step === "done") authWait(2500, finishAuth);
   }
   function signInWithId(btn) {
     if (btn.getAttribute("aria-busy") === "true") return;
+    // the button folds into a spinner
     btn.setAttribute("aria-busy", "true");
-    btn.innerHTML = `<span class="auth__spin" aria-hidden="true"></span>Signing in…`;
-    authWait(1100, () => showAuth("done"));
+    btn.setAttribute("aria-label", "Signing in…");
+    btn.insertAdjacentHTML("beforeend", `<span class="auth__spin" aria-hidden="true"></span>`);
+    authWait(1300, () => showAuth("done"));
   }
-  const bioHTML = (kind) => {
-    const face = kind === "face";
-    return `<div class="auth-bio">
-      <button class="auth-bio__scan" type="button" data-act="auth-scan" data-v="${kind}" aria-label="${face ? "Scan my face" : "Read my fingerprint"}">${icon(face ? "i-faceid" : "i-fingerprint")}</button>
-      <h3 class="auth-bio__title">${face ? "Sign in with Face ID" : "Confirm fingerprint"}</h3>
-      <p class="auth-bio__text">${face ? "Look at your front camera, or tap the icon to scan." : "Tap the icon, then place your finger on the sensor."}</p>
-      <button class="link-btn auth-bio__swap" type="button" data-act="auth-bio" data-v="${face ? "finger" : "face"}">${face ? "Use fingerprint instead" : "Use Face ID instead"}</button>
+  const BIO = {
+    finger: { tab: "Fingerprint", title: "Confirm fingerprint", text: "Tap the icon, then place your finger on the sensor.", scan: "Read my fingerprint", busy: "Reading fingerprint" },
+    face: { tab: "Face ID", title: "Sign in with Face ID", text: "Look at your front camera, or tap the icon to scan.", scan: "Scan my face", busy: "Scanning face" }
+  };
+  // Fingerprint and Face ID drawn twice: a faint base, and a lit copy that moves
+  const glyphHTML = (kind, cls = "") => {
+    const paths = inlinePaths(kind === "face" ? "i-faceid" : "i-fingerprint");
+    return `<svg class="auth-glyph auth-glyph--${kind} ${cls}" viewBox="0 0 24 24" aria-hidden="true"><g class="auth-glyph__base">${paths}</g><g class="auth-glyph__lit">${paths}</g></svg>`;
+  };
+  const bioPanelHTML = (kind) => `<div class="auth-bio__panel" id="auth-bio-panel" role="tabpanel" aria-label="${BIO[kind].tab}">
+      <button class="auth-bio__scan" type="button" data-act="auth-scan" data-v="${kind}" aria-label="${BIO[kind].scan}"><i class="auth-bio__wave"></i><i class="auth-bio__wave"></i>${glyphHTML(kind)}</button>
+      <h3 class="auth-bio__title">${BIO[kind].title}</h3>
+      <p class="auth-bio__text">${BIO[kind].text}</p></div>`;
+  const bioHTML = (kind) => `<div class="auth-bio">
+      <div class="tabs auth-bio__tabs" role="tablist" aria-label="Sign in with">
+        <span class="tabs__indicator" aria-hidden="true"></span>
+        ${Object.keys(BIO).map((k) => `<button class="tab${k === kind ? " is-selected" : ""}" type="button" role="tab" aria-selected="${k === kind}" aria-controls="auth-bio-panel" tabindex="${k === kind ? 0 : -1}" data-act="auth-bio" data-v="${k}">${icon(k === "face" ? "i-faceid" : "i-fingerprint", "ico ico--sm")}${BIO[k].tab}</button>`).join("")}
+      </div>
+      ${bioPanelHTML(kind)}
       <button class="btn btn--ghost auth-bio__cancel" type="button" data-sheet-close>Cancel</button>
     </div>`;
-  };
   function showBio(kind) {
-    const title = kind === "face" ? "Sign in with Face ID" : "Confirm fingerprint";
+    const b = BIO[kind];
     if (A.sheet?.bio) {
-      // switch between fingerprint and Face ID in place
+      if (A.sheet.bio === kind) return;
+      // switch in place: the pill slides across, the prompt comes in from its side
       A.sheet.bio = kind;
       A.sheet.render = () => bioHTML(kind);
-      $("#app-sheet-title").textContent = title;
-      sheetBody.innerHTML = bioHTML(kind);
-      $(".auth-bio__scan", sheetBody).focus({ preventScroll: true });
+      $("#app-sheet-title").textContent = b.title;
+      const tabs = $(".auth-bio__tabs", sheetBody);
+      $$('[role="tab"]', tabs).forEach((t) => {
+        const on = t.dataset.v === kind;
+        t.classList.toggle("is-selected", on);
+        t.setAttribute("aria-selected", on);
+        t.tabIndex = on ? 0 : -1;
+      });
+      moveIndicator(tabs);
+      const panel = $(".auth-bio__panel", sheetBody);
+      panel.insertAdjacentHTML("afterend", bioPanelHTML(kind));
+      panel.remove();
+      motion($(".auth-bio__panel", sheetBody), [{ opacity: 0, transform: `translateX(${kind === "face" ? 28 : -28}px)` }, { opacity: 1, transform: "none" }], { duration: 460 });
       return;
     }
-    openSheet({ title, render: () => bioHTML(kind), cls: "app-sheet--bio" });
+    openSheet({ title: b.title, render: () => bioHTML(kind), cls: "app-sheet--bio" });
     A.sheet.bio = kind;
+    // the pill starts under its tab, rather than sliding in from the edge
+    const tabs = $(".auth-bio__tabs", sheetBody);
+    const ind = $(".tabs__indicator", tabs);
+    ind.style.transition = "none";
+    moveIndicator(tabs);
+    void ind.offsetWidth;
+    ind.style.transition = "";
   }
   function scanBio(kind) {
     closeSheet(false);
-    const face = kind === "face";
+    const ticks = Array.from({ length: 48 }, (_, i) => `<line x1="80" y1="7" x2="80" y2="17" transform="rotate(${i * 7.5} 80 80)" style="--i:${i}"/>`).join("");
     const scan = document.createElement("div");
-    scan.className = "auth-scan";
+    scan.className = `auth-scan auth-scan--${kind}`;
     scan.setAttribute("role", "status");
-    scan.innerHTML = `<div class="auth-scan__tile">${icon(face ? "i-faceid" : "i-fingerprint", "ico auth-scan__glyph")}${icon("i-check", "ico auth-scan__ok")}<i class="auth-scan__line" aria-hidden="true"></i></div>
-      <p class="auth-scan__label">${face ? "Scanning face…" : "Reading fingerprint…"}</p>`;
+    scan.innerHTML = `<div class="auth-scan__box" aria-hidden="true"><i class="auth-scan__ripple"></i>
+        <div class="auth-scan__hud">
+          <svg class="auth-scan__ring" viewBox="0 0 160 160"><g class="auth-scan__ticks">${ticks}</g><circle class="auth-scan__done" cx="80" cy="80" r="68" pathLength="1"/></svg>
+          ${glyphHTML(kind, "auth-scan__glyph")}
+          <svg class="auth-scan__ok" viewBox="0 0 24 24"><path d="${$("#i-check path").getAttribute("d")}" pathLength="1"/></svg>
+          <i class="auth-scan__beam"></i>
+        </div></div>
+      <p class="auth-scan__label">${BIO[kind].busy}<span class="auth-dots" aria-hidden="true"><i></i><i></i><i></i></span></p>`;
     authEl.append(scan);
-    motion(scan, [{ opacity: 0 }, { opacity: 1 }], { duration: 260 });
-    authWait(1700, () => { scan.classList.add("is-verified"); $(".auth-scan__label", scan).textContent = "Verified"; });
-    authWait(2600, () => showAuth("done"));
+    motion(scan, [{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: "ease-out" });
+    authWait(1900, () => {
+      scan.classList.add("is-verified");
+      $(".auth-scan__label", scan).innerHTML = `<span class="auth-scan__verified">${icon("i-check", "ico ico--sm")}Verified</span>`;
+    });
+    authWait(2900, () => showAuth("done"));
+  }
+  // Home comes up as the sign-in fades: the greeting's lines rise again, the rest follows, the bar slides in
+  function enterHome() {
+    const pg = topPage();
+    if (!pg || reduceMotion) return;
+    const opts = (delay) => ({ duration: 900, delay, fill: "backwards" });
+    $$(".m-hello .hero__line-in", pg).forEach((el, i) => motion(el, [{ translate: "0 110%" }, { translate: "0 0" }], opts(160 + i * 90)));
+    [$(".m-hello .hero__date", pg), $(".m-hello__tag", pg), $(".m-frags", pg), $(".m-sec", pg)].filter(Boolean)
+      .forEach((el, i) => motion(el, [{ opacity: 0, translate: "0 22px" }, { opacity: 1, translate: "0 0" }], opts(100 + i * 90)));
+    motion($(".app-nav__bar", appNav), [{ translate: "0 160%" }, { translate: "0 0" }], { duration: 800, delay: 240, easing: SPRING, fill: "backwards" });
+  }
+  // Your photo leaves the welcome and lands in the Profile tab
+  function flyPhoto(from, dp) {
+    const to = dp.getBoundingClientRect();
+    if (!to.width) return;
+    const box = appEl.getBoundingClientRect();
+    const fly = document.createElement("span");
+    fly.className = "auth-fly";
+    fly.setAttribute("aria-hidden", "true");
+    fly.innerHTML = avatarHTML(me);
+    Object.assign(fly.style, { left: `${from.left - box.left}px`, top: `${from.top - box.top}px`, width: `${from.width}px`, height: `${from.height}px` });
+    appEl.append(fly);
+    dp.style.visibility = "hidden";
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    // across and down on different curves, so it arcs into the bar
+    const across = fly.animate([{ transform: "none" }, { transform: `translateX(${dx}px)` }], { duration: 820, easing: "cubic-bezier(.3,0,.2,1)", fill: "forwards" });
+    fly.firstElementChild.animate([{ transform: "none" }, { transform: `translateY(${dy}px) scale(${to.width / from.width})` }], { duration: 820, easing: "cubic-bezier(.6,0,.4,1)", fill: "forwards" });
+    across.finished.catch(() => {}).then(() => {
+      fly.remove();
+      dp.style.visibility = "";
+      motion(dp, [{ scale: 1.5 }, { scale: 1 }], { duration: 520, easing: SPRING });
+    });
   }
   function finishAuth() {
     setSignedIn(true);
     setTab("home");
+    const from = $(".auth-step:last-child .auth-me__dp", authEl)?.getBoundingClientRect();
     appEl.classList.remove("is-authing");
-    motion(authEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 420, easing: "ease-out" }).then(() => {
+    const dp = $(".app-nav__dp", appNav);
+    if (from && dp && !reduceMotion) flyPhoto(from, dp);
+    enterHome();
+    authEl.inert = true;
+    motion(authEl, [{ opacity: 1 }, { opacity: 0, transform: "scale(1.05)" }], { duration: 560, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).then(() => {
+      authEl.getAnimations().forEach((a) => a.cancel());
       authEl.hidden = true;
+      authEl.inert = false;
       authEl.replaceChildren();
       focusPage(topPage());
     });

@@ -824,114 +824,229 @@ button.m-card:active { transform: scale(.985); }
 .m-search__count { margin-bottom: 2px; font-size: .875rem; color: var(--slate); }
 .m-search__all { width: 100%; margin-top: 14px; }
 
-/* SIGN IN — splash, login, biometrics, signed in ------------------- */
+/* SIGN IN — splash, login, biometrics, signed in -------------------
+   The page's own motion throughout: the hero's constellation (Bloom at
+   its core, the four apps around it), its line reveals and swash, tiles
+   that pop, and the tabs' ambient light, drifting. */
 .app.is-authing :is(.app-views, .app-nav, .app-layer) { visibility: hidden; }
 .app-auth { position: absolute; inset: 0; z-index: 35; overflow: hidden; background: var(--canvas); }
 .app-auth[hidden] { display: none; }
 .auth-step { position: absolute; inset: 0; }
+
+/* One sky behind every step: the tabs' ambient light, drifting, over a faint dot grid */
+.auth-sky { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.auth-sky i { position: absolute; width: 150%; aspect-ratio: 1; animation: auth-drift 18s ease-in-out infinite alternate; }
+.auth-sky i:nth-child(1) { left: 0; top: -62%; background: radial-gradient(closest-side, color-mix(in srgb, var(--blob-1) 20%, transparent), transparent); }
+.auth-sky i:nth-child(2) { left: -88%; top: -12%; background: radial-gradient(closest-side, color-mix(in srgb, var(--blob-3) 16%, transparent), transparent); animation-duration: 23s; animation-direction: alternate-reverse; }
+.auth-sky i:nth-child(3) { left: 12%; top: 58%; background: radial-gradient(closest-side, color-mix(in srgb, var(--blob-2) 11%, transparent), transparent); animation-duration: 27s; }
+.auth-sky::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle, var(--dot) 1px, transparent 1.4px) 0 0 / 22px 22px;
+  -webkit-mask-image: radial-gradient(75% 44% at 50% 32%, #000, transparent 78%); mask-image: radial-gradient(75% 44% at 50% 32%, #000, transparent 78%);
+}
+
 .auth {
-  position: relative; isolation: isolate; display: flex; flex-direction: column; height: 100%; overflow: hidden;
+  position: relative; display: flex; flex-direction: column; height: 100%; max-width: var(--app-maxw); margin-inline: auto;
+  overflow-x: hidden; overflow-y: auto; scrollbar-width: none;
   padding: var(--safe-top) var(--app-pad) calc(var(--safe-bottom) + 18px);
 }
-/* the same ambient light as the app's tabs */
-.auth::before {
-  content: ""; position: absolute; inset: 0 0 auto; z-index: -2; height: 560px; pointer-events: none;
-  background:
-    radial-gradient(70% 60% at 100% 0%, color-mix(in srgb, var(--blob-1) 16%, transparent), transparent 70%),
-    radial-gradient(55% 50% at 0% 30%, color-mix(in srgb, var(--blob-3) 12%, transparent), transparent 70%);
-}
-/* Bloom's B, large and faint behind the words */
-.auth__bg { position: absolute; z-index: -1; top: 25%; right: -12%; width: 76%; height: auto; fill: color-mix(in srgb, #922A22 7%, transparent); pointer-events: none; }
-:root[data-theme="dark"] .auth__bg { fill: color-mix(in srgb, #E3263B 9%, transparent); }
+.auth::-webkit-scrollbar { display: none; }
 .auth__bar { display: flex; align-items: center; height: var(--app-bar); flex: none; }
 .auth__bar .brand__word { width: 150px; height: 22px; }
+/* focus lands on each step's heading for screen readers; it isn't a control, so no ring */
+.auth [tabindex="-1"]:focus-visible { box-shadow: none; }
+
+/* Line reveals, as on the hero: each line rises out of its own mask, clipped vertically only */
+.auth-line { display: block; overflow-x: visible; overflow-y: clip; padding-bottom: .1em; margin-bottom: -.1em; }
+.auth-line__in { display: inline-block; animation: lineUp 1.1s var(--ease-expo) var(--d, 0s) both; }
+.auth-line--accent .auth-line__in { color: var(--accent-fg); }
+.auth .auth-line--name .auth-line__in { animation: lineUp 1.1s var(--ease-expo) var(--d, 0s) both, nameShine 9s ease-in-out 1.6s infinite alternate; }
+.auth-line--em { padding-bottom: .34em; margin-bottom: -.34em; }
 .auth__title {
   font-family: var(--font-display); font-weight: 700; line-height: .98; letter-spacing: -.035em; color: var(--ink);
   font-size: clamp(2.25rem, 1rem + 6vw, 3rem); font-size: round(clamp(2.25rem, 1rem + 6vw, 3rem), 2px);
 }
-.auth__title em { display: block; font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent-fg); font-size: 1.14em; font-size: round(1.14em, 2px); line-height: 1; }
-/* focus lands on each step's heading for screen readers; it isn't a control, so no ring */
-.auth [tabindex="-1"]:focus-visible { box-shadow: none; }
-.auth__sub { margin-top: 16px; max-width: 32ch; font-size: 1rem; line-height: 1.5; color: var(--slate); }
+.auth__title em { position: relative; display: inline-block; font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.01em; color: var(--accent-fg); font-size: 1.14em; font-size: round(1.14em, 2px); line-height: 1; }
+.auth__title .squiggle { animation: draw 1.3s var(--ease-out) 1.15s forwards; }
+.auth__sub { margin-top: 14px; max-width: 32ch; font-size: 1rem; line-height: 1.5; color: var(--slate); }
 
-/* Splash: the app's icon, its name, and a line that fills */
-.auth--splash { align-items: center; justify-content: center; text-align: center; }
-.auth__splash { display: grid; justify-items: center; }
-.auth__icon {
-  display: grid; place-items: center; width: 96px; height: 96px; border-radius: var(--r-icon);
+/* The constellation: the hero's rings and beams, Bloom's icon at the core */
+.auth-orbit { position: relative; flex: none; width: 260px; width: min(100cqw, 100cqh, 330px); aspect-ratio: 1; }
+.auth-orbit__lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.auth-orbit__rings, .auth-orbit__beams { transform-box: view-box; transform-origin: 50% 50%; }
+.auth-orbit__core { position: absolute; left: 50%; top: 50%; width: 24%; translate: -50% -50%; }
+.auth-orbit__node { position: absolute; left: var(--x); top: var(--y); width: max(15%, 30px); transform: translate(-50%, -50%); animation: bob 6s ease-in-out infinite; animation-delay: calc(var(--i) * -1.4s); }
+.auth-orbit__node .app-mark { width: 100%; height: auto; aspect-ratio: 1; box-shadow: 0 0 0 5px color-mix(in srgb, var(--surface) 55%, transparent), var(--sh-float); animation: popIn .8s var(--ease-spring) both; animation-delay: calc(.6s + var(--i) * .09s); }
+.auth-icon {
+  position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: var(--r-icon);
   background: linear-gradient(150deg, #E3263B, #922A22 72%); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), var(--sh-float);
-  animation: auth-pop .7s var(--ease-spring) both;
 }
-.auth__icon-mark { width: 46px; height: 47px; fill: #fff; }
-.auth__name { margin-top: 22px; font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; letter-spacing: -.03em; color: var(--ink); }
-.auth__name span { color: var(--accent-fg); }
-.auth__tagline { margin-top: 8px; font-size: .75rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--slate-2); }
-.auth__load { position: absolute; left: 50%; bottom: calc(var(--safe-bottom) + 44px); width: 96px; height: 4px; translate: -50% 0; overflow: hidden; border-radius: var(--r-pill); background: var(--line); }
-.auth__load i { display: block; height: 100%; border-radius: inherit; background: var(--accent); transform-origin: left center; animation: auth-load 1.5s var(--ease-expo) both; }
+.auth-icon__b { width: 48%; fill: #fff; stroke: #fff; stroke-width: 0; overflow: visible; }
+.auth-icon__sheen { position: absolute; inset: 0; translate: -110% 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .42) 48%, transparent 64%); }
 
-/* Login */
-.auth__body { margin-top: 36px; }
-.auth__body .kicker { margin-bottom: 16px; }
-.auth__actions { display: grid; gap: 10px; margin-top: auto; }
+/* Splash: the rings form, the icon springs in and its B draws, the name rises, a line fills */
+.auth--splash { align-items: center; justify-content: center; overflow: hidden; padding-bottom: calc(var(--safe-bottom) + 96px); text-align: center; }
+.auth-splash { display: grid; justify-items: center; }
+.auth-orbit--splash { width: 400px; margin-block: -120px -126px; }
+.auth-orbit--splash .auth-orbit__rings { animation: fadeScale 1.4s var(--ease-expo) both; }
+.auth-orbit--splash .auth-orbit__core { animation: auth-icon-in 1s var(--ease-spring) .1s both; }
+.auth-orbit--splash .auth-icon__b path { stroke-dasharray: 1; stroke-width: .9; animation: auth-b 1.4s ease-out .3s both; }
+.auth-orbit--splash .auth-icon__sheen { animation: auth-sheen-x 1s ease-in-out 1.35s both; }
+.auth-orbit--splash .auth-orbit__core::before, .auth-orbit--splash .auth-orbit__core::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--r-icon); pointer-events: none; --ping: 2;
+  border: 1.5px solid color-mix(in srgb, #E3263B 32%, transparent); animation: auth-ping 2.2s var(--ease-out) 1s infinite both;
+}
+.auth-orbit--splash .auth-orbit__core::after { animation-delay: 2.1s; }
+.auth-splash__name { position: relative; font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1.1; letter-spacing: -.03em; color: var(--ink); }
+.auth-splash__name .auth-line { display: inline-block; vertical-align: top; }
+.auth-splash__name .auth-line:nth-child(1) .auth-line__in { --d: .5s; }
+.auth-splash__name .auth-line:nth-child(2) .auth-line__in { --d: .6s; }
+.auth-splash__tag { margin-top: 10px; font-size: .75rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--slate-2); animation: auth-track 1.3s var(--ease-expo) .8s both; }
+.auth-load { position: absolute; left: 50%; bottom: calc(var(--safe-bottom) + 44px); width: 120px; height: 4px; translate: -50% 0; overflow: hidden; border-radius: var(--r-pill); background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.auth-load i { position: absolute; inset: 0; border-radius: inherit; transform-origin: left center; background: linear-gradient(90deg, var(--accent), var(--cyan), var(--accent)) 0 0 / 200% 100%; animation: auth-fill 2s var(--ease-expo) .15s both, shimmer 1.4s linear infinite; }
+.auth-load--done i { animation-duration: 2.3s, 1.4s; }
+/* leaving, the name lifts away as the constellation rises */
+.is-leaving .auth-splash__name, .is-leaving .auth-splash__tag { translate: 0 -14px; transition: translate .4s var(--ease-out); }
+
+/* Login: from the splash the constellation rises into place (mobile.js); otherwise it forms here */
+.auth-vis { flex: 1 1 0; min-height: 0; display: grid; place-items: center; margin: 4px 0 12px; container: auth-vis / size; }
+@container auth-vis (max-height: 149px) { .auth-orbit { display: none; } }
+.auth--login:not(.is-flown) .auth-orbit__rings { animation: fadeScale 1.4s var(--ease-expo) .1s both; }
+.auth--login:not(.is-flown) .auth-orbit__core { animation: coreIn 1s var(--ease-spring) .15s both; }
+.auth--login .auth-orbit__beams { animation: fadeScale 1.2s var(--ease-expo) .5s both; }
+.auth--login .auth__bar { animation: rise .8s var(--ease-expo) .15s both; }
+.auth__body .kicker { margin-bottom: 14px; }
+.auth :is(.auth__body, .auth__done) .kicker { animation: rise .8s var(--ease-expo) .3s both; }
+.auth .kicker__line { animation: m-grow .9s var(--ease-expo) .35s both; }
+.auth .auth__title .auth-line:nth-child(1) .auth-line__in { --d: .36s; }
+.auth .auth__title .auth-line:nth-child(2) .auth-line__in { --d: .46s; }
+.auth--login .auth__sub { animation: rise .9s var(--ease-expo) .58s both; }
+.auth__actions { display: grid; gap: 10px; margin-top: 26px; }
+.auth__actions > * { animation: rise .9s var(--ease-expo) both; }
+.auth__actions > :nth-child(1) { animation-delay: .68s; }
+.auth__actions > :nth-child(2) { animation-delay: .76s; }
+.auth__actions > :nth-child(3) { animation-delay: .84s; }
 .auth__btn { width: 100%; height: 52px; justify-content: center; gap: 10px; }
-.auth__btn[aria-busy="true"] { pointer-events: none; }
-.auth__spin { width: 18px; height: 18px; border-radius: var(--r-pill); border: 2px solid color-mix(in srgb, currentColor 35%, transparent); border-top-color: currentColor; animation: auth-spin .8s linear infinite; }
-.auth__help { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-size: .875rem; color: var(--slate); }
-.auth__help .link-btn { min-height: 44px; padding: 0 4px; font-weight: 600; color: var(--accent-fg); }
-
-/* Signed in */
-.auth__done { display: grid; justify-items: center; margin: auto 0; padding-bottom: 40px; text-align: center; }
-.auth__ok {
-  display: grid; place-items: center; width: 68px; height: 68px; border-radius: var(--r-pill);
-  background: var(--ok-soft); color: var(--ok-fg); box-shadow: 0 0 0 8px color-mix(in srgb, var(--ok-soft) 55%, transparent);
-  animation: auth-pop .6s var(--ease-spring) both;
+.auth__btn--id { justify-self: center; overflow: hidden; transition: width .55s var(--ease-expo), transform var(--t-base) var(--ease-out), background-color var(--t-base), box-shadow var(--t-base); }
+/* a sheen crosses Bloom ID now and then */
+.auth__btn--id::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, .32) 50%, transparent 62%) 0 0 / 250% 100% no-repeat;
+  animation: auth-shine 6s ease-in-out 1.9s infinite;
 }
-.auth__ok .ico { width: 30px; height: 30px; stroke-width: 2.2; }
-.auth__done .kicker { margin: 24px 0 14px; }
-.auth__title--center { text-align: center; }
-.auth__hi { display: block; }
+.auth__btn-label, .auth__btn--id .btn__arrow { transition: opacity var(--t-fast); }
+/* signing in, the button folds into a spinner */
+.auth__btn--id[aria-busy="true"] { width: 52px; padding: 0; pointer-events: none; }
+.auth__btn--id[aria-busy="true"] :is(.auth__btn-label, .btn__arrow) { opacity: 0; }
+.auth__btn--id[aria-busy="true"]::after { animation: none; }
+.auth__spin { position: absolute; inset: 0; width: 20px; height: 20px; margin: auto; border-radius: var(--r-pill); border: 2px solid rgba(255, 255, 255, .35); border-top-color: #fff; animation: spin .8s linear infinite, auth-fade .3s .2s both; }
+.auth__help { display: flex; align-items: center; justify-content: center; gap: 4px; margin-top: 2px; font-size: .875rem; color: var(--slate); }
+.auth__help .link-btn { min-height: 44px; padding: 0 4px; font-size: .875rem; font-weight: 600; color: var(--accent-fg); }
 
-/* The biometric prompt is the app's sheet, its content centred */
+/* Signed in: your photo in a ring that closes, a check, your name, then the apps connecting */
+.auth__done { display: grid; justify-items: center; margin: auto 0; padding-bottom: 40px; text-align: center; }
+.auth-me { display: grid; place-items: center; width: 124px; height: 124px; animation: auth-icon-in .9s var(--ease-spring) .05s both; }
+.auth-me > * { grid-area: 1 / 1; }
+.auth-me__ring { width: 100%; height: 100%; overflow: visible; fill: none; stroke-width: 3; stroke-linecap: round; }
+.auth-me__ring circle:first-child { stroke: color-mix(in srgb, var(--ink) 9%, transparent); }
+.auth-me__ring circle + circle { stroke: var(--accent); stroke-dasharray: 1; transform: rotate(-90deg); transform-origin: 62px 62px; animation: auth-undraw 1.1s var(--ease-expo) .25s both; }
+.auth-me__dp { width: 104px; height: 104px; font-size: 1.5rem; }
+.auth-me__ok { align-self: end; justify-self: end; display: grid; place-items: center; width: 34px; height: 34px; margin: 0 4px 4px 0; border-radius: var(--r-pill); background: var(--green); color: #fff; box-shadow: 0 0 0 4px var(--canvas); animation: popIn .6s var(--ease-spring) 1s both; }
+.auth-me__ok .ico { width: 18px; height: 18px; stroke-width: 2.6; }
+.auth__done .kicker { margin: 26px 0 14px; }
+.auth__title--center { text-align: center; }
+.auth--done .auth__sub { margin-inline: auto; animation: rise .8s var(--ease-expo) .6s both; }
+.auth-sync { display: flex; justify-content: center; gap: 14px; margin-top: 26px; }
+.auth-sync li { position: relative; animation: popIn .7s var(--ease-spring) both; animation-delay: calc(.75s + var(--i) * .12s); }
+.auth-sync .app-mark { width: 44px; height: 44px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--surface) 55%, transparent), var(--sh-1); }
+.auth-sync__ok { position: absolute; right: -6px; bottom: -6px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: var(--r-pill); background: var(--green); color: #fff; box-shadow: 0 0 0 2px var(--canvas); animation: popIn .5s var(--ease-spring) both; animation-delay: calc(1.2s + var(--i) * .17s); }
+.auth-sync__ok .ico { width: 12px; height: 12px; stroke-width: 3; }
+/* on the way in, your photo flies into the Profile tab */
+.auth-fly { position: absolute; z-index: 60; display: grid; pointer-events: none; }
+.auth-fly .avatar { width: 100%; height: 100%; }
+
+/* Biometrics, in the app's sheet: Fingerprint or Face ID, a tile that listens, Cancel */
 .app-sheet--bio .app-sheet__head { display: none; }
-.auth-bio { display: grid; justify-items: center; gap: 8px; padding: 16px 4px 2px; text-align: center; }
+.auth-bio { display: grid; justify-items: center; padding: 14px 4px 2px; text-align: center; }
+.auth-bio__tabs .tab { height: 44px; padding: 0 18px; }
+.auth-bio__panel { display: grid; justify-items: center; gap: 8px; width: 100%; padding: 30px 0 20px; }
 .auth-bio__scan {
-  display: grid; place-items: center; width: 88px; height: 88px; margin-bottom: 8px; border-radius: var(--r-icon);
-  background: var(--accent-soft); color: var(--accent-fg);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 0 7px color-mix(in srgb, var(--accent-soft) 55%, transparent);
+  position: relative; display: grid; place-items: center; width: 104px; height: 104px; margin-bottom: 16px; border-radius: var(--r-icon);
+  background: var(--accent-soft); color: var(--accent-fg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
   transition: transform var(--t-fast) var(--ease-out);
 }
 .auth-bio__scan:active { transform: scale(.94); }
-.auth-bio__scan .ico { width: 40px; height: 40px; stroke-width: 1.5; }
+.auth-bio__wave { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; border: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent); --ping: 1.4; animation: auth-ping 2.4s var(--ease-out) infinite both; }
+.auth-bio__wave + .auth-bio__wave { animation-delay: 1.2s; }
 .auth-bio__title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; }
 .auth-bio__text { max-width: 30ch; font-size: .875rem; line-height: 1.5; color: var(--slate); }
-.auth-bio__swap { min-height: 44px; margin-top: 4px; font-size: .875rem; font-weight: 600; color: var(--accent-fg); }
 .auth-bio__cancel { width: 100%; height: 50px; }
+.auth-glyph { width: 48px; height: 48px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.auth-glyph path { transform-box: view-box; transform-origin: 50% 50%; }
+.auth-glyph--finger .auth-glyph__base { opacity: .3; }
+/* the fingerprint's ridges carry light round; Face ID looks about inside its frame */
+.auth-bio .auth-glyph--finger .auth-glyph__lit path { stroke-dasharray: .34 .66; animation: auth-ridge 2.8s linear infinite; animation-delay: calc(var(--i) * -.45s); }
+.auth-glyph--face .auth-glyph__lit { display: none; }
+.auth-glyph--face .auth-glyph__base path:first-child { animation: auth-breathe 2.6s ease-in-out infinite; }
+.auth-glyph--face .auth-glyph__base path:not(:first-child) { animation: auth-look 3.2s ease-in-out infinite; }
 
-/* Scanning, then verified: a deep-navy tile over the login, which blurs back */
+/* Scanning, then Verified: a deep-navy panel over the blurred login. Its ring of
+   ticks fills as it reads, closes in green, and the check draws */
 .auth-scan {
-  position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: 18px;
-  background: color-mix(in srgb, var(--canvas) 50%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  position: absolute; inset: 0; z-index: 5; display: grid; place-content: center; justify-items: center; gap: 22px;
+  background: color-mix(in srgb, var(--canvas) 50%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.3); backdrop-filter: blur(14px) saturate(1.3);
 }
-.auth-scan__tile {
-  position: relative; display: grid; place-items: center; width: 112px; height: 112px; overflow: hidden; border-radius: var(--r-icon);
-  background: linear-gradient(160deg, #1E2C6E, #0B1640); color: #EEF1FF; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), var(--sh-float);
-  transition: box-shadow var(--t-base) var(--ease-out);
+.auth-scan__box { position: relative; }
+.auth-scan__hud {
+  position: relative; display: grid; place-items: center; width: 176px; height: 176px; overflow: hidden; border-radius: var(--r-lg);
+  background: linear-gradient(160deg, #1E2C6E, #0B1640); color: #EEF1FF;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 1px rgba(255, 255, 255, .06), var(--sh-float);
+  animation: auth-hud-in .7s var(--ease-spring) both;
 }
-.auth-scan__tile > .ico { grid-area: 1 / 1; width: 54px; height: 54px; stroke-width: 1.4; transition: opacity var(--t-base), scale var(--t-slow) var(--ease-spring); }
-.auth-scan__ok { opacity: 0; scale: .5; color: #4ADE9B; stroke-width: 2 !important; }
-.auth-scan__line { position: absolute; left: 14%; right: 14%; top: 18%; height: 2px; border-radius: var(--r-pill); background: #7DA2FF; animation: auth-scan 1.1s ease-in-out infinite alternate; }
-.auth-scan.is-verified .auth-scan__glyph, .auth-scan.is-verified .auth-scan__line { opacity: 0; }
-.auth-scan.is-verified .auth-scan__ok { opacity: 1; scale: 1; }
-.auth-scan.is-verified .auth-scan__tile { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 0 0 6px color-mix(in srgb, var(--ok-soft) 70%, transparent), var(--sh-float); }
-.auth-scan__label { font-size: .875rem; font-weight: 600; color: var(--ink); }
+.auth-scan__hud > * { grid-area: 1 / 1; }
+.auth-scan__ring { width: 150px; height: 150px; overflow: visible; }
+.auth-scan__ticks { transition: opacity .3s; }
+.auth-scan__ticks line { stroke: rgba(160, 185, 255, .2); stroke-width: 2.6; stroke-linecap: round; animation: auth-tick .2s linear both; animation-delay: calc(.3s + var(--i) * 31ms); }
+.auth-scan__done { fill: none; stroke: #4ADE9B; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transform: rotate(-90deg); transform-origin: 80px 80px; transition: stroke-dashoffset .6s var(--ease-expo); }
+.auth-scan__glyph { width: 60px; height: 60px; transition: opacity .25s, scale .5s var(--ease-expo); }
+.auth-scan .auth-glyph--finger .auth-glyph__lit { color: #9DB8FF; }
+.auth-scan .auth-glyph--finger .auth-glyph__lit path { stroke-dasharray: 1; animation: auth-undraw 1.2s var(--ease-out) both; animation-delay: calc(.35s + var(--i) * .2s); }
+.auth-scan__ok { width: 60px; height: 60px; fill: none; stroke: #4ADE9B; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.auth-scan__ok path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .5s var(--ease-out) .2s; }
+.auth-scan__beam { align-self: start; width: 64%; height: 28px; margin-top: 30px; background: linear-gradient(180deg, transparent, rgba(142, 174, 255, .28) 44%, #C3D3FF 50%, rgba(142, 174, 255, .28) 56%, transparent); animation: auth-beam 1.15s ease-in-out infinite alternate; transition: opacity .2s; }
+.auth-scan__ripple { position: absolute; inset: 0; border-radius: var(--r-lg); border: 1.5px solid #4ADE9B; opacity: 0; pointer-events: none; --ping: 1.35; }
+.auth-scan.is-verified .auth-scan__ticks, .auth-scan.is-verified .auth-scan__beam { opacity: 0; }
+.auth-scan.is-verified .auth-scan__done, .auth-scan.is-verified .auth-scan__ok path { stroke-dashoffset: 0; }
+.auth-scan.is-verified .auth-scan__glyph { opacity: 0; scale: .6; }
+.auth-scan.is-verified .auth-scan__hud { animation: auth-bump .55s var(--ease-spring); }
+.auth-scan.is-verified .auth-scan__ripple { animation: auth-ping 1s var(--ease-out) .1s both; }
+.auth-scan__label { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; font-size: .875rem; font-weight: 600; color: var(--ink); }
+.auth-scan__verified { display: inline-flex; align-items: center; gap: 6px; color: var(--ok-fg); animation: rise .5s var(--ease-expo) both; }
+.auth-dots { display: inline-flex; gap: 3px; margin-left: 2px; }
+.auth-dots i { width: 4px; height: 4px; border-radius: var(--r-pill); background: currentColor; animation: dots 1.2s ease-in-out infinite; }
+.auth-dots i:nth-child(2) { animation-delay: .15s; }
+.auth-dots i:nth-child(3) { animation-delay: .3s; }
 
-@keyframes auth-load { from { transform: scaleX(0); } }
-@keyframes auth-pop { from { opacity: 0; scale: .7; } }
-@keyframes auth-spin { to { rotate: 1turn; } }
-@keyframes auth-scan { to { top: 80%; } }
+@keyframes auth-drift { to { transform: translate(-12%, 9%) scale(1.16); } }
+@keyframes auth-icon-in { from { opacity: 0; scale: .4; rotate: -14deg; } }
+@keyframes auth-b { 0% { stroke-dashoffset: 1; fill-opacity: 0; } 62% { stroke-dashoffset: 0; fill-opacity: 0; } 100% { stroke-dashoffset: 0; fill-opacity: 1; } }
+@keyframes auth-sheen-x { from { translate: -110% 0; } to { translate: 110% 0; } }
+@keyframes auth-ping { from { opacity: .9; scale: 1; } to { opacity: 0; scale: var(--ping, 1.5); } }
+@keyframes auth-track { from { opacity: 0; letter-spacing: .7em; } }
+@keyframes auth-fill { from { transform: scaleX(0); } }
+@keyframes auth-shine { 0% { background-position: 100% 0; } 22%, 100% { background-position: 0% 0; } }
+@keyframes auth-fade { from { opacity: 0; } }
+@keyframes auth-ridge { to { stroke-dashoffset: -1; } }
+@keyframes auth-breathe { 50% { scale: .9; } }
+@keyframes auth-look { 0%, 100% { translate: 0 0; } 30% { translate: -1.2px 0; } 65% { translate: 1.2px .4px; } }
+@keyframes auth-hud-in { from { opacity: 0; scale: .7; } }
+@keyframes auth-tick { to { stroke: #8EAEFF; } }
+@keyframes auth-undraw { from { stroke-dashoffset: 1; } }
+@keyframes auth-beam { to { translate: 0 88px; } }
+@keyframes auth-bump { 40% { scale: 1.06; } }
 @media (prefers-reduced-motion: reduce) {
-  .auth__icon, .auth__ok, .auth__load i { animation: none; }
-  .auth-scan__line, .auth__spin { animation-duration: 2.4s; }
+  .auth-scan__beam, .auth-bio__wave, .auth-orbit--splash .auth-orbit__core::before, .auth-orbit--splash .auth-orbit__core::after { display: none; }
+  .auth-glyph__lit path { stroke-dasharray: none; }
 }
 
 /* ------------------------------------------------------------------

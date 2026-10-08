@@ -147,11 +147,17 @@
     with Bloom ID, or Use biometrics), the Fingerprint / Face ID prompt as the
     app's sheet, Scanning, Verified, Signed in, then Home. It shows once a
     session (`sessionStorage` `bloo-x-signed-in`) and again after Sign out.
-    The steps cross-fade in `#app-auth` (over the tabs, under the sheet); the
-    tabs stay hidden while it shows. Tests skip it by setting that key in an
-    init script. The app icon is the logo's B in white on the logo's reds;
-    everything else is tokens (accent buttons and words, ok green for
-    Verified and Signed in).
+    The steps cross-fade in `#app-auth` (over the tabs, under the sheet) on
+    one drifting sky (`.auth-sky`); the tabs stay hidden while it shows. Tests
+    skip it by setting that key in an init script. Its motion is the page's
+    own, read from the page: the hero's constellation (`#orbit` rings, beams
+    and app nodes, with Bloom's icon at the core) rises from the splash into
+    the login; the login's headline is the hero's tagline with its swash;
+    lines rise from masks (`.auth-line`); Fingerprint / Face ID is a `.tabs`
+    switch; Scanning fills a ring of ticks, Verified closes it in green;
+    Signed in rings your photo, ticks off the four apps, then the photo flies
+    into the Profile tab as Home comes up. The app icon is the logo's B in
+    white on the logo's reds; everything else is tokens.
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
     window or device mode), in both themes, and in the iPhone mockup on a

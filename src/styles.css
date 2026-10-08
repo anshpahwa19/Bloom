@@ -1237,7 +1237,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 }
 .hero__line { display: block; overflow-x: visible; overflow-y: clip; padding-bottom: .1em; margin-bottom: -.1em; }
 .hero__line-in { display: inline-block; }
-.hero__line--name .hero__line-in {
+.hero__line--name .hero__line-in, .auth-line--name .auth-line__in {
   background: linear-gradient(100deg, var(--ink) 0%, var(--ink) 28%, var(--accent-fg) 58%, var(--cyan) 86%, var(--ink) 100%);
   background-size: 220% 100%; background-position: 0% 0;
   -webkit-background-clip: text; background-clip: text; color: transparent;
