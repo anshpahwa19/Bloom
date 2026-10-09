@@ -324,7 +324,8 @@
   });
   // Items inside a panel keep bubbling, so their data-drawer / data-toast actions still run
   document.addEventListener("click", (e) => {
-    if (!e.target.closest("[data-menu]") || e.target.closest('.menu__item:not([aria-disabled="true"])')) closeMenus();
+    // the path still holds a chip that was re-rendered while handling the click
+    if (!e.composedPath().some((n) => n.matches && n.matches("[data-menu]")) || e.target.closest('.menu__item:not([aria-disabled="true"])')) closeMenus();
   });
 
   $("#mark-read").addEventListener("click", () => {
@@ -629,14 +630,16 @@
     if (entry) entry.meta = `${counts[source]} pending`;
   }
 
-  function quickResolve(row, action) {
+  // action: approve | reject | forward. A dialog normally asks first and passes silent
+  function quickResolve(row, action, opts = {}) {
     if (!row || row.classList.contains("is-done")) return;
     row.classList.add("is-done");
+    row.classList.remove("is-rfi");
     row.dataset.outcome = action;
+    if (opts.reason) row.dataset.reason = opts.reason;
     $$(".task__actions button", row).forEach((b) => { b.disabled = true; });
-    const verb = action === "approve" ? "Approved" : "Rejected";
     decrementCount(row.dataset.source);
-    toast(`${verb} and synced to ${sourceNames[row.dataset.source]}`, action === "approve" ? "i-check" : "i-x");
+    if (!opts.silent) toast(`${{ approve: "Approved", reject: "Rejected", forward: "Forwarded" }[action]} and synced to ${sourceNames[row.dataset.source]}`, action === "approve" ? "i-check" : "i-x");
     if (ib.open) renderIb();
   }
 
@@ -786,10 +789,20 @@
           <div class="d-actions">
             <button class="btn btn--primary" type="button" id="approve-task"><span class="btn__label">Approve</span><span class="spinner" aria-hidden="true"></span></button>
             <button class="btn btn--quiet" type="button" data-toast="Opening ${sourceNames[src]} in a new tab…">Open in ${sourceNames[src]} ${icon("i-external", "ico ico--sm")}</button>
-            <button class="btn btn--quiet" type="button" disabled title="Only the task owner can reassign">Reassign</button>
+            <button class="btn btn--quiet" type="button" data-task-act="reject">Reject</button>
+            <button class="btn btn--quiet" type="button" data-task-act="rfi">Request info</button>
+            <button class="btn btn--quiet" type="button" data-task-act="forward">Forward</button>
           </div>`
       };
     },
+    assigned: (x) => ({
+      title: "Request details",
+      html: `<div class="d-task__row"><span class="app-mark app-mark--lg app-mark--${sourceMarks[x.app]}">${x.app === "sap" ? "SAP" : sourceNames[x.app].slice(0, 2)}</span><span class="tag">${sourceNames[x.app]}</span>${ibStatusPill(x)}</div>
+        <p class="d-task__title">${escapeHtml(x.title)}</p>
+        <dl class="d-facts"><div><dt>Request type</dt><dd>${escapeHtml(x.rtype || "Approval")}</dd></div><div><dt>Closed</dt><dd>${escapeHtml(x.closed)}</dd></div></dl>
+        ${x.reason ? `<h3 class="d-faq__label">Reason for rejection</h3><p class="d-note">${escapeHtml(x.reason)}</p>` : ""}
+        <div class="d-actions"><button class="btn btn--quiet" type="button" data-close-drawer-inline>Close</button></div>`
+    }),
     request: (x) => {
       const t = IB_TYPES[x.type];
       const steps = x.steps || [];
@@ -813,14 +826,17 @@
           </dl>
           ${x.details ? `<p class="d-note">${escapeHtml(x.details)}</p>` : ""}
           ${x.note ? `<p class="d-note">${escapeHtml(x.note)}</p>` : ""}
+          ${x.status === "rfi" && x.rfi ? `<p class="d-note">${icon("i-info", "ico ico--sm")}<b>${escapeHtml(x.rfi.from)}</b> asked for more information: ${escapeHtml(x.rfi.subject)}.</p>` : ""}
           ${steps.length ? `<h3 class="d-faq__label">Approval route</h3><ol class="d-steps">${steps.map((who, i) => { const s = stateOf(i); return `<li class="d-step d-step--${s}"><span class="d-step__dot">${icon(stepIcon[s])}</span><p><strong>${escapeHtml(who)}</strong><span>${stepText[s]}</span></p></li>`; }).join("")}</ol>` : ""}
-          <div class="d-actions">${x.state === "mine" && x.status === "review" ? `<button class="btn btn--primary" type="button" data-ib-drawer="remind" data-id="${x.id}">${icon("i-bellring", "ico ico--sm")}Remind ${escapeHtml(steps[x.step - 1] || "approver")}</button>` : ""}<button class="btn btn--quiet" type="button" data-close-drawer-inline>Close</button></div>`
+          <div class="d-actions">${x.state === "mine" && x.status === "rfi" ? `<button class="btn btn--primary" type="button" data-ib-drawer="respond" data-id="${x.id}">${icon("i-info", "ico ico--sm")}Respond to ${escapeHtml(x.rfi.from.split(" ")[0])}</button>` : ""}${x.state === "mine" && x.status === "review" ? `<button class="btn btn--primary" type="button" data-ib-drawer="remind" data-id="${x.id}">${icon("i-bellring", "ico ico--sm")}Remind ${escapeHtml(steps[x.step - 1] || "approver")}</button>` : ""}<button class="btn btn--quiet" type="button" data-close-drawer-inline>Close</button></div>`
       };
     }
   };
 
+  let drawerCtx = null;
   function openDrawer(type, ctx) {
     const wasOpen = drawer.classList.contains("is-open");
+    drawerCtx = ctx;
     const view = drawerViews[type](ctx);
     if (!wasOpen) lastFocus = document.activeElement;
     drawerTitle.textContent = view.title;
@@ -863,20 +879,27 @@
     const review = e.target.closest("[data-task]");
     if (review && !review.disabled) openDrawer("task", review.closest(".task"));
     const approveBtn = e.target.closest("[data-approve]");
-    if (approveBtn && !approveBtn.disabled) quickResolve(approveBtn.closest(".task"), "approve");
+    if (approveBtn && !approveBtn.disabled) confirmApprove([approveBtn.closest(".task")]);
     const rejectBtn = e.target.closest("[data-reject]");
-    if (rejectBtn && !rejectBtn.disabled) quickResolve(rejectBtn.closest(".task"), "reject");
+    if (rejectBtn && !rejectBtn.disabled) confirmReject(rejectBtn.closest(".task"));
+    const rfiBtn = e.target.closest("[data-rfi-update]");
+    if (rfiBtn) openRfi(rfiBtn.closest(".task"));
   });
   $$("[data-close-drawer]").forEach((el) => el.addEventListener("click", closeDrawer));
   drawerBody.addEventListener("click", (e) => {
     if (e.target.closest("[data-close-drawer-inline]")) { closeDrawer(); return; }
     const b = e.target.closest('[data-ib-drawer="remind"]');
     if (b) { const x = ibFind(b.dataset.id); closeDrawer(); if (x) ibRemind(x); }
+    const r = e.target.closest('[data-ib-drawer="respond"]');
+    if (r) { const x = ibFind(r.dataset.id); closeDrawer(); if (x) openRespond(x); }
+    const t = e.target.closest("[data-task-act]");
+    if (t && drawerCtx) { const row = drawerCtx; closeDrawer(); ({ reject: confirmReject, rfi: openRfi, forward: openForward })[t.dataset.taskAct](row); }
   });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || e.target.closest?.("dialog")) return; // dialogs close themselves
     if (isLocked()) return; // the login has no way around it
     if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
+    if (ibPopClose()) return;
     if (menus.some((m) => m.classList.contains("is-open"))) { closeMenus(); return; }
     if (gpt.open) { closeGpt(); return; }
     if (ib.open) { closeInbox(); return; }
@@ -903,6 +926,32 @@
     history: { name: "History", icon: "i-archive", stat: "Closed", chart: "Closed by type", unit: "closed" }
   };
   const IB_SORTS = { inbox: [["urgent", "Most urgent"], ["az", "A–Z"]], other: [["new", "Newest"], ["old", "Oldest"], ["az", "A–Z"]] };
+  const IB_STATUS = {
+    mine: [["review", "In progress"], ["rfi", "RFI"], ["returned", "Returned"]],
+    history: [["approved", "Approved"], ["rejected", "Rejected"], ["withdrawn", "Withdrawn"], ["forwarded", "Forwarded"]]
+  };
+  // Everything that can be created from Bloom. The first three are Bloom's own
+  // workflows (drafts, approval route, tracking); the rest are created here but
+  // handled in their connected app, so they are tracked there.
+  const REQUEST_TYPES = [
+    { key: "tcdf", label: "TCDF (Tender Committee Decision Form)", short: "TCDF", own: true },
+    { key: "memo", label: "Internal Memo", short: "Internal Memo", own: true },
+    { key: "rfp", label: "Request for Payment (RFP)", short: "RFP", own: true },
+    ...[["Leave", "darwinbox"], ["Out of Duty", "darwinbox"], ["Attendance Adjustment", "darwinbox"], ["Work From Home", "darwinbox"],
+      ["Broker Commission Approval Workflow", "salesforce"], ["Resale Approval Process", "salesforce"], ["Sale Order Cancellation", "salesforce"], ["Payment Deferral", "salesforce"],
+      ["Leasing Tenant Document Review", "salesforce"], ["Leasing Offer Approval", "salesforce"],
+      ["ADCB Batch Approval Process Workflow", "sap"], ["Requisition Request (PR) Workflow", "sap"], ["Purchase Order (PO) Workflow", "sap"], ["Service Entry Sheet (SES) Workflow", "sap"],
+      ["ADCB Approval Matrix Workflow", "sap"], ["Material Reservation Workflow", "sap"], ["MuleSoft Credential Store Workflow", "uipath"]
+    ].map(([label, app]) => ({ key: label.toLowerCase().replace(/[^a-z]+/g, "-"), label, short: label, app }))
+  ];
+  const COMPANIES = ["Bloom Holding", "Bloom Hospitality", "Bloom Properties"];
+  const DEPARTMENTS = ["Finance", "Legal", "Operations", "Procurement", "Digital Platforms", "People & Culture", "Sales"];
+  const PEOPLE = [
+    { name: "Taruna Sharma", role: "Senior Manager Digital Products - IT" },
+    { name: "Ankur Kushwaha", role: "Project manager - IT" },
+    { name: "Ritika Dalmia", role: "BA Lead - IT" },
+    { name: "Vishwesh Bhardwaj", role: "Technical Architect - IT" }
+  ].map((p) => ({ ...p, email: `${p.name.toLowerCase().replace(/ /g, ".")}@bloomholding.com`, initials: p.name.split(" ").map((w) => w[0]).join("") }));
   const APP_ORDER = ["salesforce", "uipath", "darwinbox", "sap"];
   const ROUTE = { tcdf: ["Mathew Raymond", "Omar Haddad", "Finance"], memo: ["Mathew Raymond", "Mariam Al Hashimi"], rfp: ["Mathew Raymond", "Omar Haddad", "Finance"] };
   let ibSeq = 0;
@@ -910,6 +959,7 @@
   const rq = (o) => ({ id: `rq${++ibSeq}`, ref: `BG-${++ibRef}`, details: "", ...o });
   const ib = {
     open: false, tab: "inbox", q: "", type: "all", sort: "urgent", returnFocus: null, fresh: null, focusKey: null,
+    rtypes: new Set(), status: "all", scope: "raised", sel: new Set(),
     items: [
       // drafts — "ago" is minutes since the last edit
       rq({ state: "draft", type: "tcdf", title: "Annual Service Agreement – Project Alpha", ago: 7200 }),
@@ -925,13 +975,19 @@
       rq({ state: "mine", type: "rfp", title: "Cloud Hosting Services – Tender", ago: 4320, status: "review", step: 3, steps: ROUTE.rfp }),
       rq({ state: "mine", type: "memo", title: "Budget Reallocation – Q4 Digital Initiatives", ago: 5760, status: "review", step: 1, steps: ROUTE.memo }),
       rq({ state: "mine", type: "tcdf", title: "Supply Agreement – Petromal Fleet Fuel", ago: 10080, status: "returned", step: 2, steps: ["Mathew Raymond", "Legal", "Finance"], note: "Legal sent this back: attach the signed quote, then resubmit." }),
+      rq({ state: "mine", type: "tcdf", title: "Consultancy Agreement – Marine Survey Partner", ago: 1440, status: "rfi", step: 2, steps: ROUTE.tcdf, rfi: { from: "Ankur Kushwaha", subject: "Need the SOW document" } }),
       // closed
       rq({ state: "history", type: "tcdf", title: "Service Agreement – Marriott Hotel Downtown Offsite", ago: 16000, closed: "12 Sep 2026", outcome: "approved", steps: ROUTE.tcdf }),
       rq({ state: "history", type: "memo", title: "Updated Travel Policy Rollout", ago: 20000, closed: "9 Sep 2026", outcome: "approved", steps: ROUTE.memo }),
       rq({ state: "history", type: "tcdf", title: "Equipment Lease – Survey Drones", ago: 30000, closed: "2 Sep 2026", outcome: "rejected", steps: ROUTE.tcdf }),
       rq({ state: "history", type: "tcdf", title: "Training Services – Brand Guidelines Workshop", ago: 37000, closed: "28 Aug 2026", outcome: "approved", steps: ROUTE.tcdf }),
       rq({ state: "history", type: "rfp", title: "Catering Services – Annual Town Hall", ago: 47000, closed: "21 Aug 2026", outcome: "withdrawn", steps: ROUTE.rfp }),
-      rq({ state: "history", type: "tcdf", title: "Consultancy Agreement – Data Security Review", ago: 57000, closed: "14 Aug 2026", outcome: "approved", steps: ROUTE.tcdf })
+      rq({ state: "history", type: "tcdf", title: "Consultancy Agreement – Data Security Review", ago: 57000, closed: "14 Aug 2026", outcome: "approved", steps: ROUTE.tcdf }),
+      // closed requests that were assigned to you — approving or rejecting an Inbox row adds to these
+      rq({ state: "history", scope: "assigned", app: "darwinbox", rtype: "Leave", title: "Annual Leave Request – 3 Aug to 7 Aug", ago: 9000, closed: "5 Oct 2026", outcome: "approved" }),
+      rq({ state: "history", scope: "assigned", app: "sap", rtype: "Purchase order", title: "Purchase Order Request for Vendor Payment – BluePeak Systems", ago: 14000, closed: "1 Oct 2026", outcome: "rejected", reason: "The vendor’s quote has expired. Please attach a current one." }),
+      rq({ state: "history", scope: "assigned", app: "salesforce", rtype: "Sale order cancellation", title: "Sale Order Cancellation – Al Noor Trading", ago: 21000, closed: "24 Sep 2026", outcome: "approved" }),
+      rq({ state: "history", scope: "assigned", app: "uipath", rtype: "Exception review", title: "Invoice exceptions – vendor contracts batch", ago: 33000, closed: "15 Sep 2026", outcome: "approved" })
     ]
   };
   const inboxEl = $("#inbox-page");
@@ -953,50 +1009,84 @@
     if (m < 43200) { const w = Math.round(m / 10080); return `${w} week${w === 1 ? "" : "s"} ago`; }
     const mo = Math.round(m / 43200); return `${mo} month${mo === 1 ? "" : "s"} ago`;
   }
-  function ibStatusPill(x) {
-    if (x.state === "mine") return x.status === "returned"
-      ? `<span class="ib-status ib-status--returned">${icon("i-return", "ico ico--xs")}Returned</span>`
-      : `<span class="ib-status ib-status--review">${icon("i-clock", "ico ico--xs")}In review</span>`;
-    if (x.state === "history") {
-      const o = { approved: ["i-check", "Approved"], rejected: ["i-x", "Rejected"], withdrawn: ["i-return", "Withdrawn"] }[x.outcome];
-      return `<span class="ib-status ib-status--${x.outcome}">${icon(o[0], "ico ico--xs")}${o[1]}</span>`;
+  const IB_OUT = { approved: ["i-check", "Approved"], rejected: ["i-x", "Rejected"], withdrawn: ["i-return", "Withdrawn"], forwarded: ["i-forward", "Forwarded"] };
+  function ibStatusPill(x, asButton = false) {
+    if (x.state === "mine") {
+      if (x.status === "returned") return `<span class="ib-status ib-status--returned">${icon("i-return", "ico ico--xs")}Returned</span>`;
+      if (x.status === "rfi") return asButton
+        ? `<button class="ib-status ib-status--rfi" type="button" data-ib="respond" title="${escapeHtml(x.rfi.from)} asked for more information">${icon("i-info", "ico ico--xs")}RFI</button>`
+        : `<span class="ib-status ib-status--rfi">${icon("i-info", "ico ico--xs")}RFI</span>`;
+      return `<span class="ib-status ib-status--review">${icon("i-clock", "ico ico--xs")}In progress</span>`;
     }
+    if (x.state === "history") { const o = IB_OUT[x.outcome]; return `<span class="ib-status ib-status--${x.outcome}">${icon(o[0], "ico ico--xs")}${o[1]}</span>`; }
     return "";
   }
 
   // Inbox rows come straight from the Attention list
   function ibTasks() {
     return taskRows().map((row, i) => ({
-      id: `task-${i}`, kind: "task", row, key: row.dataset.source, order: i,
+      id: `task-${i}`, kind: "task", row, key: row.dataset.source, order: i, rtype: row.dataset.rtype || "",
       title: $(".task__title", row).textContent, detail: $(".task__meta span", row).textContent,
-      done: row.classList.contains("is-done"), outcome: row.dataset.outcome
+      done: row.classList.contains("is-done"), outcome: row.dataset.outcome, rfi: row.classList.contains("is-rfi")
     }));
   }
-  const ibOf = (tab) => tab === "inbox" ? ibTasks() : ib.items.filter((x) => x.state === tab).map((x) => ({ ...x, kind: "req", key: x.type }));
-  const ibCount = (tab) => tab === "inbox" ? totalPending() : ib.items.filter((x) => x.state === tab).length;
+  const OUTCOME_KEY = { approve: "approved", reject: "rejected", forward: "forwarded" };
+  // What you have acted on: the seeded history plus every Inbox row you approve, reject or forward
+  function ibAssigned() {
+    const done = ibTasks().filter((x) => x.done).map((x) => ({
+      id: x.id, kind: "req", state: "history", scope: "assigned", app: x.key, key: x.key, rtype: x.rtype, title: x.title, ago: 0, closed: "Just now",
+      outcome: OUTCOME_KEY[x.outcome] || "approved", reason: x.row.dataset.reason || ""
+    }));
+    const seeded = ib.items.filter((x) => x.state === "history" && x.scope === "assigned").map((x) => ({ ...x, kind: "req", key: x.app }));
+    return [...done, ...seeded];
+  }
+  const ibRaised = () => ib.items.filter((x) => x.state === "history" && x.scope !== "assigned");
+  function ibOf(tab) {
+    if (tab === "inbox") return ibTasks();
+    if (tab === "history") return ib.scope === "assigned" ? ibAssigned() : ibRaised().map((x) => ({ ...x, kind: "req", key: x.type }));
+    return ib.items.filter((x) => x.state === tab).map((x) => ({ ...x, kind: "req", key: x.type }));
+  }
+  const ibCount = (tab) => tab === "inbox" ? totalPending() : tab === "history" ? ibRaised().length + ibAssigned().length : ib.items.filter((x) => x.state === tab).length;
   const ibKeyLabel = (k) => IB_TYPES[k]?.label || sourceNames[k] || k;
+  const ibStatusOf = (x) => x.state === "mine" ? x.status : x.outcome;
+  const ibStatusLabel = (k) => ([...IB_STATUS.mine, ...IB_STATUS.history].find(([v]) => v === k) || [])[1] || k;
+  const ibSelectable = (x) => x.kind === "task" && !x.done && !x.rfi;
 
   function ibVisible() {
     let list = ibOf(ib.tab);
     const all = list.length;
     if (ib.type !== "all") list = list.filter((x) => x.key === ib.type);
+    if (ib.rtypes.size) list = list.filter((x) => ib.rtypes.has(x.rtype));
+    if (ib.status !== "all") list = list.filter((x) => ibStatusOf(x) === ib.status);
     const q = ib.q.trim().toLowerCase();
-    if (q) list = list.filter((x) => `${x.title} ${x.detail || ""} ${x.note || ""} ${ibKeyLabel(x.key)} ${x.ref || ""}`.toLowerCase().includes(q));
+    if (q) list = list.filter((x) => `${x.title} ${x.detail || ""} ${x.note || ""} ${x.rtype || ""} ${ibKeyLabel(x.key)} ${x.ref || ""}`.toLowerCase().includes(q));
     const by = { urgent: (a, b) => a.order - b.order, new: (a, b) => a.ago - b.ago, old: (a, b) => b.ago - a.ago, az: (a, b) => a.title.localeCompare(b.title) }[ib.sort];
     return { list: list.sort(by), all };
   }
 
+  const ibCheck = (x) => ibSelectable(x)
+    ? `<label class="ib-check"><input type="checkbox" data-ib-sel${ib.sel.has(x.id) ? " checked" : ""}><span class="ib-check__box" aria-hidden="true"><svg class="ico ico--xs"><use href="#i-check"/></svg></span><span class="sr-only">Select ${escapeHtml(x.title)}</span></label>`
+    : `<span class="ib-check ib-check--off" aria-hidden="true"></span>`;
   function ibRowHTML(x, i, animate) {
-    const cls = `ib-row${x.done ? " is-done" : ""}${animate ? " is-in" : ""}${ib.fresh === x.id ? " is-new" : ""}`;
+    const cls = `ib-row${x.done ? " is-done" : ""}${animate ? " is-in" : ""}${ib.fresh === x.id ? " is-new" : ""}${x.kind === "task" ? " ib-row--sel" : ""}${ib.sel.has(x.id) ? " is-selected" : ""}`;
     const style = animate ? ` style="animation-delay:${Math.min(i, 10) * 45}ms"` : "";
     if (x.kind === "task") {
       const due = $(".due", x.row).outerHTML;
+      const o = x.outcome === "reject" ? ["rejected", "i-x", "Rejected"] : x.outcome === "forward" ? ["forwarded", "i-forward", "Forwarded"] : ["approved", "i-check", "Approved"];
+      const more = `<button class="task__more" type="button" data-ib="more" aria-haspopup="menu" aria-label="More actions for ${escapeHtml(x.title)}">&#8942;</button>`;
       const side = x.done
-        ? `<span class="ib-status ib-status--${x.outcome === "reject" ? "rejected" : "approved"}">${icon(x.outcome === "reject" ? "i-x" : "i-check", "ico ico--xs")}${x.outcome === "reject" ? "Rejected" : "Approved"}</span>`
-        : `${due}<div class="task__actions"><button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button><button class="task__more" type="button" data-ib="review" aria-label="Review ${escapeHtml(x.title)}">&#8942;</button></div>`;
-      return `<li class="${cls}"${style} data-id="${x.id}"><span class="app-mark app-mark--${sourceMarks[x.key]}">${x.key === "sap" ? "SAP" : sourceNames[x.key].slice(0, 2)}</span>
-        <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.key]}</span><span>${escapeHtml(x.detail)}</span></p></div>
+        ? `<span class="ib-status ib-status--${o[0]}">${icon(o[1], "ico ico--xs")}${o[2]}</span>`
+        : x.rfi
+        ? `${due}<div class="task__actions"><button class="ib-act ib-act--rfi" type="button" data-ib="rfi">${icon("i-info", "ico ico--xs")}Update RFI</button>${more}</div>`
+        : `${due}<div class="task__actions"><button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button>${more}</div>`;
+      return `<li class="${cls}"${style} data-id="${x.id}">${ibCheck(x)}<span class="app-mark app-mark--${sourceMarks[x.key]}">${x.key === "sap" ? "SAP" : sourceNames[x.key].slice(0, 2)}</span>
+        <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.key]}</span>${x.rtype ? `<span>${escapeHtml(x.rtype)}</span>` : ""}<span>${escapeHtml(x.detail)}</span></p></div>
         <div class="ib-row__side">${side}</div></li>`;
+    }
+    if (x.scope === "assigned") {
+      return `<li class="${cls}"${style} data-id="${x.id}"><span class="app-mark app-mark--${sourceMarks[x.app]}">${x.app === "sap" ? "SAP" : sourceNames[x.app].slice(0, 2)}</span>
+        <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.app]}</span><span>${escapeHtml(x.rtype)}</span><span>Closed ${x.closed}</span></p></div>
+        <div class="ib-row__side">${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button></div></li>`;
     }
     const t = IB_TYPES[x.type];
     let meta = "";
@@ -1005,11 +1095,12 @@
       meta = `<span>${ibAgo(x.ago)}</span>`;
       side = `<button class="ib-act ib-act--edit" type="button" data-ib="edit">${icon("i-edit", "ico ico--xs")}Edit</button><button class="ib-act ib-act--delete" type="button" data-ib="delete" aria-label="Delete draft ${escapeHtml(x.title)}">${icon("i-trash", "ico ico--xs")}Delete</button>`;
     } else if (x.state === "mine") {
-      const bars = x.steps.map((_, s) => `<i class="${s + 1 < x.step ? "is-done" : s + 1 === x.step ? (x.status === "returned" ? "is-returned" : "is-current") : ""}"></i>`).join("");
-      meta = `<span>Submitted ${ibAgo(x.ago)}</span><span><span class="ib-steps" aria-hidden="true">${bars}</span>Step ${x.step} of ${x.steps.length} · ${x.status === "returned" ? "Back with you" : `With ${escapeHtml(x.steps[x.step - 1])}`}</span>`;
-      side = `${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>` + (x.status === "returned"
+      const bars = x.steps.map((_, s) => `<i class="${s + 1 < x.step ? "is-done" : s + 1 === x.step ? (x.status === "returned" ? "is-returned" : x.status === "rfi" ? "is-rfi" : "is-current") : ""}"></i>`).join("");
+      const where = x.status === "returned" ? "Back with you" : x.status === "rfi" ? `${escapeHtml(x.rfi.from)} needs more information` : `With ${escapeHtml(x.steps[x.step - 1])}`;
+      meta = `<span>Submitted ${ibAgo(x.ago)}</span><span><span class="ib-steps" aria-hidden="true">${bars}</span>Step ${x.step} of ${x.steps.length} · ${where}</span>`;
+      side = `${ibStatusPill(x, true)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>` + (x.status === "returned"
         ? `<button class="ib-act ib-act--edit" type="button" data-ib="revise">${icon("i-edit", "ico ico--xs")}Revise</button>`
-        : `<button class="ib-act" type="button" data-ib="remind"${x.reminded ? " disabled" : ""}>${icon("i-bellring", "ico ico--xs")}${x.reminded ? "Reminded" : "Remind"}</button>`);
+        : x.status === "rfi" ? "" : `<button class="ib-act" type="button" data-ib="remind"${x.reminded ? " disabled" : ""}>${icon("i-bellring", "ico ico--xs")}${x.reminded ? "Reminded" : "Remind"}</button>`);
     } else {
       meta = `<span>Closed ${x.closed}</span>`;
       side = `${ibStatusPill(x)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button><button class="ib-act" type="button" data-ib="duplicate">${icon("i-copy", "ico ico--xs")}Duplicate</button>`;
@@ -1031,25 +1122,25 @@
   function ibStat() {
     const T = IB_TABS[ib.tab];
     $("#ib-stat-icon use").setAttribute("href", `#${T.icon}`);
-    $("#ib-stat-label").textContent = T.stat;
-    ibNum(ibStatNum, ibCount(ib.tab));
+    $("#ib-stat-label").textContent = ib.tab === "history" && ib.scope === "assigned" ? "Acted on" : T.stat;
+    ibNum(ibStatNum, ib.tab === "history" ? ibOf("history").length : ibCount(ib.tab));
     let sub = "";
     if (ib.tab === "inbox") {
       const open = ibTasks().filter((x) => !x.done);
       const overdue = open.filter((x) => $(".due--overdue", x.row)).length;
       const today = open.filter((x) => $(".due--today", x.row)).length;
-      sub = `${overdue} overdue · ${today} due today · across ${APP_ORDER.filter((a) => counts[a]).length} apps`;
+      sub = `${overdue} overdue · ${today} due today · average action time 1 hr 35 mins`;
     } else if (ib.tab === "draft") {
       const d = ib.items.filter((x) => x.state === "draft");
       sub = d.length ? `Last edited ${ibAgo(Math.min(...d.map((x) => x.ago)))}` : "No drafts — start one with New request";
     } else if (ib.tab === "mine") {
       const m = ib.items.filter((x) => x.state === "mine");
-      const back = m.filter((x) => x.status === "returned").length;
-      sub = `${m.length - back} in review · ${back} returned to you`;
+      const n = (st) => m.filter((x) => x.status === st).length;
+      sub = `${n("review")} in progress · ${n("rfi")} need${n("rfi") === 1 ? "s" : ""} information · ${n("returned")} returned`;
     } else {
-      const h = ib.items.filter((x) => x.state === "history");
+      const h = ibOf("history");
       const n = (o) => h.filter((x) => x.outcome === o).length;
-      sub = `${n("approved")} approved · ${n("rejected")} rejected · ${n("withdrawn")} withdrawn`;
+      sub = ib.scope === "assigned" ? `${n("approved")} approved · ${n("rejected")} rejected · ${n("forwarded")} forwarded` : `${n("approved")} approved · ${n("rejected")} rejected · ${n("withdrawn")} withdrawn`;
     }
     $("#ib-stat-sub").textContent = sub;
   }
@@ -1058,15 +1149,17 @@
   // Each app and each type keeps its own colour slot (validated as a set).
   const DONUT_R = 52, DONUT_C = 2 * Math.PI * DONUT_R, DONUT_GAP = 2.5;
   const IB_APP_SLOTS = { salesforce: 1, darwinbox: 2, uipath: 3, sap: 4 };
+  const ibByApp = () => ib.tab === "inbox" || (ib.tab === "history" && ib.scope === "assigned");
   function ibSlices() {
     if (ib.tab === "inbox") return { total: totalPending(), slices: APP_ORDER.map((a) => ({ key: a, label: sourceNames[a], slot: IB_APP_SLOTS[a], v: counts[a], mark: sourceMarks[a] })) };
-    const items = ib.items.filter((x) => x.state === ib.tab);
-    return { total: items.length, slices: Object.entries(IB_TYPES).map(([k, t]) => ({ key: k, label: t.label, slot: t.slot, v: items.filter((x) => x.type === k).length })) };
+    const items = ibOf(ib.tab);
+    if (ibByApp()) return { total: items.length, slices: APP_ORDER.map((a) => ({ key: a, label: sourceNames[a], slot: IB_APP_SLOTS[a], v: items.filter((x) => x.key === a).length, mark: sourceMarks[a] })) };
+    return { total: items.length, slices: Object.entries(IB_TYPES).map(([k, t]) => ({ key: k, label: t.label, slot: t.slot, v: items.filter((x) => x.key === k).length })) };
   }
   function ibChart() {
-    $("#ib-chart-title").textContent = IB_TABS[ib.tab].chart;
+    $("#ib-chart-title").textContent = ib.tab === "history" && ib.scope === "assigned" ? "Acted on by app" : IB_TABS[ib.tab].chart;
     const { total, slices } = ibSlices();
-    const set = ib.tab === "inbox" ? "apps" : "types";
+    const set = ibByApp() ? "apps" : "types";
     if (!ibPlot.querySelector(".ib-donut") || ibPlot.dataset.set !== set) {
       ibPlot.dataset.set = set;
       ibPlot.innerHTML = `<div class="ib-donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="ib-donut__track" cx="66" cy="66" r="${DONUT_R}"/>${slices.map((x) => `<circle class="ib-donut__seg" data-key="${x.key}" cx="66" cy="66" r="${DONUT_R}" style="--c: var(--viz-${x.slot}); stroke-dasharray: 0 ${DONUT_C}"/>`).join("")}</svg><div class="ib-donut__center"><p class="ib-donut__num"></p><p class="ib-donut__lbl"></p></div></div>`;
@@ -1096,17 +1189,52 @@
     $(".ib-donut__lbl", donut).textContent = hit ? hit.label : IB_TABS[ib.tab].unit;
   }
 
+  const ibChips = (el, rows, isOn, attr) => { el.innerHTML = rows.map(([k, l]) => `<button class="chip${isOn(k) ? " is-selected" : ""}" type="button" aria-pressed="${isOn(k)}" ${attr}="${escapeHtml(k)}">${escapeHtml(l)}</button>`).join(""); };
   function ibControls() {
-    const keys = ib.tab === "inbox" ? APP_ORDER : Object.keys(IB_TYPES);
-    ibTypeChips.innerHTML = [["all", "All"], ...keys.map((k) => [k, ibKeyLabel(k)])].map(([k, l]) => `<button class="chip${ib.type === k ? " is-selected" : ""}" type="button" aria-pressed="${ib.type === k}" data-type="${k}">${escapeHtml(l)}</button>`).join("");
-    $("#ib-type-label").textContent = ib.tab === "inbox" ? "App" : "Request type";
+    const keys = ibByApp() ? APP_ORDER : Object.keys(IB_TYPES);
+    ibChips(ibTypeChips, [["all", "All"], ...keys.map((k) => [k, ibKeyLabel(k)])], (k) => ib.type === k, "data-type");
+    $("#ib-type-label").textContent = ibByApp() ? "App" : "Request type";
+    // inbox rows and assigned history carry a request type (Leave, Purchase order…)
+    const rtypes = ibByApp() ? [...new Set(ibOf(ib.tab).map((x) => x.rtype).filter(Boolean))].sort() : [];
+    $("#ib-rtype-group").hidden = !rtypes.length;
+    ibChips($("#ib-rtype-chips"), rtypes.map((r) => [r, r]), (k) => ib.rtypes.has(k), "data-rtype");
+    const sts = IB_STATUS[ib.tab];
+    $("#ib-status-group").hidden = !sts;
+    if (sts) ibChips($("#ib-status-chips"), [["all", "All"], ...sts.filter(([v]) => ib.scope !== "assigned" || v !== "withdrawn").filter(([v]) => ib.scope === "assigned" || v !== "forwarded")], (k) => ib.status === k, "data-status");
     const sorts = ib.tab === "inbox" ? IB_SORTS.inbox : IB_SORTS.other;
-    ibSortChips.innerHTML = sorts.map(([k, l]) => `<button class="chip${ib.sort === k ? " is-selected" : ""}" type="button" aria-pressed="${ib.sort === k}" data-sort="${k}">${l}</button>`).join("");
-    const n = (ib.type !== "all" ? 1 : 0) + (ib.sort !== sorts[0][0] ? 1 : 0);
+    ibChips(ibSortChips, sorts, (k) => ib.sort === k, "data-sort");
+    const n = (ib.type !== "all" ? 1 : 0) + (ib.sort !== sorts[0][0] ? 1 : 0) + ib.rtypes.size + (ib.status !== "all" ? 1 : 0);
     const badge = $("#ib-filter-count");
     badge.hidden = !n;
     badge.textContent = n;
     $("#ib-filter-btn").setAttribute("aria-label", n ? `Filter, ${n} active` : "Filter");
+  }
+
+  const IB_EMPTY = {
+    inbox: ["i-check", "All caught up!", "You have no pending requests. New approval requests will appear here when they require your action."],
+    draft: ["i-edit", "No draft requests", "Requests you’ve started but haven’t submitted yet will appear here after you save them as drafts."],
+    mine: ["i-send", "Ready to get started?", "Get started by creating your first request. Once submitted, you can track its progress here."],
+    history: ["i-archive", "No request history", "Completed requests and requests you’ve reviewed or acted on will appear here."]
+  };
+  // the bulk bar replaces the column header while rows are ticked
+  function ibBulk() {
+    const sel = [...ib.sel].filter((id) => ibTasks().some((x) => x.id === id && ibSelectable(x)));
+    ib.sel = new Set(sel);
+    const rows = ib.tab === "inbox" ? ibVisible().list.filter(ibSelectable) : [];
+    $("#ib-bulk").hidden = !sel.length || ib.tab !== "inbox";
+    $("#ib-head").hidden = !$("#ib-bulk").hidden;
+    $("#ib-all-wrap").hidden = ib.tab !== "inbox" || !rows.length;
+    $("#ib-head").classList.toggle("has-all", ib.tab === "inbox" && !!rows.length);
+    $("#ib-bulk-n").textContent = sel.length;
+    const all = $("#ib-all");
+    all.checked = !!rows.length && rows.every((x) => ib.sel.has(x.id));
+    all.indeterminate = !all.checked && rows.some((x) => ib.sel.has(x.id));
+    $$(".ib-row", ibList).forEach((li) => {
+      const on = ib.sel.has(li.dataset.id);
+      li.classList.toggle("is-selected", on);
+      const cb = $("[data-ib-sel]", li);
+      if (cb) cb.checked = on;
+    });
   }
 
   function renderIb({ animate = false } = {}) {
@@ -1119,11 +1247,17 @@
     ibList.setAttribute("aria-labelledby", `ib-tab-${ib.tab}`);
     const empty = $("#ib-empty");
     empty.hidden = list.length > 0;
+    $("#ib-scope").hidden = ib.tab !== "history";
+    if (ib.tab === "history") $$("#ib-scope .chip").forEach((c) => { const on = c.dataset.scope === ib.scope; c.classList.toggle("is-selected", on); c.setAttribute("aria-pressed", String(on)); });
     if (!list.length) {
-      const filtered = ib.q.trim() || ib.type !== "all";
-      $("#ib-empty-title").textContent = filtered ? "Nothing matches" : `No ${IB_TABS[ib.tab].unit} right now`;
-      $("#ib-empty-text").textContent = filtered ? "Try another word, pick a different type, or clear the filters." : ib.tab === "draft" ? "Start one with New request." : "You’re all caught up.";
+      const filtered = ib.q.trim() || ib.type !== "all" || ib.rtypes.size || ib.status !== "all";
+      const E = IB_EMPTY[ib.tab];
+      $("#ib-empty-icon use").setAttribute("href", filtered ? "#i-search" : `#${E[0]}`);
+      $("#ib-empty-title").textContent = filtered ? "Nothing matches" : E[1];
+      $("#ib-empty-text").textContent = filtered ? "Try another word, pick a different type, or clear the filters." : E[2];
+      $("#ib-empty-cta").hidden = filtered || (ib.tab !== "mine" && ib.tab !== "draft");
     }
+    ibBulk();
     const more = ib.tab === "inbox" ? ` · the ${totalPending()} total includes items you open in each app` : "";
     $("#ib-showing").textContent = `Showing ${list.length} of ${all}${more}`;
     ib.fresh = null;
@@ -1134,7 +1268,7 @@
     if (!IB_TABS[tab]) return;
     const changed = tab !== ib.tab;
     ib.tab = tab;
-    if (changed) { ib.type = "all"; ib.sort = tab === "inbox" ? "urgent" : "new"; ib.focusKey = null; ibPlot.innerHTML = ""; }
+    if (changed) { ib.type = "all"; ib.rtypes.clear(); ib.status = "all"; ib.sel.clear(); ib.sort = tab === "inbox" ? "urgent" : "new"; ib.focusKey = null; ibPlot.innerHTML = ""; ibPopClose(); }
     $$(".tab", ibTabs).forEach((t) => {
       const on = t.dataset.ibTab === tab;
       t.classList.toggle("is-selected", on);
@@ -1168,6 +1302,7 @@
   function closeInbox() {
     if (!ib.open) return;
     ib.open = false;
+    ibPopClose();
     inboxEl.classList.remove("is-open");
     inboxEl.setAttribute("aria-hidden", "true");
     closeMenus();
@@ -1202,7 +1337,11 @@
   const ibPickType = (k) => { ib.type = ib.type === k ? "all" : k; ib.focusKey = null; renderIb({ animate: true }); };
   ibTypeChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.type = c.dataset.type; renderIb({ animate: true }); } });
   ibSortChips.addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.sort = c.dataset.sort; renderIb({ animate: true }); } });
-  $("#ib-clear").addEventListener("click", () => { ib.type = "all"; ib.sort = ib.tab === "inbox" ? "urgent" : "new"; ib.q = ""; ibSearch.value = ""; renderIb({ animate: true }); });
+  $("#ib-rtype-chips").addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (!c) return; const k = c.dataset.rtype; ib.rtypes.has(k) ? ib.rtypes.delete(k) : ib.rtypes.add(k); renderIb({ animate: true }); });
+  $("#ib-status-chips").addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (c) { ib.status = c.dataset.status; renderIb({ animate: true }); } });
+  $("#ib-clear").addEventListener("click", () => { ib.type = "all"; ib.rtypes.clear(); ib.status = "all"; ib.sort = ib.tab === "inbox" ? "urgent" : "new"; ib.q = ""; ibSearch.value = ""; renderIb({ animate: true }); });
+  $("#ib-show").addEventListener("click", () => { closeMenus(); $("#ib-filter-btn").focus(); });
+  $("#ib-scope").addEventListener("click", (e) => { const c = e.target.closest(".chip"); if (!c || c.dataset.scope === ib.scope) return; ib.scope = c.dataset.scope; ib.type = "all"; ib.rtypes.clear(); ib.status = "all"; ib.focusKey = null; ibPlot.innerHTML = ""; renderIb({ animate: true }); });
   // the chart is also a filter: pick a slice or a legend row
   ibPlot.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
   ibLegend.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) ibPickType(b.dataset.key); });
@@ -1219,22 +1358,192 @@
     toast(`Reminder sent to ${x.steps[x.step - 1]}`, "i-bellring");
     if (ib.open) renderIb();
   }
+
+  /* ---------------------------------------------------------------
+     Requests flow — approve / reject / request more info / forward /
+     delete / respond all share one dialog. Nothing is sent anywhere.
+     --------------------------------------------------------------- */
+  const flowModal = $("#flow-modal");
+  const flowForm = $("#flow-form");
+  function flow(o) {
+    flowForm.innerHTML = `<span class="flow__art${o.tone ? ` flow__art--${o.tone}` : ""}" aria-hidden="true">${icon(o.ico || "i-info")}</span>
+      <h2 class="h3 flow__title" id="flow-title">${o.title}</h2>
+      ${o.text ? `<p class="flow__text">${o.text}</p>` : ""}
+      ${o.body ? `<div class="flow__body">${o.body}</div>` : ""}
+      <div class="modal__foot"><button class="btn btn--ghost" type="button" data-flow-cancel>Cancel</button><button class="btn ${o.danger ? "btn--danger" : "btn--primary"}" type="submit" id="flow-ok">${o.confirm}</button></div>`;
+    flowForm.onsubmit = (e) => { e.preventDefault(); if (o.validate && o.validate() === false) return; flowModal.close(); o.done && o.done(); };
+    $("[data-flow-cancel]", flowForm).onclick = () => flowModal.close();
+    flowForm.oninput = (e) => { const el = e.target, err = el.id && $(`#${el.id}-err`, flowForm); if (err && el.value.trim()) { err.hidden = true; el.setAttribute("aria-invalid", "false"); } };
+    if (o.setup) o.setup();
+    flowModal.showModal();
+    $(o.focus || "#flow-ok", flowForm).focus();
+  }
+  const flowField = (id, label, extra = "") => `<div class="field"><label class="field__label" for="${id}">${label} <span class="sp__req" aria-hidden="true">*</span></label>${extra}<p class="field__error" id="${id}-err" role="alert" hidden></p></div>`;
+  const flowCheck = (id, msg) => { const el = $("#" + id); const bad = !el.value.trim(); $(`#${id}-err`).hidden = !bad; $(`#${id}-err`).textContent = msg; el.setAttribute("aria-invalid", String(bad)); if (bad) el.focus(); return !bad; };
+
+  // Pick a person by name or email
+  const peopleHTML = () => `<div class="field"><label class="ib-search flow__search"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg><input id="fl-who" type="search" placeholder="Search by name &amp; email" autocomplete="off" aria-label="Search people"></label><div class="who" id="fl-people" role="listbox" aria-label="People"></div><p class="field__error" id="fl-who-err" role="alert" hidden>Choose a person.</p></div>`;
+  function peopleBind(pick) {
+    const input = $("#fl-who"), list = $("#fl-people");
+    const paint = () => {
+      const q = input.value.trim().toLowerCase();
+      const rows = PEOPLE.filter((p) => `${p.name} ${p.email}`.toLowerCase().includes(q));
+      list.innerHTML = rows.length ? rows.map((p) => `<button class="who__row" type="button" role="option" aria-selected="${pick.name === p.name}" data-name="${escapeHtml(p.name)}"><span class="who__av" aria-hidden="true">${p.initials}</span><span class="who__txt"><b>${p.name}</b><small>${p.role}</small></span>${icon("i-check", "ico ico--sm who__tick")}</button>`).join("") : `<p class="who__none">No one found for “${escapeHtml(input.value)}”.</p>`;
+    };
+    input.addEventListener("input", paint);
+    list.addEventListener("click", (e) => { const b = e.target.closest("[data-name]"); if (!b) return; pick.name = b.dataset.name; $("#fl-who-err").hidden = true; paint(); });
+    paint();
+  }
+
+  // File picker used by the respond dialog (same limits as Help & support)
+  const attachHTML = () => `<div class="sp__attach"><input id="fl-file" class="sr-only" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"><label class="sp__drop" for="fl-file"><span class="sp__drop-ico">${icon("i-upload")}</span><span><strong>Add attachment</strong><small>PDF, JPG, PNG or DOC, up to 15 MB each. Max 5 files.</small></span></label><p class="field__error" id="fl-file-err" role="alert" hidden></p><ul class="sp__files" id="fl-files" role="list"></ul></div>`;
+  function attachBind(input, list, err) {
+    const files = [];
+    const ext = (f) => f.name.split(".").pop().toLowerCase().replace("jpeg", "jpg").replace("docx", "doc");
+    const paint = () => { list.innerHTML = files.map((f, i) => `<li class="sp-file"><span class="sp-file__ico sp-file__ico--${ext(f)}">${icon("i-doc")}<b>${ext(f).toUpperCase()}</b></span><span class="sp-file__name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><button class="sp-file__x" type="button" data-i="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-x", "ico ico--sm")}</button></li>`).join(""); };
+    input.addEventListener("change", () => {
+      const problems = [];
+      [...input.files].forEach((f) => {
+        if (!SP_TYPES.includes(f.name.split(".").pop().toLowerCase())) problems.push(`${f.name} isn’t a PDF, JPG, PNG or DOC file.`);
+        else if (f.size > SP_BYTES) problems.push(`${f.name} is over 15 MB.`);
+        else if (files.length >= SP_MAX) { if (!problems.some((p) => p.includes("5 files"))) problems.push("You can add up to 5 files."); }
+        else files.push(f);
+      });
+      input.value = "";
+      err.hidden = !problems.length; err.textContent = problems.join(" ");
+      paint();
+    });
+    list.addEventListener("click", (e) => { const x = e.target.closest(".sp-file__x"); if (x) { files.splice(+x.dataset.i, 1); err.hidden = true; paint(); } });
+  }
+
+  function confirmApprove(rows) {
+    rows = rows.filter((r) => r && !r.classList.contains("is-done"));
+    if (!rows.length) return;
+    const n = rows.length;
+    flow({
+      ico: "i-check", tone: "ok", title: n > 1 ? "Approve selected requests?" : "Approve request",
+      text: n > 1 ? `You are about to approve ${n} selected requests.` : "Are you sure you want to approve this request?",
+      body: n === 1 ? `<p class="flow__ref">${escapeHtml($(".task__title", rows[0]).textContent)}</p>` : "",
+      confirm: n > 1 ? "Approve all" : "Approve",
+      done: () => {
+        rows.forEach((r) => quickResolve(r, "approve", { silent: true }));
+        ib.sel.clear(); if (ib.open) renderIb();
+        toast(n > 1 ? `${n} requests have been successfully approved.` : "The request has been successfully approved.", "i-check");
+      }
+    });
+  }
+  function confirmReject(row) {
+    if (!row || row.classList.contains("is-done")) return;
+    flow({
+      ico: "i-x", tone: "bad", title: "Reject request", text: "Are you sure you want to reject the request? Please share the reason for rejection.",
+      body: `<p class="flow__ref">${escapeHtml($(".task__title", row).textContent)}</p>${flowField("fl-reason", "Reason for rejection", `<textarea id="fl-reason" rows="3" placeholder="Enter rejection reason"></textarea>`)}`,
+      confirm: "Reject", danger: true, focus: "#fl-reason",
+      validate: () => flowCheck("fl-reason", "Add a reason so the requester knows what to change."),
+      done: () => { quickResolve(row, "reject", { silent: true, reason: $("#fl-reason").value.trim() }); toast("The request has been successfully rejected.", "i-x"); }
+    });
+  }
+  function markRfi(row) {
+    row.classList.add("is-rfi");
+    const acts = $(".task__actions", row);
+    if (acts && !$(".task__rfi", acts)) acts.insertAdjacentHTML("afterbegin", `<button class="task__rfi" type="button" data-rfi-update>${icon("i-info", "ico ico--xs")}Update RFI</button>`);
+  }
+  function openRfi(row) {
+    if (!row || row.classList.contains("is-done")) return;
+    const pick = { name: row.dataset.rfiTo || "" };
+    const editing = !!pick.name;
+    flow({
+      ico: "i-info", title: editing ? "Update RFI" : "Request more information", text: "Please specify the additional information required to proceed with this request.",
+      body: `<p class="flow__ref">${escapeHtml($(".task__title", row).textContent)}</p>${peopleHTML()}${flowField("fl-msg", "Your message", `<textarea id="fl-msg" rows="4" placeholder="Type your message"></textarea>`)}`,
+      confirm: editing ? "Update" : "Submit", focus: "#fl-who",
+      setup: () => { peopleBind(pick); $("#fl-msg").value = row.dataset.rfiMsg || ""; },
+      validate: () => { $("#fl-who-err").hidden = !!pick.name; if (!pick.name) { $("#fl-who").focus(); return false; } return flowCheck("fl-msg", "Tell them what you need."); },
+      done: () => {
+        row.dataset.rfiTo = pick.name; row.dataset.rfiMsg = $("#fl-msg").value.trim();
+        markRfi(row); ib.sel.delete(`task-${taskRows().indexOf(row)}`);
+        toast(editing ? "Your request for additional information has been updated." : "Your request for additional information has been sent successfully.", "i-info");
+        if (ib.open) renderIb();
+      }
+    });
+  }
+  function openForward(row) {
+    if (!row || row.classList.contains("is-done")) return;
+    const pick = { name: "" };
+    flow({
+      ico: "i-forward", title: "Forward request", text: "Select another approver to review and approve this request.",
+      body: `<p class="flow__ref">${escapeHtml($(".task__title", row).textContent)}</p>${peopleHTML()}`,
+      confirm: "Forward", focus: "#fl-who", setup: () => peopleBind(pick),
+      validate: () => { $("#fl-who-err").hidden = !!pick.name; if (!pick.name) { $("#fl-who").focus(); return false; } },
+      done: () => { row.dataset.forwardTo = pick.name; quickResolve(row, "forward", { silent: true }); ib.sel.clear(); if (ib.open) renderIb(); toast("The request has been forwarded to the next approver.", "i-forward"); }
+    });
+  }
+  function confirmDelete(x) {
+    flow({
+      ico: "i-trash", tone: "bad", title: "Delete request", text: "Are you sure you want to delete the request?",
+      body: `<p class="flow__ref">${escapeHtml(x.title)}</p>`, confirm: "Delete", danger: true,
+      done: () => { ib.items = ib.items.filter((y) => y !== x); renderIb(); toast("Draft deleted", "i-trash"); }
+    });
+  }
+  // A request of yours is waiting on information somebody asked for
+  function openRespond(x) {
+    if (!x || !x.rfi) return;
+    flow({
+      ico: "i-info", title: "Request more information", text: `RFI requestor: <b>${escapeHtml(x.rfi.from)}</b>`,
+      body: `<p class="flow__ref"><span>RFI</span>${escapeHtml(x.rfi.subject)}</p>${flowField("fl-msg", "Type your message", `<textarea id="fl-msg" rows="4"></textarea>`)}${attachHTML()}`,
+      confirm: "Submit", focus: "#fl-msg", setup: () => attachBind($("#fl-file"), $("#fl-files"), $("#fl-file-err")),
+      validate: () => flowCheck("fl-msg", "Write a short reply."),
+      done: () => { x.status = "review"; x.rfi = null; toast("Your response has been sent successfully.", "i-check"); renderIb(); }
+    });
+  }
+
+  // The ⋮ menu on an Inbox row
+  const ibPop = document.createElement("div");
+  ibPop.className = "ib-pop"; ibPop.setAttribute("role", "menu"); ibPop.hidden = true;
+  function ibPopClose() {
+    if (ibPop.hidden) return false;
+    ibPop.hidden = true; ibPop.remove();
+    if (ibPop.owner && ibPop.owner.isConnected) ibPop.owner.setAttribute("aria-expanded", "false");
+    return true;
+  }
+  function ibPopOpen(btn) {
+    ibPopClose();
+    ibPop.owner = btn; btn.setAttribute("aria-expanded", "true");
+    ibPop.innerHTML = `<button type="button" role="menuitem" data-pop="review">${icon("i-eye", "ico ico--sm")}Review details</button><button type="button" role="menuitem" data-pop="rfi">${icon("i-info", "ico ico--sm")}Request more info</button><button type="button" role="menuitem" data-pop="forward">${icon("i-forward", "ico ico--sm")}Forward</button>`;
+    btn.closest(".ib-row").appendChild(ibPop);
+    ibPop.hidden = false;
+    $("button", ibPop).focus();
+  }
+  document.addEventListener("click", (e) => { if (!ibPop.hidden && !e.target.closest(".ib-pop, [data-ib='more']")) ibPopClose(); });
+  ibPop.addEventListener("keydown", (e) => {
+    const items = $$("button", ibPop), i = items.indexOf(document.activeElement);
+    const d = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+    if (d) { e.preventDefault(); items[(i + d + items.length) % items.length].focus(); }
+    if (e.key === "Tab") ibPopClose();
+  });
+
   ibList.addEventListener("click", (e) => {
-    const btn = e.target.closest("[data-ib]");
+    const pop = e.target.closest("[data-pop]");
+    const btn = pop || e.target.closest("[data-ib]");
     if (!btn) return;
     const li = btn.closest(".ib-row");
-    const act = btn.dataset.ib;
-    if (li.dataset.id.startsWith("task-")) {
+    const act = pop ? pop.dataset.pop : btn.dataset.ib;
+    if (li.classList.contains("ib-row--sel")) {
       const row = taskRows()[Number(li.dataset.id.slice(5))];
+      if (act === "more") { if (ibPop.owner === btn && !ibPop.hidden) ibPopClose(); else ibPopOpen(btn); return; }
+      const owner = ibPop.owner;
+      ibPopClose();
       if (act === "review") openDrawer("task", row);
-      else quickResolve(row, act);
+      else if (act === "approve") confirmApprove([row]);
+      else if (act === "reject") confirmReject(row);
+      else if (act === "rfi") openRfi(row);
+      else if (act === "forward") openForward(row);
       return;
     }
-    const x = ibFind(li.dataset.id);
+    const x = ibFind(li.dataset.id) || ibAssigned().find((y) => y.id === li.dataset.id);
     if (!x) return;
     if (act === "edit") openRequestForm(x, x.state === "draft" ? "edit" : "revise");
     else if (act === "revise") openRequestForm(x, "revise");
-    else if (act === "view") openDrawer("request", x);
+    else if (act === "view") openDrawer(x.scope === "assigned" ? "assigned" : "request", x);
+    else if (act === "respond") openRespond(x);
     else if (act === "remind") ibRemind(x);
     else if (act === "duplicate") {
       const copy = rq({ state: "draft", type: x.type, title: `${x.title} (copy)`, details: x.details, ago: 0 });
@@ -1243,78 +1552,161 @@
       renderIb();
       const draftTab = $('[data-ib-tab="draft"] .tab__count', ibTabs);
       if (!reduceMotion) draftTab.animate([{ transform: "scale(1.6)" }, { transform: "none" }], { duration: 500, easing: "cubic-bezier(.34,1.56,.64,1)" });
-    } else if (act === "delete") {
-      if (!btn.classList.contains("is-confirm")) {
-        btn.classList.add("is-confirm");
-        btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Confirm`;
-        btn.setAttribute("aria-label", `Confirm: delete ${x.title}`);
-        setTimeout(() => { if (btn.isConnected && btn.classList.contains("is-confirm")) { btn.classList.remove("is-confirm"); btn.innerHTML = `${icon("i-trash", "ico ico--xs")}Delete`; btn.setAttribute("aria-label", `Delete draft ${x.title}`); } }, 3200);
-        return;
-      }
-      const done = () => { ib.items = ib.items.filter((y) => y !== x); renderIb(); toast("Draft deleted", "i-trash"); };
-      if (reduceMotion || !li.animate) { done(); return; }
-      li.style.overflow = "hidden";
-      li.animate([{ height: `${li.offsetHeight}px`, opacity: 1 }, { height: "0px", opacity: 0, paddingTop: "0px", paddingBottom: "0px", marginBottom: "-10px" }], { duration: 380, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).onfinish = done;
-    }
+    } else if (act === "delete") confirmDelete(x);
   });
+  // Select rows and approve them together
+  ibList.addEventListener("change", (e) => {
+    const cb = e.target.closest("[data-ib-sel]");
+    if (!cb) return;
+    const id = cb.closest(".ib-row").dataset.id;
+    cb.checked ? ib.sel.add(id) : ib.sel.delete(id);
+    ibBulk();
+  });
+  $("#ib-all").addEventListener("change", (e) => {
+    const rows = ibVisible().list.filter(ibSelectable);
+    rows.forEach((x) => (e.target.checked ? ib.sel.add(x.id) : ib.sel.delete(x.id)));
+    ibBulk();
+  });
+  $("#ib-bulk-clear").addEventListener("click", () => { ib.sel.clear(); ibBulk(); $("#ib-all").focus(); });
+  $("#ib-bulk-approve").addEventListener("click", () => confirmApprove([...ib.sel].map((id) => taskRows()[Number(id.slice(5))])));
+  $("#ib-empty-cta").addEventListener("click", () => openRequestForm());
 
-  /* New request / edit draft / revise — a native dialog above the inbox */
+  /* New request — pick a type, fill in the details, review, send */
+  const rqp = $("#rq-pick");
+  const rqpList = $("#rqp-list");
+  const rqpSearch = $("#rqp-search");
+  const rqpGo = $("#rqp-go");
+  let rqpPick = null;
+  function rqpRender() {
+    const q = rqpSearch.value.trim().toLowerCase();
+    const rows = REQUEST_TYPES.filter((d) => `${d.label} ${d.app ? sourceNames[d.app] : "Bloom"}`.toLowerCase().includes(q));
+    let html = "", grp = "";
+    rows.forEach((d) => {
+      const g = d.own ? "Bloom workflows" : `Created in ${sourceNames[d.app]}`;
+      if (g !== grp) { grp = g; html += `<p class="rqp__group" role="presentation">${g}</p>`; }
+      const lead = d.own ? `<span class="rqp__dot" style="--c: var(--viz-${IB_TYPES[d.key].slot})"></span>` : `<span class="app-mark app-mark--${sourceMarks[d.app]}" aria-hidden="true">${d.app === "sap" ? "SAP" : sourceNames[d.app].slice(0, 2)}</span>`;
+      html += `<button class="rqp__opt" type="button" role="option" aria-selected="${rqpPick === d.key}" data-key="${d.key}">${lead}<span>${escapeHtml(d.label)}</span>${icon("i-check", "ico ico--sm rqp__tick")}</button>`;
+    });
+    rqpList.innerHTML = html;
+    rqpList.hidden = !rows.length;
+    $("#rqp-none").hidden = rows.length > 0;
+    rqpGo.disabled = !rqpPick;
+  }
+  function openRqPick() {
+    rqpPick = null; rqpSearch.value = ""; rqpRender();
+    rqp.showModal();
+    rqpSearch.focus();
+  }
+  const rqpProceed = () => { if (!rqpPick) return; const d = REQUEST_TYPES.find((x) => x.key === rqpPick); rqp.close(); rqStart(d); };
+  rqpSearch.addEventListener("input", rqpRender);
+  rqpList.addEventListener("click", (e) => { const b = e.target.closest("[data-key]"); if (b) { rqpPick = b.dataset.key; rqpRender(); rqpList.querySelector(`[data-key="${rqpPick}"]`).focus(); } });
+  rqpList.addEventListener("dblclick", (e) => { if (e.target.closest("[data-key]")) rqpProceed(); });
+  $("#rqp-form").addEventListener("submit", (e) => { e.preventDefault(); rqpProceed(); });
+  $("#rqp-cancel").addEventListener("click", () => rqp.close());
+
   const rqModal = $("#request-modal");
   const rqForm = $("#request-form");
-  const rqName = $("#rq-name");
-  const rqDetails = $("#rq-details");
-  const rqTypes = $("#rq-types");
+  const rqBody = $("#rq-body");
   const rqDraftBtn = $("#rq-draft");
-  let rqEditing = null;
-  let rqMode = "new";
-  let rqType = "tcdf";
-  rqTypes.setAttribute("role", "radiogroup");
-  rqTypes.setAttribute("aria-label", "Request type");
-  rqTypes.innerHTML = Object.entries(IB_TYPES).map(([k, t]) => `<button class="rq-type" type="button" role="radio" aria-checked="false" data-type="${k}" style="--c: var(--viz-${t.slot})">${t.label}</button>`).join("");
-  const rqSetType = (k, focus) => {
-    rqType = k;
-    $$(".rq-type", rqTypes).forEach((b) => { const on = b.dataset.type === k; b.setAttribute("aria-checked", String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
-  };
-  rqTypes.addEventListener("click", (e) => { const b = e.target.closest(".rq-type"); if (b) rqSetType(b.dataset.type); });
-  rqTypes.addEventListener("keydown", (e) => {
-    const keys = Object.keys(IB_TYPES);
-    const d = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
-    if (!d) return;
-    e.preventDefault();
-    rqSetType(keys[(keys.indexOf(rqType) + d + keys.length) % keys.length], true);
-  });
-  const rqError = (on) => { $("#rq-name-error").hidden = !on; rqName.setAttribute("aria-invalid", String(on)); };
-  rqName.addEventListener("input", () => { if (rqName.value.trim()) rqError(false); });
-
-  function openRequestForm(item = null, mode = "new") {
-    rqEditing = item;
-    rqMode = mode;
-    $("#rq-title").textContent = { new: "New request", edit: "Edit draft", revise: "Revise and resubmit" }[mode];
-    $("#rq-sub").textContent = mode === "revise" ? (item.note || "Update the request, then send it back to the approvers.") : `Bloom@Go · ${item ? item.ref : "a reference is added when you save"}`;
-    rqName.value = item ? item.title : "";
-    rqDetails.value = item ? item.details : "";
-    rqSetType(item ? item.type : "tcdf");
-    rqDraftBtn.hidden = mode === "revise";
-    rqError(false);
-    rqModal.showModal();
-    setTimeout(() => rqName.focus(), 40);
+  const rqBackBtn = $("#rq-back");
+  const rf = { item: null, mode: "new", def: null, step: 1, vals: {} };
+  const defOf = (key) => REQUEST_TYPES.find((d) => d.key === key);
+  function rfSpec(def) {
+    const company = { k: "company", label: "Company", options: COMPANIES, req: true, half: true };
+    const dept = { k: "dept", label: "Department", options: DEPARTMENTS, ph: "Select department", req: true, half: true };
+    const subject = (l = "Subject") => ({ k: "title", label: l, ph: `Enter ${l.toLowerCase()}`, req: true });
+    const why = { k: "details", label: "Business justification", area: true, req: true, ph: "Why is this needed, and what happens if it isn’t approved?" };
+    if (!def.own) return [subject(), { k: "details", label: "Details", area: true, req: true, ph: "What do you need?" }];
+    if (def.key === "tcdf") return [company, dept, subject("Title"), { k: "payee", label: "Vendor or counterparty", ph: "Enter name", half: true }, { k: "amount", label: "Estimated value (AED)", ph: "0", half: true }, why];
+    if (def.key === "rfp") return [company, dept, subject(), { k: "payee", label: "Payee", ph: "Enter payee", req: true, half: true }, { k: "amount", label: "Amount (AED)", ph: "0", req: true, half: true }, why];
+    return [company, dept, subject(), why];
   }
-  function rqSave(submit) {
-    const title = rqName.value.trim();
-    if (!title) { rqError(true); rqName.focus(); return; }
-    let x = rqEditing;
-    if (!x) { x = rq({ state: "draft", type: rqType, title, ago: 0 }); ib.items.unshift(x); }
-    Object.assign(x, { title, type: rqType, details: rqDetails.value.trim(), ago: 0 });
-    if (submit) Object.assign(x, { state: "mine", status: "review", step: 1, steps: ROUTE[rqType], note: "", reminded: false });
+  function rfFieldHTML(sp) {
+    const id = `rf-${sp.k}`, v = rf.vals[sp.k] || "";
+    const label = `<label class="field__label" for="${id}">${sp.label}${sp.req ? ` <span class="sp__req" aria-hidden="true">*</span>` : ` <span class="field__opt">optional</span>`}</label>`;
+    const ctl = sp.options
+      ? `<select class="field__input" id="${id}" data-k="${sp.k}"><option value="" disabled${v ? "" : " selected"}>${sp.ph || "Select"}</option>${sp.options.map((o) => `<option${o === v ? " selected" : ""}>${o}</option>`).join("")}</select>`
+      : sp.area ? `<textarea id="${id}" data-k="${sp.k}" rows="6" placeholder="${escapeHtml(sp.ph || "")}">${escapeHtml(v)}</textarea>`
+      : `<input class="field__input" id="${id}" data-k="${sp.k}" type="text"${sp.k === "amount" ? ' inputmode="decimal"' : ""} maxlength="90" autocomplete="off" placeholder="${escapeHtml(sp.ph || "")}" value="${escapeHtml(v)}">`;
+    return `<div class="field${sp.half ? " field--half" : ""}">${label}${ctl}<p class="field__error" id="${id}-err" role="alert" hidden>${sp.k === "title" ? "Give the request a title so approvers know what it is." : "This is required."}</p></div>`;
+  }
+  function rfRender() {
+    const d = rf.def, own = d.own;
+    $("#rq-title").textContent = rf.mode === "revise" ? "Revise and resubmit" : rf.mode === "edit" ? "Edit draft" : `Create ${d.short}`;
+    $("#rq-sub").textContent = rf.mode === "revise" ? (rf.item.note || "Update the request, then send it back to the approvers.") : own ? `Bloom@Go · ${rf.item ? rf.item.ref : "a reference is added when you save"}` : `Created here, approved in ${sourceNames[d.app]}`;
+    $("#rq-steps").hidden = !own;
+    $("#rq-steps").innerHTML = `<li class="${rf.step === 1 ? "is-current" : "is-done"}"><b>${rf.step === 1 ? "01" : icon("i-check", "ico ico--xs")}</b>${escapeHtml(d.short)} details</li><li class="${rf.step === 2 ? "is-current" : ""}"><b>02</b>Review &amp; send</li>`;
+    const spec = rfSpec(d);
+    if (rf.step === 1) {
+      rqBody.innerHTML = `${own ? "" : `<p class="d-note">${icon("i-info", "ico ico--sm")}This request is created in ${sourceNames[d.app]} and approved there. You’ll follow it in ${sourceNames[d.app]}.</p>`}<div class="rq-grid">${spec.map(rfFieldHTML).join("")}</div>`;
+    } else {
+      const route = ROUTE[d.key];
+      rqBody.innerHTML = `<dl class="d-facts rq-review">${spec.filter((sp) => (rf.vals[sp.k] || "").trim()).map((sp) => `<div${sp.area || sp.k === "title" ? ' class="d-facts__wide"' : ""}><dt>${sp.label}</dt><dd>${escapeHtml(rf.vals[sp.k])}</dd></div>`).join("")}</dl>
+        <h3 class="d-faq__label">Approval route</h3><ol class="d-steps">${route.map((who, i) => `<li class="d-step d-step--${i === 0 ? "current" : "todo"}"><span class="d-step__dot">${icon(i === 0 ? "i-clock" : "i-user")}</span><p><strong>${escapeHtml(who)}</strong><span>${i === 0 ? "Reviews first" : "Next"}</span></p></li>`).join("")}</ol>`;
+    }
+    rqBackBtn.hidden = rf.step === 1;
+    rqDraftBtn.hidden = !own || rf.mode === "revise";
+    $("#rq-submit-label").textContent = own && rf.step === 1 ? "Save & next" : !own ? "Submit request" : rf.mode === "revise" ? "Resubmit" : "Submit for approval";
+    $("#rq-submit use").setAttribute("href", own && rf.step === 1 ? "#i-arrow" : "#i-send");
+  }
+  function rfValid(all) {
+    let first = null;
+    rfSpec(rf.def).forEach((sp) => {
+      const bad = (all ? sp.req : sp.k === "title") && !(rf.vals[sp.k] || "").trim();
+      const el = $(`#rf-${sp.k}`), err = $(`#rf-${sp.k}-err`);
+      if (!el) return;
+      err.hidden = !bad; el.setAttribute("aria-invalid", String(bad));
+      if (bad && !first) first = el;
+    });
+    if (first) first.focus();
+    return !first;
+  }
+  rqBody.addEventListener("input", (e) => {
+    const k = e.target.dataset && e.target.dataset.k;
+    if (!k) return;
+    rf.vals[k] = e.target.value;
+    if (e.target.value.trim()) { e.target.setAttribute("aria-invalid", "false"); $(`#rf-${k}-err`).hidden = true; }
+  });
+  function rfOpen(item, mode, def) {
+    rf.item = item; rf.mode = mode; rf.def = def; rf.step = 1;
+    rf.vals = item
+      ? { company: item.company || COMPANIES[0], dept: item.dept || "", title: item.title, details: item.details || "", amount: item.amount || "", payee: item.payee || "" }
+      : { company: COMPANIES[0], dept: "", title: "", details: "", amount: "", payee: "" };
+    rfRender();
+    rqModal.showModal();
+    setTimeout(() => { const f = $("#rq-body [data-k='title'], #rq-body select, #rq-body input"); if (f) f.focus(); }, 40);
+  }
+  const rqStart = (def) => rfOpen(null, "new", def);
+  function openRequestForm(item = null, mode = "new") {
+    if (!item) { openRqPick(); return; }
+    rfOpen(item, mode, defOf(item.type));
+  }
+  function rfSave(submit) {
+    const v = rf.vals, d = rf.def;
+    if (!d.own) {
+      rqModal.close();
+      toast(`${d.label} created in ${sourceNames[d.app]}`, "i-send");
+      return;
+    }
+    let x = rf.item;
+    if (!x) { x = rq({ state: "draft", type: d.key, title: v.title.trim(), ago: 0 }); ib.items.unshift(x); }
+    Object.assign(x, { title: v.title.trim(), type: d.key, company: v.company, dept: v.dept, amount: (v.amount || "").trim(), payee: (v.payee || "").trim(), details: (v.details || "").trim(), ago: 0 });
+    if (submit) Object.assign(x, { state: "mine", status: "review", step: 1, steps: ROUTE[d.key], note: "", reminded: false, rfi: null });
     rqModal.close();
     ib.fresh = x.id;
     if (ib.open) setIbTab(x.state); else openInbox(null, x.state);
     ib.fresh = x.id;
     renderIb();
-    toast(submit ? `Sent to ${ROUTE[rqType][0]} for approval` : "Draft saved", submit ? "i-send" : "i-edit");
+    toast(submit ? `Sent to ${ROUTE[d.key][0]} for approval` : "Draft saved", submit ? "i-send" : "i-edit");
   }
-  rqForm.addEventListener("submit", (e) => { e.preventDefault(); rqSave(true); });
-  rqDraftBtn.addEventListener("click", () => rqSave(false));
+  rqForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (rf.step === 1 && !rfValid(true)) return;
+    if (rf.def.own && rf.step === 1) { rf.step = 2; rfRender(); $("#rq-title").focus?.(); return; }
+    rfSave(true);
+  });
+  rqDraftBtn.addEventListener("click", () => { if (rf.step === 1 && !rfValid(false)) return; rfSave(false); });
+  rqBackBtn.addEventListener("click", () => { rf.step = 1; rfRender(); });
   $("#rq-cancel").addEventListener("click", () => rqModal.close());
   $("#ib-new").addEventListener("click", () => openRequestForm());
 

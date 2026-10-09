@@ -62,6 +62,8 @@
       <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 15v3a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-3"/></symbol>
       <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="m5 8.5 7 5 7-5"/></symbol>
       <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4.5 14v-2a7.5 7.5 0 0 1 15 0v2"/><rect x="3.5" y="13" width="4" height="6" rx="2"/><rect x="16.5" y="13" width="4" height="6" rx="2"/><path d="M18.5 19c0 1.4-1.6 2-3.5 2h-1.5"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></symbol>
+      <symbol id="i-forward" viewBox="0 0 24 24"><path d="m14 5.5 5.5 5.5L14 16.5"/><path d="M19 11H9a4.5 4.5 0 0 0-4.5 4.5V19"/></symbol>
       <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
@@ -418,55 +420,55 @@
               <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
               <li class="task task--skeleton" aria-hidden="true"><span class="sk sk--mark"></span><span class="sk-stack"><span class="sk sk--line"></span><span class="sk sk--short"></span></span><span class="sk sk--pill"></span></li>
 
-              <li class="task" data-source="salesforce">
+              <li class="task" data-source="salesforce" data-rtype="Discount approval">
                 <span class="app-mark app-mark--sf">Sf</span>
                 <div class="task__body"><p class="task__title">Approve 12% discount on Al Noor Trading renewal</p><p class="task__meta">Salesforce <span>Requested by Layla Hassan</span></p></div>
                 <span class="due due--overdue"><svg class="ico ico--xs"><use href="#i-clock"/></svg>Overdue 1 day</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task" data-source="uipath">
+              <li class="task" data-source="uipath" data-rtype="Exception review">
                 <span class="app-mark app-mark--ui">Ui</span>
                 <div class="task__body"><p class="task__title">Resolve 3 exceptions paused by the Invoice Matcher bot</p><p class="task__meta">UiPath <span>Finance automation</span></p></div>
                 <span class="due due--overdue"><svg class="ico ico--xs"><use href="#i-clock"/></svg>Overdue 4 hours</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task" data-source="sap">
+              <li class="task" data-source="sap" data-rtype="Purchase requisition">
                 <span class="app-mark app-mark--sap">SAP</span>
                 <div class="task__body"><p class="task__title">Approve purchase requisition PR-40821 for site equipment</p><p class="task__meta">SAP <span>Requested by Omar Haddad</span></p></div>
                 <span class="due due--today">Due today</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task" data-source="darwinbox">
+              <li class="task" data-source="darwinbox" data-rtype="Onboarding checklist">
                 <span class="app-mark app-mark--db">Db</span>
                 <div class="task__body"><p class="task__title">Confirm onboarding checklist for Abdulazeez Aladwan</p><p class="task__meta">Darwinbox <span>Projects Affairs team</span></p></div>
                 <span class="due due--today">Due today</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task" data-source="salesforce">
+              <li class="task" data-source="salesforce" data-rtype="Forecast review">
                 <span class="app-mark app-mark--sf">Sf</span>
                 <div class="task__body"><p class="task__title">Review Q3 pipeline forecast before Thursday’s call</p><p class="task__meta">Salesforce <span>Shared by Sales Operations</span></p></div>
                 <span class="due due--today">Due today</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task is-extra is-hidden" data-source="uipath">
+              <li class="task is-extra is-hidden" data-source="uipath" data-rtype="Document validation">
                 <span class="app-mark app-mark--ui">Ui</span>
                 <div class="task__body"><p class="task__title">Validate extracted fields on 12 vendor contracts</p><p class="task__meta">UiPath <span>Document Understanding</span></p></div>
                 <span class="due">Thu, 24 Sep</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task is-extra is-hidden" data-source="darwinbox">
+              <li class="task is-extra is-hidden" data-source="darwinbox" data-rtype="Travel request">
                 <span class="app-mark app-mark--db">Db</span>
                 <div class="task__body"><p class="task__title">Approve travel request for Mathew Raymond</p><p class="task__meta">Darwinbox <span>Abu Dhabi to Riyadh</span></p></div>
                 <span class="due">Fri, 25 Sep</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task is-extra is-hidden" data-source="sap">
+              <li class="task is-extra is-hidden" data-source="sap" data-rtype="Goods receipt">
                 <span class="app-mark app-mark--sap">SAP</span>
                 <div class="task__body"><p class="task__title">Sign off goods receipt GR-11093</p><p class="task__meta">SAP <span>Warehouse, Mussafah</span></p></div>
                 <span class="due">Mon, 28 Sep</span>
                 <div class="task__actions"><button class="task__approve" type="button" data-approve><svg class="ico ico--xs"><use href="#i-check"/></svg>Approve</button><button class="task__reject" type="button" data-reject><svg class="ico ico--xs"><use href="#i-x"/></svg>Reject</button><button class="task__more" type="button" data-task aria-label="More options">&#8942;</button></div>
               </li>
-              <li class="task is-extra is-hidden" data-source="salesforce">
+              <li class="task is-extra is-hidden" data-source="salesforce" data-rtype="Opportunity update">
                 <span class="app-mark app-mark--sf">Sf</span>
                 <div class="task__body"><p class="task__title">Update close date on 4 stalled opportunities</p><p class="task__meta">Salesforce <span>Your pipeline</span></p></div>
                 <span class="due">Mon, 28 Sep</span>
@@ -978,13 +980,17 @@
             <div class="menu__panel ib-filter__panel" role="group" aria-label="Filter and sort">
               <p class="ib-filter__label" id="ib-type-label">Type</p>
               <div class="chips chips--sm" id="ib-type-chips" role="group" aria-labelledby="ib-type-label"></div>
-              <p class="ib-filter__label" id="ib-sort-label">Sort by</p>
-              <div class="chips chips--sm" id="ib-sort-chips" role="group" aria-labelledby="ib-sort-label">
-                <button class="chip is-selected" type="button" aria-pressed="true" data-sort="new">Newest</button>
-                <button class="chip" type="button" aria-pressed="false" data-sort="old">Oldest</button>
-                <button class="chip" type="button" aria-pressed="false" data-sort="az">A–Z</button>
+              <div id="ib-rtype-group">
+                <p class="ib-filter__label" id="ib-rtype-label">Request type</p>
+                <div class="chips chips--sm" id="ib-rtype-chips" role="group" aria-labelledby="ib-rtype-label"></div>
               </div>
-              <button class="link-btn ib-filter__clear" type="button" id="ib-clear">Clear filters</button>
+              <div id="ib-status-group">
+                <p class="ib-filter__label" id="ib-status-label">Status</p>
+                <div class="chips chips--sm" id="ib-status-chips" role="group" aria-labelledby="ib-status-label"></div>
+              </div>
+              <p class="ib-filter__label" id="ib-sort-label">Sort by</p>
+              <div class="chips chips--sm" id="ib-sort-chips" role="group" aria-labelledby="ib-sort-label"></div>
+              <div class="ib-filter__foot"><button class="link-btn ib-filter__clear" type="button" id="ib-clear">Clear all</button><button class="btn btn--primary btn--sm" type="button" id="ib-show">Show results</button></div>
             </div>
           </div>
           <button class="btn btn--primary btn--magnetic" type="button" id="ib-new"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
@@ -1015,11 +1021,24 @@
             <button class="tab" role="tab" type="button" id="ib-tab-mine" aria-selected="false" aria-controls="ib-list" data-ib-tab="mine" tabindex="-1">My requests <span class="tab__count" data-ib-count="mine">4</span></button>
             <button class="tab" role="tab" type="button" id="ib-tab-history" aria-selected="false" aria-controls="ib-list" data-ib-tab="history" tabindex="-1">History <span class="tab__count" data-ib-count="history">6</span></button>
           </div>
-          <div class="ib-head" aria-hidden="true"><span>Request</span><span>Actions</span></div>
+          <div class="ib-scope" id="ib-scope" role="group" aria-label="Whose requests" hidden>
+            <button class="chip is-selected" type="button" aria-pressed="true" data-scope="raised">Raised by me</button>
+            <button class="chip" type="button" aria-pressed="false" data-scope="assigned">Assigned to me</button>
+          </div>
+          <div class="ib-head" id="ib-head">
+            <label class="ib-check ib-check--all" id="ib-all-wrap" hidden><input type="checkbox" id="ib-all"><span class="ib-check__box" aria-hidden="true"><svg class="ico ico--xs"><use href="#i-check"/></svg></span>Select all</label>
+            <span id="ib-h1">Request</span><span id="ib-h2">Actions</span>
+          </div>
+          <div class="ib-bulk" id="ib-bulk" hidden>
+            <span class="ib-bulk__count"><b id="ib-bulk-n">0</b> selected</span>
+            <button class="btn btn--quiet btn--sm" type="button" id="ib-bulk-clear">Clear</button>
+            <button class="task__approve ib-bulk__go" type="button" id="ib-bulk-approve"><svg class="ico ico--xs" aria-hidden="true"><use href="#i-check"/></svg>Approve all</button>
+          </div>
           <ul class="ib-list" id="ib-list" role="tabpanel" aria-labelledby="ib-tab-inbox"></ul>
           <div class="ib-empty" id="ib-empty" hidden>
-            <span class="ib-empty__icon" aria-hidden="true"><svg class="ico"><use href="#i-search"/></svg></span>
+            <span class="ib-empty__icon" aria-hidden="true"><svg class="ico" id="ib-empty-icon"><use href="#i-search"/></svg></span>
             <p><strong id="ib-empty-title">Nothing matches</strong><span id="ib-empty-text">Try another word, or clear the filters.</span></p>
+            <button class="btn btn--primary btn--sm" type="button" id="ib-empty-cta" hidden><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
           </div>
           <footer class="ib-foot"><span id="ib-showing"></span><span>Synced 2 minutes ago</span></footer>
         </div>
@@ -1097,29 +1116,40 @@
     </form>
   </dialog>
 
-  <dialog class="modal modal--wide" id="request-modal" aria-labelledby="rq-title">
+  <!-- One dialog serves every confirm / reason / pick-a-person step in the requests flow -->
+  <dialog class="modal" id="flow-modal" aria-labelledby="flow-title">
+    <form class="modal__inner flow" id="flow-form" novalidate></form>
+  </dialog>
+
+  <!-- New request, step 0: choose what to create -->
+  <dialog class="modal" id="rq-pick" aria-labelledby="rqp-title">
+    <form class="modal__inner flow" id="rqp-form" novalidate>
+      <div class="flow__art" aria-hidden="true"><svg class="ico"><use href="#i-doc"/></svg></div>
+      <h2 class="h3 flow__title" id="rqp-title">Create new request</h2>
+      <div class="field">
+        <label class="field__label" for="rqp-search">Select a request type</label>
+        <label class="ib-search rqp__search"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg><input id="rqp-search" type="search" placeholder="Search request" autocomplete="off"></label>
+        <div class="rqp__list" id="rqp-list" role="listbox" aria-label="Request types"></div>
+        <p class="rqp__none" id="rqp-none" hidden>No request type matches that.</p>
+      </div>
+      <div class="modal__foot"><button class="btn btn--ghost" type="button" id="rqp-cancel">Cancel</button><button class="btn btn--primary" type="submit" id="rqp-go" disabled>Create request</button></div>
+    </form>
+  </dialog>
+
+  <!-- New request, steps 1 and 2: the details, then a review -->
+  <dialog class="modal modal--form" id="request-modal" aria-labelledby="rq-title">
     <form class="modal__inner" id="request-form" novalidate>
       <div class="rq-head">
         <span class="rq-head__icon" aria-hidden="true"><svg class="ico"><use href="#i-doc"/></svg></span>
         <div><h2 class="h3" id="rq-title">New request</h2><p class="meta" id="rq-sub">Bloom@Go · saved to your requests</p></div>
       </div>
-      <fieldset class="rq-types">
-        <legend class="field__label">Request type</legend>
-        <div class="rq-types__row" id="rq-types"></div>
-      </fieldset>
-      <label class="field">
-        <span class="field__label">Title</span>
-        <input class="field__input" id="rq-name" type="text" maxlength="90" placeholder="e.g. Annual Service Agreement – Project Alpha" autocomplete="off" required aria-describedby="rq-name-error">
-        <span class="field__error" id="rq-name-error" hidden>Give the request a title so approvers know what it is.</span>
-      </label>
-      <label class="field">
-        <span class="field__label">Details <span class="field__opt">optional</span></span>
-        <textarea id="rq-details" rows="3" maxlength="400" placeholder="What is it for, and is there a deadline?"></textarea>
-      </label>
+      <ol class="rq-steps" id="rq-steps" aria-label="Steps"></ol>
+      <div id="rq-body" class="rq-body"></div>
       <div class="modal__foot">
         <button class="btn btn--quiet" type="button" id="rq-cancel">Cancel</button>
-        <button class="btn btn--ghost" type="button" id="rq-draft"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-edit"/></svg>Save draft</button>
-        <button class="btn btn--primary" type="submit" id="rq-submit"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-send"/></svg>Submit for approval</button>
+        <button class="btn btn--ghost" type="button" id="rq-back" hidden><svg class="ico ico--sm" aria-hidden="true"><use href="#i-chevron-left"/></svg>Back</button>
+        <button class="btn btn--ghost" type="button" id="rq-draft"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-edit"/></svg>Save as draft</button>
+        <button class="btn btn--primary" type="submit" id="rq-submit"><span id="rq-submit-label">Save &amp; next</span><svg class="ico ico--sm btn__arrow" aria-hidden="true"><use href="#i-arrow"/></svg></button>
       </div>
     </form>
   </dialog>

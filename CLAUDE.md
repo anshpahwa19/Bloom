@@ -62,6 +62,16 @@
   - Help & support opens the contact form (`drawerViews.support`, wired by
     `initSupport`); "Browse FAQs" leads to the FAQ drawer (`help`). Files are
     only listed in the tab; nothing is stored or sent.
+  - The requests flow follows the "Bloom Multiverse" PDF flow. Approve,
+    reject (reason required), request more info (RFI), forward, delete a
+    draft and respond to an RFI all go through the one `flow()` dialog
+    (`#flow-modal`); the Attention list and the Inbox share it, so there is
+    one path. New request = `REQUEST_TYPES` picker (`#rq-pick`), then a
+    details step and a review step (`#request-modal`). Only TCDF, Internal
+    Memo and RFP are Bloom's own workflows (drafts, route, tracking); the
+    other types are created here and handled in their app. History has
+    "Raised by me" and "Assigned to me" (what you approved, rejected or
+    forwarded). Nothing is stored or sent.
   - Bloom GPT (`#gpt-page`, "Bloom GPT" section of `src/app.js`) answers
     from the page's data through `GPT_SKILLS`, picked by `GPT_ROUTES` (first
     match wins, order matters), and acts through `GPT_ACTS`. Anything that
