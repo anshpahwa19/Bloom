@@ -822,8 +822,10 @@
           <p class="d-task__title">${escapeHtml(x.title)}</p>
           <dl class="d-facts">
             <div><dt>${x.state === "history" ? "Closed" : x.state === "draft" ? "Last edited" : "Submitted"}</dt><dd>${x.state === "history" ? x.closed : ibAgo(x.ago)}</dd></div>
-            <div><dt>Reference</dt><dd>${x.ref}</dd></div>
+            <div><dt>Reference</dt><dd>#${x.ref}</dd></div>
+            ${x.company ? `<div><dt>Company</dt><dd>${escapeHtml(x.company)}</dd></div>` : ""}${x.dept ? `<div><dt>Department</dt><dd>${escapeHtml(x.dept)}</dd></div>` : ""}${x.files && x.files.length ? `<div><dt>Attachments</dt><dd>${x.files.length} file${x.files.length === 1 ? "" : "s"}</dd></div>` : ""}
           </dl>
+          ${x.parallel ? `<p class="d-note">${icon("i-info", "ico ico--sm")}All approvers were notified at the same time.</p>` : ""}
           ${x.details ? `<p class="d-note">${escapeHtml(x.details)}</p>` : ""}
           ${x.note ? `<p class="d-note">${escapeHtml(x.note)}</p>` : ""}
           ${x.status === "rfi" && x.rfi ? `<p class="d-note">${icon("i-info", "ico ico--sm")}<b>${escapeHtml(x.rfi.from)}</b> asked for more information: ${escapeHtml(x.rfi.subject)}.</p>` : ""}
@@ -945,7 +947,7 @@
     ].map(([label, app]) => ({ key: label.toLowerCase().replace(/[^a-z]+/g, "-"), label, short: label, app }))
   ];
   const COMPANIES = ["Bloom Holding", "Bloom Hospitality", "Bloom Properties"];
-  const DEPARTMENTS = ["Finance", "Legal", "Operations", "Procurement", "Digital Platforms", "People & Culture", "Sales"];
+  const DEPARTMENTS = ["Engineering", "Product", "UI/UX Design", "QA", "DevOps", "Human Resources", "Finance"];
   const PEOPLE = [
     { name: "Taruna Sharma", role: "Senior Manager Digital Products - IT" },
     { name: "Ankur Kushwaha", role: "Project manager - IT" },
@@ -1096,8 +1098,8 @@
       meta = `<span>${ibAgo(x.ago)}</span>`;
       side = `<button class="ib-act ib-act--edit" type="button" data-ib="edit">${icon("i-edit", "ico ico--xs")}Edit</button><button class="ib-act ib-act--delete" type="button" data-ib="delete" aria-label="Delete draft ${escapeHtml(x.title)}">${icon("i-trash", "ico ico--xs")}Delete</button>`;
     } else if (x.state === "mine") {
-      const bars = x.steps.map((_, s) => `<i class="${s + 1 < x.step ? "is-done" : s + 1 === x.step ? (x.status === "returned" ? "is-returned" : x.status === "rfi" ? "is-rfi" : "is-current") : ""}"></i>`).join("");
-      const where = x.status === "returned" ? "Back with you" : x.status === "rfi" ? `${escapeHtml(x.rfi.from)} needs more information` : `With ${escapeHtml(x.steps[x.step - 1])}`;
+      const bars = x.steps.map((_, s) => `<i class="${s + 1 < x.step ? "is-done" : x.parallel || s + 1 === x.step ? (x.status === "returned" ? "is-returned" : x.status === "rfi" ? "is-rfi" : "is-current") : ""}"></i>`).join("");
+      const where = x.status === "returned" ? "Back with you" : x.status === "rfi" ? `${escapeHtml(x.rfi.from)} needs more information` : x.parallel ? "With all approvers" : `With ${escapeHtml(x.steps[x.step - 1])}`;
       meta = `<span>Submitted ${ibAgo(x.ago)}</span><span><span class="ib-steps" aria-hidden="true">${bars}</span>Step ${x.step} of ${x.steps.length} · ${where}</span>`;
       side = `${ibStatusPill(x, true)}<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>` + (x.status === "returned"
         ? `<button class="ib-act ib-act--edit" type="button" data-ib="revise">${icon("i-edit", "ico ico--xs")}Revise</button>`
@@ -1357,7 +1359,7 @@
 
   function ibRemind(x) {
     x.reminded = true;
-    toast(`Reminder sent to ${x.steps[x.step - 1]}`, "i-bellring");
+    toast(`Reminder sent to ${x.parallel ? "all approvers" : x.steps[x.step - 1]}`, "i-bellring");
     if (ib.open) renderIb();
   }
 
@@ -1372,9 +1374,9 @@
       <h2 class="h3 flow__title" id="flow-title">${o.title}</h2>
       ${o.text ? `<p class="flow__text">${o.text}</p>` : ""}
       ${o.body ? `<div class="flow__body">${o.body}</div>` : ""}
-      <div class="modal__foot"><button class="btn btn--ghost" type="button" data-flow-cancel>Cancel</button><button class="btn ${o.danger ? "btn--danger" : "btn--primary"}" type="submit" id="flow-ok">${o.confirm}</button></div>`;
+      <div class="modal__foot"><button class="btn btn--ghost" type="button" data-flow-cancel>${o.cancel || "Cancel"}</button><button class="btn ${o.danger ? "btn--danger" : "btn--primary"}" type="submit" id="flow-ok">${o.confirm}</button></div>`;
     flowForm.onsubmit = (e) => { e.preventDefault(); if (o.validate && o.validate() === false) return; flowModal.close(); o.done && o.done(); };
-    $("[data-flow-cancel]", flowForm).onclick = () => flowModal.close();
+    $("[data-flow-cancel]", flowForm).onclick = () => { flowModal.close(); if (o.onCancel) o.onCancel(); };
     flowForm.oninput = (e) => { const el = e.target, err = el.id && $(`#${el.id}-err`, flowForm); if (err && el.value.trim()) { err.hidden = true; el.setAttribute("aria-invalid", "false"); } };
     if (o.setup) o.setup();
     flowModal.showModal();
@@ -1624,8 +1626,8 @@
     if (def.key === "rfp") return [company, dept, subject(), { k: "payee", label: "Payee", ph: "Enter payee", req: true, half: true }, { k: "amount", label: "Amount (AED)", ph: "0", req: true, half: true }, why];
     return [company, dept, subject(), why];
   }
-  function rfFieldHTML(sp) {
-    const id = `rf-${sp.k}`, v = rf.vals[sp.k] || "";
+  function rfFieldHTML(sp, vals = rf.vals) {
+    const id = `rf-${sp.k}`, v = vals[sp.k] || "";
     const label = `<label class="field__label" for="${id}">${sp.label}${sp.req ? ` <span class="sp__req" aria-hidden="true">*</span>` : ` <span class="field__opt">optional</span>`}</label>`;
     const ctl = sp.options
       ? `<select class="field__input" id="${id}" data-k="${sp.k}"><option value="" disabled${v ? "" : " selected"}>${sp.ph || "Select"}</option>${sp.options.map((o) => `<option${o === v ? " selected" : ""}>${o}</option>`).join("")}</select>`
@@ -1679,10 +1681,10 @@
     rqModal.showModal();
     setTimeout(() => { const f = $("#rq-body [data-k='title'], #rq-body select, #rq-body input"); if (f) f.focus(); }, 40);
   }
-  const rqStart = (def) => rfOpen(null, "new", def);
+  const rqStart = (def) => (def.own ? wzOpen(null, "new", def) : rfOpen(null, "new", def));
   function openRequestForm(item = null, mode = "new") {
     if (!item) { openRqPick(); return; }
-    rfOpen(item, mode, defOf(item.type));
+    wzOpen(item, mode, defOf(item.type));
   }
   function rfSave(submit) {
     const v = rf.vals, d = rf.def;
@@ -1711,7 +1713,357 @@
   rqDraftBtn.addEventListener("click", () => { if (rf.step === 1 && !rfValid(false)) return; rfSave(false); });
   rqBackBtn.addEventListener("click", () => { rf.step = 1; rfRender(); });
   $("#rq-cancel").addEventListener("click", () => rqModal.close());
+  rqModal.addEventListener("close", () => { rqBody.innerHTML = ""; });
   $("#ib-new").addEventListener("click", () => openRequestForm());
+  /* ---------------------------------------------------------------
+     Create Internal Memo / TCDF / RFP — three steps: details,
+     approvers, attachments (the Create Memo flow). Files are only
+     listed in the tab; nothing is stored or sent.
+     --------------------------------------------------------------- */
+  const wzModal = $("#wizard-modal");
+  const wzPanel = $("#wz-panel");
+  const wzNext = $("#wz-next");
+  const wzDraft = $("#wz-draft");
+  const wz = { item: null, mode: "new", def: null, step: 1, vals: {}, approvers: [], signing: true, files: [], snap: "" };
+  const WZ_COPY = {
+    memo: { crumb: "Create Memo", s1: ["Memo details", "Identify the primary entities and the core objective of this internal memo."], noun: "memo" },
+    tcdf: { crumb: "Create TCDF", s1: ["TCDF details", "Identify the tender, the counterparty and the decision being asked for."], noun: "TCDF" },
+    rfp: { crumb: "Create RFP", s1: ["Payment details", "Identify the payee, the amount and the reason for this payment."], noun: "payment request" }
+  };
+  const FILE_KINDS = { doc: "Word", docx: "Word", xls: "Excel", xlsx: "Excel", ppt: "PPT", pptx: "PPT" };
+  const WZ_BYTES = 10 * 1024 * 1024, WZ_MAX = 10;
+  let reqSeq = 0;
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // The justification is rich text typed on this page. Keep a small allow-list so
+  // nothing but formatting survives (paste is plain text too).
+  const RTE_TAGS = new Set(["P", "DIV", "BR", "B", "STRONG", "I", "EM", "U", "S", "STRIKE", "SPAN", "UL", "OL", "LI", "H1", "H2", "H3", "FONT"]);
+  function cleanHtml(html) {
+    const doc = new DOMParser().parseFromString(`<body>${html}</body>`, "text/html");
+    const walk = (node) => [...node.childNodes].forEach((ch) => {
+      if (ch.nodeType === 3) return;
+      if (ch.nodeType !== 1 || !RTE_TAGS.has(ch.tagName)) { ch.remove(); return; }
+      [...ch.attributes].forEach((a) => {
+        if (a.name !== "style") { ch.removeAttribute(a.name); return; }
+        const keep = a.value.split(";").map((d) => d.trim()).filter((d) => /^(text-align|background-color|font-weight|font-style|text-decoration(-line)?)\s*:\s*[a-z0-9#(),.\s%-]+$/i.test(d));
+        keep.length ? ch.setAttribute("style", keep.join("; ")) : ch.removeAttribute("style");
+      });
+      walk(ch);
+    });
+    walk(doc.body);
+    return doc.body.innerHTML;
+  }
+  const wzSnapshot = () => JSON.stringify({ v: wz.vals, a: wz.approvers, s: wz.signing, f: wz.files.map((f) => f.name) });
+  const fmtSize = (b) => `${Math.max(0.1, b / 1048576).toFixed(1)} mb`;
+  const fmtWhen = (d) => { const h = d.getHours(); return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} | ${((h + 11) % 12) + 1}:${String(d.getMinutes()).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+
+  function wzValid() {
+    if (wz.step === 1) return rfSpec(wz.def).every((sp) => !sp.req || (sp.k === "details" ? (wz.vals.detailsText || "").trim() : (wz.vals[sp.k] || "").trim()));
+    if (wz.step === 2) return wz.approvers.length > 0;
+    return true;
+  }
+  function wzRefresh() {
+    wzNext.disabled = !wzValid();
+    wzDraft.disabled = !(wz.vals.title || "").trim();
+  }
+
+  // ---- step 1: details, with the rich-text justification ---------------
+  const rteBtn = (cmd, label, inner, val = "") => `<button class="rte__btn" type="button" data-cmd="${cmd}"${val ? ` data-val="${val}"` : ""} aria-label="${label}" title="${label}">${inner}</button>`;
+  const rteHTML = () => `<div class="field rte-field">
+    <span class="field__label" id="wz-just-label">Business justification <span class="sp__req" aria-hidden="true">*</span></span>
+    <div class="rte" id="wz-rte">
+      <div class="rte__bar" role="toolbar" aria-label="Formatting" aria-controls="wz-edit">
+        <span class="rte__grp">${rteBtn("undo", "Undo", icon("i-undo", "ico ico--sm"))}${rteBtn("redo", "Redo", icon("i-redo", "ico ico--sm"))}</span>
+        <span class="rte__grp"><button class="rte__btn" type="button" data-zoom="-1" aria-label="Zoom out" title="Zoom out">${icon("i-minus", "ico ico--sm")}</button><span class="rte__zoom" id="wz-zoom" aria-live="polite">100%</span><button class="rte__btn" type="button" data-zoom="1" aria-label="Zoom in" title="Zoom in">${icon("i-plus", "ico ico--sm")}</button></span>
+        <span class="rte__grp"><select class="rte__select" id="wz-block" aria-label="Text style"><option value="p">Paragraph</option><option value="h2">Heading</option><option value="h3">Subheading</option></select>${rteBtn("insertUnorderedList", "Bulleted list", icon("i-list", "ico ico--sm"))}</span>
+        <span class="rte__grp">${rteBtn("bold", "Bold", "<b>B</b>")}${rteBtn("italic", "Italic", "<i>I</i>")}${rteBtn("strikeThrough", "Strikethrough", "<s>S</s>")}${rteBtn("underline", "Underline", "<u>U</u>")}${rteBtn("hiliteColor", "Highlight", '<span class="rte__hl">A</span>', "#FFE58F")}</span>
+        <span class="rte__grp">${rteBtn("justifyLeft", "Align left", icon("i-align-left", "ico ico--sm"))}${rteBtn("justifyCenter", "Align centre", icon("i-align-center", "ico ico--sm"))}${rteBtn("justifyRight", "Align right", icon("i-align-right", "ico ico--sm"))}${rteBtn("justifyFull", "Justify", icon("i-align-justify", "ico ico--sm"))}</span>
+        <button class="rte__btn rte__expand" type="button" data-expand aria-label="Expand editor" aria-pressed="false" title="Expand editor">${icon("i-expand", "ico ico--sm")}</button>
+      </div>
+      <div class="rte__area"><div class="rte__edit" id="wz-edit" contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="wz-just-label" data-placeholder="Why is this needed, and what happens if it isn’t approved?"></div></div>
+      <div class="rte__ai">
+        ${icon("i-sparkle", "ico ico--sm")}<input id="wz-ai" type="text" placeholder="Tell AI what else needs to be changed…" autocomplete="off" aria-label="Tell AI what else needs to be changed">
+        <button class="rte__send" type="button" id="wz-ai-go" aria-label="Send to Bloom GPT" disabled>${icon("i-arrow-up", "ico ico--sm")}</button>
+      </div>
+    </div>
+  </div>`;
+  function rteBind() {
+    const edit = $("#wz-edit"), rte = $("#wz-rte"), ai = $("#wz-ai"), go = $("#wz-ai-go");
+    const LEVELS = [[12, 75], [14, 88], [16, 100], [18, 113], [20, 125], [24, 150]]; // font size in px, label in %
+    let lvl = 2;
+    edit.innerHTML = cleanHtml(wz.vals.details || "");
+    try { document.execCommand("styleWithCSS", false, true); } catch (e) { /* older engines use font tags, which the clean-up allows */ }
+    const sync = () => {
+      wz.vals.details = cleanHtml(edit.innerHTML);
+      wz.vals.detailsText = edit.textContent.trim();
+      edit.dataset.empty = String(!wz.vals.detailsText && !edit.querySelector("li"));
+      go.disabled = !wz.vals.detailsText;
+      wzRefresh();
+    };
+    const state = () => $$("[data-cmd]", rte).forEach((b) => {
+      if (!["bold", "italic", "underline", "strikeThrough", "insertUnorderedList", "justifyLeft", "justifyCenter", "justifyRight", "justifyFull"].includes(b.dataset.cmd)) return;
+      let on = false;
+      try { on = document.activeElement === edit && document.queryCommandState(b.dataset.cmd); } catch (e) { on = false; }
+      b.setAttribute("aria-pressed", String(on));
+    });
+    edit.addEventListener("input", sync);
+    edit.addEventListener("keyup", state); edit.addEventListener("mouseup", state);
+    edit.addEventListener("paste", (e) => { e.preventDefault(); document.execCommand("insertText", false, e.clipboardData.getData("text/plain")); });
+    $(".rte__bar", rte).addEventListener("mousedown", (e) => { if (!e.target.closest("select")) e.preventDefault(); }); // keep the selection
+    $(".rte__bar", rte).addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      if (b.dataset.zoom) { lvl = clamp(lvl + Number(b.dataset.zoom), 0, LEVELS.length - 1); edit.style.fontSize = `${LEVELS[lvl][0]}px`; $("#wz-zoom").textContent = `${LEVELS[lvl][1]}%`; return; }
+      if (b.dataset.expand !== undefined) {
+        const on = rte.classList.toggle("is-expanded");
+        b.setAttribute("aria-pressed", String(on)); b.setAttribute("aria-label", on ? "Collapse editor" : "Expand editor");
+        $("use", b).setAttribute("href", on ? "#i-collapse" : "#i-expand");
+        return;
+      }
+      if (!b.dataset.cmd) return;
+      edit.focus();
+      let val = b.dataset.val || null;
+      if (b.dataset.cmd === "hiliteColor" && document.queryCommandValue("hiliteColor").replace(/\s/g, "") === "rgb(255,229,143)") val = "transparent";
+      document.execCommand(b.dataset.cmd, false, val);
+      sync(); state();
+    });
+    $("#wz-block").addEventListener("change", (e) => { edit.focus(); document.execCommand("formatBlock", false, e.target.value); sync(); });
+    // "Tell AI" — a stand-in: it tidies spacing and capitals, nothing leaves the page
+    const runAi = () => {
+      if (go.disabled) return;
+      const w = document.createTreeWalker(edit, NodeFilter.SHOW_TEXT);
+      const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach((n) => { n.textContent = n.textContent.replace(/\s+/g, " ").replace(/(^\s*|[.!?]\s+)([a-z])/g, (m, a, c) => a + c.toUpperCase()); });
+      const last = nodes[nodes.length - 1];
+      if (last && !/[.!?:]\s*$/.test(last.textContent)) last.textContent = last.textContent.replace(/\s+$/, "") + ".";
+      ai.value = "";
+      sync();
+      toast("Bloom GPT tidied your text", "i-sparkle");
+    };
+    go.addEventListener("click", runAi);
+    ai.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); runAi(); } });
+    sync();
+  }
+
+  // ---- step 2: approvers, with an optional signing order ----------------
+  const apvRow = (p, i) => `<li class="apv__row" data-name="${escapeHtml(p.name)}">
+    ${wz.signing ? `<button class="apv__grip" type="button" aria-label="Move ${escapeHtml(p.name)}, position ${i + 1} of ${wz.approvers.length}. Drag, or use the arrow keys.">${icon("i-grip", "ico ico--sm")}</button><span class="apv__n" aria-hidden="true">${i + 1}</span>` : ""}
+    <span class="who__av" aria-hidden="true">${p.initials}</span><span class="who__txt"><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.role)}</small></span>
+    <button class="apv__rm" type="button" data-remove aria-label="Remove ${escapeHtml(p.name)}">${icon("i-trash", "ico ico--sm")}</button></li>`;
+  const personOf = (name) => PEOPLE.find((p) => p.name === name) || { name, role: "", initials: name.split(" ").map((w) => w[0]).join("").slice(0, 2) };
+  function apvHTML() {
+    return `<div class="apv">
+      <div class="apv__top"><button class="apv__switch" type="button" role="switch" aria-checked="${wz.signing}" id="wz-sign"><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>Set signing order</button>
+        <p class="apv__note">${wz.signing ? "Approvers review one after another, in the order below." : "All approvers are notified at the same time."}</p></div>
+      <section class="apv__card" id="apv-picked" aria-label="Selected approvers" hidden><h3 class="apv__h">${wz.signing ? "Set signing order" : "Approvers"}</h3>${wz.signing ? `<p class="apv__hint">Arrange approvers in the desired approval sequence by dragging and dropping them.</p>` : ""}<ol class="apv__list" id="apv-list"></ol></section>
+      <section class="apv__card" aria-label="Add approver"><h3 class="apv__h">Add approver details</h3>
+        <label class="ib-search"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg><input id="apv-q" type="search" placeholder="Search by name &amp; email" autocomplete="off" aria-label="Search by name and email"></label>
+        <div class="apv__results" id="apv-results"></div></section>
+      <p class="sr-only" id="apv-live" aria-live="polite"></p></div>`;
+  }
+  function apvPaint(focusName) {
+    const list = $("#apv-list"), picked = $("#apv-picked"), res = $("#apv-results");
+    picked.hidden = !wz.approvers.length;
+    list.innerHTML = wz.approvers.map((n, i) => apvRow(personOf(n), i)).join("");
+    const q = $("#apv-q").value.trim().toLowerCase();
+    const rows = PEOPLE.filter((p) => !wz.approvers.includes(p.name) && `${p.name} ${p.email}`.toLowerCase().includes(q));
+    res.innerHTML = rows.length
+      ? rows.map((p) => `<div class="apv__res"><span class="who__av" aria-hidden="true">${p.initials}</span><span class="who__txt"><b>${p.name}</b><small>${p.role}</small></span><button class="btn btn--ghost btn--sm" type="button" data-add="${escapeHtml(p.name)}" aria-label="Add ${escapeHtml(p.name)}">${icon("i-plus", "ico ico--xs")}Add</button></div>`).join("")
+      : `<div class="apv__empty">${icon("i-search", "ico")}<p>${q ? "No employee found with the name &amp; email ID" : "Everyone available has been added."}</p></div>`;
+    if (focusName) $(`[data-name="${CSS.escape(focusName)}"] .apv__grip`, list)?.focus();
+    wzRefresh();
+  }
+  function apvBind() {
+    const list = $("#apv-list");
+    apvPaint();
+    $("#apv-q").addEventListener("input", () => apvPaint());
+    $("#apv-results").addEventListener("click", (e) => {
+      const b = e.target.closest("[data-add]");
+      if (!b) return;
+      wz.approvers.push(b.dataset.add); apvPaint();
+      $("#apv-live").textContent = `${b.dataset.add} added as approver ${wz.approvers.length}`;
+    });
+    list.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-remove]");
+      if (!b) return;
+      const name = b.closest(".apv__row").dataset.name;
+      flow({
+        ico: "i-trash", tone: "bad", title: "Remove approver", text: "Are you sure you want to remove approver?", body: `<p class="flow__ref">${escapeHtml(name)}</p>`, confirm: "Remove", danger: true,
+        done: () => { wz.approvers = wz.approvers.filter((n) => n !== name); apvPaint(); $("#apv-q").focus(); }
+      });
+    });
+    // reorder: drag the handle (mouse, pen and touch) or use the arrow keys on it
+    let drag = null;
+    list.addEventListener("pointerdown", (e) => {
+      const g = e.target.closest(".apv__grip");
+      if (!g) return;
+      e.preventDefault();
+      g.setPointerCapture(e.pointerId);
+      drag = g.closest(".apv__row"); drag.classList.add("is-drag");
+    });
+    list.addEventListener("pointermove", (e) => {
+      if (!drag) return;
+      const others = [...list.children].filter((r) => r !== drag);
+      const next = others.find((r) => { const b = r.getBoundingClientRect(); return e.clientY < b.top + b.height / 2; });
+      if (next) { if (drag.nextElementSibling !== next) list.insertBefore(drag, next); } else if (list.lastElementChild !== drag) list.appendChild(drag);
+    });
+    const drop = () => {
+      if (!drag) return;
+      const name = drag.dataset.name;
+      drag = null;
+      wz.approvers = [...list.children].map((r) => r.dataset.name);
+      apvPaint(name);
+    };
+    list.addEventListener("pointerup", drop); list.addEventListener("pointercancel", drop);
+    list.addEventListener("keydown", (e) => {
+      const g = e.target.closest(".apv__grip");
+      const d = { ArrowUp: -1, ArrowDown: 1 }[e.key];
+      if (!g || !d) return;
+      e.preventDefault();
+      const name = g.closest(".apv__row").dataset.name, i = wz.approvers.indexOf(name), j = i + d;
+      if (j < 0 || j >= wz.approvers.length) return;
+      [wz.approvers[i], wz.approvers[j]] = [wz.approvers[j], wz.approvers[i]];
+      apvPaint(name);
+      $("#apv-live").textContent = `${name} moved to position ${j + 1} of ${wz.approvers.length}`;
+    });
+    $("#wz-sign").addEventListener("click", () => {
+      const turn = () => { wz.signing = !wz.signing; wzRender(); $("#wz-sign").focus(); };
+      if (wz.signing && wz.approvers.length > 1) {
+        flow({
+          ico: "i-info", title: "Disable signing order?", text: "If you turn off Set signing order, all approvers will be notified at the same time instead of following a defined approval sequence. Do you want to proceed?",
+          confirm: "Confirm change", done: turn
+        });
+      } else turn();
+    });
+  }
+
+  // ---- step 3: attachments ----------------------------------------------
+  const attRowHTML = (f, i) => `<li class="att__row"><span class="att__c att__c--n" data-label="S.no">${i + 1}.</span><span class="att__c att__c--name" data-label="File name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><span class="att__c" data-label="File type">${f.kind}</span><span class="att__c" data-label="Size">${f.size}</span><span class="att__c" data-label="Date &amp; time">${f.when}</span><span class="att__c att__c--act"><button class="att__rm" type="button" data-i="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-trash", "ico ico--sm")}</button></span></li>`;
+  function attHTML() {
+    return `<div class="att">
+      <section class="apv__card" aria-label="Upload files"><h3 class="apv__h">Upload files</h3>
+        <div class="att__drop" id="att-drop"><span class="att__ico" aria-hidden="true">${icon("i-upload", "ico")}</span><p class="att__t">Drag &amp; drop the files here.</p><p class="att__s">Upload file in Excel, Word, PPT format, up to Max 10MB in size, Max ${WZ_MAX} files.</p>
+          <input id="att-file" class="sr-only" type="file" multiple accept=".xls,.xlsx,.doc,.docx,.ppt,.pptx"><label class="btn btn--ghost btn--sm" for="att-file">Choose file from your computer</label></div>
+        <p class="field__error" id="att-err" role="alert" hidden></p></section>
+      <section class="apv__card" id="att-card" aria-label="Uploaded documents" hidden><h3 class="apv__h">Uploaded documents <span class="att__count" id="att-count"></span></h3>
+        <div class="att__head" aria-hidden="true"><span>S.no</span><span>File name</span><span>File type</span><span>Size</span><span>Date &amp; time</span><span>Action</span></div>
+        <ol class="att__list" id="att-list"></ol></section></div>`;
+  }
+  function attBind() {
+    const input = $("#att-file"), err = $("#att-err"), drop = $("#att-drop");
+    const paint = () => {
+      $("#att-card").hidden = !wz.files.length;
+      $("#att-count").textContent = `(${wz.files.length} of ${WZ_MAX})`;
+      $("#att-list").innerHTML = wz.files.map(attRowHTML).join("");
+    };
+    const take = (list) => {
+      const problems = [];
+      [...list].forEach((f) => {
+        const ext = f.name.split(".").pop().toLowerCase();
+        if (!FILE_KINDS[ext]) problems.push(`${f.name} isn’t an Excel, Word or PPT file.`);
+        else if (f.size > WZ_BYTES) problems.push(`${f.name} is over 10 MB.`);
+        else if (wz.files.length >= WZ_MAX) { if (!problems.some((p) => p.includes("files"))) problems.push(`You can add up to ${WZ_MAX} files.`); }
+        else wz.files.push({ name: f.name.replace(/\.[^.]+$/, ""), ext, kind: FILE_KINDS[ext], size: fmtSize(f.size), when: fmtWhen(new Date()) });
+      });
+      err.hidden = !problems.length; err.textContent = problems.join(" ");
+      paint(); wzRefresh();
+    };
+    input.addEventListener("change", () => { take(input.files); input.value = ""; });
+    ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("is-over"); }));
+    ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove("is-over"); }));
+    drop.addEventListener("drop", (e) => take(e.dataTransfer.files));
+    $("#att-list").addEventListener("click", (e) => { const b = e.target.closest(".att__rm"); if (b) { wz.files.splice(+b.dataset.i, 1); err.hidden = true; paint(); wzRefresh(); } });
+    paint();
+  }
+
+  // ---- the page itself ---------------------------------------------------
+  function wzRender() {
+    const d = wz.def, copy = WZ_COPY[d.key];
+    const labels = [copy.s1[0], "Approvers", "Attachments"];
+    $("#wz-crumb").textContent = wz.mode === "revise" ? "Revise & resubmit" : wz.mode === "edit" ? "Edit draft" : copy.crumb;
+    $("#wz-steps").innerHTML = labels.map((l, i) => {
+      const done = i + 1 < wz.step, cur = i + 1 === wz.step;
+      return `<li class="${cur ? "is-current" : done ? "is-done" : ""}"><button type="button" class="wz__step" data-step="${i + 1}"${cur ? ' aria-current="step"' : ""}${i + 1 > wz.step ? " disabled" : ""}><b>${done ? icon("i-check", "ico ico--xs") : `0${i + 1}`}</b><span>${l}</span></button></li>`;
+    }).join("");
+    $("#wz-num").textContent = `0${wz.step}`;
+    $("#wz-title").textContent = labels[wz.step - 1];
+    $("#wz-desc").textContent = [copy.s1[1], "Select the required stakeholders for review.", `Upload relevant files to provide additional context or reference for this ${copy.noun}.`][wz.step - 1];
+    if (wz.step === 1) {
+      wzPanel.innerHTML = `<div class="rq-grid">${rfSpec(d).map((sp) => sp.k === "details" ? rteHTML() : rfFieldHTML(sp, wz.vals)).join("")}</div>`;
+      rteBind();
+    } else if (wz.step === 2) { wzPanel.innerHTML = apvHTML(); apvBind(); }
+    else { wzPanel.innerHTML = attHTML(); attBind(); }
+    wzDraft.hidden = wz.mode === "revise";
+    $("#wz-next-label").textContent = wz.step < 3 ? "Save & next" : wz.mode === "revise" ? "Resubmit" : "Submit";
+    $("#wz-main").scrollTop = 0;
+    wzRefresh();
+  }
+  function wzOpen(item, mode, def) {
+    Object.assign(wz, { item, mode, def, step: 1, signing: item ? item.signing !== false : true });
+    wz.vals = item
+      ? { company: item.company || COMPANIES[0], dept: item.dept || "", title: item.title, details: item.detailsHtml || "", detailsText: item.details || "", amount: item.amount || "", payee: item.payee || "" }
+      : { company: COMPANIES[0], dept: "", title: "", details: "", detailsText: "", amount: "", payee: "" };
+    wz.approvers = item && item.approvers ? [...item.approvers] : [];
+    wz.files = item && item.files ? item.files.map((f) => ({ ...f })) : [];
+    wzRender();
+    wzModal.showModal();
+    wz.snap = wzSnapshot();
+    setTimeout(() => $("#wz-panel select, #wz-panel input")?.focus(), 40);
+  }
+  // typing in the step-1 fields
+  wzPanel.addEventListener("input", (e) => {
+    const k = e.target.dataset && e.target.dataset.k;
+    if (!k || wz.step !== 1) return;
+    wz.vals[k] = e.target.value;
+    wzRefresh();
+  });
+  $("#wz-steps").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-step]");
+    if (b && !b.disabled && Number(b.dataset.step) < wz.step) { wz.step = Number(b.dataset.step); wzRender(); }
+  });
+  function wzAttemptClose() {
+    if (wzSnapshot() === wz.snap) { wzModal.close(); return; }
+    flow({
+      ico: "i-x", tone: "bad", title: "Discard changes?", text: "You have unsaved changes. If you cancel now, all the changes you’ve made will be discarded and cannot be recovered.",
+      cancel: "No", confirm: "Yes", danger: true, done: () => wzModal.close()
+    });
+  }
+  wzModal.addEventListener("cancel", (e) => { e.preventDefault(); wzAttemptClose(); });
+  wzModal.addEventListener("close", () => { wzPanel.innerHTML = ""; }); // keep ids unique while it is closed
+  $("#wz-cancel").addEventListener("click", wzAttemptClose);
+  function wzSave(submit) {
+    const v = wz.vals, d = wz.def;
+    let x = wz.item;
+    if (!x) { x = rq({ state: "draft", type: d.key, title: v.title.trim(), ago: 0 }); ib.items.unshift(x); }
+    Object.assign(x, {
+      title: v.title.trim(), type: d.key, company: v.company, dept: v.dept, amount: (v.amount || "").trim(), payee: (v.payee || "").trim(),
+      details: v.detailsText || "", detailsHtml: v.details || "", approvers: [...wz.approvers], signing: wz.signing,
+      files: wz.files.map((f) => ({ ...f })), ago: 0
+    });
+    if (submit) {
+      x.ref = `REQ-2026-${String(++reqSeq).padStart(4, "0")}`;
+      Object.assign(x, { state: "mine", status: "review", step: 1, steps: [...wz.approvers], parallel: !wz.signing, note: "", reminded: false, rfi: null });
+    }
+    wzModal.close();
+    ib.fresh = x.id;
+    if (ib.open) setIbTab(x.state); else openInbox(null, x.state);
+    ib.fresh = x.id;
+    renderIb();
+    if (!submit) { toast("Draft saved", "i-edit"); return; }
+    flow({
+      ico: "i-sparkle", tone: "ok", title: "Request created successfully", body: `<p class="flow__ref flow__ref--ref">#${x.ref}</p>`,
+      cancel: "Track request", confirm: "Go to home", done: () => closeInbox(),
+      onCancel: () => { const li = ibList.querySelector(`[data-id="${x.id}"]`); if (li) li.scrollIntoView({ behavior: smooth(), block: "center" }); }
+    });
+  }
+  $("#wz-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (!wzValid()) return;
+    if (wz.step < 3) { wz.step += 1; wzRender(); return; }
+    wzSave(true);
+  });
+  wzDraft.addEventListener("click", () => { if (!wzDraft.disabled) wzSave(false); });
+
 
   /* ---------------------------------------------------------------
      Announcements — birthdays, a work anniversary, a fire drill and

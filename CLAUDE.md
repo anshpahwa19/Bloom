@@ -66,10 +66,15 @@
     reject (reason required), request more info (RFI), forward, delete a
     draft and respond to an RFI all go through the one `flow()` dialog
     (`#flow-modal`); the Attention list and the Inbox share it, so there is
-    one path. New request = `REQUEST_TYPES` picker (`#rq-pick`), then a
-    details step and a review step (`#request-modal`). Only TCDF, Internal
-    Memo and RFP are Bloom's own workflows (drafts, route, tracking); the
-    other types are created here and handled in their app. History has
+    one path. New request = `REQUEST_TYPES` picker (`#rq-pick`). Only TCDF,
+    Internal Memo and RFP are Bloom's own workflows (drafts, tracking): they
+    open the three-step Create wizard (`#wizard-modal`, "Create Internal
+    Memo / TCDF / RFP" in `src/app.js`: details with a rich-text
+    justification, approvers with an optional signing order, attachments,
+    then a success dialog with the `REQ-2026-000N` reference). The other
+    types use the short one-step form (`#request-modal`) and are handled in
+    their app. Step buttons stay disabled until the step is valid; Cancel
+    asks before discarding changes. History has
     "Raised by me" and "Assigned to me" (what you approved, rejected or
     forwarded). Nothing is stored or sent.
   - Bloom GPT (`#gpt-page`, "Bloom GPT" section of `src/app.js`) answers
