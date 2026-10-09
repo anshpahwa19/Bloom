@@ -1195,18 +1195,19 @@
     if (!SUP.files.length) return `<button class="sup-drop" type="button" data-act="sup-pick">${icon("i-upload", "ico")}<strong>Upload Attachments</strong><span>Upload file in .PDF, .JPG, .PNG, .DOC format, up to 15MB in size, Max 5 files.</span></button>`;
     return `<ul class="sup-files">${add ? `<li><button class="sup-add" type="button" data-act="sup-pick" aria-label="Add a file">${icon("i-upload", "ico")}</button></li>` : ""}${SUP.files.map((f, i) => `<li class="sup-file"><span class="sup-file__tile sup-file__tile--${f.type.toLowerCase()}" aria-hidden="true"><b>${f.type}</b></span><button class="sup-file__x" type="button" data-act="sup-rm" data-v="${i}" aria-label="Remove ${esc(f.name)}">${icon("i-x", "ico ico--xs")}</button><span class="sup-file__name">${esc(f.name)}</span></li>`).join("")}</ul>`;
   };
-  const supFormHTML = (id) => (SUP.files = [], `<form class="sup-form" novalidate onsubmit="return false">
-      ${intro({ title: "Contact IT Support" }).replace("<h1", `<h1 id="${id}"`)}
-      <label class="sup-label" for="${id}-mail">Email<span aria-hidden="true">*</span></label>
-      <input class="sup-input" id="${id}-mail" type="email" inputmode="email" autocomplete="email" value="${esc(me.email)}" required>
-      <label class="sup-label" for="${id}-msg">Tell us how we can help?<span aria-hidden="true">*</span></label>
+  const supFormHTML = (id, kind = "it") => (SUP.files = [], `<form class="sup-form" novalidate onsubmit="return false">
+      ${intro({ title: kind === "it" ? "Contact IT Support" : "Help & Support" }).replace("<h1", `<h1 id="${id}"`)}
+      ${kind === "it" ? `<label class="sup-label" for="${id}-mail">Email<span aria-hidden="true">*</span></label>
+      <input class="sup-input" id="${id}-mail" type="email" inputmode="email" autocomplete="email" value="${esc(me.email)}" required>` : ""}
+      <label class="sup-label" for="${id}-msg">${kind === "it" ? "Tell us how we can help?" : "Description"}<span aria-hidden="true">*</span></label>
       <textarea class="sup-input sup-msg" id="${id}-msg" placeholder="Type here" required></textarea>
       <input class="sup-pick" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple hidden>
       <div class="sup-attach" data-sup-files>${supFilesHTML()}</div>
       <p class="sup-err" role="alert" hidden></p>
       <button class="btn btn--primary sup-send" type="button" data-act="sup-send" disabled>Submit</button></form>`);
   function supCheck(form) {
-    const ok = /^\S+@\S+\.\S+$/.test($(".sup-input[type=email]", form).value.trim()) && $(".sup-msg", form).value.trim();
+    const mail = $(".sup-input[type=email]", form);
+    const ok = (!mail || /^\S+@\S+\.\S+$/.test(mail.value.trim())) && $(".sup-msg", form).value.trim();
     $(".sup-send", form).disabled = !ok;
   }
   function supRefresh(form) { $("[data-sup-files]", form).innerHTML = supFilesHTML(); $(".sup-err", form).hidden = true; }
@@ -1242,6 +1243,10 @@
     if (btn.closest("#app-auth")) showAuth("login"); else back();
     supBanner();
   }
+  PAGES.helpsupport = {
+    title: () => "Help & Support",
+    render: () => supFormHTML("help-title", "help")
+  };
   PAGES.support = {
     title: () => "Contact IT Support",
     render: () => supFormHTML("sup-title")
@@ -1741,6 +1746,7 @@
         ])}
         ${groupBlock("Support", [
           rowHTML({ lead: tile("i-help"), title: "Contact IT Support", sub: "Tell our IT team what you need", go: "support" }),
+          rowHTML({ lead: tile("i-chat"), title: "Help & Support", sub: "Describe an issue and attach files", go: "helpsupport" }),
           rowHTML({ lead: tile("i-book"), title: "FAQ", sub: "Quick answers", go: "faq/0" })
         ])}
         ${groupBlock("Account", [rowHTML({ lead: tile("i-logout", "var(--warm)"), title: "Sign out", end: "", act: "sign-out", cls: "m-row--danger" })])}`;
@@ -1858,6 +1864,7 @@
     quickLinks().forEach((a) => add("Apps", a.name, `${counts[a.src]} pending · ${a.hint}`, `<span class="app-mark ${a.mark}"></span>`, `tasks/approvals/${a.src}`));
     $$("#faq .faqs__item").forEach((d, i) => add("Help", $(".faqs__q span", d).textContent, "FAQ", tile("i-help"), `faq/${i}`));
     add("Help", "Contact IT Support", "Report an issue to IT", tile("i-help"), "support");
+    add("Help", "Help & Support", "Describe an issue", tile("i-chat"), "helpsupport");
     add("Bloom GPT", "Ask Bloom GPT", "Your AI assistant", `<span class="app-mark app-mark--gpt"><span class="orb orb--xs"></span></span>`, "gpt");
     return idx;
   }

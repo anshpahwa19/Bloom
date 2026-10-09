@@ -3799,6 +3799,7 @@ button.m-card:active { transform: scale(.985); }
       <symbol id="i-faceid" viewBox="0 0 24 24"><path d="M3.5 8V6.5a3 3 0 0 1 3-3H8M16 3.5h1.5a3 3 0 0 1 3 3V8M20.5 16v1.5a3 3 0 0 1-3 3H16M8 20.5H6.5a3 3 0 0 1-3-3V16"/><path d="M9 9v1.5M15 9v1.5M12.2 9v3.8h-1"/><path d="M9.2 15.6c1.6 1.2 4 1.2 5.6 0"/></symbol>
       <!-- Bloom's B, from the logo; drawn in currentColor (fill), not stroked -->
       <symbol id="i-bloom" viewBox="0 0 42 43"><path d="M7.77 0v42.52h3.66V3.78h11.24c8.56.14 7.47 6.41 5.85 9.52h4.26C35.48 4.41 28.7.95 25.09 0H7.77Z"/><path d="M15.16 13.3v21.7h3.61V23.3l6.2 7.1 7.16-9.58c2.32.66 3.8 4.06 4.26 5.68 1.75 8.18-4.51 11.57-7.86 12.24l-13.37.41v3.31h12.3c11.02-1.18 13.23-9.99 12.95-14.25.19-7.14-6.39-10.94-9.7-11.94l-6.33 8.34-9.22-11.3Z"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-6.5L8 20.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/><path d="M8 10h8M8 13h5"/></symbol>
       <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4M7.5 8.5 12 4l4.5 4.5M4.5 14.5v3.5a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5"/></symbol>
       <symbol id="i-check-all" viewBox="0 0 24 24"><path d="m2 12.5 4.5 4.5L16 7.5"/><path d="m11.5 16.5.5.5 9.5-9.5"/></symbol>
       <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="4" rx="1"/><path d="M5 12.5v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7M12 8.5v12"/><path d="M12 8.5S10.5 3.5 8 4.5 9 8.5 12 8.5Zm0 0s1.5-5 4-4-1 4-4 4Z"/></symbol>
@@ -9120,18 +9121,19 @@ button.m-card:active { transform: scale(.985); }
     if (!SUP.files.length) return `<button class="sup-drop" type="button" data-act="sup-pick">${icon("i-upload", "ico")}<strong>Upload Attachments</strong><span>Upload file in .PDF, .JPG, .PNG, .DOC format, up to 15MB in size, Max 5 files.</span></button>`;
     return `<ul class="sup-files">${add ? `<li><button class="sup-add" type="button" data-act="sup-pick" aria-label="Add a file">${icon("i-upload", "ico")}</button></li>` : ""}${SUP.files.map((f, i) => `<li class="sup-file"><span class="sup-file__tile sup-file__tile--${f.type.toLowerCase()}" aria-hidden="true"><b>${f.type}</b></span><button class="sup-file__x" type="button" data-act="sup-rm" data-v="${i}" aria-label="Remove ${esc(f.name)}">${icon("i-x", "ico ico--xs")}</button><span class="sup-file__name">${esc(f.name)}</span></li>`).join("")}</ul>`;
   };
-  const supFormHTML = (id) => (SUP.files = [], `<form class="sup-form" novalidate onsubmit="return false">
-      ${intro({ title: "Contact IT Support" }).replace("<h1", `<h1 id="${id}"`)}
-      <label class="sup-label" for="${id}-mail">Email<span aria-hidden="true">*</span></label>
-      <input class="sup-input" id="${id}-mail" type="email" inputmode="email" autocomplete="email" value="${esc(me.email)}" required>
-      <label class="sup-label" for="${id}-msg">Tell us how we can help?<span aria-hidden="true">*</span></label>
+  const supFormHTML = (id, kind = "it") => (SUP.files = [], `<form class="sup-form" novalidate onsubmit="return false">
+      ${intro({ title: kind === "it" ? "Contact IT Support" : "Help & Support" }).replace("<h1", `<h1 id="${id}"`)}
+      ${kind === "it" ? `<label class="sup-label" for="${id}-mail">Email<span aria-hidden="true">*</span></label>
+      <input class="sup-input" id="${id}-mail" type="email" inputmode="email" autocomplete="email" value="${esc(me.email)}" required>` : ""}
+      <label class="sup-label" for="${id}-msg">${kind === "it" ? "Tell us how we can help?" : "Description"}<span aria-hidden="true">*</span></label>
       <textarea class="sup-input sup-msg" id="${id}-msg" placeholder="Type here" required></textarea>
       <input class="sup-pick" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple hidden>
       <div class="sup-attach" data-sup-files>${supFilesHTML()}</div>
       <p class="sup-err" role="alert" hidden></p>
       <button class="btn btn--primary sup-send" type="button" data-act="sup-send" disabled>Submit</button></form>`);
   function supCheck(form) {
-    const ok = /^\S+@\S+\.\S+$/.test($(".sup-input[type=email]", form).value.trim()) && $(".sup-msg", form).value.trim();
+    const mail = $(".sup-input[type=email]", form);
+    const ok = (!mail || /^\S+@\S+\.\S+$/.test(mail.value.trim())) && $(".sup-msg", form).value.trim();
     $(".sup-send", form).disabled = !ok;
   }
   function supRefresh(form) { $("[data-sup-files]", form).innerHTML = supFilesHTML(); $(".sup-err", form).hidden = true; }
@@ -9167,6 +9169,10 @@ button.m-card:active { transform: scale(.985); }
     if (btn.closest("#app-auth")) showAuth("login"); else back();
     supBanner();
   }
+  PAGES.helpsupport = {
+    title: () => "Help & Support",
+    render: () => supFormHTML("help-title", "help")
+  };
   PAGES.support = {
     title: () => "Contact IT Support",
     render: () => supFormHTML("sup-title")
@@ -9666,6 +9672,7 @@ button.m-card:active { transform: scale(.985); }
         ])}
         ${groupBlock("Support", [
           rowHTML({ lead: tile("i-help"), title: "Contact IT Support", sub: "Tell our IT team what you need", go: "support" }),
+          rowHTML({ lead: tile("i-chat"), title: "Help & Support", sub: "Describe an issue and attach files", go: "helpsupport" }),
           rowHTML({ lead: tile("i-book"), title: "FAQ", sub: "Quick answers", go: "faq/0" })
         ])}
         ${groupBlock("Account", [rowHTML({ lead: tile("i-logout", "var(--warm)"), title: "Sign out", end: "", act: "sign-out", cls: "m-row--danger" })])}`;
@@ -9783,6 +9790,7 @@ button.m-card:active { transform: scale(.985); }
     quickLinks().forEach((a) => add("Apps", a.name, `${counts[a.src]} pending · ${a.hint}`, `<span class="app-mark ${a.mark}"></span>`, `tasks/approvals/${a.src}`));
     $$("#faq .faqs__item").forEach((d, i) => add("Help", $(".faqs__q span", d).textContent, "FAQ", tile("i-help"), `faq/${i}`));
     add("Help", "Contact IT Support", "Report an issue to IT", tile("i-help"), "support");
+    add("Help", "Help & Support", "Describe an issue", tile("i-chat"), "helpsupport");
     add("Bloom GPT", "Ask Bloom GPT", "Your AI assistant", `<span class="app-mark app-mark--gpt"><span class="orb orb--xs"></span></span>`, "gpt");
     return idx;
   }
