@@ -1178,6 +1178,14 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .ib-empty p { display: grid; gap: 2px; font-size: var(--fs-support); }
 .ib-empty strong { font-family: var(--font-display); font-size: 1rem; color: var(--ink); }
 .ib-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 16px; padding: 0 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+/* Inbox — average action time */
+.ib-avg { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 24px 20px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--amber); box-shadow: var(--sh-1); }
+.ib-avg[hidden] { display: none; }
+.ib-avg__num { font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.ib-avg__num small { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.ib-avg__label { margin-top: 8px; font-size: var(--fs-support); color: var(--slate); }
+.ib-avg__icon { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: var(--r-icon); background: var(--amber-soft); color: var(--amber-fg); }
+.ib-avg__icon .ico { width: 26px; height: 26px; }
 /* Inbox — selecting rows, the row menu, scope and RFI states */
 .ib-head { align-items: center; }
 .ib-head.has-all { padding-left: 18px; }
@@ -1202,6 +1210,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .ib-scope + .ib-head { padding-top: 14px; }
 .ib-filter__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 4px; }
 .ib-filter .menu__panel { max-height: min(76vh, 560px); overflow: auto; }
+.ib-row.has-pop { z-index: 9; }
 .ib-pop { position: absolute; z-index: 8; top: calc(100% - 10px); right: 16px; display: grid; min-width: 210px; padding: 6px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2); }
 .ib-pop button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r-sm); font-size: var(--fs-support); font-weight: 500; text-align: left; color: var(--ink-2); transition: background-color var(--t-fast); }
 .ib-pop button:hover, .ib-pop button:focus-visible { background: var(--surface-2); color: var(--ink); }
@@ -2878,6 +2887,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
       <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4.5 14v-2a7.5 7.5 0 0 1 15 0v2"/><rect x="3.5" y="13" width="4" height="6" rx="2"/><rect x="16.5" y="13" width="4" height="6" rx="2"/><path d="M18.5 19c0 1.4-1.6 2-3.5 2h-1.5"/></symbol>
       <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></symbol>
       <symbol id="i-forward" viewBox="0 0 24 24"><path d="m14 5.5 5.5 5.5L14 16.5"/><path d="M19 11H9a4.5 4.5 0 0 0-4.5 4.5V19"/></symbol>
+      <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M7 3.5h10M7 20.5h10"/><path d="M8 3.5c0 4 4 5.5 4 8.5s-4 4.5-4 8.5M16 3.5c0 4-4 5.5-4 8.5s4 4.5 4 8.5"/></symbol>
       <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
@@ -3813,6 +3823,10 @@ html.is-locked, .is-locked body { overflow: hidden; }
 
       <div class="inbox__grid">
         <aside class="inbox__side" aria-label="Summary">
+          <div class="ib-avg" id="ib-avg">
+            <div class="ib-avg__body"><p class="ib-avg__num">1 <small>hr</small> 35 <small>mins</small></p><p class="ib-avg__label">Average action time</p></div>
+            <span class="ib-avg__icon" aria-hidden="true"><svg class="ico"><use href="#i-hourglass"/></svg></span>
+          </div>
           <div class="ib-stat">
             <span class="ib-stat__icon" aria-hidden="true"><svg class="ico" id="ib-stat-icon"><use href="#i-inbox"/></svg></span>
             <p class="ib-stat__label" id="ib-stat-label">Waiting on you</p>
@@ -5115,12 +5129,13 @@ html.is-locked, .is-locked body { overflow: hidden; }
     if (x.kind === "task") {
       const due = $(".due", x.row).outerHTML;
       const o = x.outcome === "reject" ? ["rejected", "i-x", "Rejected"] : x.outcome === "forward" ? ["forwarded", "i-forward", "Forwarded"] : ["approved", "i-check", "Approved"];
+      const view = `<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>`;
       const more = `<button class="task__more" type="button" data-ib="more" aria-haspopup="menu" aria-label="More actions for ${escapeHtml(x.title)}">&#8942;</button>`;
       const side = x.done
-        ? `<span class="ib-status ib-status--${o[0]}">${icon(o[1], "ico ico--xs")}${o[2]}</span>`
+        ? `<span class="ib-status ib-status--${o[0]}">${icon(o[1], "ico ico--xs")}${o[2]}</span>${view}`
         : x.rfi
-        ? `${due}<div class="task__actions"><button class="ib-act ib-act--rfi" type="button" data-ib="rfi">${icon("i-info", "ico ico--xs")}Update RFI</button>${more}</div>`
-        : `${due}<div class="task__actions"><button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button>${more}</div>`;
+        ? `${due}<div class="task__actions">${view}<button class="ib-act ib-act--rfi" type="button" data-ib="rfi">${icon("i-info", "ico ico--xs")}Update RFI</button>${more}</div>`
+        : `${due}<div class="task__actions">${view}<button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button>${more}</div>`;
       return `<li class="${cls}"${style} data-id="${x.id}">${ibCheck(x)}<span class="app-mark app-mark--${sourceMarks[x.key]}">${x.key === "sap" ? "SAP" : sourceNames[x.key].slice(0, 2)}</span>
         <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.key]}</span>${x.rtype ? `<span>${escapeHtml(x.rtype)}</span>` : ""}<span>${escapeHtml(x.detail)}</span></p></div>
         <div class="ib-row__side">${side}</div></li>`;
@@ -5164,6 +5179,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
   function ibStat() {
     const T = IB_TABS[ib.tab];
     $("#ib-stat-icon use").setAttribute("href", `#${T.icon}`);
+    $("#ib-avg").hidden = ib.tab !== "inbox";
     $("#ib-stat-label").textContent = ib.tab === "history" && ib.scope === "assigned" ? "Acted on" : T.stat;
     ibNum(ibStatNum, ib.tab === "history" ? ibOf("history").length : ibCount(ib.tab));
     let sub = "";
@@ -5171,7 +5187,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
       const open = ibTasks().filter((x) => !x.done);
       const overdue = open.filter((x) => $(".due--overdue", x.row)).length;
       const today = open.filter((x) => $(".due--today", x.row)).length;
-      sub = `${overdue} overdue · ${today} due today · average action time 1 hr 35 mins`;
+      sub = `${overdue} overdue · ${today} due today`;
     } else if (ib.tab === "draft") {
       const d = ib.items.filter((x) => x.state === "draft");
       sub = d.length ? `Last edited ${ibAgo(Math.min(...d.map((x) => x.ago)))}` : "No drafts — start one with New request";
@@ -5542,15 +5558,16 @@ html.is-locked, .is-locked body { overflow: hidden; }
   ibPop.className = "ib-pop"; ibPop.setAttribute("role", "menu"); ibPop.hidden = true;
   function ibPopClose() {
     if (ibPop.hidden) return false;
-    ibPop.hidden = true; ibPop.remove();
+    ibPop.hidden = true; ibPop.closest(".ib-row")?.classList.remove("has-pop"); ibPop.remove();
     if (ibPop.owner && ibPop.owner.isConnected) ibPop.owner.setAttribute("aria-expanded", "false");
     return true;
   }
   function ibPopOpen(btn) {
     ibPopClose();
     ibPop.owner = btn; btn.setAttribute("aria-expanded", "true");
-    ibPop.innerHTML = `<button type="button" role="menuitem" data-pop="review">${icon("i-eye", "ico ico--sm")}Review details</button><button type="button" role="menuitem" data-pop="rfi">${icon("i-info", "ico ico--sm")}Request more info</button><button type="button" role="menuitem" data-pop="forward">${icon("i-forward", "ico ico--sm")}Forward</button>`;
+    ibPop.innerHTML = `<button type="button" role="menuitem" data-pop="rfi">${icon("i-info", "ico ico--sm")}Request more info</button><button type="button" role="menuitem" data-pop="forward">${icon("i-forward", "ico ico--sm")}Forward</button>`;
     btn.closest(".ib-row").appendChild(ibPop);
+    btn.closest(".ib-row").classList.add("has-pop");
     ibPop.hidden = false;
     $("button", ibPop).focus();
   }
@@ -5573,7 +5590,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
       if (act === "more") { if (ibPop.owner === btn && !ibPop.hidden) ibPopClose(); else ibPopOpen(btn); return; }
       const owner = ibPop.owner;
       ibPopClose();
-      if (act === "review") openDrawer("task", row);
+      if (act === "view") openDrawer(row.classList.contains("is-done") ? "assigned" : "task", row.classList.contains("is-done") ? ibAssigned().find((y) => y.id === li.dataset.id) : row);
       else if (act === "approve") confirmApprove([row]);
       else if (act === "reject") confirmReject(row);
       else if (act === "rfi") openRfi(row);

@@ -1171,6 +1171,14 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .ib-empty p { display: grid; gap: 2px; font-size: var(--fs-support); }
 .ib-empty strong { font-family: var(--font-display); font-size: 1rem; color: var(--ink); }
 .ib-foot { display: flex; justify-content: space-between; gap: 16px; margin-top: 16px; padding: 0 4px; font-size: var(--fs-meta); color: var(--slate-2); }
+/* Inbox — average action time */
+.ib-avg { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 24px 20px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--amber); box-shadow: var(--sh-1); }
+.ib-avg[hidden] { display: none; }
+.ib-avg__num { font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.ib-avg__num small { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.ib-avg__label { margin-top: 8px; font-size: var(--fs-support); color: var(--slate); }
+.ib-avg__icon { display: grid; place-items: center; flex: none; width: 56px; height: 56px; border-radius: var(--r-icon); background: var(--amber-soft); color: var(--amber-fg); }
+.ib-avg__icon .ico { width: 26px; height: 26px; }
 /* Inbox — selecting rows, the row menu, scope and RFI states */
 .ib-head { align-items: center; }
 .ib-head.has-all { padding-left: 18px; }
@@ -1195,6 +1203,7 @@ kbd, .faqs__a kbd { padding: 1px 6px; border-radius: var(--r-2xs); border: 1px s
 .ib-scope + .ib-head { padding-top: 14px; }
 .ib-filter__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 4px; }
 .ib-filter .menu__panel { max-height: min(76vh, 560px); overflow: auto; }
+.ib-row.has-pop { z-index: 9; }
 .ib-pop { position: absolute; z-index: 8; top: calc(100% - 10px); right: 16px; display: grid; min-width: 210px; padding: 6px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-2); }
 .ib-pop button { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: var(--r-sm); font-size: var(--fs-support); font-weight: 500; text-align: left; color: var(--ink-2); transition: background-color var(--t-fast); }
 .ib-pop button:hover, .ib-pop button:focus-visible { background: var(--surface-2); color: var(--ink); }

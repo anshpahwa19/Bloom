@@ -1073,12 +1073,13 @@
     if (x.kind === "task") {
       const due = $(".due", x.row).outerHTML;
       const o = x.outcome === "reject" ? ["rejected", "i-x", "Rejected"] : x.outcome === "forward" ? ["forwarded", "i-forward", "Forwarded"] : ["approved", "i-check", "Approved"];
+      const view = `<button class="ib-act" type="button" data-ib="view">${icon("i-eye", "ico ico--xs")}View</button>`;
       const more = `<button class="task__more" type="button" data-ib="more" aria-haspopup="menu" aria-label="More actions for ${escapeHtml(x.title)}">&#8942;</button>`;
       const side = x.done
-        ? `<span class="ib-status ib-status--${o[0]}">${icon(o[1], "ico ico--xs")}${o[2]}</span>`
+        ? `<span class="ib-status ib-status--${o[0]}">${icon(o[1], "ico ico--xs")}${o[2]}</span>${view}`
         : x.rfi
-        ? `${due}<div class="task__actions"><button class="ib-act ib-act--rfi" type="button" data-ib="rfi">${icon("i-info", "ico ico--xs")}Update RFI</button>${more}</div>`
-        : `${due}<div class="task__actions"><button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button>${more}</div>`;
+        ? `${due}<div class="task__actions">${view}<button class="ib-act ib-act--rfi" type="button" data-ib="rfi">${icon("i-info", "ico ico--xs")}Update RFI</button>${more}</div>`
+        : `${due}<div class="task__actions">${view}<button class="task__approve" type="button" data-ib="approve">${icon("i-check", "ico ico--xs")}Approve</button><button class="task__reject" type="button" data-ib="reject">${icon("i-x", "ico ico--xs")}Reject</button>${more}</div>`;
       return `<li class="${cls}"${style} data-id="${x.id}">${ibCheck(x)}<span class="app-mark app-mark--${sourceMarks[x.key]}">${x.key === "sap" ? "SAP" : sourceNames[x.key].slice(0, 2)}</span>
         <div class="ib-row__body"><p class="ib-row__title">${escapeHtml(x.title)}</p><p class="ib-row__meta"><span>${sourceNames[x.key]}</span>${x.rtype ? `<span>${escapeHtml(x.rtype)}</span>` : ""}<span>${escapeHtml(x.detail)}</span></p></div>
         <div class="ib-row__side">${side}</div></li>`;
@@ -1122,6 +1123,7 @@
   function ibStat() {
     const T = IB_TABS[ib.tab];
     $("#ib-stat-icon use").setAttribute("href", `#${T.icon}`);
+    $("#ib-avg").hidden = ib.tab !== "inbox";
     $("#ib-stat-label").textContent = ib.tab === "history" && ib.scope === "assigned" ? "Acted on" : T.stat;
     ibNum(ibStatNum, ib.tab === "history" ? ibOf("history").length : ibCount(ib.tab));
     let sub = "";
@@ -1129,7 +1131,7 @@
       const open = ibTasks().filter((x) => !x.done);
       const overdue = open.filter((x) => $(".due--overdue", x.row)).length;
       const today = open.filter((x) => $(".due--today", x.row)).length;
-      sub = `${overdue} overdue · ${today} due today · average action time 1 hr 35 mins`;
+      sub = `${overdue} overdue · ${today} due today`;
     } else if (ib.tab === "draft") {
       const d = ib.items.filter((x) => x.state === "draft");
       sub = d.length ? `Last edited ${ibAgo(Math.min(...d.map((x) => x.ago)))}` : "No drafts — start one with New request";
@@ -1500,15 +1502,16 @@
   ibPop.className = "ib-pop"; ibPop.setAttribute("role", "menu"); ibPop.hidden = true;
   function ibPopClose() {
     if (ibPop.hidden) return false;
-    ibPop.hidden = true; ibPop.remove();
+    ibPop.hidden = true; ibPop.closest(".ib-row")?.classList.remove("has-pop"); ibPop.remove();
     if (ibPop.owner && ibPop.owner.isConnected) ibPop.owner.setAttribute("aria-expanded", "false");
     return true;
   }
   function ibPopOpen(btn) {
     ibPopClose();
     ibPop.owner = btn; btn.setAttribute("aria-expanded", "true");
-    ibPop.innerHTML = `<button type="button" role="menuitem" data-pop="review">${icon("i-eye", "ico ico--sm")}Review details</button><button type="button" role="menuitem" data-pop="rfi">${icon("i-info", "ico ico--sm")}Request more info</button><button type="button" role="menuitem" data-pop="forward">${icon("i-forward", "ico ico--sm")}Forward</button>`;
+    ibPop.innerHTML = `<button type="button" role="menuitem" data-pop="rfi">${icon("i-info", "ico ico--sm")}Request more info</button><button type="button" role="menuitem" data-pop="forward">${icon("i-forward", "ico ico--sm")}Forward</button>`;
     btn.closest(".ib-row").appendChild(ibPop);
+    btn.closest(".ib-row").classList.add("has-pop");
     ibPop.hidden = false;
     $("button", ibPop).focus();
   }
@@ -1531,7 +1534,7 @@
       if (act === "more") { if (ibPop.owner === btn && !ibPop.hidden) ibPopClose(); else ibPopOpen(btn); return; }
       const owner = ibPop.owner;
       ibPopClose();
-      if (act === "review") openDrawer("task", row);
+      if (act === "view") openDrawer(row.classList.contains("is-done") ? "assigned" : "task", row.classList.contains("is-done") ? ibAssigned().find((y) => y.id === li.dataset.id) : row);
       else if (act === "approve") confirmApprove([row]);
       else if (act === "reject") confirmReject(row);
       else if (act === "rfi") openRfi(row);
