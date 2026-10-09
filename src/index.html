@@ -1107,9 +1107,11 @@
       <header class="drawer__head">
         <button class="icon-btn drawer__back" type="button" data-close-drawer aria-label="Back" hidden><svg class="ico"><use href="#i-chevron-left"/></svg></button>
         <h2 class="h3" id="drawer-title">Drawer</h2>
+        <span class="drawer__meta" id="drawer-meta"></span>
         <button class="icon-btn icon-btn--bordered drawer__close" type="button" data-close-drawer aria-label="Close panel"><svg class="ico"><use href="#i-x"/></svg></button>
       </header>
       <div class="drawer__body" id="drawer-body"></div>
+      <footer class="drawer__foot" id="drawer-foot" hidden></footer>
     </section>
   </div>
 
@@ -1161,7 +1163,7 @@
       </header>
       <div class="wz__main" id="wz-main">
         <div class="wz__rail">
-          <p class="wz__num" id="wz-num" aria-hidden="true">01</p>
+          <div class="wz__numrow"><button class="wz__back" type="button" id="wz-back" aria-label="Previous step" hidden><svg class="ico"><use href="#i-chevron-left"/></svg></button><p class="wz__num" id="wz-num" aria-hidden="true">01</p></div>
           <h2 class="wz__title" id="wz-title">Memo details</h2>
           <p class="wz__desc" id="wz-desc"></p>
         </div>

@@ -68,15 +68,25 @@
     (`#flow-modal`); the Attention list and the Inbox share it, so there is
     one path. New request = `REQUEST_TYPES` picker (`#rq-pick`). Only TCDF,
     Internal Memo and RFP are Bloom's own workflows (drafts, tracking): they
-    open the three-step Create wizard (`#wizard-modal`, "Create Internal
-    Memo / TCDF / RFP" in `src/app.js`: details with a rich-text
-    justification, approvers with an optional signing order, attachments,
-    then a success dialog with the `REQ-2026-000N` reference). The other
-    types use the short one-step form (`#request-modal`) and are handled in
+    open the Create wizard (`#wizard-modal`, "Create Internal
+    Memo / TCDF / RFP" in `src/app.js`; `WZ_FLOWS` holds the steps): the
+    memo has details, approvers, attachments; TCDF and RFP have submission
+    details, request details, approvers, attachments. TCDF has the category,
+    project, vendor, WBS, amount and budget fields; RFP has dates, a PO
+    lookup that fills and locks the payment fields, a duplicate-invoice
+    check, line items and an approval checklist per approver. Dropdowns are
+    the one `.combo`. Then a success dialog with the `REQ-2026-000N`
+    reference. The other types use the short one-step form
+    (`#request-modal`) and are handled in
     their app. Step buttons stay disabled until the step is valid; Cancel
     asks before discarding changes. History has
     "Raised by me" and "Assigned to me" (what you approved, rejected or
     forwarded). Nothing is stored or sent.
+  - Viewing a request opens the wide detail drawer (`dvHTML` in `src/app.js`):
+    request card, "Request information" with Show more detail, approval
+    history, attachments and, for Inbox rows, the Take action menu (Approve,
+    Reject, RFI, Forward). One Inbox row starts with an RFI waiting for you.
+    Inbox tasks take their sample details from `TASK_INFO`.
   - Bloom GPT (`#gpt-page`, "Bloom GPT" section of `src/app.js`) answers
     from the page's data through `GPT_SKILLS`, picked by `GPT_ROUTES` (first
     match wins, order matters), and acts through `GPT_ACTS`. Anything that

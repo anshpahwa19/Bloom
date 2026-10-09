@@ -742,6 +742,65 @@
     setTimeout(() => (email || text).focus(), 80);
   }
 
+  // ---- request detail view: card, information, history, attachments, Take action ----
+  const TASK_INFO = {
+    "Discount approval": { name: "Discount Approval", by: "Layla Hassan", role: "Account Executive, Sales", main: [["Account", "Al Noor Trading"], ["Opportunity", "Renewal FY27"], ["List price", "AED 480,000"], ["Discount", "12%"], ["Net amount", "AED 422,400"]], more: [["Contract term", "24 months"], ["Payment terms", "Net 45"], ["Approval limit", "10%, needs a second approver"]] },
+    "Exception review": { name: "Exception Review", by: "Finance automation", role: "UiPath, Invoice Matcher", main: [["Process", "Invoice Matcher"], ["Paused exceptions", "3"], ["Queue", "Finance-AP"], ["Paused since", "04:10 today"]], more: [["Robot", "BOT-FIN-07"], ["Failure reason", "Vendor not found"], ["Batch", "INV-2026-0914"]] },
+    "Purchase requisition": { name: "Purchase Requisition", by: "Omar Haddad", role: "Procurement Lead", main: [["Requisition", "PR-40821"], ["Plant", "Mussafah"], ["Material", "Site equipment"], ["Value", "AED 86,400"]], more: [["Cost centre", "CC-2210"], ["Delivery date", "30 Oct 2026"], ["Vendor", "Mussafah Steel Trading"]] },
+    "Onboarding checklist": { name: "Onboarding Checklist", by: "Projects Affairs team", role: "People & Culture", main: [["Employee", "Abdulazeez Aladwan"], ["Joining date", "1 Oct 2026"], ["Department", "Projects Affairs"], ["Checklist", "7 of 9 done"]], more: [["Manager", "Mathew Raymond"], ["Location", "Abu Dhabi"], ["Open items", "Laptop, building access"]] },
+    "Forecast review": { name: "Forecast Review", by: "Sales Operations", role: "Shared the forecast", main: [["Quarter", "Q3"], ["Pipeline", "AED 12.4M"], ["Commit", "AED 4.1M"], ["Review call", "Thursday"]], more: [["Best case", "AED 6.8M"], ["Deals at risk", "5"], ["Coverage", "3.0x"]] },
+    "Document validation": { name: "Document Validation", by: "Document Understanding", role: "UiPath", main: [["Contracts", "12"], ["Fields extracted", "148"], ["Low confidence", "9"], ["Queue", "Contracts-DU"]], more: [["Oldest item", "2 days"], ["Reviewer group", "Legal Ops"]] },
+    "Travel request": { name: "Travel Request", by: "Mathew Raymond", role: "Director, Projects", main: [["Traveller", "Mathew Raymond"], ["Route", "Abu Dhabi to London"], ["Dates", "12 to 16 Oct 2026"], ["Estimated cost", "AED 6,200"]], more: [["Purpose", "Supplier site visit"], ["Class", "Economy"], ["Hotel", "3 nights"]] },
+    "Goods receipt": { name: "Goods Receipt", by: "Warehouse team", role: "SAP", main: [["Goods receipt", "GR-11093"], ["Purchase order", "PO-4500112"], ["Warehouse", "Mussafah"], ["Items", "14"]], more: [["Received on", "22 Sep 2026"], ["Vendor", "Gulf Civil Works LLC"], ["Variance", "None"]] },
+    "Opportunity update": { name: "Opportunity Update", by: "Salesforce", role: "Sales Operations", main: [["Opportunities", "4 stalled"], ["Oldest close date", "14 Aug 2026"], ["Owner team", "Sales"], ["Stage", "Negotiation"]], more: [["Value at stake", "AED 1.9M"], ["Last activity", "31 days ago"]] }
+  };
+  const DV_PILLS = { progress: ["ib-status--review", "i-clock", "In-Progress"], rfi: ["ib-status--rfi", "i-info", "RFI"], returned: ["ib-status--returned", "i-return", "Returned"], approved: ["ib-status--approved", "i-check", "Approved"], rejected: ["ib-status--rejected", "i-x", "Rejected"], withdrawn: ["ib-status--withdrawn", "i-return", "Withdrawn"], forwarded: ["ib-status--forwarded", "i-forward", "Forwarded"], draft: ["ib-status--forwarded", "i-edit", "Draft"] };
+  const dvPill = (k) => { const p = DV_PILLS[k] || DV_PILLS.progress; return `<span class="ib-status ${p[0]}">${icon(p[1], "ico ico--xs")}${p[2]}</span>`; };
+  const HIST = { approved: ["i-check", "Approved"], current: ["i-clock", "In-Progress"], rfi: ["i-info", "RFI"], returned: ["i-return", "Returned"], rejected: ["i-x", "Rejected"], awaiting: ["i-user", "Awaiting"] };
+  const dvInitials = (n) => n.replace(/\(.*\)/, "").trim().split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  function dvHTML(o) {
+    const kv = (rows) => rows.map(([k, v]) => `<div class="dv__kv"><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+    const rich = o.textHtml ? cleanHtml(o.textHtml) : o.text ? `<p>${escapeHtml(o.text)}</p>` : "";
+    return `<div class="dv">
+      <div class="dv__col">
+        <section class="dv__card dv__card--head" aria-label="Request"><div class="dv__top"><span class="dv__ref">${escapeHtml(o.ref)}</span><span class="dv__ago">${escapeHtml(o.ago)}</span></div>
+          <h3 class="dv__h">${escapeHtml(o.heading)}</h3>
+          <div class="dv__who">${o.who ? `<span class="who__av" aria-hidden="true">${escapeHtml(dvInitials(o.who))}</span><span class="who__txt"><b>${escapeHtml(o.who)}</b><small>${escapeHtml(o.role || "")}</small></span>` : "<span></span>"}<span class="dv__lead">${o.lead || ""}</span></div></section>
+        ${o.rfi ? `<p class="d-note">${icon("i-info", "ico ico--sm")}<b>${escapeHtml(o.rfi.from)}</b> asked for more information: ${escapeHtml(o.rfi.subject)}.</p>` : ""}
+        ${o.note ? `<p class="d-note">${escapeHtml(o.note)}</p>` : ""}
+        ${o.parallel ? `<p class="d-note">${icon("i-info", "ico ico--sm")}All approvers were notified at the same time.</p>` : ""}
+        <section class="dv__card" aria-label="Request information"><h3 class="dv__sec">${icon("i-doc", "ico ico--sm")}Request information</h3>
+          <dl class="dv__list">${kv(o.main)}</dl>
+          ${o.more && o.more.length ? `<dl class="dv__list dv__more" hidden>${kv(o.more)}</dl><button class="dv__toggle" type="button" data-dv-more aria-expanded="false">${icon("i-chevron-down", "ico ico--sm")}<span>Show more detail</span></button>` : ""}</section>
+        ${rich ? `<section class="dv__card" aria-label="Business justification"><h3 class="dv__sec">${icon("i-edit", "ico ico--sm")}Business justification</h3><div class="dv__rich">${rich}</div></section>` : ""}
+      </div>
+      <aside class="dv__col"><section class="dv__card" aria-label="Approval history"><h3 class="dv__sec">${icon("i-check", "ico ico--sm")}Approval history</h3>
+        ${o.history && o.history.length ? `<ol class="hist">${o.history.map((h) => { const s = HIST[h.state] || HIST.awaiting; return `<li class="hist__it hist__it--${h.state}"><span class="hist__dot" aria-hidden="true">${icon(s[0], "ico ico--xs")}</span><div><p class="hist__n"><b>${escapeHtml(h.name)}</b>${h.comment ? `<span class="hist__c" title="${escapeHtml(h.comment)}" aria-label="Comment: ${escapeHtml(h.comment)}">${icon("i-info", "ico ico--xs")}</span>` : ""}</p><p class="hist__s">${escapeHtml(h.note || s[1])}</p>${h.tags ? `<p class="hist__t">${escapeHtml(h.tags)}</p>` : ""}${h.when ? `<p class="hist__w">${escapeHtml(h.when)}</p>` : ""}</div></li>`; }).join("")}</ol>` : `<p class="dv__empty">Approvers are added when the request is submitted.</p>`}</section></aside>
+      <section class="dv__card dv__wide" aria-label="Attachments"><h3 class="dv__sec">${icon("i-upload", "ico ico--sm")}Attachment</h3>
+        ${o.files && o.files.length ? `<div class="dvf__head" aria-hidden="true"><span>File name</span><span>Uploaded by</span><span>Date &amp; time</span><span>Action</span></div><ul class="dvf__list">${o.files.map((f, i) => `<li class="dvf__row"><span class="dvf__name" data-label="File name">${escapeHtml(f.name)}</span><span data-label="Uploaded by">${escapeHtml(f.by)}</span><span data-label="Date &amp; time">${escapeHtml(f.when)}</span><span class="dvf__act"><button class="att__btn att__btn--view" type="button" data-dv-view="${i}" aria-label="View ${escapeHtml(f.name)}">${icon("i-eye", "ico ico--sm")}</button></span></li>`).join("")}</ul>` : `<p class="dv__empty">No attachments.</p>`}</section>
+    </div>`;
+  }
+  const taHTML = (acts) => `<div class="ta"><div class="ta__menu" id="ta-menu" role="menu" hidden>${acts.map(([k, l, i]) => `<button class="ta__opt ta__opt--${k}" type="button" role="menuitem" data-task-act="${k}">${icon(i, "ico ico--sm")}${l}</button>`).join("")}</div><button class="btn btn--primary ta__btn" id="ta-btn" type="button" aria-haspopup="menu" aria-expanded="false">${icon("i-bolt", "ico ico--sm")}Take action</button></div>`;
+  // what a request shows under "Request information", from what was typed in the form
+  function reqFacts(x) {
+    const d = x.data || {}, main = [], more = [];
+    const add = (a, k, v) => { if (v) a.push([k, escapeHtml(String(v))]); };
+    if (x.type === "tcdf") {
+      add(main, "Category", d.category); add(main, "Sub category", d.sub); add(main, "Reference value", d.ref); add(main, "Project", d.project); add(main, "Vendor name", d.vendor);
+      add(more, "WBS code", d.wbs); add(more, "Amount", fmtMoney(d.cur, d.amount)); add(more, "In approved budget", d.budget); add(more, "Budget/MCR line reference no.", d.budgetRef);
+    } else if (x.type === "rfp") {
+      add(main, "Project name", d.project); add(main, "Department", d.dept); add(main, "Received date", fmtDay(d.received)); add(main, "Due date", fmtDay(d.due)); add(main, "PO number", d.po);
+      add(more, "Vendor invoice number", d.invoice); add(more, "Payment project", d.payProject); add(more, "Stakeholder name", d.stakeholder); add(more, "Stakeholder type", d.stype); add(more, "Amount", fmtMoney(d.cur, d.amount));
+      if (d.lines && d.lines.some((l) => l.item)) more.push(["Line items", d.lines.filter((l) => l.item).map((l) => `${escapeHtml(l.item)} · ${escapeHtml(fmtMoney(l.cur, l.amount))}`).join("<br>")]);
+    } else { add(main, "Company", x.company); add(main, "Department", x.dept); }
+    if (!main.length) { add(main, "Company", x.company); add(main, "Department", x.dept); }
+    if (x.approvers && x.approvers.length) add(more, "Approval", x.parallel ? "All approvers at once" : "One after another");
+    return { main, more };
+  }
+
+  const drawerPanel = $(".drawer__panel");
+  const drawerMeta = $("#drawer-meta");
+  const drawerFoot = $("#drawer-foot");
   const drawerBack = $(".drawer__back");
   const drawerClose = $(".drawer__close");
 
@@ -776,23 +835,30 @@
         <div class="d-actions"><button class="btn btn--primary" type="button" data-drawer="support">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
     }),
     task: (row) => {
-      const src = row.dataset.source;
-      const title = $(".task__title", row).textContent;
-      const detail = $(".task__meta span", row).textContent;
-      const due = $(".due", row).textContent.trim();
+      const src = row.dataset.source, idx = taskRows().indexOf(row);
+      const info = TASK_INFO[row.dataset.rtype] || { name: "Approval", by: "", role: "", main: [], more: [] };
+      const rfiFrom = row.dataset.rfiFrom;
+      const state = row.classList.contains("is-rfi") ? "rfi" : "current";
+      const history = [
+        { name: "Fatima Al Zaabi", state: "approved", when: "12 Jun 2026" },
+        { name: "Omar Khalil", state: "approved", when: "16 Jun 2026", comment: "Checked against the approved limit." },
+        { name: "Rashid Khan (you)", state, when: "19 Jun 2026", note: state === "rfi" ? (rfiFrom ? "RFI to (You)" : "RFI sent") : "In-Progress" },
+        { name: "Sarah Mitchell", state: "awaiting" }
+      ];
+      const acts = [["approve", "Approve", "i-check"], ["reject", "Reject", "i-x"], ...(rfiFrom ? [] : [["rfi", "RFI", "i-info"]]), ["forward", "Forward", "i-forward"]];
       return {
-        title: "Review task",
-        html: `<div class="d-task__row"><span class="app-mark app-mark--lg app-mark--${sourceMarks[src]}">${src === "sap" ? "SAP" : sourceNames[src].slice(0, 2)}</span><span class="tag">${sourceNames[src]}</span></div>
-          <p class="d-task__title">${escapeHtml(title)}</p>
-          <dl class="d-facts"><div><dt>Context</dt><dd>${escapeHtml(detail)}</dd></div><div><dt>Due</dt><dd>${escapeHtml(due)}</dd></div></dl>
-          <p class="d-note">Approving here updates the task in ${sourceNames[src]}. You can also open it there for the full record.</p>
-          <div class="d-actions">
-            <button class="btn btn--primary" type="button" id="approve-task"><span class="btn__label">Approve</span><span class="spinner" aria-hidden="true"></span></button>
-            <button class="btn btn--quiet" type="button" data-toast="Opening ${sourceNames[src]} in a new tab…">Open in ${sourceNames[src]} ${icon("i-external", "ico ico--sm")}</button>
-            <button class="btn btn--quiet" type="button" data-task-act="reject">Reject</button>
-            <button class="btn btn--quiet" type="button" data-task-act="rfi">Request info</button>
-            <button class="btn btn--quiet" type="button" data-task-act="forward">Forward</button>
-          </div>`
+        title: info.name, wide: true,
+        meta: `${dvPill(state === "rfi" ? "rfi" : "progress")}<span class="dv__created">Created 12 Jan 2024</span>`,
+        html: dvHTML({
+          ref: `REQ-${1041 + idx}`, ago: `${(idx + 1) * 15} mins ago`, heading: $(".task__title", row).textContent, who: info.by, role: info.role,
+          lead: `<span class="app-mark app-mark--lg app-mark--${sourceMarks[src]}" aria-hidden="true">${src === "sap" ? "SAP" : sourceNames[src].slice(0, 2)}</span>`,
+          main: info.main, more: info.more, history,
+          files: [{ name: "Internal Information Notice.doc", by: info.by || "Requester", when: "30 Jun 2026 | 12:30 PM" }],
+          rfi: rfiFrom ? { from: rfiFrom, subject: row.dataset.rfiSubject } : null
+        }),
+        foot: rfiFrom
+          ? `<button class="btn btn--primary" type="button" data-task-act="respond">${icon("i-info", "ico ico--sm")}Respond to RFI</button>${taHTML(acts)}`
+          : taHTML(acts)
       };
     },
     assigned: (x) => ({
@@ -806,31 +872,28 @@
     request: (x) => {
       const t = IB_TYPES[x.type];
       const steps = x.steps || [];
-      const stateOf = (i) => {
-        if (x.state === "history") {
-          if (x.outcome === "approved") return "done";
-          if (x.outcome === "rejected") return i < steps.length - 1 ? "done" : "rejected";
-          return i === 0 ? "done" : "skipped";
-        }
-        return i + 1 < x.step ? "done" : i + 1 === x.step ? (x.status === "returned" ? "returned" : "current") : "todo";
-      };
-      const stepIcon = { done: "i-check", current: "i-clock", returned: "i-return", rejected: "i-x", todo: "i-user", skipped: "i-user" };
-      const stepText = { done: "Approved", current: "Reviewing now", returned: "Sent it back to you", rejected: "Rejected", todo: "Next", skipped: "Not needed" };
+      const facts = reqFacts(x);
+      const label = (REQUEST_TYPES.find((d) => d.key === x.type) || {}).short || t.label;
+      const hist = steps.map((who, i) => {
+        const tags = ((x.checks || {})[who] || []).join(", ");
+        if (x.state === "history") return { tags, name: who, state: x.outcome === "approved" || i < steps.length - 1 && x.outcome === "rejected" ? "approved" : x.outcome === "rejected" ? "rejected" : "awaiting", when: i === 0 || x.outcome === "approved" ? x.closed : "" };
+        const done = i + 1 < x.step, cur = i + 1 === x.step;
+        return { tags, name: who, state: done ? "approved" : cur ? (x.status === "returned" ? "returned" : x.status === "rfi" ? "rfi" : x.parallel ? "current" : "current") : x.parallel ? "current" : "awaiting", when: done ? "" : cur || x.parallel ? "" : "Awaiting", note: cur && x.status === "rfi" ? "RFI to (You)" : "" };
+      });
+      const status = x.state === "history" ? x.outcome : x.state === "draft" ? "draft" : x.status === "returned" ? "returned" : x.status === "rfi" ? "rfi" : "progress";
+      const mine = x.state === "mine";
       return {
-        title: x.state === "draft" ? "Draft" : "Request details",
-        html: `<div class="d-task__row"><span class="ib-row__icon" style="--c: var(--viz-${t.slot})">${icon("i-doc")}</span><span class="tag">${t.label}</span>${ibStatusPill(x)}</div>
-          <p class="d-task__title">${escapeHtml(x.title)}</p>
-          <dl class="d-facts">
-            <div><dt>${x.state === "history" ? "Closed" : x.state === "draft" ? "Last edited" : "Submitted"}</dt><dd>${x.state === "history" ? x.closed : ibAgo(x.ago)}</dd></div>
-            <div><dt>Reference</dt><dd>#${x.ref}</dd></div>
-            ${x.company ? `<div><dt>Company</dt><dd>${escapeHtml(x.company)}</dd></div>` : ""}${x.dept ? `<div><dt>Department</dt><dd>${escapeHtml(x.dept)}</dd></div>` : ""}${x.files && x.files.length ? `<div><dt>Attachments</dt><dd>${x.files.length} file${x.files.length === 1 ? "" : "s"}</dd></div>` : ""}
-          </dl>
-          ${x.parallel ? `<p class="d-note">${icon("i-info", "ico ico--sm")}All approvers were notified at the same time.</p>` : ""}
-          ${x.details ? `<p class="d-note">${escapeHtml(x.details)}</p>` : ""}
-          ${x.note ? `<p class="d-note">${escapeHtml(x.note)}</p>` : ""}
-          ${x.status === "rfi" && x.rfi ? `<p class="d-note">${icon("i-info", "ico ico--sm")}<b>${escapeHtml(x.rfi.from)}</b> asked for more information: ${escapeHtml(x.rfi.subject)}.</p>` : ""}
-          ${steps.length ? `<h3 class="d-faq__label">Approval route</h3><ol class="d-steps">${steps.map((who, i) => { const s = stateOf(i); return `<li class="d-step d-step--${s}"><span class="d-step__dot">${icon(stepIcon[s])}</span><p><strong>${escapeHtml(who)}</strong><span>${stepText[s]}</span></p></li>`; }).join("")}</ol>` : ""}
-          <div class="d-actions">${x.state === "mine" && x.status === "rfi" ? `<button class="btn btn--primary" type="button" data-ib-drawer="respond" data-id="${x.id}">${icon("i-info", "ico ico--sm")}Respond to ${escapeHtml(x.rfi.from.split(" ")[0])}</button>` : ""}${x.state === "mine" && x.status === "review" ? `<button class="btn btn--primary" type="button" data-ib-drawer="remind" data-id="${x.id}">${icon("i-bellring", "ico ico--sm")}Remind ${escapeHtml(steps[x.step - 1] || "approver")}</button>` : ""}<button class="btn btn--quiet" type="button" data-close-drawer-inline>Close</button></div>`
+        title: label, wide: true,
+        meta: `${dvPill(status)}<span class="dv__created">${x.state === "draft" ? "Last edited" : x.state === "history" ? "Closed" : "Created"} ${x.state === "history" ? x.closed : ibAgo(x.ago)}</span>`,
+        html: dvHTML({
+          ref: x.ref, ago: x.state === "history" ? `Closed ${x.closed}` : ibAgo(x.ago), heading: x.title, who: "Rashid Khan", role: "Sr. Engineer, Digital Platforms",
+          lead: `<span class="ib-row__icon" style="--c: var(--viz-${t.slot})">${icon("i-doc")}</span>`,
+          main: facts.main, more: facts.more, text: x.details, textHtml: x.detailsHtml, history: hist, note: x.note,
+          parallel: x.parallel, files: (x.files || []).map((f) => ({ name: `${f.name}.${f.ext || ""}`.replace(/\.$/, ""), by: "You", when: f.when })),
+          rfi: x.status === "rfi" && x.rfi ? { from: x.rfi.from, subject: x.rfi.subject } : null
+        }),
+        foot: mine && x.status === "rfi" ? `<button class="btn btn--primary" type="button" data-ib-drawer="respond" data-id="${x.id}">${icon("i-info", "ico ico--sm")}Respond to ${escapeHtml(x.rfi.from.split(" ")[0])}</button>`
+          : mine && x.status === "review" ? `<button class="btn btn--primary" type="button" data-ib-drawer="remind" data-id="${x.id}">${icon("i-bellring", "ico ico--sm")}Remind ${x.parallel ? "approvers" : escapeHtml(steps[x.step - 1] || "approver")}</button>` : ""
       };
     }
   };
@@ -843,6 +906,11 @@
     if (!wasOpen) lastFocus = document.activeElement;
     drawerTitle.textContent = view.title;
     drawerBody.innerHTML = view.html;
+    drawerBody.scrollTop = 0;
+    drawerPanel.classList.toggle("is-wide", !!view.wide);
+    drawerMeta.innerHTML = view.meta || "";
+    drawerFoot.hidden = !view.foot;
+    drawerFoot.innerHTML = view.foot || "";
     // A list you step into (Quick links) goes back with a chevron; the rest close with ×
     drawerBack.hidden = !view.back;
     drawerClose.hidden = !!view.back;
@@ -856,17 +924,6 @@
     setTimeout(() => { if (type !== "support" && type !== "itsupport") (view.back ? drawerBack : drawerClose).focus(); }, 60);
 
     if (type === "support" || type === "itsupport") initSupport();
-    if (type === "task") {
-      $("#approve-task").addEventListener("click", (e) => {
-        const btn = e.currentTarget;
-        btn.classList.add("is-loading");
-        $(".btn__label", btn).textContent = "Approving";
-        setTimeout(() => {
-          closeDrawer();
-          quickResolve(ctx, "approve");
-        }, 900);
-      });
-    }
   }
   function closeDrawer() {
     if (!drawer.classList.contains("is-open")) return;
@@ -888,17 +945,33 @@
     if (rfiBtn) openRfi(rfiBtn.closest(".task"));
   });
   $$("[data-close-drawer]").forEach((el) => el.addEventListener("click", closeDrawer));
-  drawerBody.addEventListener("click", (e) => {
+  drawerPanel.addEventListener("click", (e) => {
     if (e.target.closest("[data-close-drawer-inline]")) { closeDrawer(); return; }
     const b = e.target.closest('[data-ib-drawer="remind"]');
     if (b) { const x = ibFind(b.dataset.id); closeDrawer(); if (x) ibRemind(x); }
     const r = e.target.closest('[data-ib-drawer="respond"]');
     if (r) { const x = ibFind(r.dataset.id); closeDrawer(); if (x) openRespond(x); }
+    const more = e.target.closest("[data-dv-more]");
+    if (more) {
+      const list = more.previousElementSibling, open = list.hidden;
+      list.hidden = !open; more.setAttribute("aria-expanded", String(open)); $("span", more).textContent = open ? "Show less detail" : "Show more detail";
+    }
+    const v = e.target.closest("[data-dv-view]");
+    if (v) toast("File previews aren’t part of the prototype", "i-info");
+    const ta = e.target.closest("#ta-btn");
+    if (ta) { const m = $("#ta-menu"), open = m.hidden; m.hidden = !open; ta.setAttribute("aria-expanded", String(open)); if (open) $("button", m).focus(); return; }
     const t = e.target.closest("[data-task-act]");
-    if (t && drawerCtx) { const row = drawerCtx; closeDrawer(); ({ reject: confirmReject, rfi: openRfi, forward: openForward })[t.dataset.taskAct](row); }
+    if (t && drawerCtx) {
+      const row = drawerCtx, act = t.dataset.taskAct;
+      closeDrawer();
+      ({ approve: (r2) => confirmApprove([r2]), reject: confirmReject, rfi: openRfi, forward: openForward, respond: openRfi })[act](row);
+    }
   });
+  document.addEventListener("click", (e) => { const m = $("#ta-menu"); if (m && !m.hidden && !e.target.closest(".ta")) { m.hidden = true; $("#ta-btn").setAttribute("aria-expanded", "false"); } });
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape" || e.target.closest?.("dialog")) return; // dialogs close themselves
+    const ta = $("#ta-menu");
+    if (ta && !ta.hidden) { ta.hidden = true; $("#ta-btn").setAttribute("aria-expanded", "false"); $("#ta-btn").focus(); return; }
     if (isLocked()) return; // the login has no way around it
     if (drawer.classList.contains("is-open")) { closeDrawer(); return; }
     if (ibPopClose()) return;
@@ -1453,6 +1526,10 @@
   }
   function openRfi(row) {
     if (!row || row.classList.contains("is-done")) return;
+    if (row.dataset.rfiFrom) { // someone asked you: this is your reply
+      openRespond({ rfi: { from: row.dataset.rfiFrom, subject: row.dataset.rfiSubject } }, () => { delete row.dataset.rfiFrom; row.classList.remove("is-rfi"); $(".task__rfi", row)?.remove(); });
+      return;
+    }
     const pick = { name: row.dataset.rfiTo || "" };
     const editing = !!pick.name;
     flow({
@@ -1488,14 +1565,17 @@
     });
   }
   // A request of yours is waiting on information somebody asked for
-  function openRespond(x) {
+  function openRespond(x, onDone) {
     if (!x || !x.rfi) return;
     flow({
       ico: "i-info", title: "Request more information", text: `RFI requestor: <b>${escapeHtml(x.rfi.from)}</b>`,
       body: `<p class="flow__ref"><span>RFI</span>${escapeHtml(x.rfi.subject)}</p>${flowField("fl-msg", "Type your message", `<textarea id="fl-msg" rows="4"></textarea>`)}${attachHTML()}`,
       confirm: "Submit", focus: "#fl-msg", setup: () => attachBind($("#fl-file"), $("#fl-files"), $("#fl-file-err")),
       validate: () => flowCheck("fl-msg", "Write a short reply."),
-      done: () => { x.status = "review"; x.rfi = null; toast("Your response has been sent successfully.", "i-check"); renderIb(); }
+      done: () => {
+        if (onDone) onDone(); else { x.status = "review"; x.rfi = null; }
+        toast("Your response has been sent successfully.", "i-check"); renderIb();
+      }
     });
   }
 
@@ -1575,6 +1655,9 @@
   $("#ib-bulk-clear").addEventListener("click", () => { ib.sel.clear(); ibBulk(); $("#ib-all").focus(); });
   $("#ib-bulk-approve").addEventListener("click", () => confirmApprove([...ib.sel].map((id) => taskRows()[Number(id.slice(5))])));
   $("#ib-empty-cta").addEventListener("click", () => openRequestForm());
+
+  // one Inbox request already has an RFI waiting for you ("RFI to (You)")
+  { const seeded = taskRows().pop(); if (seeded) { seeded.dataset.rfiFrom = "Ankur Kushwaha"; seeded.dataset.rfiSubject = "Need SOW Document"; markRfi(seeded); } }
 
   /* New request — pick a type, fill in the details, review, send */
   const rqp = $("#rq-pick");
@@ -1716,24 +1799,59 @@
   rqModal.addEventListener("close", () => { rqBody.innerHTML = ""; });
   $("#ib-new").addEventListener("click", () => openRequestForm());
   /* ---------------------------------------------------------------
-     Create Internal Memo / TCDF / RFP — three steps: details,
-     approvers, attachments (the Create Memo flow). Files are only
-     listed in the tab; nothing is stored or sent.
+     Create Internal Memo / TCDF / RFP. The memo has three steps
+     (details, approvers, attachments); TCDF and RFP have four
+     (submission details, request details, approvers, attachments).
+     Files are only listed in the tab; nothing is stored or sent.
      --------------------------------------------------------------- */
   const wzModal = $("#wizard-modal");
   const wzPanel = $("#wz-panel");
   const wzNext = $("#wz-next");
   const wzDraft = $("#wz-draft");
-  const wz = { item: null, mode: "new", def: null, step: 1, vals: {}, approvers: [], signing: true, files: [], snap: "" };
-  const WZ_COPY = {
-    memo: { crumb: "Create Memo", s1: ["Memo details", "Identify the primary entities and the core objective of this internal memo."], noun: "memo" },
-    tcdf: { crumb: "Create TCDF", s1: ["TCDF details", "Identify the tender, the counterparty and the decision being asked for."], noun: "TCDF" },
-    rfp: { crumb: "Create RFP", s1: ["Payment details", "Identify the payee, the amount and the reason for this payment."], noun: "payment request" }
+  const wz = { item: null, mode: "new", def: null, step: 1, vals: {}, lines: [], locked: false, approvers: [], checks: {}, signing: true, files: [], snap: "" };
+  const WZ_FLOWS = {
+    memo: { crumb: "Create Memo", noun: "memo", steps: [
+      ["details", "Memo details", "Identify the primary entities and the core objective of this internal memo."],
+      ["approvers", "Approvers", "Select the required stakeholders for review."],
+      ["files", "Attachments", "Upload relevant files to provide additional context or reference for this memo."]] },
+    tcdf: { crumb: "TCDF", noun: "TCDF", steps: [
+      ["submission", "Submission Details", "Identify the submission type and core request categorization."],
+      ["request", "Request Details", "Say what is being requested and why."],
+      ["approvers", "Approvers", "Select the required stakeholders for review."],
+      ["files", "Attachments", "Upload relevant files to provide additional context or reference for this TCDF."]] },
+    rfp: { crumb: "RFP", noun: "payment request", steps: [
+      ["submission", "Submission Details", "Identify the submission type and core request categorization."],
+      ["request", "Request Details", "Say what is being requested and why."],
+      ["approvers", "Approvers", "Select the required stakeholders for review."],
+      ["files", "Attachments", "Upload relevant files to provide additional context or reference for this payment request."]] }
   };
+  const wzKey = () => WZ_FLOWS[wz.def.key].steps[wz.step - 1][0];
   const FILE_KINDS = { doc: "Word", docx: "Word", xls: "Excel", xlsx: "Excel", ppt: "PPT", pptx: "PPT" };
   const WZ_BYTES = 10 * 1024 * 1024, WZ_MAX = 10;
   let reqSeq = 0;
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  // Sample lists for the prototype's dropdowns
+  const TCDF_CATEGORIES = ["Bidder List", "Construction Contract", "Purchase order", "Service Agreement", "Others"];
+  const TCDF_SUBS = {
+    "Bidder List": ["Shortlist approval", "Bidder addition", "Evaluation outcome"],
+    "Construction Contract": ["Awards", "Amendment to agreement no.", "Close out", "Variation Order"],
+    "Purchase order": ["New purchase order", "Amendment to purchase order", "Cancellation"],
+    "Service Agreement": ["Awards", "Amendment to agreement no.", "Close out", "Renewal"],
+    Others: ["Others"]
+  };
+  const PROJECTS = ["ADB Boat Parking", "Al - Dhay AMC - BG", "Al Abbar Rectification work of villa", "Al Ain Bloomscape Nursery", "Al Ain Mock up villa", "Saadiyat Marina Phase 2", "Yas Bay Retail Podium"];
+  const VENDORS = ["2U Getsmarter (US) LLC", "360 degree Cloud Technologies LLC", "3C Payment Luxembourg S.A", "3db Entertainment & Parties Events", "3FIVEB Technologies DMCC", "Gulf Civil Works LLC", "Mussafah Steel Trading"];
+  const WBS_CODES = ["36322", "36410", "36588", "40117", "40233", "41009"];
+  const CURRENCIES = [["AED", "Dirham"], ["INR", "Rupee"], ["JPY", "Japanese Yen"], ["USD", "Dollar"]];
+  const RFP_DEPARTMENTS = ["Project Development", "Finance", "Commercial", "Delivery", "Design", "Hospitality", "Procurement", "Legal"];
+  const STAKEHOLDER_TYPES = ["Supplier", "Contractor", "Consultant", "Landlord", "Other"];
+  const LINE_ITEMS = ["Advance payment", "1st Payment", "2nd Payment", "3rd Payment", "Final payment", "Retention release"];
+  const CHECKLIST = ["Delivery", "Design", "Hospitality", "Commercial", "Finance", "Head of Department"];
+  // Typing this PO number fills the payment details in, as in the flow
+  const PO_LOOKUP = { "123456789": { payProject: "Al Metlaa", stakeholder: "Taruna", stype: "Supplier", cur: "AED", amount: "1500" } };
+  const PO_FILLED = ["payProject", "stakeholder", "stype", "cur", "amount"];
+  const USED_INVOICES = ["1244sap", "inv-2026-0001"];
+  const DUP_MSG = "Invoice number already exists. Please enter a unique invoice number.";
 
   // The justification is rich text typed on this page. Keep a small allow-list so
   // nothing but formatting survives (paste is plain text too).
@@ -1753,18 +1871,121 @@
     walk(doc.body);
     return doc.body.innerHTML;
   }
-  const wzSnapshot = () => JSON.stringify({ v: wz.vals, a: wz.approvers, s: wz.signing, f: wz.files.map((f) => f.name) });
+  const wzSnapshot = () => JSON.stringify({ v: wz.vals, l: wz.lines, a: wz.approvers, c: wz.checks, s: wz.signing, f: wz.files.map((f) => f.name) });
   const fmtSize = (b) => `${Math.max(0.1, b / 1048576).toFixed(1)} mb`;
   const fmtWhen = (d) => { const h = d.getHours(); return `${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()} | ${((h + 11) % 12) + 1}:${String(d.getMinutes()).padStart(2, "0")} ${h < 12 ? "AM" : "PM"}`; };
+  const fmtDay = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${Number(m[3])} ${MONTHS[Number(m[2]) - 1]} ${m[1]}` : ""; };
+  const fmtMoney = (cur, n) => (n ? `${cur || "AED"} ${Number(String(n).replace(/,/g, "")).toLocaleString("en-US", { maximumFractionDigits: 2 })}` : "");
 
+  // ---- the field specs for each step ------------------------------------
+  const sp = {
+    text: (k, label, o = {}) => ({ t: "text", k, label, ph: `Enter ${label.toLowerCase()}`, ...o }),
+    combo: (k, label, o = {}) => ({ t: "combo", k, label, ph: `Select ${label.toLowerCase()}`, ...o })
+  };
+  function wzSpec() {
+    const key = wzKey(), d = wz.def.key;
+    if (d === "memo" && key === "details") return [
+      sp.combo("company", "Company", { opts: COMPANIES, req: 1, half: 1, plain: 1 }), sp.combo("dept", "Department", { opts: DEPARTMENTS, req: 1, half: 1, plain: 1 }),
+      sp.text("title", "Subject", { req: 1 }), { t: "rich", k: "details", req: 1 }];
+    if (key === "request") return [sp.text("title", "Subject", { req: 1 }), { t: "rich", k: "details", req: 1 }];
+    if (d === "tcdf" && key === "submission") return [
+      sp.combo("category", "Category", { opts: TCDF_CATEGORIES, req: 1, half: 1, plain: 1 }),
+      sp.combo("sub", "Sub category", { optsFn: (v) => TCDF_SUBS[v.category] || [], req: 1, half: 1, plain: 1, offIf: (v) => !v.category }),
+      sp.text("ref", "Reference value", { ph: "Enter value", req: 1 }),
+      sp.combo("project", "Project", { opts: PROJECTS, search: "Find item", req: 1, half: 1 }),
+      sp.combo("vendor", "Vendor name", { opts: VENDORS, search: "Find item", req: 1, half: 1 }),
+      sp.combo("wbs", "WBS code", { opts: WBS_CODES, search: "Find item", req: 1, half: 1, ph: "Select WBS code" }),
+      { t: "money", k: "amount", cur: "cur", label: "Amount", req: 1, half: 1 },
+      { t: "radio", k: "budget", label: "Is it included in the approved budget?", opts: ["Yes", "No"], req: 1, half: 1 },
+      sp.text("budgetRef", "Budget/MCR line reference no.", { ph: "Enter budget number", req: 1, half: 1, showIf: (v) => v.budget === "Yes" })];
+    if (d === "rfp" && key === "submission") return [
+      sp.text("project", "Project name", { req: 1, half: 1 }), sp.combo("dept", "Department", { opts: RFP_DEPARTMENTS, req: 1, half: 1, plain: 1 }),
+      { t: "date", k: "received", label: "Received date", req: 1, half: 1 }, { t: "date", k: "due", label: "Due date", req: 1, half: 1 },
+      { t: "section", label: "Payment details" },
+      sp.text("po", "PO number", { ph: "Enter number", half: 1, hint: () => (wz.locked ? "Matched purchase order. The details below are filled in." : "") }),
+      sp.text("invoice", "Vendor invoice number", { ph: "Enter number", req: 1, half: 1 }),
+      sp.text("payProject", "Project name", { ph: "Enter name", req: 1, half: 1, lock: 1 }),
+      { t: "money", k: "amount", cur: "cur", label: "Currency", req: 1, half: 1, lock: 1 },
+      sp.text("stakeholder", "Stakeholder name", { ph: "Enter name", req: 1, half: 1, lock: 1 }),
+      sp.combo("stype", "Stakeholder type", { opts: STAKEHOLDER_TYPES, ph: "Enter type", req: 1, half: 1, plain: 1, lock: 1 }),
+      { t: "lines" }];
+    return [];
+  }
+  const specShown = (s) => !s.showIf || s.showIf(wz.vals);
+  const invoiceDup = () => USED_INVOICES.includes((wz.vals.invoice || "").trim().toLowerCase());
+  const lineOk = (l) => l.item && String(l.amount || "").trim();
   function wzValid() {
-    if (wz.step === 1) return rfSpec(wz.def).every((sp) => !sp.req || (sp.k === "details" ? (wz.vals.detailsText || "").trim() : (wz.vals[sp.k] || "").trim()));
-    if (wz.step === 2) return wz.approvers.length > 0;
+    const key = wzKey();
+    if (key === "approvers") return wz.approvers.length > 0;
+    if (key === "files") return true;
+    const specs = wzSpec();
+    const ok = specs.every((s) => {
+      if (!s.req || !specShown(s)) return true;
+      if (s.t === "rich") return (wz.vals.detailsText || "").trim();
+      if (s.t === "money") return String(wz.vals[s.k] || "").trim() && wz.vals[s.cur];
+      return String(wz.vals[s.k] || "").trim();
+    });
+    if (!ok) return false;
+    if (specs.some((s) => s.t === "lines") && !wz.lines.every(lineOk)) return false;
+    if (wz.def.key === "rfp" && key === "submission") {
+      if (wz.vals.received && wz.vals.due && wz.vals.due < wz.vals.received) return false;
+      if (invoiceDup()) return false;
+    }
     return true;
   }
   function wzRefresh() {
     wzNext.disabled = !wzValid();
-    wzDraft.disabled = !(wz.vals.title || "").trim();
+    wzDraft.disabled = wzSnapshot() === wz.snap;
+  }
+
+  // ---- fields: text, dates, radios, money, lines and the dropdown ----------
+  const reqMark = (s) => (s.req ? ` <span class="sp__req" aria-hidden="true">*</span>` : ` <span class="field__opt">optional</span>`);
+  const fieldWrap = (s, inner, id) => `<div class="field${s.half ? " field--half" : ""}${s.lock && wz.locked ? " is-locked" : ""}"${s.showIf ? ` data-show="${s.k}"` : ""}>${inner}<p class="field__error" id="${id}-err" role="alert" hidden></p></div>`;
+  // one dropdown for every select: optional search, keyboard friendly, values live in wz.vals / wz.lines
+  const comboId = (k) => `cb-${k.replace(/[^a-z0-9]/gi, "-")}`;
+  function comboHTML(id, value, o) {
+    const dis = o.disabled ? " disabled" : "";
+    return `<div class="combo" data-combo="${id}"><button class="combo__btn field__input${value ? "" : " is-ph"}" type="button" id="rf-${id.replace(/[^a-z0-9]/gi, "-")}" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-controls="${comboId(id)}"${dis}${o.label ? ` aria-label="${escapeHtml(o.label)}"` : ""}><span>${escapeHtml(value || o.ph || "Select")}</span>${icon("i-chevron-down", "ico ico--sm combo__chev")}</button>
+      <div class="combo__pop" id="${comboId(id)}" hidden>${o.search ? `<label class="combo__search">${icon("i-search", "ico ico--sm")}<input type="search" placeholder="${escapeHtml(o.search)}" autocomplete="off" aria-label="${escapeHtml(o.search)}"></label>` : ""}<div class="combo__list" role="listbox" tabindex="-1"></div></div></div>`;
+  }
+  const comboOpts = (id) => {
+    if (id === "cur") return CURRENCIES.map(([c, n]) => ({ v: c, label: `<b>${c}</b> ${n}` }));
+    if (id.startsWith("line:")) {
+      const [, , f] = id.split(":");
+      return (f === "cur" ? CURRENCIES.map(([c, n]) => ({ v: c, label: `<b>${c}</b> ${n}` })) : LINE_ITEMS.map((v) => ({ v, label: v })));
+    }
+    const s = wzSpec().find((x) => x.k === id);
+    return (s.optsFn ? s.optsFn(wz.vals) : s.opts).map((v) => ({ v, label: escapeHtml(v) }));
+  };
+  const comboGet = (id) => (id.startsWith("line:") ? wz.lines[Number(id.split(":")[1])][id.split(":")[2]] : wz.vals[id]);
+  const comboSet = (id, v) => { if (id.startsWith("line:")) wz.lines[Number(id.split(":")[1])][id.split(":")[2]] = v; else wz.vals[id] = v; };
+  function moneyHTML(s) {
+    const id = `rf-${s.k}`, locked = s.lock && wz.locked;
+    return fieldWrap(s, `<label class="field__label" for="${id}">${s.label}${reqMark(s)}</label><div class="money${locked ? " is-locked" : ""}">${comboHTML(s.cur, wz.vals[s.cur] || "AED", { label: "Currency", disabled: locked, search: "Find currency" })}<input class="field__input money__in" id="${id}" data-k="${s.k}" type="text" inputmode="decimal" autocomplete="off" placeholder="Enter amount" value="${escapeHtml(wz.vals[s.k] || "")}"${locked ? " disabled" : ""}></div>`, id);
+  }
+  function fieldHTML(s) {
+    if (s.t === "section") return `<h3 class="wz__sec">${s.label}</h3>`;
+    if (s.t === "rich") return rteHTML();
+    if (s.t === "lines") return linesHTML();
+    if (!specShown(s)) return "";
+    const id = `rf-${s.k}`, v = wz.vals[s.k] || "";
+    const lab = `<label class="field__label" for="${id}">${s.label}${reqMark(s)}</label>`;
+    const locked = s.lock && wz.locked;
+    if (s.t === "money") return moneyHTML(s);
+    if (s.t === "combo") {
+      const off = (s.offIf && s.offIf(wz.vals)) || locked;
+      return fieldWrap(s, `${lab.replace(`for="${id}"`, `for="${id}"`)}${comboHTML(s.k, v, { ph: s.ph, search: s.search, disabled: off, label: s.label })}`, id);
+    }
+    if (s.t === "radio") return `<fieldset class="field field--half rq-radio"><legend class="field__label">${s.label}${reqMark(s)}</legend><div class="rq-radio__row" role="radiogroup">${s.opts.map((o) => `<label class="rq-radio__opt"><input type="radio" name="rf-${s.k}" data-k="${s.k}" value="${o}"${v === o ? " checked" : ""}><span class="rq-radio__dot" aria-hidden="true"></span>${o}</label>`).join("")}</div></fieldset>`;
+    if (s.t === "date") return fieldWrap(s, `${lab}<input class="field__input" id="${id}" data-k="${s.k}" type="date" value="${escapeHtml(v)}"${s.k === "due" && wz.vals.received ? ` min="${escapeHtml(wz.vals.received)}"` : ""}>`, id);
+    const hint = s.hint ? s.hint() : "";
+    return fieldWrap(s, `${lab}<input class="field__input" id="${id}" data-k="${s.k}" type="text" maxlength="90" autocomplete="off" placeholder="${escapeHtml(s.ph || "")}" value="${escapeHtml(v)}"${locked ? " disabled" : ""}>${hint ? `<p class="field__ok">${icon("i-check", "ico ico--xs")}${hint}</p>` : ""}`, id);
+  }
+  function linesHTML() {
+    return `<div class="lines">${wz.lines.map((l, i) => `<div class="lines__row" data-i="${i}">
+      ${fieldWrap({ half: 1 }, `<div class="lines__lab"><label class="field__label" for="rf-line-${i}-item">Line item${reqMark({ req: 1 })}</label>${i ? `<button class="lines__rm" type="button" data-line-rm="${i}" aria-label="Remove line item ${i + 1}">${icon("i-trash", "ico ico--sm")}</button>` : ""}</div>${comboHTML(`line:${i}:item`, l.item, { ph: "Enter item", label: `Line item ${i + 1}` })}`, `rf-line-${i}`)}
+      ${fieldWrap({ half: 1 }, `<span class="field__label lines__lab2" aria-hidden="true">&nbsp;</span><div class="money">${comboHTML(`line:${i}:cur`, l.cur || "AED", { label: `Currency, line item ${i + 1}`, search: "Find currency" })}<input class="field__input money__in" data-line="${i}" type="text" inputmode="decimal" autocomplete="off" placeholder="Enter amount" aria-label="Amount, line item ${i + 1}" value="${escapeHtml(l.amount || "")}"></div>`, `rf-line-${i}-amt`)}</div>`).join("")}
+      <button class="lines__add" type="button" data-line-add${wz.lines.length >= 10 ? " disabled" : ""}>${icon("i-plus", "ico ico--sm")}Add more</button></div>`;
   }
 
   // ---- step 1: details, with the rich-text justification ---------------
@@ -1845,26 +2066,33 @@
     sync();
   }
 
-  // ---- step 2: approvers, with an optional signing order ----------------
+  // ---- approvers: an order, optionally switchable (memo) and, for RFP, a checklist each ------
+  const personOf = (name) => PEOPLE.find((p) => p.name === name) || { name, role: "", initials: name.split(" ").map((w) => w[0]).join("").slice(0, 2) };
+  const isMemo = () => wz.def.key === "memo";
+  const isRfp = () => wz.def.key === "rfp";
+  const chkLabel = (name) => { const c = wz.checks[name] || []; return c.length ? (c.length > 2 ? `${c.length} selected` : c.join(", ")) : "Select checklist"; };
   const apvRow = (p, i) => `<li class="apv__row" data-name="${escapeHtml(p.name)}">
     ${wz.signing ? `<button class="apv__grip" type="button" aria-label="Move ${escapeHtml(p.name)}, position ${i + 1} of ${wz.approvers.length}. Drag, or use the arrow keys.">${icon("i-grip", "ico ico--sm")}</button><span class="apv__n" aria-hidden="true">${i + 1}</span>` : ""}
     <span class="who__av" aria-hidden="true">${p.initials}</span><span class="who__txt"><b>${escapeHtml(p.name)}</b><small>${escapeHtml(p.role)}</small></span>
+    ${isRfp() ? `<div class="combo combo--check apv__chk" data-check="${escapeHtml(p.name)}"><button class="combo__btn field__input${(wz.checks[p.name] || []).length ? "" : " is-ph"}" type="button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Approval checklist for ${escapeHtml(p.name)}"><span>${escapeHtml(chkLabel(p.name))}</span>${icon("i-chevron-down", "ico ico--sm combo__chev")}</button><div class="combo__pop" hidden><p class="combo__head">Select checklist</p><div class="combo__list" role="listbox" aria-multiselectable="true">${CHECKLIST.map((c) => `<label class="combo__opt combo__opt--check" role="option"><input type="checkbox" value="${c}"${(wz.checks[p.name] || []).includes(c) ? " checked" : ""}><span class="combo__box" aria-hidden="true">${icon("i-check", "ico ico--xs")}</span>${c}</label>`).join("")}</div></div></div>` : ""}
     <button class="apv__rm" type="button" data-remove aria-label="Remove ${escapeHtml(p.name)}">${icon("i-trash", "ico ico--sm")}</button></li>`;
-  const personOf = (name) => PEOPLE.find((p) => p.name === name) || { name, role: "", initials: name.split(" ").map((w) => w[0]).join("").slice(0, 2) };
   function apvHTML() {
     return `<div class="apv">
-      <div class="apv__top"><button class="apv__switch" type="button" role="switch" aria-checked="${wz.signing}" id="wz-sign"><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>Set signing order</button>
-        <p class="apv__note">${wz.signing ? "Approvers review one after another, in the order below." : "All approvers are notified at the same time."}</p></div>
-      <section class="apv__card" id="apv-picked" aria-label="Selected approvers" hidden><h3 class="apv__h">${wz.signing ? "Set signing order" : "Approvers"}</h3>${wz.signing ? `<p class="apv__hint">Arrange approvers in the desired approval sequence by dragging and dropping them.</p>` : ""}<ol class="apv__list" id="apv-list"></ol></section>
+      ${isMemo() ? `<div class="apv__top"><button class="apv__switch" type="button" role="switch" aria-checked="${wz.signing}" id="wz-sign"><span class="switch" aria-hidden="true"><span class="switch__thumb"></span></span>Set signing order</button>
+        <p class="apv__note">${wz.signing ? "Approvers review one after another, in the order below." : "All approvers are notified at the same time."}</p></div>` : ""}
+      <p class="apv__warn" id="apv-warn" role="status" hidden>${icon("i-info", "ico ico--sm")}Sequence should be selected appropriately. Assigning an HOD as the first approver may disrupt the intended approval flow.</p>
+      <section class="apv__card" id="apv-picked" aria-label="Selected approvers" hidden><h3 class="apv__h">${wz.signing ? "Approval sequence" : "Approvers"}</h3>${wz.signing ? `<p class="apv__hint">Arrange approvers in the desired approval sequence by dragging and dropping them.</p>` : ""}<ol class="apv__list" id="apv-list"></ol></section>
       <section class="apv__card" aria-label="Add approver"><h3 class="apv__h">Add approver details</h3>
         <label class="ib-search"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg><input id="apv-q" type="search" placeholder="Search by name &amp; email" autocomplete="off" aria-label="Search by name and email"></label>
         <div class="apv__results" id="apv-results"></div></section>
       <p class="sr-only" id="apv-live" aria-live="polite"></p></div>`;
   }
+  const hodFirst = () => isRfp() && wz.approvers.length && (wz.checks[wz.approvers[0]] || []).includes("Head of Department");
   function apvPaint(focusName) {
     const list = $("#apv-list"), picked = $("#apv-picked"), res = $("#apv-results");
     picked.hidden = !wz.approvers.length;
     list.innerHTML = wz.approvers.map((n, i) => apvRow(personOf(n), i)).join("");
+    $("#apv-warn").hidden = !hodFirst();
     const q = $("#apv-q").value.trim().toLowerCase();
     const rows = PEOPLE.filter((p) => !wz.approvers.includes(p.name) && `${p.name} ${p.email}`.toLowerCase().includes(q));
     res.innerHTML = rows.length
@@ -1889,8 +2117,29 @@
       const name = b.closest(".apv__row").dataset.name;
       flow({
         ico: "i-trash", tone: "bad", title: "Remove approver", text: "Are you sure you want to remove approver?", body: `<p class="flow__ref">${escapeHtml(name)}</p>`, confirm: "Remove", danger: true,
-        done: () => { wz.approvers = wz.approvers.filter((n) => n !== name); apvPaint(); $("#apv-q").focus(); }
+        done: () => { wz.approvers = wz.approvers.filter((n) => n !== name); delete wz.checks[name]; apvPaint(); $("#apv-q").focus(); }
       });
+    });
+    // checklist per approver (RFP)
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest(".apv__chk > .combo__btn");
+      if (!btn) return;
+      const box = btn.parentElement, open = btn.getAttribute("aria-expanded") !== "true";
+      closeCombos();
+      if (open) { btn.setAttribute("aria-expanded", "true"); $(".combo__pop", box).hidden = false; box.closest(".apv__row").classList.add("has-open"); }
+    });
+    list.addEventListener("change", (e) => {
+      const cb = e.target.closest(".combo__opt--check input");
+      if (!cb) return;
+      const box = cb.closest("[data-check]"), name = box.dataset.check;
+      const set = new Set(wz.checks[name] || []);
+      cb.checked ? set.add(cb.value) : set.delete(cb.value);
+      wz.checks[name] = CHECKLIST.filter((c) => set.has(c));
+      const btn = $(".combo__btn", box);
+      $("span", btn).textContent = chkLabel(name);
+      btn.classList.toggle("is-ph", !wz.checks[name].length);
+      $("#apv-warn").hidden = !hodFirst();
+      wzRefresh();
     });
     // reorder: drag the handle (mouse, pen and touch) or use the arrow keys on it
     let drag = null;
@@ -1926,7 +2175,8 @@
       apvPaint(name);
       $("#apv-live").textContent = `${name} moved to position ${j + 1} of ${wz.approvers.length}`;
     });
-    $("#wz-sign").addEventListener("click", () => {
+    const sign = $("#wz-sign");
+    if (sign) sign.addEventListener("click", () => {
       const turn = () => { wz.signing = !wz.signing; wzRender(); $("#wz-sign").focus(); };
       if (wz.signing && wz.approvers.length > 1) {
         flow({
@@ -1937,8 +2187,8 @@
     });
   }
 
-  // ---- step 3: attachments ----------------------------------------------
-  const attRowHTML = (f, i) => `<li class="att__row"><span class="att__c att__c--n" data-label="S.no">${i + 1}.</span><span class="att__c att__c--name" data-label="File name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><span class="att__c" data-label="File type">${f.kind}</span><span class="att__c" data-label="Size">${f.size}</span><span class="att__c" data-label="Date &amp; time">${f.when}</span><span class="att__c att__c--act"><button class="att__rm" type="button" data-i="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-trash", "ico ico--sm")}</button></span></li>`;
+  // ---- attachments ----------------------------------------------------------
+  const attRowHTML = (f, i) => `<li class="att__row"><span class="att__c att__c--n" data-label="S.no">${i + 1}.</span><span class="att__c att__c--name" data-label="File name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><span class="att__c" data-label="File type">${f.kind}</span><span class="att__c" data-label="Size">${f.size}</span><span class="att__c" data-label="Date &amp; time">${f.when}</span><span class="att__c att__c--act"><button class="att__btn att__btn--del" type="button" data-del="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-trash", "ico ico--sm")}</button><button class="att__btn att__btn--view" type="button" data-view="${i}" aria-label="View ${escapeHtml(f.name)}">${icon("i-eye", "ico ico--sm")}</button></span></li>`;
   function attHTML() {
     return `<div class="att">
       <section class="apv__card" aria-label="Upload files"><h3 class="apv__h">Upload files</h3>
@@ -1963,7 +2213,7 @@
         if (!FILE_KINDS[ext]) problems.push(`${f.name} isn’t an Excel, Word or PPT file.`);
         else if (f.size > WZ_BYTES) problems.push(`${f.name} is over 10 MB.`);
         else if (wz.files.length >= WZ_MAX) { if (!problems.some((p) => p.includes("files"))) problems.push(`You can add up to ${WZ_MAX} files.`); }
-        else wz.files.push({ name: f.name.replace(/\.[^.]+$/, ""), ext, kind: FILE_KINDS[ext], size: fmtSize(f.size), when: fmtWhen(new Date()) });
+        else wz.files.push({ name: f.name.replace(/\.[^.]+$/, ""), ext, kind: FILE_KINDS[ext], size: fmtSize(f.size), when: fmtWhen(new Date()), blob: URL.createObjectURL(f) });
       });
       err.hidden = !problems.length; err.textContent = problems.join(" ");
       paint(); wzRefresh();
@@ -1972,51 +2222,164 @@
     ["dragenter", "dragover"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add("is-over"); }));
     ["dragleave", "drop"].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove("is-over"); }));
     drop.addEventListener("drop", (e) => take(e.dataTransfer.files));
-    $("#att-list").addEventListener("click", (e) => { const b = e.target.closest(".att__rm"); if (b) { wz.files.splice(+b.dataset.i, 1); err.hidden = true; paint(); wzRefresh(); } });
+    $("#att-list").addEventListener("click", (e) => {
+      const del = e.target.closest("[data-del]"), view = e.target.closest("[data-view]");
+      if (del) { wz.files.splice(+del.dataset.del, 1); err.hidden = true; paint(); wzRefresh(); }
+      if (view) { const f = wz.files[+view.dataset.view]; if (f.blob) window.open(f.blob, "_blank", "noopener"); else toast("No preview for this file in the prototype", "i-info"); }
+    });
     paint();
   }
 
-  // ---- the page itself ---------------------------------------------------
+  // ---- the dropdown behaviour -------------------------------------------------
+  function closeCombos(except) {
+    $$(".combo", wzModal).forEach((c) => {
+      if (c === except) return;
+      const b = $(".combo__btn", c);
+      if (b && b.getAttribute("aria-expanded") === "true") {
+        b.setAttribute("aria-expanded", "false"); $(".combo__pop", c).hidden = true;
+        const row = c.closest(".apv__row"); if (row) row.classList.remove("has-open");
+      }
+    });
+  }
+  const anyComboOpen = () => $$(".combo__btn[aria-expanded='true']", wzModal).length > 0;
+  function comboPaint(box) {
+    const id = box.dataset.combo, q = ($(".combo__search input", box)?.value || "").trim().toLowerCase(), cur = comboGet(id);
+    const rows = comboOpts(id).filter((o) => o.v.toLowerCase().includes(q));
+    $(".combo__list", box).innerHTML = rows.length
+      ? rows.map((o) => `<button class="combo__opt" type="button" role="option" aria-selected="${o.v === cur}" data-v="${escapeHtml(o.v)}"><span>${o.label}</span>${icon("i-check", "ico ico--sm combo__tick")}</button>`).join("")
+      : `<p class="combo__none">No match for “${escapeHtml(q)}”.</p>`;
+  }
+  function comboOpen(box) {
+    closeCombos(box);
+    const btn = $(".combo__btn", box), pop = $(".combo__pop", box);
+    btn.setAttribute("aria-expanded", "true"); pop.hidden = false;
+    comboPaint(box);
+    pop.scrollIntoView({ block: "nearest" });
+    ($(".combo__search input", box) || $(".combo__opt[aria-selected='true']", box) || $(".combo__opt", box))?.focus({ preventScroll: true });
+  }
+  function wzRepaint(focusId) {
+    const m = $("#wz-main"), top = m.scrollTop, a = document.activeElement;
+    const id = focusId || (a && wzPanel.contains(a) ? a.id : ""), pos = a && a.selectionStart;
+    const specs = wzSpec();
+    wzPanel.innerHTML = `<div class="rq-grid">${specs.map(fieldHTML).join("")}</div>`;
+    if (specs.some((x) => x.t === "rich")) rteBind();
+    m.scrollTop = top;
+    const el = id && document.getElementById(id);
+    if (el && !el.disabled) { el.focus({ preventScroll: true }); if (typeof pos === "number" && el.setSelectionRange && el.type === "text") try { el.setSelectionRange(pos, pos); } catch (e) { /* not a text field */ } }
+    wzRefresh();
+  }
+  const cleanMoney = (v) => v.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1");
+  const fieldMsg = (id, msg) => { const err = $(`#${id}-err`), el = $(`#${id}`); if (!err) return; err.hidden = !msg; err.textContent = msg || ""; if (el) el.setAttribute("aria-invalid", String(!!msg)); };
+  function poLookup() {
+    const hit = PO_LOOKUP[(wz.vals.po || "").trim()];
+    if (hit) { Object.assign(wz.vals, hit); wz.locked = true; wzRepaint(); }
+    else if (wz.locked) { PO_FILLED.forEach((k) => { wz.vals[k] = k === "cur" ? "AED" : ""; }); wz.locked = false; wzRepaint(); }
+  }
+  function invoiceCheck(announce) {
+    const dup = invoiceDup();
+    fieldMsg("rf-invoice", dup ? DUP_MSG : "");
+    if (dup && announce) toast(DUP_MSG, "i-x");
+    wzRefresh();
+  }
+  function dateCheck() {
+    const bad = wz.vals.received && wz.vals.due && wz.vals.due < wz.vals.received;
+    fieldMsg("rf-due", bad ? "The due date can’t be before the received date." : "");
+    wzRefresh();
+  }
+
+  // ---- the page itself -----------------------------------------------------------
   function wzRender() {
-    const d = wz.def, copy = WZ_COPY[d.key];
-    const labels = [copy.s1[0], "Approvers", "Attachments"];
-    $("#wz-crumb").textContent = wz.mode === "revise" ? "Revise & resubmit" : wz.mode === "edit" ? "Edit draft" : copy.crumb;
-    $("#wz-steps").innerHTML = labels.map((l, i) => {
+    const flowDef = WZ_FLOWS[wz.def.key], steps = flowDef.steps, last = wz.step === steps.length;
+    $("#wz-crumb").textContent = wz.mode === "revise" ? "Revise & resubmit" : wz.mode === "edit" ? "Edit draft" : flowDef.crumb;
+    $("#wz-steps").innerHTML = steps.map(([, l], i) => {
       const done = i + 1 < wz.step, cur = i + 1 === wz.step;
       return `<li class="${cur ? "is-current" : done ? "is-done" : ""}"><button type="button" class="wz__step" data-step="${i + 1}"${cur ? ' aria-current="step"' : ""}${i + 1 > wz.step ? " disabled" : ""}><b>${done ? icon("i-check", "ico ico--xs") : `0${i + 1}`}</b><span>${l}</span></button></li>`;
     }).join("");
+    const [key, label, desc] = steps[wz.step - 1];
     $("#wz-num").textContent = `0${wz.step}`;
-    $("#wz-title").textContent = labels[wz.step - 1];
-    $("#wz-desc").textContent = [copy.s1[1], "Select the required stakeholders for review.", `Upload relevant files to provide additional context or reference for this ${copy.noun}.`][wz.step - 1];
-    if (wz.step === 1) {
-      wzPanel.innerHTML = `<div class="rq-grid">${rfSpec(d).map((sp) => sp.k === "details" ? rteHTML() : rfFieldHTML(sp, wz.vals)).join("")}</div>`;
-      rteBind();
-    } else if (wz.step === 2) { wzPanel.innerHTML = apvHTML(); apvBind(); }
-    else { wzPanel.innerHTML = attHTML(); attBind(); }
+    $("#wz-back").hidden = wz.step === 1;
+    $("#wz-back").setAttribute("aria-label", `Back to ${steps[Math.max(0, wz.step - 2)][1]}`);
+    $("#wz-title").textContent = label;
+    $("#wz-desc").textContent = desc;
+    closeCombos();
+    if (key === "approvers") { wzPanel.innerHTML = apvHTML(); apvBind(); }
+    else if (key === "files") { wzPanel.innerHTML = attHTML(); attBind(); }
+    else {
+      const specs = wzSpec();
+      wzPanel.innerHTML = `<div class="rq-grid">${specs.map(fieldHTML).join("")}</div>`;
+      if (specs.some((s) => s.t === "rich")) rteBind();
+    }
     wzDraft.hidden = wz.mode === "revise";
-    $("#wz-next-label").textContent = wz.step < 3 ? "Save & next" : wz.mode === "revise" ? "Resubmit" : "Submit";
+    $("#wz-next-label").textContent = !last ? "Save & next" : wz.mode === "revise" ? "Resubmit" : "Submit";
     $("#wz-main").scrollTop = 0;
     wzRefresh();
   }
   function wzOpen(item, mode, def) {
     Object.assign(wz, { item, mode, def, step: 1, signing: item ? item.signing !== false : true });
-    wz.vals = item
-      ? { company: item.company || COMPANIES[0], dept: item.dept || "", title: item.title, details: item.detailsHtml || "", detailsText: item.details || "", amount: item.amount || "", payee: item.payee || "" }
-      : { company: COMPANIES[0], dept: "", title: "", details: "", detailsText: "", amount: "", payee: "" };
+    const d = item && item.data ? item.data : {};
+    wz.vals = { company: COMPANIES[0], dept: "", title: "", details: "", detailsText: "", cur: "AED", ...d, ...(item ? { title: item.title, details: item.detailsHtml || d.details || "", detailsText: item.details || d.detailsText || "", company: item.company || d.company || COMPANIES[0], dept: item.dept || d.dept || "" } : {}) };
+    wz.lines = d.lines && d.lines.length ? d.lines.map((l) => ({ ...l })) : [{ item: "", cur: "AED", amount: "" }];
+    wz.locked = !!d.locked;
+    wz.checks = item && item.checks ? Object.fromEntries(Object.entries(item.checks).map(([k, v]) => [k, [...v]])) : {};
     wz.approvers = item && item.approvers ? [...item.approvers] : [];
     wz.files = item && item.files ? item.files.map((f) => ({ ...f })) : [];
     wzRender();
     wzModal.showModal();
     wz.snap = wzSnapshot();
-    setTimeout(() => $("#wz-panel select, #wz-panel input")?.focus(), 40);
+    wzRefresh();
+    setTimeout(() => $("#wz-panel .combo__btn:not(:disabled), #wz-panel input:not([type=radio])")?.focus({ preventScroll: true }), 40);
   }
-  // typing in the step-1 fields
+  // typing and choosing in step fields
   wzPanel.addEventListener("input", (e) => {
-    const k = e.target.dataset && e.target.dataset.k;
-    if (!k || wz.step !== 1) return;
-    wz.vals[k] = e.target.value;
+    const t = e.target;
+    if (t.matches(".combo__search input")) { comboPaint(t.closest(".combo")); return; }
+    if (t.dataset.line !== undefined) { const v = cleanMoney(t.value); t.value = v; wz.lines[+t.dataset.line].amount = v; wzRefresh(); return; }
+    const k = t.dataset.k;
+    if (!k || t.type === "radio") return;
+    let v = t.value;
+    if (k === "amount") { v = cleanMoney(v); t.value = v; }
+    wz.vals[k] = v;
+    if (t.getAttribute("aria-invalid") === "true" && k !== "invoice" && k !== "due") fieldMsg(t.id, "");
+    if (k === "po") { poLookup(); return; }
+    if (k === "invoice") { fieldMsg("rf-invoice", ""); wzRefresh(); return; }
+    if (k === "received" || k === "due") { if (k === "received" && t.value) { const due = $("#rf-due"); if (due) due.min = t.value; } dateCheck(); return; }
     wzRefresh();
   });
+  wzPanel.addEventListener("change", (e) => {
+    const t = e.target;
+    if (t.matches("input[type=radio]")) { wz.vals[t.dataset.k] = t.value; if (t.value === "No") wz.vals.budgetRef = ""; wzRepaint(); }
+  });
+  wzPanel.addEventListener("focusout", (e) => { if (e.target.id === "rf-invoice" && (wz.vals.invoice || "").trim()) invoiceCheck(true); });
+  wzPanel.addEventListener("click", (e) => {
+    const btn = e.target.closest(".combo > .combo__btn");
+    if (btn && !btn.closest(".apv__chk")) { const box = btn.parentElement; btn.getAttribute("aria-expanded") === "true" ? closeCombos() : comboOpen(box); return; }
+    const opt = e.target.closest(".combo__opt:not(.combo__opt--check)");
+    if (opt) {
+      const box = opt.closest(".combo"), id = box.dataset.combo;
+      comboSet(id, opt.dataset.v);
+      if (id === "category") wz.vals.sub = "";
+      wzRepaint(`rf-${id.replace(/[^a-z0-9]/gi, "-")}`);
+      return;
+    }
+    if (e.target.closest("[data-line-add]")) { if (wz.lines.length < 10) { wz.lines.push({ item: "", cur: "AED", amount: "" }); wzRepaint(); $$(".lines__row .combo__btn", wzPanel).pop()?.focus(); } return; }
+    const rm = e.target.closest("[data-line-rm]");
+    if (rm) { wz.lines.splice(+rm.dataset.lineRm, 1); wzRepaint(); }
+  });
+  wzPanel.addEventListener("keydown", (e) => {
+    const box = e.target.closest(".combo:not(.combo--check)");
+    if (!box) return;
+    const btn = $(".combo__btn", box), open = btn.getAttribute("aria-expanded") === "true";
+    if (e.target === btn && !open && ["ArrowDown", "ArrowUp", "Enter", " "].includes(e.key)) { e.preventDefault(); comboOpen(box); return; }
+    if (!open) return;
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeCombos(); btn.focus(); return; }
+    const d = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+    if (!d) return;
+    e.preventDefault();
+    const items = [...$$(".combo__search input, .combo__opt", box)], i = items.indexOf(document.activeElement);
+    items[clamp(i + d, 0, items.length - 1)]?.focus();
+  });
+  wzModal.addEventListener("click", (e) => { if (!e.target.closest(".combo")) closeCombos(); });
+  $("#wz-back").addEventListener("click", () => { if (wz.step > 1) { wz.step -= 1; wzRender(); } });
   $("#wz-steps").addEventListener("click", (e) => {
     const b = e.target.closest("[data-step]");
     if (b && !b.disabled && Number(b.dataset.step) < wz.step) { wz.step = Number(b.dataset.step); wzRender(); }
@@ -2028,17 +2391,18 @@
       cancel: "No", confirm: "Yes", danger: true, done: () => wzModal.close()
     });
   }
-  wzModal.addEventListener("cancel", (e) => { e.preventDefault(); wzAttemptClose(); });
+  wzModal.addEventListener("cancel", (e) => { e.preventDefault(); if (anyComboOpen()) { closeCombos(); return; } wzAttemptClose(); });
   wzModal.addEventListener("close", () => { wzPanel.innerHTML = ""; }); // keep ids unique while it is closed
   $("#wz-cancel").addEventListener("click", wzAttemptClose);
   function wzSave(submit) {
     const v = wz.vals, d = wz.def;
+    const title = (v.title || "").trim() || `Untitled ${d.short}`;
     let x = wz.item;
-    if (!x) { x = rq({ state: "draft", type: d.key, title: v.title.trim(), ago: 0 }); ib.items.unshift(x); }
+    if (!x) { x = rq({ state: "draft", type: d.key, title, ago: 0 }); ib.items.unshift(x); }
     Object.assign(x, {
-      title: v.title.trim(), type: d.key, company: v.company, dept: v.dept, amount: (v.amount || "").trim(), payee: (v.payee || "").trim(),
-      details: v.detailsText || "", detailsHtml: v.details || "", approvers: [...wz.approvers], signing: wz.signing,
-      files: wz.files.map((f) => ({ ...f })), ago: 0
+      title, type: d.key, company: v.company, dept: v.dept, amount: fmtMoney(v.cur, v.amount), payee: (v.stakeholder || "").trim(),
+      details: v.detailsText || "", detailsHtml: v.details || "", approvers: [...wz.approvers], checks: Object.fromEntries(Object.entries(wz.checks).map(([k, c]) => [k, [...c]])), signing: wz.signing,
+      files: wz.files.map((f) => ({ ...f })), data: { ...v, lines: wz.lines.map((l) => ({ ...l })), locked: wz.locked }, ago: 0
     });
     if (submit) {
       x.ref = `REQ-2026-${String(++reqSeq).padStart(4, "0")}`;
@@ -2059,7 +2423,7 @@
   $("#wz-form").addEventListener("submit", (e) => {
     e.preventDefault();
     if (!wzValid()) return;
-    if (wz.step < 3) { wz.step += 1; wzRender(); return; }
+    if (wz.step < WZ_FLOWS[wz.def.key].steps.length) { wz.step += 1; wzRender(); return; }
     wzSave(true);
   });
   wzDraft.addEventListener("click", () => { if (!wzDraft.disabled) wzSave(false); });
