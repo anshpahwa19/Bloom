@@ -700,7 +700,7 @@
   function quickHTML() {
     const apps = quickLinks().map((x) => `<li><a class="m-app" href="${esc(x.href)}" target="_blank" rel="noopener"><span class="app-mark app-mark--lg ${x.mark}" aria-hidden="true"></span><span class="m-app__name">${esc(x.name)}</span><span class="m-app__hint">${esc(x.hint)}</span></a></li>`).join("");
     return `<section class="m-sec" aria-labelledby="m-ql-title">${secHead($("#ql-title").textContent).replace('class="m-sec__title"', 'class="m-sec__title" id="m-ql-title"')}
-      <div class="m-dock frost"><ul class="m-dock__list" data-rail>${apps}<li><button class="m-app" type="button" data-toast="Opening quick links…"><span class="app-mark app-mark--lg m-app__all" aria-hidden="true">${icon("i-grid")}</span><span class="m-app__name">View all</span><span class="m-app__hint">Every app</span></button></li></ul></div></section>`;
+      <div class="m-dock frost"><ul class="m-dock__list" data-rail>${apps}<li><button class="m-app" type="button" data-go="quicklinks"><span class="app-mark app-mark--lg m-app__all" aria-hidden="true">${icon("i-grid")}</span><span class="m-app__name">View all</span><span class="m-app__hint">Every app</span></button></li></ul></div></section>`;
   }
 
   /* Announcements: the page's own slides, as swipeable cards */
@@ -1183,6 +1183,26 @@
   /* ---------------------------------------------------------------
      EXPLORE — the gateway to discovery
      --------------------------------------------------------------- */
+  // Quick links — every company app. The first three are the dock's own; the rest are placeholders with generated tiles
+  const QL_MORE = [
+    { name: "Egnyte", href: "https://www.egnyte.com", hue: "navy", mark: "Eg", text: "All company policies are stored in Egnyte, Bloom's document hub." },
+    { name: "Docusign", href: "https://www.docusign.com", hue: "violet", mark: "Ds", text: "Sign contracts and agreements electronically, from anywhere." },
+    { name: "servicedesk", href: "https://www.manageengine.com/products/service-desk", hue: "blue", mark: "Sd", text: "Raise IT, facilities and HR service requests." },
+    { name: "Contentful", href: "https://www.contentful.com", hue: "warm", mark: "Ct", text: "Create and manage content for Bloom's sites and apps." },
+    { name: "Powerbi", href: "https://powerbi.microsoft.com", hue: "gold", mark: "Pb", text: "Dashboards and reports across the business." }
+  ];
+  const QL_TEXT = { sap: "Create ADCB Batch Approval Process Workflow Requests.", salesforce: "Create Broker Commission Approval, Resale Approvals and more.", darwinbox: "Create Leave, Out of Duty, & others requests directly." };
+  function quickLinksPageHTML() {
+    const own = quickLinks().filter((x) => QL_TEXT[x.src]).sort((a, b) => ["sap", "salesforce", "darwinbox"].indexOf(a.src) - ["sap", "salesforce", "darwinbox"].indexOf(b.src))
+      .map((x) => ({ name: x.name, href: x.href, text: QL_TEXT[x.src], tile: `<span class="app-mark app-mark--lg ${x.mark}" aria-hidden="true"></span>`, hue: "blue" }));
+    const more = QL_MORE.map((x) => ({ ...x, tile: `<span class="app-mark app-mark--lg m-ql__gen" aria-hidden="true">${x.mark}</span>` }));
+    return `<ul class="m-ql">${[...own, ...more].map((x) => `<li><a class="m-ql__row m-ql__row--${x.hue}" href="${esc(x.href)}" target="_blank" rel="noopener">${x.tile}<span class="m-ql__txt"><strong>${esc(x.name)}</strong><span>${esc(x.text)}</span></span>${icon("i-external", "ico ico--sm m-ql__ext")}<span class="sr-only">(opens in a new tab)</span></a></li>`).join("")}</ul>`;
+  }
+  PAGES.quicklinks = {
+    title: () => "Quick links",
+    render: () => `${intro({ kick: "Every app", title: "Quick links", sub: "Open the tools you use at work." })}${quickLinksPageHTML()}`
+  };
+
   PAGES.explore = {
     root: true, title: () => "Explore",
     render() {

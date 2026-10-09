@@ -3182,6 +3182,17 @@ button.m-card:active { transform: scale(.985); }
 .m-perk-index .perk-row__tile { width: 44px; height: 44px; }
 .m-perk-index .perk-row__title { color: var(--ink); }
 
+/* QUICK LINKS ----------------------------------------------------- */
+.m-ql { display: grid; gap: 10px; margin-top: 20px; }
+.m-ql__row { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 12px 14px; border-radius: var(--r-md); background: linear-gradient(180deg, color-mix(in srgb, var(--tint, var(--blob-1)) 12%, var(--surface)), var(--surface)); box-shadow: inset 0 0 0 1px var(--line); transition: transform var(--t-fast) var(--ease-out); }
+.m-ql__row:active { transform: scale(.98); }
+.m-ql__row--blue { --tint: var(--blob-1); } .m-ql__row--navy { --tint: var(--accent); } .m-ql__row--violet { --tint: var(--blob-3); } .m-ql__row--warm { --tint: var(--warm); } .m-ql__row--gold { --tint: #E8A800; }
+.m-ql__txt { display: grid; gap: 2px; flex: 1; min-width: 0; }
+.m-ql__txt strong { font-family: var(--font-display); font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.m-ql__txt span { font-size: .75rem; line-height: 1.4; color: var(--slate); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.m-ql__ext { color: var(--accent-fg); align-self: start; margin-top: 4px; }
+.m-ql__gen { --bg: color-mix(in srgb, var(--tint) 18%, var(--surface)); --c: var(--ink); }
+
 /* HELP ------------------------------------------------------------ */
 .m-gpt-card {
   position: relative; margin-top: 24px; padding: 22px 18px 18px; border-radius: var(--r-xl); overflow: hidden; isolation: isolate; text-align: center;
@@ -8580,7 +8591,7 @@ button.m-card:active { transform: scale(.985); }
   function quickHTML() {
     const apps = quickLinks().map((x) => `<li><a class="m-app" href="${esc(x.href)}" target="_blank" rel="noopener"><span class="app-mark app-mark--lg ${x.mark}" aria-hidden="true"></span><span class="m-app__name">${esc(x.name)}</span><span class="m-app__hint">${esc(x.hint)}</span></a></li>`).join("");
     return `<section class="m-sec" aria-labelledby="m-ql-title">${secHead($("#ql-title").textContent).replace('class="m-sec__title"', 'class="m-sec__title" id="m-ql-title"')}
-      <div class="m-dock frost"><ul class="m-dock__list" data-rail>${apps}<li><button class="m-app" type="button" data-toast="Opening quick links…"><span class="app-mark app-mark--lg m-app__all" aria-hidden="true">${icon("i-grid")}</span><span class="m-app__name">View all</span><span class="m-app__hint">Every app</span></button></li></ul></div></section>`;
+      <div class="m-dock frost"><ul class="m-dock__list" data-rail>${apps}<li><button class="m-app" type="button" data-go="quicklinks"><span class="app-mark app-mark--lg m-app__all" aria-hidden="true">${icon("i-grid")}</span><span class="m-app__name">View all</span><span class="m-app__hint">Every app</span></button></li></ul></div></section>`;
   }
 
   /* Announcements: the page's own slides, as swipeable cards */
@@ -9063,6 +9074,26 @@ button.m-card:active { transform: scale(.985); }
   /* ---------------------------------------------------------------
      EXPLORE — the gateway to discovery
      --------------------------------------------------------------- */
+  // Quick links — every company app. The first three are the dock's own; the rest are placeholders with generated tiles
+  const QL_MORE = [
+    { name: "Egnyte", href: "https://www.egnyte.com", hue: "navy", mark: "Eg", text: "All company policies are stored in Egnyte, Bloom's document hub." },
+    { name: "Docusign", href: "https://www.docusign.com", hue: "violet", mark: "Ds", text: "Sign contracts and agreements electronically, from anywhere." },
+    { name: "servicedesk", href: "https://www.manageengine.com/products/service-desk", hue: "blue", mark: "Sd", text: "Raise IT, facilities and HR service requests." },
+    { name: "Contentful", href: "https://www.contentful.com", hue: "warm", mark: "Ct", text: "Create and manage content for Bloom's sites and apps." },
+    { name: "Powerbi", href: "https://powerbi.microsoft.com", hue: "gold", mark: "Pb", text: "Dashboards and reports across the business." }
+  ];
+  const QL_TEXT = { sap: "Create ADCB Batch Approval Process Workflow Requests.", salesforce: "Create Broker Commission Approval, Resale Approvals and more.", darwinbox: "Create Leave, Out of Duty, & others requests directly." };
+  function quickLinksPageHTML() {
+    const own = quickLinks().filter((x) => QL_TEXT[x.src]).sort((a, b) => ["sap", "salesforce", "darwinbox"].indexOf(a.src) - ["sap", "salesforce", "darwinbox"].indexOf(b.src))
+      .map((x) => ({ name: x.name, href: x.href, text: QL_TEXT[x.src], tile: `<span class="app-mark app-mark--lg ${x.mark}" aria-hidden="true"></span>`, hue: "blue" }));
+    const more = QL_MORE.map((x) => ({ ...x, tile: `<span class="app-mark app-mark--lg m-ql__gen" aria-hidden="true">${x.mark}</span>` }));
+    return `<ul class="m-ql">${[...own, ...more].map((x) => `<li><a class="m-ql__row m-ql__row--${x.hue}" href="${esc(x.href)}" target="_blank" rel="noopener">${x.tile}<span class="m-ql__txt"><strong>${esc(x.name)}</strong><span>${esc(x.text)}</span></span>${icon("i-external", "ico ico--sm m-ql__ext")}<span class="sr-only">(opens in a new tab)</span></a></li>`).join("")}</ul>`;
+  }
+  PAGES.quicklinks = {
+    title: () => "Quick links",
+    render: () => `${intro({ kick: "Every app", title: "Quick links", sub: "Open the tools you use at work." })}${quickLinksPageHTML()}`
+  };
+
   PAGES.explore = {
     root: true, title: () => "Explore",
     render() {
