@@ -600,7 +600,11 @@
     "auth-sso": (_, btn) => signInWithId(btn),
     "auth-bio": (kind) => showBio(kind === "face" ? "face" : "finger"),
     "auth-scan": (kind) => scanBio(kind === "face" ? "face" : "finger"),
-    "auth-help": () => toast("IT support will be in touch shortly.", "i-help"),
+    "auth-help": () => showAuth("support"),
+    "auth-back": () => showAuth("login"),
+    "sup-pick": (_, btn) => $(".sup-pick", btn.closest(".sup-form")).click(),
+    "sup-rm": (i, btn) => { SUP.files.splice(Number(i), 1); supRefresh(btn.closest(".sup-form")); },
+    "sup-send": (_, btn) => supSend(btn),
     language: () => openSheet({ title: "Language", render: languageHTML }),
     "push-notify": (_, btn) => {
       const on = !pushOn();
@@ -1183,6 +1187,66 @@
   /* ---------------------------------------------------------------
      EXPLORE — the gateway to discovery
      --------------------------------------------------------------- */
+  // Contact IT Support — email, what's wrong, up to five files; Submit wakes once both are filled
+  const SUP = { files: [] };
+  const SUP_EXT = { pdf: "PDF", jpg: "JPG", jpeg: "JPG", png: "PNG", doc: "DOC", docx: "DOC" };
+  const supFilesHTML = () => {
+    const add = SUP.files.length < 5;
+    if (!SUP.files.length) return `<button class="sup-drop" type="button" data-act="sup-pick">${icon("i-upload", "ico")}<strong>Upload Attachments</strong><span>Upload file in .PDF, .JPG, .PNG, .DOC format, up to 15MB in size, Max 5 files.</span></button>`;
+    return `<ul class="sup-files">${add ? `<li><button class="sup-add" type="button" data-act="sup-pick" aria-label="Add a file">${icon("i-upload", "ico")}</button></li>` : ""}${SUP.files.map((f, i) => `<li class="sup-file"><span class="sup-file__tile sup-file__tile--${f.type.toLowerCase()}" aria-hidden="true"><b>${f.type}</b></span><button class="sup-file__x" type="button" data-act="sup-rm" data-v="${i}" aria-label="Remove ${esc(f.name)}">${icon("i-x", "ico ico--xs")}</button><span class="sup-file__name">${esc(f.name)}</span></li>`).join("")}</ul>`;
+  };
+  const supFormHTML = (id) => (SUP.files = [], `<form class="sup-form" novalidate onsubmit="return false">
+      ${intro({ title: "Contact IT Support" }).replace("<h1", `<h1 id="${id}"`)}
+      <label class="sup-label" for="${id}-mail">Email<span aria-hidden="true">*</span></label>
+      <input class="sup-input" id="${id}-mail" type="email" inputmode="email" autocomplete="email" value="${esc(me.email)}" required>
+      <label class="sup-label" for="${id}-msg">Tell us how we can help?<span aria-hidden="true">*</span></label>
+      <textarea class="sup-input sup-msg" id="${id}-msg" placeholder="Type here" required></textarea>
+      <input class="sup-pick" type="file" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" multiple hidden>
+      <div class="sup-attach" data-sup-files>${supFilesHTML()}</div>
+      <p class="sup-err" role="alert" hidden></p>
+      <button class="btn btn--primary sup-send" type="button" data-act="sup-send" disabled>Submit</button></form>`);
+  function supCheck(form) {
+    const ok = /^\S+@\S+\.\S+$/.test($(".sup-input[type=email]", form).value.trim()) && $(".sup-msg", form).value.trim();
+    $(".sup-send", form).disabled = !ok;
+  }
+  function supRefresh(form) { $("[data-sup-files]", form).innerHTML = supFilesHTML(); $(".sup-err", form).hidden = true; }
+  appEl.addEventListener("input", (e) => { const f = e.target.closest?.(".sup-form"); if (f) supCheck(f); });
+  appEl.addEventListener("change", (e) => {
+    if (!e.target.matches?.(".sup-pick")) return;
+    const form = e.target.closest(".sup-form");
+    const err = $(".sup-err", form);
+    let msg = "";
+    [...e.target.files].forEach((f) => {
+      const type = SUP_EXT[f.name.split(".").pop().toLowerCase()];
+      if (!type) msg = "Use .PDF, .JPG, .PNG or .DOC files.";
+      else if (f.size > 15 * 1024 * 1024) msg = "Each file can be up to 15MB.";
+      else if (SUP.files.length >= 5) msg = "You can attach up to 5 files.";
+      else SUP.files.push({ name: f.name, type });
+    });
+    e.target.value = "";
+    supRefresh(form);
+    if (msg) { err.textContent = msg; err.hidden = false; }
+  });
+  function supBanner() {
+    $(".sup-banner")?.remove();
+    const b = document.createElement("div");
+    b.className = "sup-banner";
+    b.setAttribute("role", "status");
+    b.innerHTML = `<span class="sup-banner__ic" aria-hidden="true">${icon("i-check")}</span><p>Your request has been submitted successfully</p>`;
+    appEl.append(b);
+    motion(b, [{ opacity: 0, translate: "0 -16px" }, { opacity: 1, translate: "0 0" }], { duration: 520 });
+    setTimeout(() => motion(b, [{ opacity: 1 }, { opacity: 0 }], { duration: 400, fill: "forwards" }).then(() => b.remove()), 4500);
+  }
+  function supSend(btn) {
+    SUP.files = [];
+    if (btn.closest("#app-auth")) showAuth("login"); else back();
+    supBanner();
+  }
+  PAGES.support = {
+    title: () => "Contact IT Support",
+    render: () => supFormHTML("sup-title")
+  };
+
   // Quick links — every company app. The first three are the dock's own; the rest are placeholders with generated tiles
   const QL_MORE = [
     { name: "Egnyte", href: "https://www.egnyte.com", hue: "navy", mark: "Eg", text: "All company policies are stored in Egnyte, Bloom's document hub." },
@@ -1578,10 +1642,10 @@
         <section class="m-sec" id="m-faq" aria-labelledby="m-faq-title">${secHead(c.title).replace('class="m-sec__title"', 'class="m-sec__title" id="m-faq-title"')}
           <div class="chips m-chips m-chips--wrap" role="tablist" aria-label="Question categories" data-live="faqTabs">${faqTabsHTML()}</div>
           <div data-live="faqs">${faqListHTML(A.faq)}</div></section>
-        <section class="faq__help m-help" aria-label="Help and support">
+        <section class="faq__help m-help" aria-label="Contact IT Support">
           <span class="faq__help-icon" aria-hidden="true">${icon("i-help")}</span>
           <p>${help.innerHTML}</p>
-          <div class="m-help__acts"><button class="btn btn--primary btn--sm" type="button" data-toast="A support request has been started.">Contact support</button><button class="btn btn--quiet btn--sm" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>
+          <div class="m-help__acts"><button class="btn btn--primary btn--sm" type="button" data-go="support">Contact IT Support</button><button class="btn btn--quiet btn--sm" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>
         </section>`;
     },
     live: { noticed: () => gptNoticedHTML(), faqTabs: () => faqTabsHTML(), faqs: () => faqListHTML(A.faq) }
@@ -1676,7 +1740,7 @@
           rowHTML({ lead: tile("i-globe"), title: "Language", sub: "English", act: "language" })
         ])}
         ${groupBlock("Support", [
-          rowHTML({ lead: tile("i-help"), title: "Help & support", sub: "Bloom GPT and our support team", go: "tab/help" }),
+          rowHTML({ lead: tile("i-help"), title: "Contact IT Support", sub: "Tell our IT team what you need", go: "support" }),
           rowHTML({ lead: tile("i-book"), title: "FAQ", sub: "Quick answers", go: "faq/0" })
         ])}
         ${groupBlock("Account", [rowHTML({ lead: tile("i-logout", "var(--warm)"), title: "Sign out", end: "", act: "sign-out", cls: "m-row--danger" })])}`;
@@ -1793,7 +1857,7 @@
     perks.forEach((x) => add("Perks", x.title, `${PERK_CATS[x.cat]} perk`, `<span class="perk-row__tile" data-pc="${x.cat}">${icon(x.icon)}</span>`, `perk/${x.id}`));
     quickLinks().forEach((a) => add("Apps", a.name, `${counts[a.src]} pending · ${a.hint}`, `<span class="app-mark ${a.mark}"></span>`, `tasks/approvals/${a.src}`));
     $$("#faq .faqs__item").forEach((d, i) => add("Help", $(".faqs__q span", d).textContent, "FAQ", tile("i-help"), `faq/${i}`));
-    add("Help", "Help & support", "FAQs and contacts", tile("i-help"), "tab/help");
+    add("Help", "Contact IT Support", "Report an issue to IT", tile("i-help"), "support");
     add("Bloom GPT", "Ask Bloom GPT", "Your AI assistant", `<span class="app-mark app-mark--gpt"><span class="orb orb--xs"></span></span>`, "gpt");
     return idx;
   }
@@ -2151,8 +2215,10 @@
         <div class="auth__actions">
           <button class="btn btn--primary auth__btn auth__btn--id" type="button" data-act="auth-sso"><span class="auth__btn-label">Log in with Bloom ID</span>${icon("i-arrow", "ico ico--sm btn__arrow")}</button>
           <button class="btn btn--ghost auth__btn" type="button" data-act="auth-bio" data-v="finger">${icon("i-fingerprint", "ico ico--sm")}Use biometrics</button>
-          <p class="auth__help">Need help? <button class="link-btn" type="button" data-act="auth-help">Contact IT support</button></p>
+          <p class="auth__help">Need help? <button class="link-btn" type="button" data-act="auth-help">Contact IT Support</button></p>
         </div></section>`,
+    support: () => `<section class="auth auth--support" aria-labelledby="auth-sup-title"><header class="auth__bar auth__bar--back"><button class="pg-bar__btn" type="button" data-act="auth-back" aria-label="Back to sign in">${icon("i-chevron-left")}</button></header>
+        ${supFormHTML("auth-sup-title")}</section>`,
     done: () => `<section class="auth auth--done" aria-labelledby="auth-done-title">${authBar()}
         <div class="auth__done" role="status">
           <span class="auth-me" aria-hidden="true"><svg class="auth-me__ring" viewBox="0 0 124 124"><circle cx="62" cy="62" r="60"/><circle cx="62" cy="62" r="60" pathLength="1"/></svg>${avatarHTML(me, "auth-me__dp")}<span class="auth-me__ok">${icon("i-check")}</span></span>
