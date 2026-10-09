@@ -59,6 +59,9 @@
     renders the hero dock (entries with a `dock` place) and the "View All"
     drawer (`drawerViews.links`, back chevron instead of ×). Add an app
     there, never in the markup; `brand` only tints its card.
+  - Help & support opens the contact form (`drawerViews.support`, wired by
+    `initSupport`); "Browse FAQs" leads to the FAQ drawer (`help`). Files are
+    only listed in the tab; nothing is stored or sent.
   - Bloom GPT (`#gpt-page`, "Bloom GPT" section of `src/app.js`) answers
     from the page's data through `GPT_SKILLS`, picked by `GPT_ROUTES` (first
     match wins, order matters), and acts through `GPT_ACTS`. Anything that

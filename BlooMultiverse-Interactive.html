@@ -619,6 +619,35 @@ em { font-style: normal; }
 .ql-card:hover .ql-card__ext { translate: 2px -2px; }
 .ql-card:active { translate: 0; }
 .ql-card:focus-visible { box-shadow: var(--ring); }
+/* Help & support — the contact form */
+.sp { display: grid; gap: 20px; }
+.sp__title { font-family: var(--font-display); font-size: 2rem; font-weight: 700; line-height: 1.1; letter-spacing: -.03em; }
+.sp__title em { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -.02em; color: var(--accent-fg); }
+.sp__lead { color: var(--slate); font-size: var(--fs-body); }
+.sp__mail { display: inline-flex; align-items: center; gap: 10px; justify-self: start; font-weight: 600; color: var(--accent-fg); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.sp__form { display: grid; gap: 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.sp__form > * + * { margin-top: 0; }
+.sp__req { color: var(--bad-fg); }
+.sp__drop { display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: var(--r-sm); border: 1px dashed var(--line-strong); cursor: pointer; transition: border-color var(--t-base), background-color var(--t-base); }
+.sp__drop:hover, .sr-only:focus-visible + .sp__drop { border-color: var(--accent-fg); background: var(--accent-soft); }
+.sp__drop-ico { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--accent-soft); color: var(--accent-fg); }
+.sp__drop strong { display: block; font-size: var(--fs-support); }
+.sp__drop small { display: block; font-size: var(--fs-meta); color: var(--slate-2); }
+.sp__attach { display: grid; gap: 10px; }
+.sp__attach .sr-only:focus-visible + .sp__drop { box-shadow: var(--ring); }
+.sp__files { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.sp__attach input[type="file"] { font-size: 1rem; }
+.sp__files:empty { display: none; }
+.sp-file { position: relative; display: grid; justify-items: center; gap: 6px; width: 84px; font-size: var(--fs-meta); }
+.sp-file__ico { position: relative; display: grid; place-items: center; width: 84px; height: 64px; border-radius: var(--r-sm); background: var(--surface-2); border: 1px solid var(--line); color: var(--accent-fg); }
+.sp-file__ico .ico { width: 28px; height: 28px; }
+.sp-file__ico b { position: absolute; bottom: 6px; font-size: .625rem; font-weight: 700; letter-spacing: .06em; }
+.sp-file__ico--pdf { color: var(--bad-fg); }
+.sp-file__ico--jpg { color: var(--warm-fg); }
+.sp-file__name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--slate); }
+.sp-file__x { position: absolute; top: -6px; right: -6px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: var(--canvas); }
+.sp-file__x .ico { width: 12px; height: 12px; }
+@media (max-width: 599px) { .sp__title { font-size: 1.75rem; } }
 .d-task__row { display: flex; gap: 14px; align-items: center; }
 .d-task__title { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
 .d-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -2737,6 +2766,8 @@ html.is-locked, .is-locked body { overflow: hidden; }
       <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5l-8 8"/><path d="M18 14v4.5a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1H10"/></symbol>
       <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15.5V4.5M7.5 9 12 4.5 16.5 9"/><path d="M4.5 15v3a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5v-3"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="m5 8.5 7 5 7-5"/></symbol>
       <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
       <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
@@ -3570,7 +3601,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
           <div class="faq__help reveal">
             <span class="faq__help-icon"><svg class="ico"><use href="#i-help"/></svg></span>
             <p><strong>Still need a hand?</strong>Our support team can help with anything in BlooMultiverse.</p>
-            <button class="btn btn--primary btn--sm" type="button" data-drawer="help">Help &amp; support <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></button>
+            <button class="btn btn--primary btn--sm" type="button" data-drawer="support">Help &amp; support <svg class="ico ico--sm btn__arrow"><use href="#i-arrow"/></svg></button>
           </div>
         </div>
       </div>
@@ -3600,7 +3631,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
         <nav class="footer__col" aria-label="Support">
           <p class="footer__label">Support</p>
           <button class="footer__link" type="button" data-drawer="help">FAQs</button>
-          <button class="footer__link" type="button" data-drawer="help">Help &amp; support</button>
+          <button class="footer__link" type="button" data-drawer="support">Help &amp; support</button>
         </nav>
         <div class="footer__col">
           <p class="footer__label">Follow us</p>
@@ -4256,7 +4287,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
     { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
     { group: "Requests", label: "Drafts", meta: "Requests you haven’t sent", inbox: "draft" },
     { group: "Requests", label: "My requests", meta: "Waiting on approvers", inbox: "mine" },
-    { group: "Help", label: "Help & support", meta: "FAQs and contacts", drawer: "help" },
+    { group: "Help", label: "Help & support", meta: "Talk to our support team", drawer: "support" },
     { group: "Bloom GPT", label: "Ask Bloom GPT", meta: "Your AI assistant", gpt: true }
   ];
   const search = $("#search");
@@ -4519,6 +4550,46 @@ html.is-locked, .is-locked body { overflow: hidden; }
   const drawerBody = $("#drawer-body");
   let lastFocus = null;
 
+  const SUPPORT_EMAIL = "it@bloomholding.com";
+  const SP_MAX = 5, SP_BYTES = 15 * 1024 * 1024, SP_TYPES = ["pdf", "jpg", "jpeg", "png", "doc", "docx"];
+  // Files stay in this tab's memory until Submit; nothing is stored or sent
+  function initSupport() {
+    const text = $("#sp-text"), submit = $("#sp-submit"), list = $("#sp-files"), err = $("#sp-error"), input = $("#sp-file");
+    let files = [];
+    const ext = (f) => f.name.split(".").pop().toLowerCase();
+    const sync = () => { submit.disabled = !text.value.trim(); };
+    const paint = () => {
+      list.innerHTML = files.map((f, i) => `<li class="sp-file"><span class="sp-file__ico sp-file__ico--${ext(f) === "jpeg" ? "jpg" : ext(f) === "docx" ? "doc" : ext(f)}">${icon("i-doc")}<b>${ext(f).replace("jpeg", "jpg").replace("docx", "doc").toUpperCase()}</b></span><span class="sp-file__name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><button class="sp-file__x" type="button" data-i="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-x", "ico ico--sm")}</button></li>`).join("");
+    };
+    text.addEventListener("input", sync);
+    input.addEventListener("change", () => {
+      const problems = [];
+      [...input.files].forEach((f) => {
+        if (!SP_TYPES.includes(ext(f))) problems.push(`${f.name} isn’t a PDF, JPG, PNG or DOC file.`);
+        else if (f.size > SP_BYTES) problems.push(`${f.name} is over 15 MB.`);
+        else if (files.length >= SP_MAX) { if (!problems.some((p) => p.includes("5 files"))) problems.push("You can add up to 5 files."); }
+        else files.push(f);
+      });
+      input.value = "";
+      err.hidden = !problems.length; err.textContent = problems.join(" ");
+      paint();
+    });
+    list.addEventListener("click", (e) => {
+      const x = e.target.closest(".sp-file__x");
+      if (!x) return;
+      files.splice(+x.dataset.i, 1); err.hidden = true; paint();
+      $(".sp__drop").focus?.();
+    });
+    $("#sp-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!text.value.trim() || submit.classList.contains("is-loading")) return;
+      submit.classList.add("is-loading"); submit.disabled = true;
+      $(".btn__label", submit).textContent = "Submitting";
+      setTimeout(() => { closeDrawer(); toast("Your request has been submitted successfully", "i-check"); }, 900);
+    });
+    setTimeout(() => text.focus(), 80);
+  }
+
   const drawerBack = $(".drawer__back");
   const drawerClose = $(".drawer__close");
 
@@ -4528,6 +4599,34 @@ html.is-locked, .is-locked body { overflow: hidden; }
       back: true,
       html: `<ul class="ql-list" role="list">${QUICK_LINKS.map((l) =>
         `<li><a class="ql-card" ${qlLink(l)} style="--brand: ${l.brand}">${qlMark(l)}<span class="ql-card__text"><strong class="ql-card__name">${l.name}</strong><span class="ql-card__desc">${escapeHtml(l.desc)}</span></span>${icon("i-external", "ico ql-card__ext")}</a></li>`).join("")}</ul>`
+    }),
+    support: () => ({
+      title: "Help & support",
+      back: true,
+      html: `<div class="sp">
+        <h3 class="sp__title">Talk to our <em>support team</em></h3>
+        <p class="sp__lead">Feel free to reach out for help with your account or any questions you may have about Bloom Multiverse.</p>
+        <a class="sp__mail" href="mailto:${SUPPORT_EMAIL}">${icon("i-mail", "ico ico--sm")}${SUPPORT_EMAIL}</a>
+        <form class="sp__form" id="sp-form" novalidate>
+          <div class="field">
+            <label class="field__label" for="sp-text">Tell us how we can help? <span class="sp__req" aria-hidden="true">*</span></label>
+            <textarea id="sp-text" rows="6" placeholder="Type here" required></textarea>
+          </div>
+          <div class="sp__attach">
+            <label class="sp__drop" for="sp-file">
+              <span class="sp__drop-ico">${icon("i-upload")}</span>
+              <span><strong>Add attachment</strong><small>PDF, JPG, PNG or DOC, up to 15 MB each. Max 5 files.</small></span>
+            </label>
+            <input id="sp-file" class="sr-only" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            <p class="field__error" id="sp-error" role="alert" hidden></p>
+            <ul class="sp__files" id="sp-files" role="list"></ul>
+          </div>
+          <div class="d-actions">
+            <button class="btn btn--primary" type="submit" id="sp-submit" disabled><span class="btn__label">Submit</span><span class="spinner" aria-hidden="true"></span></button>
+            <button class="btn btn--quiet" type="button" data-drawer="help">Browse FAQs</button>
+          </div>
+        </form>
+      </div>`
     }),
     profile: () => ({
       title: "My profile",
@@ -4548,7 +4647,7 @@ html.is-locked, .is-locked body { overflow: hidden; }
             `<details class="faq"${g === 0 && i === 0 ? " open" : ""}><summary>${$(".faqs__q span", d).innerHTML}${icon("i-chevron-down")}</summary><p>${$(".faqs__a p", d).innerHTML}</p></details>`).join("");
           return `<h3 class="d-faq__label">${label}</h3>${items}`;
         }).join("")}
-        <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="A support request has been started.">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
+        <div class="d-actions"><button class="btn btn--primary" type="button" data-drawer="support">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
     }),
     task: (row) => {
       const src = row.dataset.source;
@@ -4613,8 +4712,9 @@ html.is-locked, .is-locked body { overflow: hidden; }
     closeNav(false);
     closeSearch();
     hideTip();
-    setTimeout(() => (view.back ? drawerBack : drawerClose).focus(), 60);
+    setTimeout(() => { if (type !== "support") (view.back ? drawerBack : drawerClose).focus(); }, 60);
 
+    if (type === "support") initSupport();
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {
         const btn = e.currentTarget;

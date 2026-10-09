@@ -384,7 +384,7 @@
     { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
     { group: "Requests", label: "Drafts", meta: "Requests you haven’t sent", inbox: "draft" },
     { group: "Requests", label: "My requests", meta: "Waiting on approvers", inbox: "mine" },
-    { group: "Help", label: "Help & support", meta: "FAQs and contacts", drawer: "help" },
+    { group: "Help", label: "Help & support", meta: "Talk to our support team", drawer: "support" },
     { group: "Bloom GPT", label: "Ask Bloom GPT", meta: "Your AI assistant", gpt: true }
   ];
   const search = $("#search");
@@ -647,6 +647,46 @@
   const drawerBody = $("#drawer-body");
   let lastFocus = null;
 
+  const SUPPORT_EMAIL = "it@bloomholding.com";
+  const SP_MAX = 5, SP_BYTES = 15 * 1024 * 1024, SP_TYPES = ["pdf", "jpg", "jpeg", "png", "doc", "docx"];
+  // Files stay in this tab's memory until Submit; nothing is stored or sent
+  function initSupport() {
+    const text = $("#sp-text"), submit = $("#sp-submit"), list = $("#sp-files"), err = $("#sp-error"), input = $("#sp-file");
+    let files = [];
+    const ext = (f) => f.name.split(".").pop().toLowerCase();
+    const sync = () => { submit.disabled = !text.value.trim(); };
+    const paint = () => {
+      list.innerHTML = files.map((f, i) => `<li class="sp-file"><span class="sp-file__ico sp-file__ico--${ext(f) === "jpeg" ? "jpg" : ext(f) === "docx" ? "doc" : ext(f)}">${icon("i-doc")}<b>${ext(f).replace("jpeg", "jpg").replace("docx", "doc").toUpperCase()}</b></span><span class="sp-file__name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><button class="sp-file__x" type="button" data-i="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-x", "ico ico--sm")}</button></li>`).join("");
+    };
+    text.addEventListener("input", sync);
+    input.addEventListener("change", () => {
+      const problems = [];
+      [...input.files].forEach((f) => {
+        if (!SP_TYPES.includes(ext(f))) problems.push(`${f.name} isn’t a PDF, JPG, PNG or DOC file.`);
+        else if (f.size > SP_BYTES) problems.push(`${f.name} is over 15 MB.`);
+        else if (files.length >= SP_MAX) { if (!problems.some((p) => p.includes("5 files"))) problems.push("You can add up to 5 files."); }
+        else files.push(f);
+      });
+      input.value = "";
+      err.hidden = !problems.length; err.textContent = problems.join(" ");
+      paint();
+    });
+    list.addEventListener("click", (e) => {
+      const x = e.target.closest(".sp-file__x");
+      if (!x) return;
+      files.splice(+x.dataset.i, 1); err.hidden = true; paint();
+      $(".sp__drop").focus?.();
+    });
+    $("#sp-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!text.value.trim() || submit.classList.contains("is-loading")) return;
+      submit.classList.add("is-loading"); submit.disabled = true;
+      $(".btn__label", submit).textContent = "Submitting";
+      setTimeout(() => { closeDrawer(); toast("Your request has been submitted successfully", "i-check"); }, 900);
+    });
+    setTimeout(() => text.focus(), 80);
+  }
+
   const drawerBack = $(".drawer__back");
   const drawerClose = $(".drawer__close");
 
@@ -656,6 +696,34 @@
       back: true,
       html: `<ul class="ql-list" role="list">${QUICK_LINKS.map((l) =>
         `<li><a class="ql-card" ${qlLink(l)} style="--brand: ${l.brand}">${qlMark(l)}<span class="ql-card__text"><strong class="ql-card__name">${l.name}</strong><span class="ql-card__desc">${escapeHtml(l.desc)}</span></span>${icon("i-external", "ico ql-card__ext")}</a></li>`).join("")}</ul>`
+    }),
+    support: () => ({
+      title: "Help & support",
+      back: true,
+      html: `<div class="sp">
+        <h3 class="sp__title">Talk to our <em>support team</em></h3>
+        <p class="sp__lead">Feel free to reach out for help with your account or any questions you may have about Bloom Multiverse.</p>
+        <a class="sp__mail" href="mailto:${SUPPORT_EMAIL}">${icon("i-mail", "ico ico--sm")}${SUPPORT_EMAIL}</a>
+        <form class="sp__form" id="sp-form" novalidate>
+          <div class="field">
+            <label class="field__label" for="sp-text">Tell us how we can help? <span class="sp__req" aria-hidden="true">*</span></label>
+            <textarea id="sp-text" rows="6" placeholder="Type here" required></textarea>
+          </div>
+          <div class="sp__attach">
+            <label class="sp__drop" for="sp-file">
+              <span class="sp__drop-ico">${icon("i-upload")}</span>
+              <span><strong>Add attachment</strong><small>PDF, JPG, PNG or DOC, up to 15 MB each. Max 5 files.</small></span>
+            </label>
+            <input id="sp-file" class="sr-only" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            <p class="field__error" id="sp-error" role="alert" hidden></p>
+            <ul class="sp__files" id="sp-files" role="list"></ul>
+          </div>
+          <div class="d-actions">
+            <button class="btn btn--primary" type="submit" id="sp-submit" disabled><span class="btn__label">Submit</span><span class="spinner" aria-hidden="true"></span></button>
+            <button class="btn btn--quiet" type="button" data-drawer="help">Browse FAQs</button>
+          </div>
+        </form>
+      </div>`
     }),
     profile: () => ({
       title: "My profile",
@@ -676,7 +744,7 @@
             `<details class="faq"${g === 0 && i === 0 ? " open" : ""}><summary>${$(".faqs__q span", d).innerHTML}${icon("i-chevron-down")}</summary><p>${$(".faqs__a p", d).innerHTML}</p></details>`).join("");
           return `<h3 class="d-faq__label">${label}</h3>${items}`;
         }).join("")}
-        <div class="d-actions"><button class="btn btn--primary" type="button" data-toast="A support request has been started.">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
+        <div class="d-actions"><button class="btn btn--primary" type="button" data-drawer="support">Contact support</button><button class="btn btn--quiet" type="button" data-toast="Opening the help centre…">Visit help centre</button></div>`
     }),
     task: (row) => {
       const src = row.dataset.source;
@@ -741,8 +809,9 @@
     closeNav(false);
     closeSearch();
     hideTip();
-    setTimeout(() => (view.back ? drawerBack : drawerClose).focus(), 60);
+    setTimeout(() => { if (type !== "support") (view.back ? drawerBack : drawerClose).focus(); }, 60);
 
+    if (type === "support") initSupport();
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {
         const btn = e.currentTarget;
