@@ -384,6 +384,7 @@
     { group: "Requests", label: "New request", meta: "TCDF, Internal Memo, RFP", inbox: "new" },
     { group: "Requests", label: "Drafts", meta: "Requests you haven’t sent", inbox: "draft" },
     { group: "Requests", label: "My requests", meta: "Waiting on approvers", inbox: "mine" },
+    { group: "Help", label: "Contact IT Support", meta: "Raise an IT request", drawer: "itsupport" },
     { group: "Help", label: "Help & support", meta: "Talk to our support team", drawer: "support" },
     { group: "Bloom GPT", label: "Ask Bloom GPT", meta: "Your AI assistant", gpt: true }
   ];
@@ -648,17 +649,58 @@
   let lastFocus = null;
 
   const SUPPORT_EMAIL = "it@bloomholding.com";
+  const supportView = (it) => ({
+      title: it ? "Contact IT Support" : "Help & support",
+      back: true,
+      html: `<div class="sp">
+        <h3 class="sp__title">Talk to our <em>support team</em></h3>
+        <p class="sp__lead">Feel free to reach out for help with your account or any questions you may have about Bloom Multiverse.</p>
+        <a class="sp__mail" href="mailto:${SUPPORT_EMAIL}">${icon("i-mail", "ico ico--sm")}${SUPPORT_EMAIL}</a>
+        <form class="sp__form" id="sp-form" novalidate>
+          ${it ? `<div class="field">
+            <label class="field__label" for="sp-email">Email <span class="sp__req" aria-hidden="true">*</span></label>
+            <input class="field__input" id="sp-email" type="email" inputmode="email" autocomplete="off" placeholder="Enter email" required>
+            <p class="field__error" id="sp-email-error" role="alert" hidden>Enter a valid email address.</p>
+          </div>` : ""}
+          <div class="field">
+            <label class="field__label" for="sp-text">Tell us how we can help? <span class="sp__req" aria-hidden="true">*</span></label>
+            <textarea id="sp-text" rows="6" placeholder="Type here" required></textarea>
+          </div>
+          <div class="sp__attach">
+            <label class="sp__drop" for="sp-file">
+              <span class="sp__drop-ico">${icon("i-upload")}</span>
+              <span><strong>Add attachment</strong><small>PDF, JPG, PNG or DOC, up to 15 MB each. Max 5 files.</small></span>
+            </label>
+            <input id="sp-file" class="sr-only" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            <p class="field__error" id="sp-error" role="alert" hidden></p>
+            <ul class="sp__files" id="sp-files" role="list"></ul>
+          </div>
+          <div class="d-actions">
+            <button class="btn btn--primary" type="submit" id="sp-submit" disabled><span class="btn__label">Submit</span><span class="spinner" aria-hidden="true"></span></button>
+            ${it ? "" : `<button class="btn btn--quiet" type="button" data-drawer="help">Browse FAQs</button>`}
+          </div>
+        </form>
+      </div>`
+    });
+
+
   const SP_MAX = 5, SP_BYTES = 15 * 1024 * 1024, SP_TYPES = ["pdf", "jpg", "jpeg", "png", "doc", "docx"];
   // Files stay in this tab's memory until Submit; nothing is stored or sent
   function initSupport() {
     const text = $("#sp-text"), submit = $("#sp-submit"), list = $("#sp-files"), err = $("#sp-error"), input = $("#sp-file");
     let files = [];
     const ext = (f) => f.name.split(".").pop().toLowerCase();
-    const sync = () => { submit.disabled = !text.value.trim(); };
+    const email = $("#sp-email"), emailErr = $("#sp-email-error");
+    const emailOk = () => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+    const sync = () => { submit.disabled = !text.value.trim() || (email && !email.value.trim()); };
     const paint = () => {
       list.innerHTML = files.map((f, i) => `<li class="sp-file"><span class="sp-file__ico sp-file__ico--${ext(f) === "jpeg" ? "jpg" : ext(f) === "docx" ? "doc" : ext(f)}">${icon("i-doc")}<b>${ext(f).replace("jpeg", "jpg").replace("docx", "doc").toUpperCase()}</b></span><span class="sp-file__name" title="${escapeHtml(f.name)}">${escapeHtml(f.name)}</span><button class="sp-file__x" type="button" data-i="${i}" aria-label="Remove ${escapeHtml(f.name)}">${icon("i-x", "ico ico--sm")}</button></li>`).join("");
     };
     text.addEventListener("input", sync);
+    if (email) {
+      email.addEventListener("input", () => { sync(); if (email.getAttribute("aria-invalid")) { const ok = emailOk(); email.toggleAttribute("aria-invalid", !ok); emailErr.hidden = ok; } });
+      email.addEventListener("blur", () => { if (!email.value.trim()) return; const ok = emailOk(); ok ? email.removeAttribute("aria-invalid") : email.setAttribute("aria-invalid", "true"); emailErr.hidden = ok; });
+    }
     input.addEventListener("change", () => {
       const problems = [];
       [...input.files].forEach((f) => {
@@ -680,11 +722,21 @@
     $("#sp-form").addEventListener("submit", (e) => {
       e.preventDefault();
       if (!text.value.trim() || submit.classList.contains("is-loading")) return;
+      if (!emailOk()) { email.setAttribute("aria-invalid", "true"); emailErr.hidden = false; email.focus(); return; }
       submit.classList.add("is-loading"); submit.disabled = true;
       $(".btn__label", submit).textContent = "Submitting";
-      setTimeout(() => { closeDrawer(); toast("Your request has been submitted successfully", "i-check"); }, 900);
+      setTimeout(() => {
+        // Nothing is sent. Offline stands in for a failed request, and the form keeps what was typed
+        if (!navigator.onLine) {
+          submit.classList.remove("is-loading"); submit.disabled = false; $(".btn__label", submit).textContent = "Submit";
+          err.hidden = false; err.textContent = "Something went wrong. Check your connection and try again.";
+          toast("Something went wrong", "i-x");
+          return;
+        }
+        closeDrawer(); toast("Your request has been submitted successfully", "i-check");
+      }, 900);
     });
-    setTimeout(() => text.focus(), 80);
+    setTimeout(() => (email || text).focus(), 80);
   }
 
   const drawerBack = $(".drawer__back");
@@ -697,34 +749,8 @@
       html: `<ul class="ql-list" role="list">${QUICK_LINKS.map((l) =>
         `<li><a class="ql-card" ${qlLink(l)} style="--brand: ${l.brand}">${qlMark(l)}<span class="ql-card__text"><strong class="ql-card__name">${l.name}</strong><span class="ql-card__desc">${escapeHtml(l.desc)}</span></span>${icon("i-external", "ico ql-card__ext")}</a></li>`).join("")}</ul>`
     }),
-    support: () => ({
-      title: "Help & support",
-      back: true,
-      html: `<div class="sp">
-        <h3 class="sp__title">Talk to our <em>support team</em></h3>
-        <p class="sp__lead">Feel free to reach out for help with your account or any questions you may have about Bloom Multiverse.</p>
-        <a class="sp__mail" href="mailto:${SUPPORT_EMAIL}">${icon("i-mail", "ico ico--sm")}${SUPPORT_EMAIL}</a>
-        <form class="sp__form" id="sp-form" novalidate>
-          <div class="field">
-            <label class="field__label" for="sp-text">Tell us how we can help? <span class="sp__req" aria-hidden="true">*</span></label>
-            <textarea id="sp-text" rows="6" placeholder="Type here" required></textarea>
-          </div>
-          <div class="sp__attach">
-            <label class="sp__drop" for="sp-file">
-              <span class="sp__drop-ico">${icon("i-upload")}</span>
-              <span><strong>Add attachment</strong><small>PDF, JPG, PNG or DOC, up to 15 MB each. Max 5 files.</small></span>
-            </label>
-            <input id="sp-file" class="sr-only" type="file" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
-            <p class="field__error" id="sp-error" role="alert" hidden></p>
-            <ul class="sp__files" id="sp-files" role="list"></ul>
-          </div>
-          <div class="d-actions">
-            <button class="btn btn--primary" type="submit" id="sp-submit" disabled><span class="btn__label">Submit</span><span class="spinner" aria-hidden="true"></span></button>
-            <button class="btn btn--quiet" type="button" data-drawer="help">Browse FAQs</button>
-          </div>
-        </form>
-      </div>`
-    }),
+    support: () => supportView(false),
+    itsupport: () => supportView(true),
     profile: () => ({
       title: "My profile",
       html: `<div class="d-profile"><span class="avatar img-rashid"></span><h3>Rashid Khan</h3><p class="meta">Sr. Engineer, Digital Platforms</p></div>
@@ -809,9 +835,9 @@
     closeNav(false);
     closeSearch();
     hideTip();
-    setTimeout(() => { if (type !== "support") (view.back ? drawerBack : drawerClose).focus(); }, 60);
+    setTimeout(() => { if (type !== "support" && type !== "itsupport") (view.back ? drawerBack : drawerClose).focus(); }, 60);
 
-    if (type === "support") initSupport();
+    if (type === "support" || type === "itsupport") initSupport();
     if (type === "task") {
       $("#approve-task").addEventListener("click", (e) => {
         const btn = e.currentTarget;
