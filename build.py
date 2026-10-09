@@ -43,3 +43,20 @@ hosted = re.sub(
 HOSTED.parent.mkdir(exist_ok=True)
 HOSTED.write_text(hosted.lstrip(), encoding="utf-8")
 print(f"wrote {HOSTED.relative_to(ROOT)} ({HOSTED.stat().st_size / 1024:.0f} KB)")
+
+# The standalone copy: the phone app on its own, no iPhone mockup, for tools
+# that capture the page (the Figma plugin). Always the app, in one 393-wide
+# column centred in the window (or the whole window on a phone).
+STANDALONE = ROOT / "BlooMultiverse-Standalone.html"
+mark = 'else if (location.hash !== "#desktop") root.classList.add("is-mockup");'
+assert mark in html
+solo = html.replace(mark, 'else root.classList.add("is-app", "is-standalone");', 1)
+solo = solo.replace("</head>", """<style>
+:root.is-standalone .app { left: max(0px, calc((100vw - 393px) / 2)); right: max(0px, calc((100vw - 393px) / 2)); }
+:root.is-standalone #mockup { display: none; }
+/* fluid sizes follow the window; in a 393 column they should be the phone's */
+:root.is-standalone .auth__title { font-size: 2.5rem; }
+:root.is-standalone .hero__title.m-hello__title { font-size: 2.5rem; }
+</style></head>""", 1)
+STANDALONE.write_text(solo, encoding="utf-8")
+print(f"wrote {STANDALONE.name} ({STANDALONE.stat().st_size / 1024:.0f} KB)")
