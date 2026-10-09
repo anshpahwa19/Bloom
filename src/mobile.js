@@ -2098,7 +2098,9 @@
   const inlinePaths = (id) => $$(`#${id} path`).map((p, i) => `<path d="${p.getAttribute("d")}" pathLength="1" style="--i:${i}"/>`).join("");
   // Bloom's icon: the logo's B, white on the logo's red
   const bloomIcon = () => `<span class="auth-icon"><svg class="auth-icon__b" viewBox="0 0 42 43">${inlinePaths("i-bloom")}</svg><i class="auth-icon__sheen"></i></span>`;
-  const authBar = () => `<header class="auth__bar"><span class="brand__word has-logo" role="img" aria-label="Bloom Multiverse"></span></header>`;
+  // The page's own theme switch (app.js flips it and keeps its label), as a round button
+  const authTheme = () => `<button class="auth-theme" type="button" data-theme-switch="icon" role="switch" aria-checked="${root.getAttribute("data-theme") === "dark"}" aria-label="Switch to ${root.getAttribute("data-theme") === "dark" ? "light" : "dark"} theme">${icon("i-sun", "ico auth-theme__sun")}${icon("i-moon", "ico auth-theme__moon")}</button>`;
+  const authBar = () => `<header class="auth__bar"><span class="brand__word has-logo" role="img" aria-label="Bloom Multiverse"></span>${authTheme()}</header>`;
   // Each line rises out of its own mask, as the hero's do
   const authLine = (html, cls = "") => `<span class="auth-line ${cls}"><span class="auth-line__in">${html}</span></span>`;
   // The hero's constellation before sign-in: Bloom at the core and, on the login, the four apps (no counts yet)
@@ -2116,10 +2118,10 @@
     return `${authLine(esc(t.firstChild.textContent.trim()))} ${authLine($("em", t).outerHTML, "auth-line--em")}`;
   };
   const AUTH_STEPS = {
-    splash: () => `<section class="auth auth--splash" aria-label="Bloom Multiverse is opening">
+    splash: () => `<section class="auth auth--splash" aria-label="Bloom Multiverse is opening">${authTheme()}
         <div class="auth-splash">${authOrbitHTML(false)}
           <p class="auth-splash__name">${authLine("Bloom")} ${authLine("Multiverse", "auth-line--accent")}</p>
-          <p class="auth-splash__tag">Employee workspace</p></div>
+          <p class="auth-splash__tag">Where AI and Humans Work Together</p></div>
         <span class="auth-load" aria-hidden="true"><i></i></span></section>`,
     login: () => `<section class="auth auth--login" aria-labelledby="auth-title">${authBar()}
         <div class="auth-vis">${authOrbitHTML(true)}</div>

@@ -853,6 +853,19 @@ button.m-card:active { transform: scale(.985); }
 .auth::-webkit-scrollbar { display: none; }
 .auth__bar { display: flex; align-items: center; height: var(--app-bar); flex: none; }
 .auth__bar .brand__word { width: 150px; height: 22px; }
+.auth__bar { justify-content: space-between; }
+/* sun in the dark, moon in the light: the icon shows what it switches to */
+.auth-theme {
+  position: relative; display: inline-grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-pill);
+  background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line), var(--sh-1);
+  transition: transform var(--t-fast) var(--ease-out), background-color var(--t-base);
+}
+.auth-theme:active { transform: scale(.9); }
+.auth-theme .ico { grid-area: 1 / 1; transition: opacity var(--t-base), rotate var(--t-slow) var(--ease-spring), scale var(--t-slow) var(--ease-spring); }
+.auth-theme__moon, :root[data-theme="dark"] .auth-theme__sun { opacity: 1; rotate: 0deg; scale: 1; }
+.auth-theme__sun, :root[data-theme="dark"] .auth-theme__moon { opacity: 0; rotate: -70deg; scale: .5; }
+:root[data-theme="dark"] .auth-theme__sun { opacity: 1; rotate: 0deg; scale: 1; }
+.auth--splash > .auth-theme { position: absolute; top: calc(var(--safe-top) + 6px); right: var(--app-pad); z-index: 2; }
 /* focus lands on each step's heading for screen readers; it isn't a control, so no ring */
 .auth [tabindex="-1"]:focus-visible { box-shadow: none; }
 
@@ -901,7 +914,7 @@ button.m-card:active { transform: scale(.985); }
 .auth-splash__name .auth-line { display: inline-block; vertical-align: top; }
 .auth-splash__name .auth-line:nth-child(1) .auth-line__in { --d: .5s; }
 .auth-splash__name .auth-line:nth-child(2) .auth-line__in { --d: .6s; }
-.auth-splash__tag { margin-top: 10px; font-size: .75rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--slate-2); animation: auth-track 1.3s var(--ease-expo) .8s both; }
+.auth-splash__tag { margin-top: 10px; max-width: 26ch; font-size: .75rem; font-weight: 600; line-height: 1.5; text-wrap: balance; letter-spacing: .16em; text-transform: uppercase; color: var(--slate-2); animation: auth-track 1.3s var(--ease-expo) .8s both; }
 .auth-load { position: absolute; left: 50%; bottom: calc(var(--safe-bottom) + 44px); width: 120px; height: 4px; translate: -50% 0; overflow: hidden; border-radius: var(--r-pill); background: color-mix(in srgb, var(--ink) 10%, transparent); }
 .auth-load i { position: absolute; inset: 0; border-radius: inherit; transform-origin: left center; background: linear-gradient(90deg, var(--accent), var(--cyan), var(--accent)) 0 0 / 200% 100%; animation: auth-fill 2s var(--ease-expo) .15s both, shimmer 1.4s linear infinite; }
 .auth-load--done i { animation-duration: 2.3s, 1.4s; }

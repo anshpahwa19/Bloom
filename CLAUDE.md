@@ -158,6 +158,9 @@
     Signed in rings your photo, ticks off the four apps, then the photo flies
     into the Profile tab as Home comes up. The app icon is the logo's B in
     white on the logo's reds; everything else is tokens.
+    The splash and login carry a round theme toggle (`.auth-theme`, the page's
+    own `data-theme-switch`); the splash tagline is "Where AI and Humans Work
+    Together".
   - Inputs in the app are 16px (iOS zooms smaller ones). Touch targets are
     at least 44px. Check 320, 375, 390 and 430 wide (a phone-sized browser
     window or device mode), in both themes, and in the iPhone mockup on a
