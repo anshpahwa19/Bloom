@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Inbox · Empty states — BlooMultiverse</title>
+  <meta name="description" content="Empty states for every tab of the BlooMultiverse Inbox: Inbox, Draft, My requests, History (raised by me, assigned to me) and no search results.">
+  <meta name="theme-color" content="#05081A">
+  <script>
+    (function () {
+      var root = document.documentElement, saved = null;
+      try { saved = localStorage.getItem("bloo-theme"); } catch (e) {}
+      root.setAttribute("data-theme", saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Instrument+Sans:wght@400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <!-- The portal's own stylesheet, so this matches the live Inbox exactly -->
+  <style>
+<!-- @include styles.css -->
+  </style>
+  <style>
+/* ==================================================================
+   Inbox — empty states, one for every tab
+   Inbox · Draft · My requests · History (raised by me / assigned to me)
+   and "nothing matches" for a search or filter that finds no rows.
+   Everything not defined here comes from the portal's styles.css.
+   ================================================================== */
+
+/* The portal's own images, only the ones this page uses */
+.app-mark--sf { --logo: url("{{app-salesforce.png}}"); }
+.app-mark--sap { --logo: url("{{app-sap.png}}"); }
+.app-mark--ui { --logo: url("{{app-uipath.png}}"); }
+.app-mark--db { --logo: url("{{app-darwinbox.png}}"); }
+
+/* The Inbox is an overlay in the portal; here it simply fills the page */
+.inbox.ibd { position: relative; z-index: auto; visibility: visible; clip-path: none; overflow: visible; min-height: 100vh; transition: none; }
+.inbox.ibd .inbox__inner { padding-bottom: 120px; }
+.ibd .ib-avg[hidden], .ibd [hidden] { display: none !important; }
+
+/* ---- the empty state ------------------------------------------------- */
+.ibe-wrap { container-type: inline-size; }
+.ibe {
+  position: relative; isolation: isolate; overflow: clip; margin-top: 18px;
+  display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: center; gap: 24px;
+  padding: clamp(28px, 5cqi, 52px) clamp(20px, 4cqi, 44px); text-align: center;
+  border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); box-shadow: var(--sh-1);
+}
+.ibe::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.4px) 0 0 / 24px 24px;
+  -webkit-mask-image: radial-gradient(60% 70% at 24% 50%, #000, transparent); mask-image: radial-gradient(60% 70% at 24% 50%, #000, transparent);
+}
+.ibe[hidden] { display: none; }
+.ibe__art { position: relative; width: min(100%, 260px); }
+.ibe__copy { display: grid; justify-items: center; min-width: 0; }
+.ibe__badge {
+  display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px 0 10px;
+  border-radius: var(--r-pill); background: var(--accent-soft); color: var(--accent-fg);
+  font-size: var(--fs-meta); font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+}
+.ibe__badge--ok { background: var(--ok-soft); color: var(--ok-fg); }
+.ibe__badge .ico { stroke-width: 2.4; }
+.ibe__title {
+  margin-top: 16px; font-family: var(--font-display); font-weight: 700; line-height: 1.02; letter-spacing: -.035em; text-wrap: balance;
+  font-size: clamp(1.75rem, 1.2rem + 1.4vw, 2.5rem); font-size: round(clamp(1.75rem, 1.2rem + 1.4vw, 2.5rem), 2px);
+}
+.ibe__text { margin-top: 12px; max-width: 46ch; font-size: 1rem; color: var(--slate); text-wrap: pretty; }
+.ibe__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
+.ibe__tip { display: flex; align-items: flex-start; gap: 10px; max-width: 46ch; margin-top: 20px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface-2); text-align: left; font-size: var(--fs-support); color: var(--slate); }
+.ibe__tip .ico { flex: none; margin-top: 2px; color: var(--accent-fg); }
+.ibe__starts { display: grid; gap: 8px; width: 100%; max-width: 46ch; margin: 22px 0 0; padding: 0; list-style: none; text-align: left; }
+.ibe__starts li { display: block; min-width: 0; }
+.ibe__start { width: 100%; text-align: left; display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 8px 14px 8px 8px; border-radius: var(--r-sm); border: 1px solid var(--line); background: var(--surface); transition: border-color var(--t-base), transform var(--t-base) var(--ease-out), box-shadow var(--t-base); }
+.ibe__start:hover { border-color: color-mix(in srgb, var(--c) 45%, var(--line)); transform: translateY(-2px); box-shadow: var(--sh-1); }
+.ibe__start-ico { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--r-icon); background: color-mix(in srgb, var(--c) 13%, var(--surface)); color: var(--c); }
+.ibe__start strong { display: block; font-size: var(--fs-support); font-weight: 600; }
+.ibe__start small { display: block; font-size: var(--fs-meta); color: var(--slate-2); }
+.ibe__start > .ico { color: var(--slate-2); }
+.ibe__filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 18px; }
+.ibe__filters .chip { gap: 8px; }
+.ibe__filters .chip .ico { width: 14px; height: 14px; }
+@container (min-width: 700px) {
+  .ibe { grid-template-columns: minmax(200px, .8fr) minmax(0, 1.2fr); gap: 36px; text-align: left; padding-block: clamp(36px, 5cqi, 56px); }
+  .ibe__copy { justify-items: start; }
+  .ibe__actions, .ibe__filters { justify-content: flex-start; }
+}
+
+/* ---- illustrations: drawn with the portal's tokens ----------------------- */
+.ill { display: block; width: 100%; height: auto; overflow: visible; }
+.ill__shadow { fill: color-mix(in srgb, var(--ink) 9%, transparent); }
+.ill__sheet { fill: var(--surface); stroke: var(--line-strong); stroke-width: 2; }
+.ill__sheet--back { fill: var(--surface-2); }
+.ill__ln { fill: none; stroke: var(--line-strong); stroke-width: 3.5; stroke-linecap: round; }
+.ill__ln--acc { stroke: var(--accent); }
+.ill__dash { fill: none; stroke: var(--accent-fg); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1 7; }
+.ill__acc { fill: var(--accent); }
+.ill__soft { fill: var(--accent-soft); }
+.ill__ok { fill: var(--ok-soft); stroke: var(--ok-fg); stroke-width: 2.5; }
+.ill__bad { fill: var(--bad-soft); stroke: var(--bad-fg); stroke-width: 2.5; }
+.ill__tick { fill: none; stroke: var(--ok-fg); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.ill__cross { fill: none; stroke: var(--bad-fg); stroke-width: 4; stroke-linecap: round; }
+.ill__w { fill: #fff; }
+.ill__ring { fill: var(--surface); stroke: var(--accent); stroke-width: 5; }
+.ill__hand { fill: none; stroke: var(--accent-fg); stroke-width: 3.5; stroke-linecap: round; }
+.ill__float { animation: bob 6s ease-in-out infinite; }
+.ill__float--2 { animation-delay: -2.4s; }
+.ill__fly { animation: ibeFly 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ibeFly { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 6px -8px; rotate: -3deg; } }
+.ill__write { stroke-dasharray: 60; stroke-dashoffset: 60; animation: ibeWrite 3.6s var(--ease-out) infinite; }
+@keyframes ibeWrite { 0% { stroke-dashoffset: 60; } 55%, 100% { stroke-dashoffset: 0; } }
+
+/* the Inbox art: the same calm rings as the Attention empty state */
+.ibe__calm { position: relative; width: min(100%, 250px); aspect-ratio: 1; }
+.ibe__calm svg.rings { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ibe__calm .rings circle { fill: none; stroke: color-mix(in srgb, var(--ink) 14%, transparent); stroke-width: 1; }
+.ibe__calm .rings .is-dashed { stroke-dasharray: 2 7; animation: spin 90s linear infinite; transform-origin: 160px 160px; }
+.ibe__calm .rings .is-faint { stroke: color-mix(in srgb, var(--ink) 7%, transparent); }
+.ibe__core {
+  position: absolute; left: 50%; top: 50%; width: 32%; aspect-ratio: 1; translate: -50% -50%; display: grid; place-items: center; border-radius: 50%;
+  background: radial-gradient(circle at 32% 26%, color-mix(in srgb, var(--accent) 55%, #fff), var(--accent) 58%, color-mix(in srgb, var(--accent) 62%, #000));
+  box-shadow: 0 0 0 10px color-mix(in srgb, var(--accent) 12%, transparent), 0 0 0 24px color-mix(in srgb, var(--accent) 6%, transparent), inset 0 -6px 14px rgba(0, 0, 0, .25);
+  animation: coreIn 1s var(--ease-spring) .1s both;
+}
+.ibe__core svg { width: 46%; height: 46%; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .7s var(--ease-out) .6s forwards; }
+.ibe__app { position: absolute; left: var(--x); top: var(--y); z-index: 1; transform: translate(-50%, -50%); animation: bob 6s ease-in-out infinite; animation-delay: var(--d); }
+.ibe__app .app-mark { width: 44px; height: 44px; box-shadow: 0 0 0 6px color-mix(in srgb, var(--surface) 60%, transparent), var(--sh-float); }
+.ibe__tick { position: absolute; right: -6px; top: -6px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--green); color: #fff; box-shadow: 0 0 0 2px var(--surface); animation: popIn .5s var(--ease-spring) both; animation-delay: calc(.9s + var(--n) * 120ms); }
+.ibe__tick .ico { width: 12px; height: 12px; stroke-width: 2.6; }
+
+/* An empty donut is just its track */
+.ib-donut__seg[data-empty] { display: none; }
+.ibd .ib-legend__item { cursor: default; }
+.ibd .ib-legend__item:hover { background: none; }
+.ibd .ib-legend__item.is-zero .ib-legend__val, .ibd .ib-legend__item.is-zero .ib-legend__pct { color: var(--slate-3); }
+
+/* ---- Preview controls (outside the design) ------------------------------ */
+.review {
+  position: fixed; z-index: 190; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); translate: -50% 0;
+  display: flex; align-items: center; gap: 10px; max-width: calc(100% - 24px); padding: 6px 6px 6px 18px; border-radius: var(--r-pill);
+}
+.review.tone-invert { background: none; }
+.review.frost::before { background: color-mix(in srgb, var(--canvas) 88%, transparent); }
+.review__label { font-size: var(--fs-meta); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--slate-2); white-space: nowrap; }
+.review .tabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; background: color-mix(in srgb, var(--ink) 8%, transparent); border-color: transparent; }
+.review .tabs::-webkit-scrollbar { display: none; }
+.review .tab { height: 36px; white-space: nowrap; }
+.review .theme-toggle { display: inline-grid; color: var(--ink); }
+@media (max-width: 899px) { .review { padding-left: 6px; } .review__label { display: none; } }
+@media (max-width: 479px) { .review .tab { padding: 0 12px; } }
+  </style>
+</head>
+<body data-state="inbox">
+  <svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5"/><path d="M5.6 5.6 3.5 13.5v4a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4l-2.1-7.9a2 2 0 0 0-1.9-1.6H7.5a2 2 0 0 0-1.9 1.6Z"/></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5h4l10-10a2.1 2.1 0 0 0-3-3l-10 10Z"/><path d="m13.5 8.5 3 3"/></symbol>
+      <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10 14M20.5 3.5 14 20.5l-4-6.5-6.5-4Z"/></symbol>
+      <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="4.5" rx="1.5"/><path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9M10 13h4"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.3-4.3"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+      <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m14.5 6-6 6 6 6"/></symbol>
+      <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="m6.5 9.5 5.5 5.5 5.5-5.5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+      <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8Z"/><path d="M14 3.5V8h4.5M9 12.5h6M9 16h4"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8 6 18M18 6l1.8-1.8"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/></symbol>
+      <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M7 3.5h10M7 20.5h10"/><path d="M8 3.5c0 4 4 5.5 4 8.5s-4 4.5-4 8.5M16 3.5c0 4-4 5.5-4 8.5s4 4.5 4 8.5"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h14M13 6.5l5.5 5.5-5.5 5.5"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 8h.01"/></symbol>
+      <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.5 4v4.5H15"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="inbox ibd is-open" id="inbox-page" aria-labelledby="inbox-title">
+    <div class="inbox__inner container">
+      <header class="inbox__top">
+        <div class="inbox__heading">
+          <a class="inbox__back" href="#"><svg class="ico ico--sm"><use href="#i-chevron-left"/></svg>Back to home</a>
+          <h1 class="inbox__title" id="inbox-title">Inbox</h1>
+          <p class="inbox__sub">Everything waiting on you, what you’re writing, and where your requests are.</p>
+        </div>
+        <div class="inbox__tools">
+          <label class="ib-search">
+            <svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg>
+            <input id="ib-search" type="search" placeholder="Search requests…" autocomplete="off" aria-label="Search requests in this tab" readonly>
+          </label>
+          <button class="btn btn--ghost ib-filter__btn" type="button" id="ib-filter-btn">
+            <svg class="ico ico--sm" aria-hidden="true"><use href="#i-filter"/></svg>Filter<span class="ib-filter__count" id="ib-filter-count" hidden>2</span><svg class="ico ico--sm ib-filter__chev" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+          </button>
+          <button class="btn btn--primary" type="button" id="ib-new"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
+        </div>
+      </header>
+
+      <div class="inbox__grid">
+        <aside class="inbox__side" aria-label="Summary">
+          <div class="ib-avg" id="ib-avg">
+            <div class="ib-avg__body"><p class="ib-avg__num" id="ib-avg-num">–</p><p class="ib-avg__label">Average action time</p></div>
+            <span class="ib-avg__icon" aria-hidden="true"><svg class="ico"><use href="#i-hourglass"/></svg></span>
+          </div>
+          <div class="ib-stat">
+            <span class="ib-stat__icon" aria-hidden="true"><svg class="ico"><use href="#i-inbox" id="ib-stat-icon"/></svg></span>
+            <p class="ib-stat__label" id="ib-stat-label">Waiting on you</p>
+            <p class="ib-stat__num" id="ib-stat-num">0</p>
+            <p class="ib-stat__sub" id="ib-stat-sub"></p>
+            <span class="ib-stat__rings" aria-hidden="true"></span>
+          </div>
+          <section class="ib-chart" aria-labelledby="ib-chart-title">
+            <h3 class="ib-chart__title" id="ib-chart-title">Waiting by app</h3>
+            <div class="ib-chart__plot" id="ib-plot"></div>
+            <ul class="ib-legend" id="ib-legend"></ul>
+          </section>
+        </aside>
+
+        <div class="inbox__main">
+          <div class="tabs ib-tabs" role="tablist" aria-label="Requests" id="ib-tabs">
+            <span class="tabs__indicator" aria-hidden="true"></span>
+            <button class="tab is-selected" role="tab" type="button" aria-selected="true" data-tab="inbox">Inbox <span class="tab__count" data-count="inbox">0</span></button>
+            <button class="tab" role="tab" type="button" aria-selected="false" data-tab="draft" tabindex="-1">Draft <span class="tab__count" data-count="draft">0</span></button>
+            <button class="tab" role="tab" type="button" aria-selected="false" data-tab="mine" tabindex="-1">My requests <span class="tab__count" data-count="mine">0</span></button>
+            <button class="tab" role="tab" type="button" aria-selected="false" data-tab="history" tabindex="-1">History <span class="tab__count" data-count="history">0</span></button>
+          </div>
+          <div class="ib-scope" id="ib-scope" role="group" aria-label="Whose requests" hidden>
+            <button class="chip is-selected" type="button" aria-pressed="true" data-scope="history">Raised by me</button>
+            <button class="chip" type="button" aria-pressed="false" data-scope="assigned">Assigned to me</button>
+          </div>
+
+          <div class="ibe-wrap">
+            <!-- 1 · Inbox -->
+            <section class="ibe" data-for="inbox" role="status" aria-label="Inbox is empty">
+              <div class="ibe__art" aria-hidden="true">
+                <div class="ibe__calm">
+                  <svg class="rings" viewBox="0 0 320 320"><circle cx="160" cy="160" r="76"/><circle class="is-dashed" cx="160" cy="160" r="112"/><circle class="is-faint" cx="160" cy="160" r="152"/></svg>
+                  <span class="ibe__core"><svg viewBox="0 0 24 24"><path pathLength="1" d="m6.5 12.5 3.6 3.6 7.4-8.1"/></svg></span>
+                  <span class="ibe__app" style="--x:70%;--y:20%;--d:0s;--n:0"><span class="app-mark app-mark--sf">Sf</span><i class="ibe__tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                  <span class="ibe__app" style="--x:15%;--y:42%;--d:-1.4s;--n:1"><span class="app-mark app-mark--ui">Ui</span><i class="ibe__tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                  <span class="ibe__app" style="--x:36%;--y:84%;--d:-2.6s;--n:2"><span class="app-mark app-mark--db">Db</span><i class="ibe__tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                  <span class="ibe__app" style="--x:84%;--y:62%;--d:-3.6s;--n:3"><span class="app-mark app-mark--sap">SAP</span><i class="ibe__tick"><svg class="ico"><use href="#i-check"/></svg></i></span>
+                </div>
+              </div>
+              <div class="ibe__copy">
+                <p class="ibe__badge ibe__badge--ok"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-check"/></svg>All clear</p>
+                <h2 class="ibe__title">All caught up!</h2>
+                <p class="ibe__text">You have no pending requests. New approval requests will appear here when they require your action.</p>
+                <div class="ibe__actions">
+                  <button class="btn btn--ghost" type="button" id="ibe-refresh"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-refresh"/></svg><span>Check again</span></button>
+                  <button class="btn btn--quiet" type="button" data-go="history"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-archive"/></svg>View history</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- 2 · Draft -->
+            <section class="ibe" data-for="draft" role="status" aria-label="No drafts" hidden>
+              <div class="ibe__art" aria-hidden="true">
+                <svg class="ill" viewBox="0 0 240 200">
+                  <ellipse class="ill__shadow" cx="120" cy="184" rx="76" ry="9"/>
+                  <g transform="rotate(-9 120 104)"><rect class="ill__sheet ill__sheet--back" x="64" y="36" width="112" height="140" rx="14"/></g>
+                  <g transform="rotate(6 120 104)"><rect class="ill__sheet ill__sheet--back" x="64" y="36" width="112" height="140" rx="14"/></g>
+                  <g class="ill__float">
+                    <rect class="ill__sheet" x="64" y="36" width="112" height="140" rx="14"/>
+                    <circle class="ill__soft" cx="88" cy="62" r="11"/><path class="ill__ln ill__ln--acc" d="m83 62 4 4 7-8" style="stroke-width:3"/>
+                    <path class="ill__ln" d="M108 62h44M82 92h72M82 110h72M82 128h46"/>
+                    <path class="ill__dash ill__write" d="M82 150h56"/>
+                  </g>
+                  <g class="ill__float ill__float--2" transform="translate(150 96) rotate(38)">
+                    <rect class="ill__acc" x="0" y="0" width="14" height="62" rx="3"/>
+                    <rect class="ill__soft" x="0" y="0" width="14" height="12" rx="3"/>
+                    <path class="ill__acc" d="M0 62h14l-7 16Z"/>
+                    <path class="ill__w" d="M3 62h8l-4 9Z" style="opacity:.55"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="ibe__copy">
+                <p class="ibe__badge"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-edit"/></svg>Drafts</p>
+                <h2 class="ibe__title">No draft requests</h2>
+                <p class="ibe__text">Requests you’ve started but haven’t submitted yet will appear here after you save them as drafts.</p>
+                <div class="ibe__actions">
+                  <button class="btn btn--primary" type="button"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
+                  <button class="btn btn--quiet" type="button" data-go="inbox"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-inbox"/></svg>Go to Inbox</button>
+                </div>
+                <p class="ibe__tip"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-info"/></svg><span>Choose <b>Save as draft</b> at any step of a TCDF, Internal Memo or RFP to keep your place.</span></p>
+              </div>
+            </section>
+
+            <!-- 3 · My requests -->
+            <section class="ibe" data-for="mine" role="status" aria-label="No requests yet" hidden>
+              <div class="ibe__art" aria-hidden="true">
+                <svg class="ill" viewBox="0 0 240 200">
+                  <ellipse class="ill__shadow" cx="112" cy="184" rx="72" ry="9"/>
+                  <path class="ill__dash" d="M142 92C168 70 180 52 206 40" />
+                  <g class="ill__float">
+                    <rect class="ill__sheet" x="52" y="46" width="112" height="132" rx="14"/>
+                    <path class="ill__ln" d="M74 76h46M74 96h68M74 114h56"/>
+                    <path class="ill__ln" d="M80 150h60" style="stroke-width:3"/>
+                    <circle class="ill__ok" cx="80" cy="150" r="8"/><circle class="ill__soft" cx="110" cy="150" r="8" style="stroke:var(--accent);stroke-width:2.5"/><circle class="ill__sheet" cx="140" cy="150" r="8"/>
+                    <path class="ill__tick" d="m76.5 150 3 3 5-6" style="stroke-width:3"/>
+                  </g>
+                  <g class="ill__fly" transform="translate(176 34)">
+                    <path class="ill__acc" d="M0 20 46 0 34 44 22 28Z"/>
+                    <path class="ill__soft" d="M22 28 46 0 20 24Z" style="opacity:.8"/>
+                    <path d="m22 28 2 12 8-9Z" style="fill:color-mix(in srgb, var(--accent) 70%, #000)"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="ibe__copy">
+                <p class="ibe__badge"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-send"/></svg>My requests</p>
+                <h2 class="ibe__title">Ready to get started?</h2>
+                <p class="ibe__text">Get started by creating your first request. Once submitted, you can track its progress here.</p>
+                <ul class="ibe__starts" aria-label="Start with">
+                  <li><button class="ibe__start" type="button" style="--c: var(--viz-1)"><span class="ibe__start-ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span><strong>TCDF</strong><small>Tender Committee Decision Form</small></span><svg class="ico ico--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button></li>
+                  <li><button class="ibe__start" type="button" style="--c: var(--viz-2)"><span class="ibe__start-ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span><strong>Internal Memo</strong><small>Share a decision or notice inside Bloom</small></span><svg class="ico ico--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button></li>
+                  <li><button class="ibe__start" type="button" style="--c: var(--viz-3)"><span class="ibe__start-ico"><svg class="ico ico--sm"><use href="#i-doc"/></svg></span><span><strong>RFP</strong><small>Request for payment</small></span><svg class="ico ico--sm" aria-hidden="true"><use href="#i-arrow"/></svg></button></li>
+                </ul>
+                <div class="ibe__actions">
+                  <button class="btn btn--primary" type="button"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- 4 · History, raised by me -->
+            <section class="ibe" data-for="history" role="status" aria-label="No request history" hidden>
+              <div class="ibe__art" aria-hidden="true">
+                <svg class="ill" viewBox="0 0 240 200">
+                  <ellipse class="ill__shadow" cx="120" cy="184" rx="78" ry="9"/>
+                  <g class="ill__float">
+                    <rect class="ill__sheet" x="76" y="38" width="88" height="62" rx="10"/>
+                    <path class="ill__ln" d="M92 62h56M92 80h36"/>
+                    <rect class="ill__sheet ill__sheet--back" x="46" y="84" width="148" height="86" rx="14"/>
+                    <rect class="ill__soft" x="46" y="84" width="148" height="26" rx="12"/>
+                    <path class="ill__ln ill__ln--acc" d="M104 134h32"/>
+                  </g>
+                  <g class="ill__float ill__float--2" transform="translate(166 132)">
+                    <circle class="ill__ring" r="26" cx="0" cy="0"/>
+                    <path class="ill__hand" d="M0 -14V0l10 7"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="ibe__copy">
+                <p class="ibe__badge"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-archive"/></svg>History</p>
+                <h2 class="ibe__title">No request history</h2>
+                <p class="ibe__text">Completed requests and requests you’ve reviewed or acted on will appear here.</p>
+                <div class="ibe__actions">
+                  <button class="btn btn--primary" type="button"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-plus"/></svg>New request</button>
+                  <button class="btn btn--quiet" type="button" data-go="assigned">See assigned to me</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- 5 · History, assigned to me -->
+            <section class="ibe" data-for="assigned" role="status" aria-label="Nothing acted on yet" hidden>
+              <div class="ibe__art" aria-hidden="true">
+                <svg class="ill" viewBox="0 0 240 200">
+                  <ellipse class="ill__shadow" cx="120" cy="184" rx="74" ry="9"/>
+                  <g class="ill__float">
+                    <rect class="ill__sheet" x="62" y="30" width="116" height="144" rx="14"/>
+                    <path class="ill__ln" d="M82 58h52M82 76h76M82 94h60"/>
+                  </g>
+                  <g class="ill__float ill__float--2" transform="translate(88 138) rotate(-12)">
+                    <circle class="ill__ok" r="25"/><path class="ill__tick" d="m-10 1 7 7 13-15"/>
+                  </g>
+                  <g class="ill__float" transform="translate(152 120) rotate(10)" style="animation-delay:-1.2s">
+                    <circle class="ill__bad" r="21"/><path class="ill__cross" d="m-8 -8 16 16m0 -16 -16 16"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="ibe__copy">
+                <p class="ibe__badge"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-check"/></svg>Assigned to me</p>
+                <h2 class="ibe__title">Nothing acted on yet</h2>
+                <p class="ibe__text">Requests you approve, reject or forward will appear here, with your decision and when you made it.</p>
+                <div class="ibe__actions">
+                  <button class="btn btn--primary" type="button" data-go="inbox"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-inbox"/></svg>Go to Inbox</button>
+                  <button class="btn btn--quiet" type="button" data-go="history">See raised by me</button>
+                </div>
+              </div>
+            </section>
+
+            <!-- 6 · A search or filter finds nothing (any tab) -->
+            <section class="ibe" data-for="none" role="status" aria-label="Nothing matches" hidden>
+              <div class="ibe__art" aria-hidden="true">
+                <svg class="ill" viewBox="0 0 240 200">
+                  <ellipse class="ill__shadow" cx="120" cy="184" rx="78" ry="9"/>
+                  <g>
+                    <rect class="ill__sheet" x="40" y="40" width="160" height="30" rx="10"/><path class="ill__ln" d="M58 55h56"/>
+                    <rect class="ill__sheet" x="40" y="82" width="160" height="30" rx="10"/><path class="ill__ln" d="M58 97h80"/>
+                    <rect class="ill__sheet" x="40" y="124" width="160" height="30" rx="10"/><path class="ill__ln" d="M58 139h40"/>
+                  </g>
+                  <g class="ill__float" transform="translate(130 96)">
+                    <circle class="ill__ring" r="38" cx="0" cy="0" style="fill:color-mix(in srgb, var(--surface) 78%, transparent)"/>
+                    <path class="ill__ln ill__ln--acc" d="m27 27 30 30" style="stroke-width:9"/>
+                    <path class="ill__cross" d="m-12 -12 24 24m0 -24 -24 24" style="stroke:var(--slate-2)"/>
+                  </g>
+                </svg>
+              </div>
+              <div class="ibe__copy">
+                <p class="ibe__badge"><svg class="ico ico--sm" aria-hidden="true"><use href="#i-search"/></svg>No results</p>
+                <h2 class="ibe__title">Nothing matches</h2>
+                <p class="ibe__text">Try another word, pick a different type, or clear the filters.</p>
+                <div class="ibe__filters" aria-label="Active filters">
+                  <span class="chip is-selected">Search: “invoice”<svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></span>
+                  <span class="chip is-selected">Status: RFI<svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></span>
+                </div>
+                <div class="ibe__actions">
+                  <button class="btn btn--primary" type="button" data-go="mine">Clear all filters</button>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <footer class="ib-foot"><span id="ib-showing">Showing 0 of 0</span><span>Synced 2 minutes ago</span></footer>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview controls — not part of the design -->
+  <div class="review tone-invert frost" role="group" aria-label="Preview">
+    <span class="review__label">Empty state</span>
+    <div class="tabs" role="tablist" aria-label="Which empty state" id="es-states">
+      <span class="tabs__indicator" aria-hidden="true"></span>
+      <button class="tab is-selected" role="tab" type="button" aria-selected="true" data-state="inbox">Inbox</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-state="draft" tabindex="-1">Draft</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-state="mine" tabindex="-1">My requests</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-state="history" tabindex="-1">History</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-state="assigned" tabindex="-1">Assigned to me</button>
+      <button class="tab" role="tab" type="button" aria-selected="false" data-state="none" tabindex="-1">No results</button>
+    </div>
+    <button class="nav-btn theme-toggle" type="button" data-theme-switch role="switch" aria-checked="false" aria-label="Dark theme"><svg class="ico theme-toggle__sun"><use href="#i-sun"/></svg><svg class="ico theme-toggle__moon"><use href="#i-moon"/></svg></button>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+      const $ = (s, r = document) => r.querySelector(s);
+      const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+      const root = document.documentElement;
+
+      // Theme — the same switch and storage key as the portal
+      const syncTheme = () => $$("[data-theme-switch]").forEach((b) => b.setAttribute("aria-checked", String(root.dataset.theme === "dark")));
+      $$("[data-theme-switch]").forEach((b) => b.addEventListener("click", () => {
+        root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+        try { localStorage.setItem("bloo-theme", root.dataset.theme); } catch (e) { /* preview only */ }
+        syncTheme();
+      }));
+      syncTheme();
+
+      // Sliding tab indicators, positioned like the portal's tabs
+      function place(list) {
+        const ind = $(".tabs__indicator", list), sel = $(".tab.is-selected", list);
+        if (!ind || !sel || !list.offsetParent) return;
+        ind.style.width = `${sel.offsetWidth}px`;
+        ind.style.transform = `translateX(${sel.offsetLeft}px)`;
+        if (list.scrollWidth > list.clientWidth) list.scrollTo({ left: Math.max(0, sel.offsetLeft - 12), behavior: "smooth" });
+      }
+      const placeAll = () => $$(".tabs").forEach(place);
+
+      // The summary beside each empty state: zeros, as the live Inbox shows them
+      const APPS = [["salesforce", "Salesforce", 1, "sf"], ["uipath", "UiPath", 3, "ui"], ["darwinbox", "Darwinbox", 2, "db"], ["sap", "SAP", 4, "sap"]];
+      const TYPES = [["tcdf", "TCDF", 1], ["memo", "Internal Memo", 2], ["rfp", "RFP", 3]];
+      const byApp = (v = [0, 0, 0, 0]) => APPS.map(([k, label, slot, mark], i) => ({ k, label, slot, mark, v: v[i] }));
+      const byType = (v = [0, 0, 0]) => TYPES.map(([k, label, slot], i) => ({ k, label, slot, v: v[i] }));
+      const STATES = {
+        inbox: { tab: "inbox", icon: "i-inbox", label: "Waiting on you", sub: "0 overdue · 0 due today", chart: "Waiting by app", unit: "waiting", slices: byApp(), counts: [0, 0, 0, 0], avg: true },
+        draft: { tab: "draft", icon: "i-edit", label: "Drafts", sub: "No drafts — start one with New request", chart: "Drafts by type", unit: "drafts", slices: byType(), counts: [0, 0, 0, 0] },
+        mine: { tab: "mine", icon: "i-send", label: "In progress", sub: "0 in progress · 0 need information · 0 returned", chart: "In progress by type", unit: "in progress", slices: byType(), counts: [0, 0, 0, 0] },
+        history: { tab: "history", scope: "history", icon: "i-archive", label: "Closed", sub: "0 approved · 0 rejected · 0 withdrawn", chart: "Closed by type", unit: "closed", slices: byType(), counts: [0, 0, 0, 0] },
+        assigned: { tab: "history", scope: "assigned", icon: "i-archive", label: "Acted on", sub: "0 approved · 0 rejected · 0 forwarded", chart: "Acted on by app", unit: "acted on", slices: byApp(), counts: [0, 0, 0, 0] },
+        none: { tab: "mine", icon: "i-send", label: "In progress", sub: "3 in progress · 1 needs information · 1 returned", chart: "In progress by type", unit: "in progress", slices: byType([3, 1, 1]), counts: [24, 8, 5, 10], filtered: true, search: "invoice" }
+      };
+
+      const R = 52, C = 2 * Math.PI * R, GAP = 2.5;
+      function paintChart(s) {
+        const total = s.slices.reduce((a, x) => a + x.v, 0);
+        let acc = 0;
+        $("#ib-plot").innerHTML = `<div class="ib-donut"><svg viewBox="0 0 132 132" aria-hidden="true"><circle class="ib-donut__track" cx="66" cy="66" r="${R}"/>${s.slices.map((x) => {
+          const len = total ? (x.v / total) * C : 0;
+          const seg = `<circle class="ib-donut__seg" ${x.v ? "" : "data-empty "}cx="66" cy="66" r="${R}" style="--c: var(--viz-${x.slot}); stroke-dasharray: ${Math.max(0, len - (x.v && x.v !== total ? GAP : 0)).toFixed(2)} ${C.toFixed(2)}; stroke-dashoffset: ${(-acc).toFixed(2)}"/>`;
+          acc += len;
+          return seg;
+        }).join("")}</svg><div class="ib-donut__center"><p class="ib-donut__num">${total}</p><p class="ib-donut__lbl">${s.unit}</p></div></div>`;
+        $("#ib-legend").innerHTML = s.slices.map((x) => `<li><span class="ib-legend__item${x.v ? "" : " is-zero"}" style="--c: var(--viz-${x.slot})"><span class="ib-legend__dot"></span><span class="ib-legend__name">${x.mark ? `<span class="app-mark app-mark--${x.mark}" aria-hidden="true">${x.k === "sap" ? "SAP" : x.label.slice(0, 2)}</span>` : ""}${x.label}</span><span class="ib-legend__val">${x.v}</span><span class="ib-legend__pct">${total ? Math.round((x.v / total) * 100) : 0}%</span></span></li>`).join("");
+        return total;
+      }
+
+      function setState(name) {
+        const s = STATES[name] || STATES.inbox;
+        name = STATES[name] ? name : "inbox";
+        document.body.dataset.state = name;
+        $$(".ibe").forEach((e) => { e.hidden = e.dataset.for !== name; });
+        $("#ib-avg").hidden = s.tab !== "inbox";
+        $("#ib-stat-icon").setAttribute("href", `#${s.icon}`);
+        $("#ib-stat-label").textContent = s.label;
+        $("#ib-stat-sub").textContent = s.sub;
+        $("#ib-chart-title").textContent = s.chart;
+        $("#ib-stat-num").textContent = paintChart(s);
+        $$("[data-count]").forEach((c, i) => { c.textContent = s.counts[i]; });
+        $$("#ib-tabs .tab").forEach((t) => { const on = t.dataset.tab === s.tab; t.classList.toggle("is-selected", on); t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1; });
+        $("#ib-scope").hidden = s.tab !== "history";
+        $$("#ib-scope .chip").forEach((c) => { const on = c.dataset.scope === s.scope; c.classList.toggle("is-selected", on); c.setAttribute("aria-pressed", String(on)); });
+        $("#ib-search").value = s.search || "";
+        $("#ib-filter-count").hidden = !s.filtered;
+        $("#ib-showing").textContent = s.filtered ? "Showing 0 of 5" : "Showing 0 of 0";
+        $$("#es-states .tab").forEach((b) => { const on = b.dataset.state === name; b.classList.toggle("is-selected", on); b.setAttribute("aria-selected", String(on)); b.tabIndex = on ? 0 : -1; });
+        history.replaceState(null, "", `?state=${name}`);
+        requestAnimationFrame(placeAll);
+      }
+      $$("#es-states .tab").forEach((b) => b.addEventListener("click", () => setState(b.dataset.state)));
+      $("#es-states").addEventListener("keydown", (e) => {
+        const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+        if (!d) return;
+        const tabs = $$("#es-states .tab"), next = tabs[(tabs.indexOf(document.activeElement) + d + tabs.length) % tabs.length];
+        next.focus(); setState(next.dataset.state);
+      });
+      // the Inbox's own tabs and chips switch states too
+      $$("#ib-tabs .tab").forEach((t) => t.addEventListener("click", () => setState(t.dataset.tab)));
+      $$("#ib-scope .chip").forEach((c) => c.addEventListener("click", () => setState(c.dataset.scope)));
+      $$("[data-go]").forEach((b) => b.addEventListener("click", () => setState(b.dataset.go)));
+
+      // Check again: a quick sync, still nothing new
+      $("#ibe-refresh").addEventListener("click", (e) => {
+        const b = e.currentTarget, label = $("span", b);
+        b.disabled = true; label.textContent = "Checking…";
+        setTimeout(() => { b.disabled = false; label.textContent = "Nothing new"; setTimeout(() => { label.textContent = "Check again"; }, 1800); }, 900);
+      });
+
+      $$('a[href="#"]').forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
+      addEventListener("resize", placeAll);
+      (document.fonts ? document.fonts.ready : Promise.resolve()).then(placeAll);
+      setState(new URLSearchParams(location.search).get("state") || "inbox");
+    })();
+  </script>
+</body>
+</html>
